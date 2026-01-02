@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Varsity Applications</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/varsity.css"> <!-- Professional styling -->
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>South African Universities</h1>
+</header>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="index.html">Home</a>
+  <a href="jobs.html">Jobs</a>
+  <a href="bursaries.html">Bursaries</a>
+  <a href="varsity.html">Varsity</a>
+  <a href="cv-generator.html">Generate CV</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+  <p>
+    Below is a list of recognized public universities in South Africa.
+    Application status updates automatically based on deadlines.
+  </p>
+
+  <!-- Search and sort -->
+  <input type="text" id="searchInput" placeholder="Search universities..." />
+  <button id="sortDeadlineBtn">Sort by Earliest Deadline</button>
+
+  <!-- University cards container -->
+  <ul class="varsity-cards" id="varsityList"></ul>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    const varsityList = document.getElementById('varsityList');
+    const searchInput = document.getElementById('searchInput');
+    const sortDeadlineBtn = document.getElementById('sortDeadlineBtn');
+
+    // 26 default universities
+    const universities = [
+      {name: "University of Cape Town", link:"#", deadline:"2026-01-15"},
+      {name: "University of Pretoria", link:"#", deadline:"2026-01-20"},
+      {name: "University of the Witwatersrand", link:"#", deadline:"2026-02-10"},
+      {name: "Stellenbosch University", link:"#", deadline:"2026-01-25"},
+      {name: "University of Johannesburg", link:"#", deadline:"2026-02-05"},
+      {name: "University of KwaZulu-Natal", link:"#", deadline:"2026-01-30"},
+      {name: "North-West University", link:"#", deadline:"2026-02-15"},
+      {name: "Rhodes University", link:"#", deadline:"2026-02-20"},
+      {name: "University of the Free State", link:"#", deadline:"2026-01-28"},
+      {name: "Nelson Mandela University", link:"#", deadline:"2026-02-12"},
+      {name: "University of Venda", link:"#", deadline:"2026-03-01"},
+      {name: "University of Fort Hare", link:"#", deadline:"2026-03-05"},
+      {name: "Tshwane University of Technology", link:"#", deadline:"2026-01-22"},
+      {name: "Vaal University of Technology", link:"#", deadline:"2026-02-18"},
+      {name: "Cape Peninsula University of Technology", link:"#", deadline:"2026-02-01"},
+      {name: "Durban University of Technology", link:"#", deadline:"2026-02-08"},
+      {name: "Mangosuthu University of Technology", link:"#", deadline:"2026-02-25"},
+      {name: "University of South Africa", link:"#", deadline:"2026-01-18"},
+      {name: "Sol Plaatje University", link:"#", deadline:"2026-03-10"},
+      {name: "University of Mpumalanga", link:"#", deadline:"2026-02-28"},
+      {name: "Sefako Makgatho Health Sciences University", link:"#", deadline:"2026-03-05"},
+      {name: "Central University of Technology", link:"#", deadline:"2026-02-03"},
+      {name: "University of Limpopo", link:"#", deadline:"2026-02-10"},
+      {name: "University of Zululand", link:"#", deadline:"2026-02-15"},
+      {name: "Walter Sisulu University", link:"#", deadline:"2026-02-20"},
+      {name: "University of the Western Cape", link:"#", deadline:"2026-01-27"}
+    ];
+
+    function renderFilteredList() {
+      const query = searchInput.value.toLowerCase();
+      varsityList.innerHTML = '';
+
+      const filtered = universities.filter(uni =>
+        uni.name.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        varsityList.innerHTML = "<li>No universities match your search.</li>";
+        return;
+      }
+
+      const today = new Date();
+
+      filtered.forEach(uni => {
+        const deadlineDate = new Date(uni.deadline);
+        const isOpen = deadlineDate >= today;
+
+        // Highlight urgent deadlines within 7 days
+        const diffTime = deadlineDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const isUrgent = diffDays <= 7 && isOpen;
+
+        const li = document.createElement('li');
+        li.className = "varsity-card";
+        li.innerHTML = `
+          <a href="${uni.link}" target="_blank">${uni.name}</a>
+          <small>Deadline: ${uni.deadline}</small>
+          <span class="status ${isOpen ? 'open' : 'closed'}">
+            ${isOpen ? 'Open' : 'Closed'}
+          </span>
+          ${isUrgent ? '<span class="urgent">Urgent!</span>' : ''}
+        `;
+        varsityList.appendChild(li);
+      });
+    }
+
+    searchInput.addEventListener('input', renderFilteredList);
+    sortDeadlineBtn.addEventListener('click', () => {
+      universities.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      renderFilteredList();
+    });
+
+    renderFilteredList();
+  </script>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>Apply early and check opening/closing dates for applications.</p>
+</footer>
+
+</body>
+</html>

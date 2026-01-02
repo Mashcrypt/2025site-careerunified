@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel – South Africa Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ==========================
+   GENERAL STYLING
+========================== */
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 0;
+  color: #1f2937;
+}
+header, nav, footer {
+  background: #1e3a8a;
+  color: white;
+  padding: 15px 20px;
+}
+header h1 { margin: 0; font-size: 28px; }
+nav a {
+  color: white;
+  margin-right: 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+nav a:hover { text-decoration: underline; }
+main { padding: 20px; max-width: 1200px; margin: auto; }
+h2 { margin-top: 40px; color: #1e3a8a; }
+
+/* ==========================
+   FORMS
+========================== */
+form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+input, select, textarea, button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+textarea { resize: vertical; }
+button {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover { background: #374ba0; }
+
+/* ==========================
+   LISTS
+========================== */
+ul { list-style: none; padding: 0; }
+li {
+  background: white;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* ==========================
+   READ MORE / TOGGLE
+========================== */
+.read-more { color:#1e3a8a; cursor:pointer; font-weight:bold; }
+
+/* ==========================
+   RESPONSIVE
+========================== */
+@media(max-width:900px){
+  form, ul { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Admin Panel</h1>
+  <p>Manage Universities, Bursaries, Jobs, CV Tips, and Admins</p>
+</header>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="varsity.html">View Varsities</a>
+  <a href="bursaries.html">View Bursaries</a>
+  <a href="jobs.html">View Jobs</a>
+  <a href="cv-generator.html">View CV Tips</a>
+</nav>
+
+<main>
+  <!-- LOGIN -->
+  <div id="loginSection">
+    <h2>Admin Login</h2>
+    <form id="loginForm">
+      <input type="text" id="adminUser" placeholder="Username" required>
+      <input type="password" id="adminPass" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p id="loginError" style="color:red;"></p>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" style="display:none;">
+
+    <!-- UNIVERSITIES -->
+    <h2>Universities</h2>
+    <form id="adminForm">
+      <input type="hidden" id="editIndex">
+      <input type="text" id="uniName" placeholder="University Name" required>
+      <input type="url" id="uniLink" placeholder="Application Link" required>
+      <input type="date" id="uniDeadline" required>
+      <button type="submit">Save University</button>
+    </form>
+    <ul id="adminUniversityList"></ul>
+
+    <!-- BURSARIES -->
+    <h2>Bursaries</h2>
+    <form id="bursaryForm">
+      <input type="hidden" id="bursaryEditIndex">
+      <input type="text" id="bursaryName" placeholder="Bursary Name" required>
+      <input type="text" id="bursaryProvider" placeholder="Provider" required>
+      <input type="url" id="bursaryLink" placeholder="Application Link" required>
+      <input type="date" id="bursaryDeadline" required>
+      <select id="bursaryFaculty" required>
+        <option value="">Select Faculty/Category</option>
+        <option value="Accounting & Finance">Accounting & Finance</option>
+        <option value="Arts & Humanities">Arts & Humanities</option>
+        <option value="Commerce & Business">Commerce & Business</option>
+        <option value="Computer Science & IT">Computer Science & IT</option>
+        <option value="Construction & Built Environment">Construction & Built Environment</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Health & Medical">Health & Medical</option>
+        <option value="Law">Law</option>
+        <option value="MBA & Postgraduate">MBA & Postgraduate</option>
+        <option value="Nursing">Nursing</option>
+        <option value="Science">Science</option>
+        <option value="Government">State/Government Bursaries</option>
+        <option value="Student Loan">Student Loan</option>
+      </select>
+      <textarea id="bursaryDescription" placeholder="Bursary Description" rows="3" required></textarea>
+      <button type="submit">Save Bursary</button>
+    </form>
+    <ul id="adminBursaryList"></ul>
+
+   <!-- ===============================
+     JOBS MANAGEMENT
+=============================== -->
+ <h2>Jobs</h2>
+
+<form id="jobForm">
+
+  <input type="hidden" id="jobEditIndex">
+
+  <input type="text" id="jobTitle" placeholder="Job Title" required>
+
+  <input type="text" id="jobCompany" placeholder="Company Name" required>
+
+  <textarea id="jobDesc" placeholder="Job Description" rows="4" required></textarea>
+
+  <input type="text" id="jobLocation" placeholder="Location (e.g. Cape Town / Remote)" required>
+
+  <input type="text" id="jobSalary" placeholder="Salary (e.g. R20,000 – R30,000 / Negotiable)" required>
+
+  <input type="url" id="jobApplyLink" placeholder="Application Link (URL)" required>
+
+  <label>Date Posted</label>
+  <input type="date" id="jobPosted" required>
+
+  <label>Closing Date</label>
+  <input type="date" id="jobDeadline" required>
+
+  <select id="jobCategory" required>
+    <option value="">Select Category</option>
+    <option value="internship">Internship / Graduate Program</option>
+    <option value="temporary">Temporary Contract</option>
+    <option value="freelance">Freelance</option>
+  </select>
+
+  <select id="jobType" required>
+    <option value="">Select Job Type</option>
+    <option value="Full-time">Full-time</option>
+    <option value="Part-time">Part-time</option>
+    <option value="Contract">Contract</option>
+    <option value="Remote">Remote</option>
+  </select>
+
+  <button type="submit">Save Job</button>
+</form>
+
+<ul id="adminJobList"></ul>
+
+
+    <!-- CV TIPS -->
+    <h2>CV Tips</h2>
+    <form id="cvTipsForm">
+      <input type="hidden" id="cvTipEditIndex">
+      <input type="text" id="cvTipTitle" placeholder="Tip Title" required>
+      <select id="cvTipCategory" required>
+        <option value="">Select Category</option>
+        <option value="Formatting Tips">Formatting Tips</option>
+        <option value="Content Tips">Content Tips</option>
+        <option value="Common Mistakes">Common Mistakes</option>
+        <option value="Interview Preparation Tips">Interview Preparation Tips</option>
+      </select>
+      <textarea id="cvTipContent" placeholder="Tip Content / Description" rows="3" required></textarea>
+      <button type="submit">Save Tip</button>
+    </form>
+    <ul id="cvTipsListAdmin"></ul>
+
+    <!-- ADMIN MANAGEMENT -->
+    <h2>Admins</h2>
+    <form id="adminAccountForm">
+      <input type="text" id="newAdminUser" placeholder="New Admin Username" required>
+      <input type="password" id="newAdminPass" placeholder="New Admin Password" required>
+      <button type="submit">Add Admin</button>
+    </form>
+    <ul id="adminList"></ul>
+
+    <button id="logoutBtn">Logout</button>
+  </div>
+</main>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
+

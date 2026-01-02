@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bursaries – South Africa</title>
+<link rel="stylesheet" href="css/style.css">       <!-- main shared styles -->
+<link rel="stylesheet" href="css/bursaries.css">  <!-- bursary-specific styles -->
+</head>
+<body>
+
+<header>
+  <h1>Available Bursaries</h1>
+</header>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="jobs.html">Jobs</a>
+  <a href="bursaries.html">Bursaries</a>
+  <a href="varsity.html">Varsity</a>
+  <a href="cv-generator.html">Generate CV</a>
+</nav>
+
+<main>
+  <p>Filter bursaries by faculty or category and check deadlines.</p>
+
+  <div class="filter">
+    <label for="facultyFilter">Select Faculty/Category: </label>
+    <select id="facultyFilter">
+      <option value="All">All Bursaries</option>
+      <option value="Accounting & Finance">Accounting & Finance</option>
+      <option value="Arts & Humanities">Arts & Humanities</option>
+      <option value="Commerce & Business">Commerce & Business</option>
+      <option value="Computer Science & IT">Computer Science & IT</option>
+      <option value="Construction & Built Environment">Construction & Built Environment</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Health & Medical">Health & Medical</option>
+      <option value="Law">Law</option>
+      <option value="MBA & Postgraduate">MBA & Postgraduate</option>
+      <option value="Nursing">Nursing</option>
+      <option value="Science">Science</option>
+      <option value="Government">State/Government Bursaries</option>
+      <option value="Student Loan">Student Loan</option>
+    </select>
+  </div>
+
+  <ul id="bursaryList"></ul>
+
+</main>
+
+<footer>
+  <p>Apply early and check bursary deadlines. Some bursaries may close quickly.</p>
+</footer>
+
+<script>
+const bursaryList = document.getElementById('bursaryList');
+const facultyFilter = document.getElementById('facultyFilter');
+let bursaries = JSON.parse(localStorage.getItem('bursaries')) || [];
+
+function renderBursaries(filter='All') {
+  bursaryList.innerHTML = '';
+  bursaries.sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
+  const filtered = filter==='All'?bursaries:bursaries.filter(b=>b.faculty===filter);
+
+  if(filtered.length===0){
+    bursaryList.innerHTML='<li class="bursary-card">No bursaries found.</li>';
+    return;
+  }
+
+  const today = new Date();
+
+  filtered.forEach((b,index)=>{
+    const deadlineDate = new Date(b.deadline);
+    const isUrgent = (deadlineDate-today)/(1000*60*60*24) <= 7;
+    const shortDesc = b.description.length>150?b.description.substring(0,150)+'...':b.description;
+    const readMore = b.description.length>150?`<span class="read-more" onclick="toggleDesc(${index})">Read more</span>`:'';
+
+    const li = document.createElement('li');
+    li.className='bursary-card';
+    li.innerHTML=`
+      <strong>${b.name}</strong> (${b.faculty})<br>
+      Provider: ${b.provider}<br>
+      Deadline: ${b.deadline} ${isUrgent?'<span class="urgent">Urgent</span>':''}<br>
+      <p id="desc-${index}">${shortDesc}</p>
+      ${readMore}<br>
+      <a href="${b.link}" target="_blank">Apply Here</a>
+    `;
+    bursaryList.appendChild(li);
+  });
+}
+
+function toggleDesc(index){
+  const descEl=document.getElementById(`desc-${index}`);
+  const b=bursaries[index];
+  descEl.innerHTML = descEl.innerHTML.endsWith('...') ? b.description : b.description.substring(0,150)+'...';
+}
+
+renderBursaries();
+facultyFilter.addEventListener('change', e=>renderBursaries(e.target.value));
+</script>
+
+<!-- FAST SCROLL BUTTONS -->
+<button id="scrollUp" class="scroll-btn">↑</button>
+<button id="scrollDown" class="scroll-btn">↓</button>
+
+</body>
+</html>
+
