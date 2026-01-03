@@ -4,187 +4,102 @@
 <meta charset="UTF-8">
 <title>Contact Us – CareerUnified</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- Classic EmailJS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- ✅ CORRECT & CURRENT EMAILJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.10.0/dist/email.min.js"></script>
 
 <style>
-/* ===========================
-   CONTACT PAGE STYLES
-=========================== */
-* { box-sizing: border-box; margin:0; padding:0; }
-body { font-family: 'Poppins', Arial, sans-serif; background:#f7f9fc; color:#1f2937; line-height:1.7; }
-nav { background:#1e3a8a; padding:15px 25px; display:flex; justify-content:space-between; align-items:center; }
-nav a { color:white; text-decoration:none; font-weight:600; margin-left:20px; }
-nav .logo { font-size:20px; font-weight:700; }
-nav a:hover { color:#facc15; }
-header { background:linear-gradient(90deg,#1e3a8a,#2563eb); color:white; padding:60px 20px; text-align:center; }
-header h1 { font-size:40px; margin-bottom:10px; }
-header p { font-size:18px; opacity:0.95; }
-main { max-width:1000px; margin:50px auto; padding:0 20px; }
-.section { background:white; padding:35px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.08); margin-bottom:35px; }
-.section h2 { color:#1e3a8a; font-size:22px; margin-bottom:12px; }
-.section p { font-size:15px; margin-bottom:12px; }
-.contact-info { list-style:none; margin-top:15px; }
-.contact-info li { margin-bottom:8px; font-size:15px; }
-.contact-form { margin-top:15px; }
-.contact-form input, .contact-form select, .contact-form textarea {
-  width:100%; padding:12px 14px; margin-bottom:14px; border-radius:8px; border:1px solid #d1d5db; font-size:14px;
+body {
+  font-family: Poppins, Arial, sans-serif;
+  background: #f7f9fc;
+  padding: 40px;
 }
-.contact-form textarea { resize:vertical; }
-.contact-form button {
-  background:#2563eb; color:white; padding:14px; border:none; border-radius:10px; font-weight:600; cursor:pointer; width:100%;
+form {
+  max-width: 500px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.1);
 }
-.contact-form button:hover { background:#1d4ed8; }
-.notice { background:#f1f5ff; border-left:5px solid #2563eb; padding:18px; border-radius:8px; font-size:14px; }
-footer { background:#1e3a8a; color:white; text-align:center; padding:20px; font-size:14px; }
-footer a { color:#facc15; text-decoration:none; margin:0 8px; }
-footer a:hover { text-decoration:underline; }
-@media (max-width:768px) { header h1{ font-size:30px; } nav{ flex-direction:column; align-items:flex-start; } nav a{ margin:8px 0 0; } }
+input, select, textarea, button {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px;
+  font-size: 14px;
+}
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button:hover { background: #1d4ed8; }
 </style>
 </head>
 
 <body>
 
-<!-- NAVIGATION -->
-<nav>
-  <a href="index.html" class="logo">CareerUnified</a>
-  <div>
-    <a href="jobs.html">Jobs</a>
-    <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsity</a>
-    <a href="cv-generator.html">Generate CV</a>
-  </div>
-</nav>
+<h2>Contact CareerUnified</h2>
 
-<!-- HEADER -->
-<header>
-  <h1>Contact Us</h1>
-  <p>We’re here to support and guide your journey</p>
-</header>
+<form id="contact-form">
+  <input type="text" name="from_name" placeholder="Your Name" required>
+  <input type="email" name="from_email" placeholder="Your Email" required>
+  <select name="reason" required>
+    <option value="">Reason</option>
+    <option>Feedback</option>
+    <option>Question</option>
+    <option>Support</option>
+  </select>
+  <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+  <button type="submit">Send Message</button>
+</form>
 
-<!-- MAIN -->
-<main>
-
-  <!-- INTRO -->
-  <div class="section">
-    <h2>Get in Touch</h2>
-    <p>If you have questions, feedback, or suggestions regarding CareerUnified, we welcome you to reach out. Our team will respond promptly, usually within 1 business day.</p>
-  </div>
-
-  <!-- CONTACT INFO -->
-  <div class="section">
-    <h2>Contact Information</h2>
-    <ul class="contact-info">
-      <li><strong>Platform:</strong> CareerUnified (South Africa)</li>
-      <li><strong>Email:</strong> contact@careerunified.com</li>
-      <li><strong>Availability:</strong> Monday – Friday (Business Hours)</li>
-    </ul>
-  </div>
-
-  <!-- FORM -->
-  <div class="section">
-    <h2>Send Us a Message</h2>
-    <p>Please use the form below for general enquiries. We’ll get back to you promptly.</p>
-
-    <div class="notice">Message submission is active. Our team will respond within 1 business day.</div>
-
-    <form id="contact-form" class="contact-form">
-      <input type="text" name="name" placeholder="Your Full Name" required>
-      <input type="email" name="email" placeholder="Your Email Address" required>
-      <select name="reason" required>
-        <option value="" disabled selected>Reason for Contact</option>
-        <option value="Feedback">Feedback</option>
-        <option value="Question">Question</option>
-        <option value="Suggestion">Suggestion</option>
-      </select>
-      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </div>
-
-  <!-- DISCLAIMER -->
-  <div class="section">
-    <h2>Important Notice</h2>
-    <p>CareerUnified is a third-party career assistance platform. We do not recruit, shortlist, hire, or award funding.</p>
-    <p>All applications must be completed through the official employer, institution, or provider websites.</p>
-  </div>
-
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <p>
-    <a href="index.html">Home</a> |
-    <a href="about-us.html">About Us</a> |
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="terms.html">Terms & Conditions</a> |
-    <a href="contact-us.html">Contact Us</a>
-  </p>
-  <p>© 2026 CareerUnified. All rights reserved.</p>
-</footer>
-
-<!-- ===============================
-     EMAILJS CONTACT FORM SCRIPT – CLASSIC SDK, GUARANTEED WORKING
-================================ -->
 <script>
-  // ----- CONFIGURE YOUR EMAILJS IDS & KEY -----
-  const SERVICE_ID = "service_1g83g1d";
-  const TEMPLATE_MAIN = "template_vuptbkx";
-  const TEMPLATE_AUTO = "template_4agu3xs";
-  const PUBLIC_KEY = "u082oiEYxXgiBHK07";
-  // -------------------------------------------
+/* ===============================
+   EMAILJS – FINAL VERIFIED SETUP
+================================ */
 
-  // Initialize EmailJS
-  emailjs.init(PUBLIC_KEY);
+// 1️⃣ INIT WITH **CORRECT PUBLIC KEY**
+emailjs.init("ZdXt4LrBaHzJDfotS");
 
-  const form = document.getElementById("contact-form");
-  form.addEventListener("submit", function(e){
-    e.preventDefault();
+// 2️⃣ FORM SUBMIT
+document.getElementById("contact-form").addEventListener("submit", function(e) {
+  e.preventDefault();
 
-    const formData = {
-      from_name: this.name.value.trim(),
-      from_email: this.email.value.trim(),
-      reason: this.reason.value,
-      message: this.message.value.trim(),
-      date: new Date().toLocaleString()
-    };
+  const params = {
+    from_name: this.from_name.value,
+    from_email: this.from_email.value,
+    reason: this.reason.value,
+    message: this.message.value,
+    date: new Date().toLocaleString()
+  };
 
-    console.log("=== EmailJS Diagnostic ===");
-    console.log("Service ID:", SERVICE_ID);
-    console.log("Main Template ID:", TEMPLATE_MAIN);
-    console.log("Auto-Reply Template ID:", TEMPLATE_AUTO);
-    console.log("Public Key:", PUBLIC_KEY);
-    console.log("Form Data:", formData);
+  console.log("Sending EmailJS data:", params);
 
-    // Send main email to team
-    emailjs.send(SERVICE_ID, TEMPLATE_MAIN, formData)
-      .then(() => {
-        console.log("Main email sent successfully.");
-
-        // Send auto-reply email to user
-        return emailjs.send(SERVICE_ID, TEMPLATE_AUTO, {
-          from_name: formData.from_name,
-          from_email: formData.from_email,
-          message: formData.message
-        });
-      })
-      .then(() => {
-        console.log("Auto-reply sent successfully.");
-        alert("Your message has been sent! A confirmation email has been sent to you as well.");
-        form.reset();
-      })
-      .catch((err) => {
-        console.error("EmailJS send error:", err);
-        alert("Oops! Something went wrong. Check console for details.");
-      });
+  // 3️⃣ SEND EMAIL
+  emailjs.send(
+    "service_1g83g1d",       // ✅ service ID
+    "template_vuptbkx",      // ✅ main contact template
+    params
+  )
+  .then(function(response) {
+    console.log("SUCCESS:", response);
+    alert("Message sent successfully!");
+    document.getElementById("contact-form").reset();
+  })
+  .catch(function(error) {
+    console.error("EMAILJS ERROR:", error);
+    alert("Failed to send message. Check console.");
   });
+});
 </script>
 
 </body>
 </html>
+
+
 
 
 
