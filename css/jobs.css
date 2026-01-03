@@ -1,14 +1,15 @@
 /* ----------------- JOBS PAGE STYLES ----------------- */
 
-/* GENERAL LAYOUT */
+/* ----------------- GENERAL LAYOUT ----------------- */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif; /* aligned with CV Generator */
     background-color: #f5f5f5;
     margin: 0;
     padding: 0;
     color: #333;
 }
 
+/* ----------------- HEADER ----------------- */
 header {
     background-color: #1e3a8a;
     color: #fff;
@@ -19,32 +20,35 @@ header {
 header h1 {
     margin: 0;
     font-size: 2rem;
+    font-weight: 600;
 }
 
-/* NAVIGATION */
+/* ----------------- NAVIGATION ----------------- */
 nav {
     display: flex;
     justify-content: center;
+    align-items: center;
     background-color: #f8f9fa;
     padding: 10px 0;
     gap: 15px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 nav a {
     text-decoration: none;
     color: #1e3a8a;
     font-weight: 600;
-    padding: 5px 10px;
+    padding: 6px 12px;
+    border-radius: 5px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 nav a:hover {
     background-color: #1e3a8a;
     color: #fff;
-    border-radius: 5px;
 }
 
-/* MAIN CONTENT */
+/* ----------------- MAIN CONTENT ----------------- */
 main {
     max-width: 1200px;
     margin: 20px auto;
@@ -57,7 +61,7 @@ main p {
     text-align: center;
 }
 
-/* SEARCH & FILTER BAR */
+/* ----------------- SEARCH & FILTER BAR ----------------- */
 .search-filter-container {
     display: flex;
     flex-wrap: wrap;
@@ -95,7 +99,7 @@ main p {
     background-color: #162c6f;
 }
 
-/* JOB CARDS GRID */
+/* ----------------- JOB CARDS GRID ----------------- */
 .jobs-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -105,7 +109,7 @@ main p {
     margin: 0;
 }
 
-/* JOB CARD */
+/* ----------------- JOB CARD ----------------- */
 .job-card {
     background-color: #fff;
     border-radius: 10px;
@@ -123,7 +127,7 @@ main p {
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-/* JOB DETAILS */
+/* ----------------- JOB DETAILS ----------------- */
 .job-card h3 {
     margin: 0 0 5px 0;
     color: #1e3a8a;
@@ -134,14 +138,14 @@ main p {
     font-weight: 600;
     color: #333;
     font-size: 0.9rem;
-    margin-bottom: 2px; /* reduced spacing */
+    margin-bottom: 2px;
 }
 
 .job-card .location,
 .job-card .salary {
     font-size: 0.85rem;
     color: #555;
-    margin: 2px 0; /* reduced spacing */
+    margin: 2px 0;
 }
 
 .job-card p.description {
@@ -150,7 +154,7 @@ main p {
     margin: 5px 0 10px 0;
 }
 
-/* APPLY BUTTON */
+/* ----------------- APPLY BUTTON ----------------- */
 .job-card a.apply-btn {
     padding: 7px 12px;
     background-color: #16a34a;
@@ -166,7 +170,7 @@ main p {
     background-color: #13803d;
 }
 
-/* STATUS LABELS */
+/* ----------------- STATUS LABELS ----------------- */
 .status {
     padding: 3px 7px;
     border-radius: 5px;
@@ -205,7 +209,7 @@ main p {
     100% { transform: scale(1); background-color: #facc15; }
 }
 
-/* FEATURED RIBBON */
+/* ----------------- FEATURED RIBBON ----------------- */
 .featured-ribbon {
     position: absolute;
     top: 0;
@@ -221,7 +225,7 @@ main p {
     transform-origin: left top;
 }
 
-/* FOOTER */
+/* ----------------- FOOTER ----------------- */
 footer {
     text-align: center;
     padding: 20px 0;
@@ -230,7 +234,7 @@ footer {
     margin-top: 40px;
 }
 
-/* SCROLL BUTTONS */
+/* ----------------- SCROLL BUTTONS ----------------- */
 .scroll-btn {
     position: fixed;
     right: 20px;
@@ -254,7 +258,7 @@ footer {
     transform: translateY(-2px);
 }
 
-/* RESPONSIVE */
+/* ----------------- RESPONSIVE ----------------- */
 @media (max-width: 600px) {
     .jobs-list {
         grid-template-columns: 1fr;
@@ -272,3 +276,5 @@ footer {
         margin-bottom: 10px;
     }
 }
+
+
