@@ -1,113 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Contact Us – CareerUnified</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-<!-- ✅ OFFICIAL EMAILJS CDN (NOT jsDelivr) -->
-<script src="https://unpkg.com/@emailjs/browser@4/dist/email.min.js"></script>
-
-<style>
-body {
-  font-family: Poppins, Arial, sans-serif;
-  background: #f7f9fc;
-  padding: 40px;
-}
-form {
-  max-width: 520px;
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-input, select, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 14px;
-  font-size: 14px;
-}
-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-button:hover { background: #1d4ed8; }
-</style>
+  <meta charset="UTF-8">
+  <title>Contact Us | CareerUnified</title>
 </head>
-
 <body>
 
-<h2>Contact CareerUnified</h2>
+  <h2>Contact CareerUnified</h2>
 
-<form id="contact-form">
-  <input type="text" name="from_name" placeholder="Your Name" required>
-  <input type="email" name="from_email" placeholder="Your Email" required>
+  <form id="contact-form">
+    <input type="text" name="from_name" placeholder="Your Name" required>
+    <input type="email" name="from_email" placeholder="Your Email" required>
 
-  <select name="reason" required>
-    <option value="">Reason</option>
-    <option>Feedback</option>
-    <option>Question</option>
-    <option>Support</option>
-  </select>
+    <select name="reason" required>
+      <option value="">Select a reason</option>
+      <option value="Feedback">Feedback</option>
+      <option value="Support">Support</option>
+      <option value="Partnership">Partnership</option>
+    </select>
 
-  <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+    <textarea name="message" placeholder="Your message" required></textarea>
 
-  <button type="submit">Send Message</button>
-</form>
+    <button type="submit">Send Message</button>
+  </form>
 
-<script>
-/* ======================================
-   EMAILJS – SAFE INITIALIZATION
-====================================== */
+  <!-- ✅ OFFICIAL EmailJS SDK (DO NOT CHANGE) -->
+  <script src="https://unpkg.com/@emailjs/browser@4/dist/email.min.js"></script>
 
-// 🚨 HARD STOP if EmailJS did not load
-if (typeof emailjs === "undefined") {
-  alert("Email service failed to load. Check your internet or ad-blocker.");
-  throw new Error("EmailJS not loaded");
-}
+  <script>
+    // ✅ INIT (PUBLIC KEY)
+    emailjs.init("ZdXt4LrBaHzJDfotS");
 
-// ✅ INIT WITH VERIFIED PUBLIC KEY
-emailjs.init("ZdXt4LrBaHzJDfotS");
+    document.getElementById("contact-form").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-console.log("EmailJS loaded successfully");
+      const form = this;
 
-// FORM HANDLER
-document.getElementById("contact-form").addEventListener("submit", function (e) {
-  e.preventDefault();
+      const params = {
+        from_name: form.from_name.value,
+        from_email: form.from_email.value,
+        reason: form.reason.value,
+        message: form.message.value,
+        date: new Date().toLocaleString()
+      };
 
-  const params = {
-    from_name: this.from_name.value.trim(),
-    from_email: this.from_email.value.trim(),
-    reason: this.reason.value,
-    message: this.message.value.trim(),
-    date: new Date().toLocaleString()
-  };
+      console.log("Sending EmailJS data:", params);
 
-  console.log("Sending data:", params);
+      // 1️⃣ SEND TO ADMIN
+      emailjs.send(
+        "service_1g83g1d",
+        "template_vuptbkx",
+        params
+      )
+      .then(() => {
 
-  emailjs.send(
-    "service_1g83g1d",     // ✅ VERIFIED SERVICE
-    "template_vuptbkx",    // ✅ VERIFIED TEMPLATE
-    params
-  )
-  .then(function (res) {
-    console.log("SUCCESS", res);
-    alert("Message sent successfully!");
-    document.getElementById("contact-form").reset();
-  })
-  .catch(function (err) {
-    console.error("EMAILJS ERROR", err);
-    alert("Send failed. Open console.");
-  });
-});
-</script>
+        // 2️⃣ SEND AUTO-REPLY TO USER
+        return emailjs.send(
+          "service_1g83g1d",
+          "template_4agu3xs",
+          params
+        );
+
+      })
+      .then(() => {
+        alert("Message sent successfully!");
+        form.reset();
+      })
+      .catch(error => {
+        console.error("EmailJS error:", error);
+        alert("Oops! Something went wrong. Please try again later.");
+      });
+    });
+  </script>
 
 </body>
 </html>
+
+
 
 
 
