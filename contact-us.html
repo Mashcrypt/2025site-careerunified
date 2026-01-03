@@ -4,18 +4,12 @@
 <meta charset="UTF-8">
 <title>Contact Us – Career Unified</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- EmailJS SDK (STABLE, NON-MODULE) -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Poppins', Arial, sans-serif;
@@ -24,7 +18,7 @@ body {
   line-height: 1.7;
 }
 
-/* NAVIGATION */
+/* NAV */
 nav {
   background: #1e3a8a;
   padding: 15px 25px;
@@ -40,14 +34,9 @@ nav a {
   margin-left: 20px;
 }
 
-nav .logo {
-  font-size: 20px;
-  font-weight: 700;
-}
+nav .logo { font-size: 20px; font-weight: 700; }
 
-nav a:hover {
-  color: #facc15;
-}
+nav a:hover { color: #facc15; }
 
 /* HEADER */
 header {
@@ -57,14 +46,8 @@ header {
   text-align: center;
 }
 
-header h1 {
-  font-size: 40px;
-}
-
-header p {
-  font-size: 18px;
-  opacity: 0.95;
-}
+header h1 { font-size: 40px; }
+header p { font-size: 18px; opacity: 0.95; }
 
 /* MAIN */
 main {
@@ -87,14 +70,18 @@ main {
   margin-bottom: 12px;
 }
 
-/* CONTACT INFO */
-.contact-info {
-  list-style: none;
-  margin-top: 15px;
-}
+/* INFO */
+.contact-info { list-style: none; margin-top: 15px; }
+.contact-info li { margin-bottom: 8px; }
 
-.contact-info li {
-  margin-bottom: 8px;
+/* NOTICE */
+.notice {
+  background: #f1f5ff;
+  border-left: 5px solid #2563eb;
+  padding: 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
 /* FORM */
@@ -106,7 +93,6 @@ main {
   margin-bottom: 14px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  font-size: 14px;
 }
 
 .contact-form button {
@@ -120,11 +106,8 @@ main {
   width: 100%;
 }
 
-.contact-form button:hover {
-  background: #1d4ed8;
-}
+.contact-form button:hover { background: #1d4ed8; }
 
-/* STATUS MESSAGE */
 #form-status {
   margin-top: 12px;
   font-size: 14px;
@@ -150,7 +133,6 @@ footer a {
 
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="index.html" class="logo">Career Unified</a>
   <div>
@@ -161,7 +143,6 @@ footer a {
   </div>
 </nav>
 
-<!-- HEADER -->
 <header>
   <h1>Contact Us</h1>
   <p>We’re here to support and guide your journey</p>
@@ -169,50 +150,64 @@ footer a {
 
 <main>
 
-  <!-- INTRO -->
-  <div class="section">
-    <h2>Get in Touch</h2>
-    <p>
-      If you have questions, feedback, or suggestions regarding Career Unified,
-      we welcome you to reach out.
-    </p>
+<div class="section">
+  <h2>Get in Touch</h2>
+  <p>
+    If you have questions, feedback, or suggestions regarding Career Unified,
+    we welcome you to reach out. Our team responds during business hours.
+  </p>
+</div>
+
+<div class="section">
+  <h2>Contact Information</h2>
+  <ul class="contact-info">
+    <li><strong>Platform:</strong> Career Unified (South Africa)</li>
+    <li><strong>Email:</strong> contact@careerunified.com</li>
+    <li><strong>Availability:</strong> Monday – Friday (Business Days)</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>Send Us a Message</h2>
+
+  <div class="notice">
+    ✔ Message submission is active.<br>
+    ⏳ If you don’t hear back immediately, our team will respond within <strong>1 business day</strong>.<br>
+    📩 Please <strong>do not reply</strong> directly to the automated confirmation email.
   </div>
 
-  <!-- CONTACT INFO -->
-  <div class="section">
-    <h2>Contact Information</h2>
-    <ul class="contact-info">
-      <li><strong>Platform:</strong> Career Unified (South Africa)</li>
-      <li><strong>Email:</strong> contact@careerunified.com</li>
-      <li><strong>Availability:</strong> Monday – Friday</li>
-    </ul>
-  </div>
+  <form id="contactForm" class="contact-form">
+    <input type="text" name="from_name" placeholder="Your Full Name" required>
+    <input type="email" name="from_email" placeholder="Your Email Address" required>
 
-  <!-- FORM -->
-  <div class="section">
-    <h2>Send Us a Message</h2>
+    <select name="reason" required>
+      <option value="">Reason for Contact</option>
+      <option>General Enquiry</option>
+      <option>Feedback</option>
+      <option>Support</option>
+    </select>
 
-    <form id="contactForm" class="contact-form">
-      <input type="text" name="from_name" placeholder="Your Full Name" required>
-      <input type="email" name="from_email" placeholder="Your Email Address" required>
+    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
 
-      <select name="reason" required>
-        <option value="">Reason for Contact</option>
-        <option>General Enquiry</option>
-        <option>Feedback</option>
-        <option>Support</option>
-      </select>
+    <button type="submit">Send Message</button>
+    <div id="form-status"></div>
+  </form>
+</div>
 
-      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-
-      <button type="submit">Send Message</button>
-      <div id="form-status"></div>
-    </form>
-  </div>
+<div class="section">
+  <h2>Important Notice</h2>
+  <p>
+    Career Unified is a third-party career assistance platform.
+    We do not recruit, shortlist, hire, or award funding.
+  </p>
+  <p>
+    All job, bursary, and study applications must be completed through the
+    official employer, institution, or provider websites.
+  </p>
+</div>
 
 </main>
 
-<!-- FOOTER -->
 <footer>
   <p>
     <a href="index.html">Home</a> |
@@ -225,9 +220,7 @@ footer a {
 </footer>
 
 <script>
-(function(){
-  emailjs.init("ZdXt4LrBaHzJDfotS");
-})();
+(function(){ emailjs.init("ZdXt4LrBaHzJDfotS"); })();
 
 document.getElementById("contactForm").addEventListener("submit", function(e) {
   e.preventDefault();
@@ -248,7 +241,7 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
     .then(() => emailjs.send("service_1g83g1d", "template_4agu3xs", data))
     .then(() => {
       status.style.color = "green";
-      status.textContent = "Message sent successfully. We’ll get back to you soon.";
+      status.textContent = "Message sent successfully. Thank you for contacting Career Unified.";
       this.reset();
     })
     .catch(() => {
@@ -260,6 +253,8 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
 
 </body>
 </html>
+
+
 
 
 
