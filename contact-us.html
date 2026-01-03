@@ -7,8 +7,16 @@
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<!-- EmailJS SDK v4 -->
+<script type="module">
+  import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+
+  // Initialize EmailJS
+  emailjs.init("u082oiEYxXgiBHK07");
+
+  // Expose emailjs to window so we can use it in form handler
+  window.emailjs = emailjs;
+</script>
 
 <style>
 /* =====================================
@@ -108,7 +116,7 @@ footer a:hover { text-decoration: underline; }
     <h2>Contact Information</h2>
     <ul class="contact-info">
       <li><strong>Platform:</strong> CareerUnified (South Africa)</li>
-      <li><strong>Email:</strong> support@careerunified.com</li>
+      <li><strong>Email:</strong> contact@careerunified.com</li>
       <li><strong>Availability:</strong> Monday – Friday (Business Hours)</li>
     </ul>
   </div>
@@ -166,62 +174,57 @@ footer a:hover { text-decoration: underline; }
 </footer>
 
 <!-- ===============================
-     EMAILJS CONTACT FORM SCRIPT
+     EMAILJS CONTACT FORM SCRIPT v4
 ================================ -->
-<script>
-  // Initialize EmailJS with public key
-  emailjs.init("u082oiEYxXgiBHK07");
+<script type="module">
+import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+
+document.getElementById("contact-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = {
+      name: this.name.value,
+      email: this.email.value,
+      reason: this.reason.value,
+      message: this.message.value,
+      date: new Date().toLocaleString()
+  };
+
+  console.log("Sending emails with data:", formData);
 
   // Send main contact email
-  function sendMainEmail(formData) {
-      return emailjs.send("service_1g83g1d", "template_vuptbkx", {
-          from_name: formData.name,
-          from_email: formData.email,
-          reason: formData.reason,
-          message: formData.message,
-          date: formData.date // added date variable
-      });
-  }
-
-  // Send auto-reply email to user
-  function sendAutoReply(formData) {
+  emailjs.send("service_1g83g1d", "template_vuptbkx", {
+      from_name: formData.name,
+      from_email: formData.email,
+      reason: formData.reason,
+      message: formData.message,
+      date: formData.date
+  })
+  .then(() => {
+      // Send auto-reply to user
       return emailjs.send("service_1g83g1d", "template_4agu3xs", {
           from_name: formData.name,
           from_email: formData.email,
           message: formData.message
       });
-  }
-
-  // Handle form submission
-  document.getElementById("contact-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const formData = {
-          name: this.name.value,
-          email: this.email.value,
-          reason: this.reason.value,
-          message: this.message.value,
-          date: new Date().toLocaleString() // pass current date/time
-      };
-
-      console.log("Sending email with data:", formData); // debug log
-
-      sendMainEmail(formData)
-          .then(() => sendAutoReply(formData))
-          .then(() => {
-              console.log("Emails sent successfully!");
-              alert("Your message has been sent! A confirmation email has been sent to you as well.");
-              this.reset();
-          })
-          .catch((error) => {
-              console.error("EmailJS error:", error);
-              alert("Oops! Something went wrong. Please try again later.");
-          });
+  })
+  .then(() => {
+      console.log("Both emails sent successfully!");
+      alert("Your message has been sent! A confirmation email has been sent to you as well.");
+      this.reset();
+  })
+  .catch((error) => {
+      console.error("EmailJS error:", error);
+      alert("Oops! Something went wrong. Please try again later.");
   });
+
+});
 </script>
 
 </body>
 </html>
+
+
 
 
 
