@@ -7,9 +7,6 @@
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- EmailJS SDK v4 (classic, no module) -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 <style>
 /* ===========================
    CONTACT PAGE STYLES
@@ -127,28 +124,30 @@ footer a:hover { text-decoration:underline; }
 </footer>
 
 <!-- ===============================
-     EMAILJS CONTACT FORM SCRIPT – DIAGNOSTIC & FINAL
+     EMAILJS CONTACT FORM SCRIPT – LATEST MODULE SDK
 ================================ -->
-<script>
-  // ----- IMPORTANT: REPLACE THESE WITH YOUR ACTUAL IDS -----
+<script type="module">
+  // ----- CONFIGURE YOUR EMAILJS IDS & KEY -----
   const SERVICE_ID = "service_1g83g1d";        // your EmailJS service ID
   const TEMPLATE_MAIN = "template_vuptbkx";    // your main contact template ID
   const TEMPLATE_AUTO = "template_4agu3xs";    // your auto-reply template ID
   const PUBLIC_KEY = "u082oiEYxXgiBHK07";     // your EmailJS public key
-  // ---------------------------------------------------------
+  // -------------------------------------------
 
-  // Initialize EmailJS
-  emailjs.init(PUBLIC_KEY);
+  import { init, send } from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+
+  init(PUBLIC_KEY);
 
   const form = document.getElementById("contact-form");
-  form.addEventListener("submit", function(e){
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const formData = {
-      from_name: this.name.value.trim(),
-      from_email: this.email.value.trim(),
-      reason: this.reason.value,
-      message: this.message.value.trim(),
+      from_name: form.name.value.trim(),
+      from_email: form.email.value.trim(),
+      reason: form.reason.value,
+      message: form.message.value.trim(),
       date: new Date().toLocaleString()
     };
 
@@ -159,33 +158,32 @@ footer a:hover { text-decoration:underline; }
     console.log("Public Key:", PUBLIC_KEY);
     console.log("Form Data:", formData);
 
-    // ----- Send Main Email -----
-    emailjs.send(SERVICE_ID, TEMPLATE_MAIN, formData)
-      .then((res) => {
-        console.log("Main email sent successfully:", res);
+    try {
+      // Send main email to team
+      const mainResponse = await send(SERVICE_ID, TEMPLATE_MAIN, formData);
+      console.log("Main email sent successfully:", mainResponse);
 
-        // ----- Send Auto-Reply Email -----
-        return emailjs.send(SERVICE_ID, TEMPLATE_AUTO, {
-          from_name: formData.from_name,
-          from_email: formData.from_email,
-          message: formData.message
-        });
-      })
-      .then((res) => {
-        console.log("Auto-reply sent successfully:", res);
-        alert("Your message has been sent! A confirmation email has been sent to you as well.");
-        form.reset();
-      })
-      .catch((err) => {
-        console.error("EmailJS send error:", err);
-        alert("EmailJS failed to send. Check console for details.");
+      // Send auto-reply to user
+      const autoResponse = await send(SERVICE_ID, TEMPLATE_AUTO, {
+        from_name: formData.from_name,
+        from_email: formData.from_email,
+        message: formData.message
       });
+      console.log("Auto-reply sent successfully:", autoResponse);
 
+      alert("Your message has been sent! A confirmation email has been sent to you as well.");
+      form.reset();
+    } catch (err) {
+      console.error("EmailJS send error:", err);
+      alert("Oops! Something went wrong. Check console for details.");
+    }
   });
 </script>
 
 </body>
 </html>
+
+
 
 
 
