@@ -102,6 +102,31 @@ facultyFilter.addEventListener('change', e=>renderBursaries(e.target.value));
 <button id="scrollUp" class="scroll-btn">↑</button>
 <button id="scrollDown" class="scroll-btn">↓</button>
 
+<script type="module">
+import { sanityClient } from './js/sanityClient.js';
+
+const list = document.getElementById('bursaryList');
+
+sanityClient.fetch(`*[_type=="bursary"] | order(deadline asc)`).then(data => {
+  list.innerHTML = '';
+  data.forEach(b => {
+    list.innerHTML += `
+      <div class="card">
+        <h3>${b.name}</h3>
+        <p><strong>Provider:</strong> ${b.provider}</p>
+        <p><strong>Faculty:</strong> ${b.faculty}</p>
+        <p><strong>Deadline:</strong> ${b.deadline || 'Open'}</p>
+        <p>${b.description || ''}</p>
+        <a href="${b.applicationLink}" target="_blank">Apply Now</a>
+      </div>
+    `;
+  });
+});
+</script>
+<div id="bursaryList"></div>
+
+  
 </body>
 </html>
+
 
