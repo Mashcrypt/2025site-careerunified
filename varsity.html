@@ -143,10 +143,50 @@ sanityClient.fetch(`*[_type=="university"] | order(deadline asc)`).then(data => 
   });
 });
 </script>
+<script type="module">
+import { createClient } from "https://cdn.skypack.dev/@sanity/client";
+
+const client = createClient({
+  projectId: "qjg5raj1",       // your Sanity project ID
+  dataset: "production",
+  apiVersion: "2024-01-01",
+  useCdn: true
+});
+
+const list = document.getElementById("varsityList");
+
+async function loadUniversities() {
+  const universities = await client.fetch(`
+    *[_type == "university"] | order(deadline asc) {
+      name,
+      applicationLink,
+      deadline,
+      notes
+    }
+  `);
+
+  list.innerHTML = "";
+
+  universities.forEach(u => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${u.name}</h3>
+      <p><strong>Deadline:</strong> ${u.deadline || "Not specified"}</p>
+      <p>${u.notes || ""}</p>
+      <a href="${u.applicationLink}" target="_blank">Apply Now</a>
+    `;
+    list.appendChild(card);
+  });
+}
+
+loadUniversities();
+</script>
 
  <div id="universityList"></div>
  
 </body>
 </html>
+
 
 
