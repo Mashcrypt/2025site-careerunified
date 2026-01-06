@@ -1,0 +1,204 @@
+/* ----------------- VARSITY PAGE STYLES ----------------- */
+
+/* GENERAL LAYOUT */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #1e3a8a; /* Deep blue header */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+/* NAVIGATION */
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    gap: 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #1e3a8a;
+    font-weight: 600;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: #1e3a8a;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* MAIN CONTENT */
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+    text-align: center;
+}
+
+main p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* SEARCH & SORT */
+#searchInput {
+    padding: 10px 12px;
+    width: 250px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+#sortDeadlineBtn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1e3a8a;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#sortDeadlineBtn:hover {
+    background-color: #162c6f;
+}
+
+/* VARSITY CARDS */
+.varsity-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.varsity-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.varsity-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.varsity-card a {
+    text-decoration: none;
+    color: #1e3a8a;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.varsity-card small {
+    display: block;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* STATUS LABELS */
+.status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    margin-right: 5px;
+}
+
+.status.open {
+    background-color: #28a745; /* green */
+}
+
+.status.closed {
+    background-color: #dc3545; /* red */
+}
+
+/* URGENT LABEL */
+.urgent {
+    background-color: #facc15; /* yellow */
+    color: #333;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    color: #555;
+    margin-top: 40px;
+}
+
+/* SCROLL BUTTONS */
+.scroll-btn {
+    position: fixed;
+    right: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    background-color: #1e3a8a;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+}
+
+#scrollUp {
+    bottom: 80px;
+}
+
+#scrollDown {
+    bottom: 20px;
+}
+
+.scroll-btn:hover {
+    background-color: #162c6f;
+    transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        gap: 5px;
+    }
+    #searchInput {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #sortDeadlineBtn {
+        width: 100%;
+    }
+}

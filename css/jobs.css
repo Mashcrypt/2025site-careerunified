@@ -1,0 +1,226 @@
+/* ===============================
+   GLOBAL LAYOUT CONSISTENCY FIX
+================================ */
+
+header {
+  background-color: #1e3a8a; /* ✅ BLUE HEADER BAR (FIX) */
+  color: #ffffff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+header p {
+  margin-top: 6px;
+  color: #e5e7eb;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background-color: #f8f9fa;
+  padding: 10px 0;
+}
+
+nav a {
+  padding: 10px 14px;
+  text-decoration: none;
+  color: #1e3a8a;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover,
+nav a.active {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  border-radius: 6px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px 0;
+  background-color: #f8f9fa;
+  color: #555;
+  margin-top: 40px;
+}
+
+/* ===============================
+   JOBS PAGE – LOCKED DESIGN
+================================ */
+
+.jobs-container {
+  display: flex;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.jobs-left {
+  flex: 1;
+}
+
+.jobs-preview {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  min-height: 420px;
+}
+
+/* SEARCH & FILTERS */
+.search-filter-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-filter-container input,
+.search-filter-container select,
+.search-filter-container button {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.search-filter-container button {
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.search-filter-container button:hover {
+  background: #162c6f;
+}
+
+/* JOB LIST */
+.jobs-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* JOB CARD */
+.job-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.job-card.selected {
+  border-left: 4px solid #1e3a8a;
+}
+
+.job-card h3 {
+  margin: 0 0 3px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.job-card .company {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.job-card .meta {
+  font-size: 12.5px;
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+/* SALARY */
+.job-card .salary {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #15803d;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.job-card .views {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* PREVIEW */
+.fade-in {
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(8px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.apply-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #16a34a;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.apply-btn:hover {
+  background: #13803d;
+}
+
+/* SCROLL BUTTONS */
+.scroll-btn {
+  position: fixed;
+  right: 20px;
+  padding: 10px 14px;
+  border-radius: 50%;
+  border: none;
+  background: #1e3a8a;
+  color: white;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+}
+
+#scrollUp {
+  bottom: 80px;
+}
+
+#scrollDown {
+  bottom: 30px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .jobs-container {
+    flex-direction: column;
+  }
+}
+
+
+
+

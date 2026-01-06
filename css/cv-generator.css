@@ -1,0 +1,256 @@
+/* ----------------- CV GENERATOR PAGE STYLES ----------------- */
+
+/* ----------------- GENERAL LAYOUT ----------------- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #1e3a8a;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+/* ----------------- NAVIGATION ----------------- */
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    gap: 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #1e3a8a;
+    font-weight: 600;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: #1e3a8a;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* ----------------- MAIN CONTENT ----------------- */
+main {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* ----------------- FORM CARD ----------------- */
+.form-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex: 1 1 350px;
+    max-width: 450px;
+}
+
+.form-card h2 {
+    margin-bottom: 15px;
+    color: #1e3a8a;
+    text-align: center;
+}
+
+.form-card input,
+.form-card textarea,
+.form-card select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.form-card textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.form-card button {
+    padding: 10px 20px;
+    background-color: #1e3a8a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+    transition: background-color 0.3s;
+}
+
+.form-card button:hover {
+    background-color: #162c6f;
+}
+
+.form-card .btn-secondary {
+    background-color: #6c757d;
+}
+
+.form-card .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* ----------------- CV PREVIEW CARD ----------------- */
+.preview-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex: 1 1 350px;
+    max-width: 550px;
+    min-height: 400px;
+}
+
+/* ----------------- CV TEMPLATE STYLES ----------------- */
+
+/* ----- MODERN TEMPLATE ----- */
+#cvPreview.template-modern {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    line-height: 1.5;
+}
+
+#cvPreview.template-modern h1 {
+    color: #1e3a8a;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+#cvPreview.template-modern p {
+    margin: 0 0 10px 0;
+}
+
+#cvPreview.template-modern .section {
+    margin-bottom: 15px;
+    border-left: 3px solid #1e3a8a;
+    padding-left: 10px;
+}
+
+#cvPreview.template-modern .section h3 {
+    margin: 0 0 5px 0;
+    color: #1e3a8a;
+    font-size: 1.1rem;
+}
+
+/* ----- CLASSIC TEMPLATE ----- */
+#cvPreview.template-classic {
+    font-family: 'Georgia', serif;
+    color: #000;
+}
+
+#cvPreview.template-classic h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #1e3a8a;
+    padding-bottom: 5px;
+}
+
+#cvPreview.template-classic p {
+    margin: 0 0 10px 0;
+}
+
+#cvPreview.template-classic .section {
+    margin-bottom: 15px;
+}
+
+#cvPreview.template-classic .section h3 {
+    font-size: 1.1rem;
+    text-decoration: underline;
+    margin-bottom: 5px;
+}
+
+/* ----- MINIMAL TEMPLATE ----- */
+#cvPreview.template-minimal {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+}
+
+#cvPreview.template-minimal h1 {
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+#cvPreview.template-minimal p {
+    margin: 0 0 8px 0;
+}
+
+#cvPreview.template-minimal .section {
+    margin-bottom: 10px;
+}
+
+#cvPreview.template-minimal .section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: #1e3a8a;
+}
+
+/* ----------------- FOOTER ----------------- */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    color: #555;
+    margin-top: 40px;
+}
+
+/* ----------------- SCROLL BUTTONS ----------------- */
+.scroll-btn {
+    position: fixed;
+    right: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    background-color: #1e3a8a;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+}
+
+#scrollUp {
+    bottom: 80px;
+}
+
+#scrollDown {
+    bottom: 20px;
+}
+
+.scroll-btn:hover {
+    background-color: #162c6f;
+    transform: translateY(-2px);
+}
+
+/* ----------------- RESPONSIVE ----------------- */
+@media (max-width: 900px) {
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+}

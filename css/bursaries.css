@@ -1,0 +1,166 @@
+/* ----------------- BURSARIES PAGE STYLES ----------------- */
+
+/* General Page Layout */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    gap: 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 600;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* Main Content */
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* Filter Dropdown */
+.filter {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.filter select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+/* Bursary List Cards */
+#bursaryList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bursary-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.bursary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.bursary-card strong {
+    font-size: 1.1rem;
+    color: #007bff;
+}
+
+.bursary-card p {
+    margin: 10px 0;
+}
+
+.bursary-card a {
+    display: inline-block;
+    margin-top: 8px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.bursary-card a:hover {
+    background-color: #0056b3;
+}
+
+/* Urgent Deadline */
+.urgent {
+    color: #d9534f;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+/* Read More Link */
+.read-more {
+    color: #007bff;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    color: #555;
+    margin-top: 40px;
+}
+
+/* Scroll Buttons */
+.scroll-btn {
+    position: fixed;
+    right: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+}
+
+#scrollUp {
+    bottom: 80px;
+}
+
+#scrollDown {
+    bottom: 20px;
+}
+
+.scroll-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About Us – Career Unified</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: #f7f9fc;
+  color: #1f2937;
+  line-height: 1.75;
+}
+
+/* NAVIGATION */
+nav {
+  background: #1e3a8a;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 20px;
+}
+
+nav .logo {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+nav a:hover {
+  color: #facc15;
+}
+
+/* HERO HEADER */
+header {
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 46px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+header p {
+  font-size: 19px;
+  max-width: 720px;
+  margin: auto;
+  opacity: 0.95;
+}
+
+/* MAIN WRAPPER */
+main {
+  max-width: 950px;
+  margin: 50px auto;
+  background: white;
+  padding: 50px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+section {
+  margin-bottom: 45px;
+}
+
+section h2 {
+  font-size: 24px;
+  color: #1e3a8a;
+  margin-bottom: 12px;
+}
+
+section p {
+  font-size: 15.5px;
+  margin-bottom: 14px;
+}
+
+/* HIGHLIGHT BANNER */
+.highlight {
+  background: #f1f5ff;
+  border-left: 5px solid #2563eb;
+  padding: 25px;
+  border-radius: 10px;
+  margin: 40px 0;
+}
+
+.highlight strong {
+  color: #1e3a8a;
+}
+
+/* VALUES GRID */
+.values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 25px;
+}
+
+.value-box {
+  background: #f9fbff;
+  padding: 22px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.value-box h3 {
+  font-size: 16px;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+}
+
+/* TRUST SECTION */
+.trust {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 35px;
+  border-radius: 14px;
+}
+
+.trust h2 {
+  color: #facc15;
+}
+
+.trust p {
+  font-size: 15px;
+  opacity: 0.95;
+}
+
+/* FOOTER */
+footer {
+  background: #1e3a8a;
+  color: white;
+  text-align: center;
+  padding: 25px 20px;
+  margin-top: 60px;
+  font-size: 14px;
+}
+
+footer a {
+  color: #facc15;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main {
+    padding: 30px;
+    margin: 20px;
+  }
+
+  header h1 {
+    font-size: 32px;
+  }
+
+  header p {
+    font-size: 16px;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav .nav-links {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
+  nav .nav-links a {
+    margin: 8px 0 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="index.html" class="logo">Career Unified</a>
+  <div class="nav-links">
+    <a href="jobs.html">Jobs</a>
+    <a href="bursaries.html">Bursaries</a>
+    <a href="varsity.html">Varsity</a>
+    <a href="cv-generator.html">Generate CV</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header>
+  <h1>About Career Unified</h1>
+  <p>One click from your dream — simplifying access to opportunities</p>
+</header>
+
+<!-- CONTENT -->
+<main>
+
+  <section>
+    <h2>Who We Are</h2>
+    <p>
+      Career Unified is a digital opportunity discovery platform designed to help
+      individuals find jobs, bursaries, universities, and career resources in
+      one central, easy-to-use space.
+    </p>
+    <p>
+      We know that opportunity searches can be confusing, time-consuming,
+      and fragmented. Career Unified exists to bring clarity and simplicity.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why Career Unified Exists</h2>
+    <p>
+      Many opportunities are missed not because people lack potential,
+      but because information is scattered, unclear, or hard to access.
+    </p>
+    <p>
+      Career Unified was created to bridge that gap — by organizing publicly
+      available opportunities and presenting them in a way that is
+      accessible, transparent, and practical.
+    </p>
+  </section>
+
+  <div class="highlight">
+    <p>
+      <strong>Our belief:</strong> Access to information should never be the
+      reason someone misses an opportunity.
+    </p>
+  </div>
+
+  <section>
+    <h2>What We Do</h2>
+    <p>Career Unified helps users discover:</p>
+    <ul>
+      <li>Job opportunities and graduate programmes</li>
+      <li>Bursaries, scholarships, and funding options</li>
+      <li>University and higher education information</li>
+      <li>Career tools such as CV tips and generators</li>
+    </ul>
+    <p>
+      We guide users to opportunities — applications are completed through
+      official providers.
+    </p>
+  </section>
+
+  <section>
+    <h2>What We Are Not</h2>
+    <p>
+      Career Unified is not an employer, recruitment agency, bursary provider,
+      or educational institution.
+    </p>
+    <p>
+      We do not make hiring decisions, award funding, or guarantee placement
+      or acceptance.
+    </p>
+  </section>
+
+  <section>
+    <h2>Our Values</h2>
+    <div class="values">
+      <div class="value-box">
+        <h3>Transparency</h3>
+        <p>Clear communication about our role and limitations.</p>
+      </div>
+      <div class="value-box">
+        <h3>Accessibility</h3>
+        <p>Making opportunities easier to find for everyone.</p>
+      </div>
+      <div class="value-box">
+        <h3>Responsibility</h3>
+        <p>Encouraging ethical and informed decision-making.</p>
+      </div>
+      <div class="value-box">
+        <h3>Growth</h3>
+        <p>Continuously improving our tools and content.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="trust">
+    <h2>Trust & Responsibility</h2>
+    <p>
+      Career Unified operates as a third-party platform. While we strive to keep
+      information accurate and up to date, users are encouraged to verify
+      details directly with employers, institutions, and providers.
+    </p>
+    <p>
+      We are committed to ethical operation, data responsibility, and
+      compliance with applicable South African regulations, including
+      POPIA principles.
+    </p>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Career Unified. All rights reserved.</p>
+  <p>
+    <a href="index.html">Home</a> |
+    <a href="about-us.html">About Us</a> |
+    <a href="terms.html">Terms & Conditions</a> |
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="contact-us.html">Contact Us</a>
+  </p>
+</footer>
+
+</body>
+</html>
+
+
+
+
+
+
