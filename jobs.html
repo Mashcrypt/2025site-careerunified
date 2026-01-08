@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Jobs – Easy Opt</title>
+
 <link rel="stylesheet" href="css/style.css">
 
 <style>
 /* ===============================
    GLOBAL LAYOUT CONSISTENCY FIX
 ================================ */
-
 header { text-align: center; }
 header h1 { margin-bottom: 6px; }
 header p { margin-top: 0; color: #e5e7eb; }
-
 nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 nav a { padding: 10px 14px; }
 footer { text-align: center; }
@@ -27,9 +26,9 @@ footer { text-align: center; }
 
 /* SEARCH & FILTERS */
 .search-filter-container { display: flex; gap: 10px; margin-bottom: 15px; }
-.search-filter-container input, .search-filter-container select, .search-filter-container button {
-  padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;
-}
+.search-filter-container input,
+.search-filter-container select,
+.search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
 .search-filter-container button { background: #1e3a8a; color: white; font-weight: 600; cursor: pointer; border: none; }
 .search-filter-container button:hover { background: #162c6f; }
 
@@ -44,7 +43,6 @@ footer { text-align: center; }
 .job-card .company { font-size: 13px; font-weight: 600; color: #111827; }
 .job-card .meta { font-size: 12.5px; color: #4b5563; margin-top: 2px; }
 .job-card .salary { margin-top: 6px; font-size: 13.5px; font-weight: 700; color: #15803d; font-family: "Inter", "Segoe UI", system-ui, sans-serif; letter-spacing: 0.2px; }
-.job-card .views { font-size: 11px; color: #6b7280; margin-top: 4px; }
 
 /* PREVIEW */
 .fade-in { animation: fadeIn 0.35s ease; }
@@ -61,6 +59,7 @@ footer { text-align: center; }
 </head>
 
 <body>
+
 <header>
   <h1>Available Jobs</h1>
   <p>Find your next opportunity</p>
@@ -75,6 +74,7 @@ footer { text-align: center; }
 </nav>
 
 <main class="jobs-container">
+
   <div class="jobs-left">
     <div class="search-filter-container">
       <input type="text" id="jobSearch" placeholder="Search job title, company, keyword">
@@ -86,12 +86,14 @@ footer { text-align: center; }
       </select>
       <button id="sortBtn">Sort by Closing Date</button>
     </div>
+
     <ul class="jobs-list" id="jobList"></ul>
   </div>
 
   <div class="jobs-preview" id="jobPreview">
     <p>Select a job to view details</p>
   </div>
+
 </main>
 
 <footer>
@@ -102,34 +104,37 @@ footer { text-align: center; }
 <button id="scrollDown" class="scroll-btn">↓</button>
 
 <script type="module">
-import { createClient } from 'https://cdn.skypack.dev/@sanity/client';
-
-const sanityClient = createClient({
-  projectId: 'qjg5raj1',
-  dataset: 'production',
-  useCdn: true,
-  apiVersion: '2026-01-01'
-});
+import { sanityClient } from './js/sanityClient.js';
 
 const jobList = document.getElementById('jobList');
 const jobPreview = document.getElementById('jobPreview');
 const searchInput = document.getElementById('jobSearch');
 const categoryFilter = document.getElementById('categoryFilter');
+const sortBtn = document.getElementById('sortBtn');
 
 let jobs = [];
-let views = {};
 let selectedIndex = null;
 
 async function fetchJobs() {
   try {
-    const query = `*[_type=="job"] | order(posted desc){
-      _id, title, company, description, location, salary, applyLink, posted, deadline, category, jobType
+    const query = `*[_type == "job"] | order(deadline asc){
+      _id,
+      title,
+      company,
+      description,
+      location,
+      salary,
+      applyLink,
+      posted,
+      deadline,
+      category,
+      jobType
     }`;
     jobs = await sanityClient.fetch(query);
     renderJobs();
-  } catch(e) {
-    console.error(e);
+  } catch (err) {
     jobList.innerHTML = '<li>Failed to load jobs from Sanity.</li>';
+    console.error(err);
   }
 }
 
@@ -139,35 +144,33 @@ function renderJobs() {
 
   const filtered = jobs.filter(j => {
     const matchCat = cat === 'all' || j.category === cat;
-    const matchSearch =
-      j.title.toLowerCase().includes(term) ||
-      j.company.toLowerCase().includes(term) ||
-      j.description.toLowerCase().includes(term);
+    const matchSearch = j.title.toLowerCase().includes(term) || j.company.toLowerCase().includes(term) || j.description.toLowerCase().includes(term);
     return matchCat && matchSearch;
-  });
-
-  filtered.sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
+  }).sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
 
   jobList.innerHTML = '';
 
-  filtered.forEach((job, index) => {
-    if(!views[index]) views[index]=0;
-    const li = document.createElement('li');
-    li.className='job-card';
-    if(index===selectedIndex) li.classList.add('selected');
+  if (!filtered.length) {
+    jobList.innerHTML = '<li>No jobs found.</li>';
+    jobPreview.innerHTML = '<p>Select a job to view details</p>';
+    return;
+  }
 
-    li.innerHTML=`
+  filtered.forEach((job, index) => {
+    const li = document.createElement('li');
+    li.className = 'job-card';
+    if (index === selectedIndex) li.classList.add('selected');
+
+    li.innerHTML = `
       <h3>${job.title}</h3>
       <p class="company">${job.company}</p>
       <p class="meta">${job.location}</p>
       <p class="salary">${job.salary || 'N/A'}</p>
       <p class="meta">Posted: ${job.posted || 'N/A'} • Closing: ${job.deadline || 'N/A'}</p>
-      <p class="views">${views[index]} views</p>
     `;
 
-    li.onclick = ()=>{
-      selectedIndex=index;
-      views[index]++;
+    li.onclick = () => {
+      selectedIndex = index;
       showPreview(job);
       renderJobs();
     };
@@ -192,20 +195,28 @@ function showPreview(job){
 
 searchInput.addEventListener('input', renderJobs);
 categoryFilter.addEventListener('change', renderJobs);
-document.getElementById('sortBtn').onclick = renderJobs;
+sortBtn.addEventListener('click', renderJobs);
 
-window.addEventListener('scroll', ()=>{
-  const show=window.scrollY>300;
-  scrollUp.style.display=show?'block':'none';
-  scrollDown.style.display=show?'block':'none';
+/* SCROLL */
+const scrollUp = document.getElementById('scrollUp');
+const scrollDown = document.getElementById('scrollDown');
+
+window.addEventListener('scroll', () => {
+  const show = window.scrollY > 300;
+  scrollUp.style.display = show ? 'block' : 'none';
+  scrollDown.style.display = show ? 'block' : 'none';
 });
-scrollUp.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-scrollDown.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+scrollUp.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
+scrollDown.onclick = () => window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 
+// Fetch jobs on load
 fetchJobs();
 </script>
+
 </body>
 </html>
+
+
 
 
 
