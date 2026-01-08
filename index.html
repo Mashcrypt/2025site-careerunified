@@ -7,7 +7,226 @@
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- Main Styles -->
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* =======================
+   MODERN HOME PAGE STYLES
+======================= */
+
+/* GENERAL */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin:0; padding:0;
+  background:#f7f8fc;
+  color:#111827;
+}
+
+/* NAVIGATION */
+.main-nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 40px;
+  background:#1e3a8a;
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+.main-nav .logo {
+  font-weight:700;
+  font-size:1.4rem;
+  text-decoration:none;
+  color:white;
+}
+.main-nav .nav-links a {
+  margin-left:20px;
+  color:white;
+  text-decoration:none;
+  font-weight:500;
+}
+.main-nav .nav-links a:hover { text-decoration:underline; }
+
+/* HERO */
+.hero {
+  text-align:center;
+  padding:80px 20px 60px;
+  background:linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color:white;
+}
+.hero h1 { font-size:2.8rem; margin-bottom:10px; font-weight:700; }
+.hero .slogan { font-size:1.2rem; margin-bottom:25px; }
+.hero-search {
+  display:flex;
+  justify-content:center;
+  max-width:600px;
+  margin:0 auto;
+}
+.hero-search input {
+  flex:1;
+  padding:12px 15px;
+  border-radius:6px 0 0 6px;
+  border:none;
+  font-size:14px;
+}
+.hero-search button {
+  padding:12px 20px;
+  border:none;
+  background:#16a34a;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  border-radius:0 6px 6px 0;
+  transition:0.3s;
+}
+.hero-search button:hover { background:#15803d; }
+
+/* QUICK STATS */
+.quick-stats {
+  display:flex;
+  justify-content:space-around;
+  flex-wrap:wrap;
+  margin:40px auto;
+  max-width:1000px;
+}
+.quick-stats .stat {
+  background:white;
+  padding:20px 30px;
+  margin:10px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  text-align:center;
+  flex:1 1 180px;
+}
+.quick-stats .stat h3 { font-size:1.8rem; margin-bottom:8px; color:#1e3a8a; }
+.quick-stats .stat p { margin:0; font-weight:500; }
+
+/* MAIN */
+.container {
+  max-width:1100px;
+  margin:0 auto 60px;
+  padding:0 20px;
+}
+.section-title {
+  font-size:1.8rem;
+  margin-bottom:25px;
+  color:#1e3a8a;
+}
+
+/* JOB CARDS */
+.job-cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px;
+}
+.job-card {
+  background:white;
+  border-radius:10px;
+  padding:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+.job-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 25px rgba(0,0,0,0.12);
+}
+.job-card h3 {
+  margin:0 0 8px;
+  font-size:1.1rem;
+  font-weight:600;
+  color:#1e3a8a;
+}
+.job-card .badge {
+  background:#f59e0b;
+  color:white;
+  font-size:0.75rem;
+  padding:2px 6px;
+  border-radius:4px;
+  margin-left:6px;
+}
+.job-card .company { font-size:0.95rem; font-weight:500; margin-bottom:5px; }
+.job-card p { font-size:0.85rem; margin:4px 0; color:#4b5563; }
+.job-card .urgent {
+  background:#dc2626;
+  color:white;
+  font-size:0.75rem;
+  padding:2px 6px;
+  border-radius:4px;
+  margin-left:5px;
+}
+.job-card .apply-link {
+  display:inline-block;
+  margin-top:10px;
+  background:#16a34a;
+  color:white;
+  padding:6px 12px;
+  border-radius:5px;
+  text-decoration:none;
+  font-weight:500;
+  transition:0.2s;
+}
+.job-card .apply-link:hover { background:#15803d; }
+
+/* COOKIE NOTICE */
+.cookie-notice {
+  position:fixed;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:white;
+  padding:15px 20px;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);
+  max-width:400px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:1000;
+}
+.cookie-notice button {
+  background:#1e3a8a;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.cookie-notice button:hover { background:#162c6f; }
+
+/* FOOTER */
+.main-footer {
+  background:#1e3a8a;
+  color:white;
+  padding:25px 20px;
+  text-align:center;
+}
+.main-footer a { color:white; text-decoration:underline; margin:0 8px; font-weight:500; }
+
+/* SCROLL BUTTONS */
+.scroll-btn {
+  position:fixed;
+  right:20px;
+  padding:10px 14px;
+  border-radius:50%;
+  border:none;
+  background:#1e3a8a;
+  color:white;
+  cursor:pointer;
+  display:none;
+  z-index:999;
+}
+#scrollUp { bottom:80px; }
+#scrollDown { bottom:30px; }
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero-search { flex-direction:column; gap:10px; }
+  .hero-search input, .hero-search button { width:100%; border-radius:6px; }
+  .quick-stats { flex-direction:column; align-items:center; }
+}
+</style>
 </head>
 
 <body>
@@ -71,22 +290,6 @@
   <button id="acceptCookies">Accept</button>
 </div>
 
-<script>
-(function () {
-  const notice = document.getElementById('cookieNotice');
-  const acceptBtn = document.getElementById('acceptCookies');
-
-  if (localStorage.getItem('cookiesAccepted') === 'true') {
-    notice.style.display = 'none';
-  }
-
-  acceptBtn.addEventListener('click', () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    notice.style.display = 'none';
-  });
-})();
-</script>
-
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-links">
@@ -123,7 +326,6 @@ async function renderRecentJobs() {
   statJobs.innerText = jobs.length + '+';
 
   const today = new Date();
-
   homeJobList.innerHTML = '';
   jobs.slice(0, 6).forEach(job => {
     const deadlineDate = new Date(job.deadline);
@@ -153,6 +355,21 @@ function performSearch(){
   window.location.href='jobs.html';
 }
 
+// ================= COOKIE =================
+(function () {
+  const notice = document.getElementById('cookieNotice');
+  const acceptBtn = document.getElementById('acceptCookies');
+
+  if (localStorage.getItem('cookiesAccepted') === 'true') {
+    notice.style.display = 'none';
+  }
+
+  acceptBtn.addEventListener('click', () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    notice.style.display = 'none';
+  });
+})();
+
 // ================= SCROLL =================
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
@@ -166,6 +383,8 @@ down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smoot
 
 </body>
 </html>
+
+
 
 
 
