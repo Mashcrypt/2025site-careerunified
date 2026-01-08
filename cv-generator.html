@@ -3,16 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <title>CV Generator – Career Unified</title>
+
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/cv-generator.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+/* GENERAL */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f7;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+}
+
+/* NAVIGATION */
+nav {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+nav a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #1e3a8a;
+  font-weight:600;
+}
+nav a.active { color: #16a34a; }
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 25px 15px;
+}
+header h1 { margin:0; font-size:2rem; }
+header p { margin-top:5px; color:#374151; font-weight:500; }
+
+/* MAIN LAYOUT */
+main {
+  display: flex;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto 50px auto;
+  flex-wrap: wrap;
+}
+
+/* FORM CARD */
+.form-card {
+  flex:1 1 400px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.form-card input, .form-card textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-family: inherit;
+}
+.form-card button {
+  padding: 10px 20px;
+  border: none;
+  border-radius:6px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight:600;
+  transition: all 0.2s;
+}
+.form-card button:first-of-type { background:#1e3a8a; color:white; }
+.form-card button:first-of-type:hover { background:#3746b0; }
+.form-card button:last-of-type { background:#16a34a; color:white; }
+.form-card button:last-of-type:hover { background:#059669; }
+
+/* PREVIEW CARD */
+.preview-card {
+  flex:1 1 500px;
+  background:#fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.preview-card h1, .preview-card h3 { margin-bottom:6px; color:#1e3a8a; }
+.preview-card p { margin-bottom:10px; line-height:1.5; }
+
+/* CV SECTIONS */
+.cv-section { margin-bottom:20px; }
+.cv-section strong { display:block; color:#111827; font-weight:600; }
+
+/* CV TIPS */
+#cvTipsContainer {
+  max-width: 1000px;
+  margin: 50px auto;
+}
+#cvTipsContainer div {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+#cvTipsContainer button {
+  margin-top:8px;
+  padding:5px 10px;
+  border:none;
+  background:#1e3a8a;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+}
+#cvTipsContainer button:hover { background:#3746b0; }
+
+/* FOOTER */
+.main-footer {
+  text-align:center;
+  padding:25px 0;
+  background:#f9fafb;
+  color:#374151;
+}
+.main-footer a {
+  margin:0 10px;
+  text-decoration:none;
+  color:#1e3a8a;
+  font-weight:500;
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1>CV Generator</h1>
-</header>
-
+<!-- NAVIGATION -->
 <nav>
   <a href="index.html">Home</a>
   <a href="jobs.html">Jobs</a>
@@ -21,49 +148,68 @@
   <a href="cv-generator.html" class="active">Generate CV</a>
 </nav>
 
+<!-- HEADER -->
+<header>
+  <h1>CV Generator</h1>
+  <p>Create a professional CV quickly and download as PDF</p>
+</header>
+
+<!-- MAIN -->
 <main>
+  <!-- FORM -->
   <div class="form-card">
     <input id="fullName" placeholder="Full Name">
     <input id="email" placeholder="Email">
     <input id="phone" placeholder="Phone">
+
     <textarea id="summary" placeholder="Profile"></textarea>
     <textarea id="education" placeholder="Education"></textarea>
     <textarea id="experience" placeholder="Experience"></textarea>
     <textarea id="skills" placeholder="Skills"></textarea>
+
     <button onclick="generateCV()">Preview</button>
     <button onclick="downloadPDF()">Download PDF</button>
   </div>
 
+  <!-- PREVIEW -->
   <div class="preview-card">
-    <div id="cvPreview"></div>
+    <div id="cvPreview">
+      <p>Your CV preview will appear here</p>
+    </div>
   </div>
-
-  <section style="max-width:1000px;margin:40px auto;">
-    <h2>CV Tips</h2>
-    <div id="cvTipsContainer"></div>
-  </section>
 </main>
 
-<footer>
-  <p>© 2026 Career Unified</p>
+<!-- CV TIPS -->
+<section>
+  <h2 style="text-align:center; margin-top:40px;">CV Tips</h2>
+  <div id="cvTipsContainer"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+  <div>
+    <a href="about-us.html">About Us</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms & Conditions</a>
+    <a href="contact-us.html">Contact Us</a>
+  </div>
+  <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
 
 <script src="js/sanityClient.js"></script>
 <script>
+// ================= CV GENERATOR =================
 const preview = document.getElementById('cvPreview');
 
 function generateCV() {
   preview.innerHTML = `
-    <h1>${document.getElementById('fullName').value}</h1>
-    <p>${document.getElementById('email').value} | ${document.getElementById('phone').value}</p>
-    <h3>Profile</h3>
-    <p style="white-space:pre-line;">${document.getElementById('summary').value}</p>
-    <h3>Education</h3>
-    <p style="white-space:pre-line;">${document.getElementById('education').value}</p>
-    <h3>Experience</h3>
-    <p style="white-space:pre-line;">${document.getElementById('experience').value}</p>
-    <h3>Skills</h3>
-    <p style="white-space:pre-line;">${document.getElementById('skills').value}</p>
+    <div class="cv-section"><h1>${fullName.value}</h1></div>
+    <div class="cv-section"><strong>Email:</strong> ${email.value} <strong>Phone:</strong> ${phone.value}</div>
+
+    <div class="cv-section"><h3>Profile</h3><p style="white-space:pre-line;">${summary.value}</p></div>
+    <div class="cv-section"><h3>Education</h3><p style="white-space:pre-line;">${education.value}</p></div>
+    <div class="cv-section"><h3>Experience</h3><p style="white-space:pre-line;">${experience.value}</p></div>
+    <div class="cv-section"><h3>Skills</h3><p style="white-space:pre-line;">${skills.value}</p></div>
   `;
 }
 
@@ -71,34 +217,36 @@ function downloadPDF() {
   html2pdf().from(preview).save("My_CV.pdf");
 }
 
-// Load CV Tips from Sanity
-const tipsContainer = document.getElementById('cvTipsContainer');
-async function fetchCvTips() {
-  const tips = await window.sanityClient.fetch(`*[_type=="cvTip"] | order(_createdAt desc){
-    title,
-    content
-  }`);
-  
-  if (!tips.length) {
-    tipsContainer.innerHTML = "<p>No CV tips available yet.</p>";
-    return;
-  }
+// ================= LOAD CV TIPS =================
+const tips = JSON.parse(localStorage.getItem('cvTips')) || [];
+const container = document.getElementById('cvTipsContainer');
 
-  tips.forEach(tip => {
+if(tips.length === 0){
+  container.innerHTML = "<p style='text-align:center;'>No CV tips available.</p>";
+} else {
+  tips.forEach((tip, index) => {
     const div = document.createElement('div');
-    div.style.background="#fff";
-    div.style.padding="15px";
-    div.style.marginBottom="10px";
-    div.style.borderRadius="8px";
-    div.innerHTML = `<strong>${tip.title}</strong><p style="white-space:pre-line;">${tip.content}</p>`;
-    tipsContainer.appendChild(div);
+    div.innerHTML = `<strong>${tip.title}</strong>
+      <p style="white-space:pre-line;">${tip.content}</p>
+      <button onclick="fillTip(${index})">Use Tip</button>`;
+    container.appendChild(div);
   });
 }
 
-fetchCvTips();
+// Auto-fill a section from tip
+function fillTip(index) {
+  const tip = tips[index];
+  if(tip.section === 'summary') summary.value = tip.content;
+  if(tip.section === 'education') education.value = tip.content;
+  if(tip.section === 'experience') experience.value = tip.content;
+  if(tip.section === 'skills') skills.value = tip.content;
+  generateCV();
+}
 </script>
+
 </body>
 </html>
+
 
 
 
