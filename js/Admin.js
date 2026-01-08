@@ -199,3 +199,4 @@ window.deleteAdmin = index => {
 };
 
 renderAdmins();
+
