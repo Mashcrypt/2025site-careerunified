@@ -27,19 +27,6 @@
     <label for="facultyFilter">Select Faculty/Category: </label>
     <select id="facultyFilter">
       <option value="All">All Bursaries</option>
-      <option value="Accounting & Finance">Accounting & Finance</option>
-      <option value="Arts & Humanities">Arts & Humanities</option>
-      <option value="Commerce & Business">Commerce & Business</option>
-      <option value="Computer Science & IT">Computer Science & IT</option>
-      <option value="Construction & Built Environment">Construction & Built Environment</option>
-      <option value="Engineering">Engineering</option>
-      <option value="Health & Medical">Health & Medical</option>
-      <option value="Law">Law</option>
-      <option value="MBA & Postgraduate">MBA & Postgraduate</option>
-      <option value="Nursing">Nursing</option>
-      <option value="Science">Science</option>
-      <option value="Government">State/Government Bursaries</option>
-      <option value="Student Loan">Student Loan</option>
     </select>
   </div>
 
@@ -50,10 +37,6 @@
   <p>Apply early and check bursary deadlines. Some bursaries may close quickly.</p>
 </footer>
 
-<!-- FAST SCROLL BUTTONS -->
-<button id="scrollUp" class="scroll-btn">↑</button>
-<button id="scrollDown" class="scroll-btn">↓</button>
-
 <script type="module">
 import { sanityClient } from './js/sanityClient.js';
 
@@ -61,49 +44,59 @@ const bursaryList = document.getElementById('bursaryList');
 const facultyFilter = document.getElementById('facultyFilter');
 let bursaries = [];
 
+// --- Fetch bursaries from Sanity ---
 async function fetchBursaries() {
   try {
     const query = `*[_type=="bursary"] | order(deadline asc){
       _id,
       name,
       provider,
-      faculty,
       description,
+      faculty,
       link,
       deadline
     }`;
     bursaries = await sanityClient.fetch(query);
-    renderBursaries(facultyFilter.value);
+
+    // Populate faculty filter dynamically
+    const faculties = Array.from(new Set(bursaries.map(b => b.faculty))).sort();
+    faculties.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      facultyFilter.appendChild(opt);
+    });
+
+    renderBursaries();
   } catch(err) {
     bursaryList.innerHTML = '<li>Failed to load bursaries from Sanity.</li>';
     console.error('Sanity fetch error:', err);
   }
 }
 
+// --- Render bursaries ---
 function renderBursaries(filter='All') {
   bursaryList.innerHTML = '';
-  const sorted = bursaries.sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
-  const filtered = filter==='All'?sorted:sorted.filter(b=>b.faculty===filter);
+  const filtered = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
 
-  if(filtered.length===0){
-    bursaryList.innerHTML='<li class="bursary-card">No bursaries found.</li>';
+  if (!filtered.length) {
+    bursaryList.innerHTML = '<li class="bursary-card">No bursaries found.</li>';
     return;
   }
 
   const today = new Date();
-
-  filtered.forEach((b,index)=>{
+  filtered.forEach((b,index) => {
     const deadlineDate = new Date(b.deadline);
-    const isUrgent = (deadlineDate-today)/(1000*60*60*24) <= 7;
-    const shortDesc = b.description.length>150 ? b.description.substring(0,150)+'...' : b.description;
-    const readMore = b.description.length>150 ? `<span class="read-more" onclick="toggleDesc(${index})">Read more</span>` : '';
+    const isUrgent = (deadlineDate - today)/(1000*60*60*24) <= 7;
+    const shortDesc = b.description.length > 150 ? b.description.substring(0,150)+'...' : b.description;
+    const readMore = b.description.length > 150 ? `<span class="read-more" onclick="toggleDesc(${index})">Read more</span>` : '';
 
     const li = document.createElement('li');
-    li.className='bursary-card';
-    li.innerHTML=`
+    li.className = 'bursary-card';
+    li.innerHTML = `
       <strong>${b.name}</strong> (${b.faculty})<br>
       Provider: ${b.provider}<br>
-      Deadline: ${b.deadline} ${isUrgent?'<span class="urgent">Urgent</span>':''}<br>
+      Deadline: ${b.deadline} ${isUrgent ? '<span class="urgent">Urgent</span>' : ''}<br>
       <p id="desc-${index}">${shortDesc}</p>
       ${readMore}<br>
       <a href="${b.link}" target="_blank">Apply Here</a>
@@ -112,24 +105,15 @@ function renderBursaries(filter='All') {
   });
 }
 
+// --- Toggle description ---
 window.toggleDesc = function(index){
-  const descEl=document.getElementById(`desc-${index}`);
-  const b=bursaries[index];
+  const descEl = document.getElementById(`desc-${index}`);
+  const b = bursaries[index];
   descEl.innerHTML = descEl.innerHTML.endsWith('...') ? b.description : b.description.substring(0,150)+'...';
 }
 
-facultyFilter.addEventListener('change', e=>renderBursaries(e.target.value));
-
-/* Scroll Buttons */
-const scrollUp = document.getElementById('scrollUp');
-const scrollDown = document.getElementById('scrollDown');
-window.addEventListener('scroll', () => {
-  const show = window.scrollY > 300;
-  scrollUp.style.display = show ? 'block' : 'none';
-  scrollDown.style.display = show ? 'block' : 'none';
-});
-scrollUp.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
-scrollDown.onclick = () => window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+// --- Event listener ---
+facultyFilter.addEventListener('change', e => renderBursaries(e.target.value));
 
 // Initial fetch
 fetchBursaries();
@@ -137,4 +121,5 @@ fetchBursaries();
 
 </body>
 </html>
+
 
