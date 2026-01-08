@@ -20,6 +20,7 @@
   <a href="bursaries.html">Bursaries</a>
   <a href="jobs.html">Jobs</a>
   <a href="cv-generator.html" class="active">Generate CV</a>
+  <a href="varsity.html">Varsity</a>
 </nav>
 
 <main>
@@ -38,66 +39,61 @@
   </div>
 
   <div class="preview-card">
-    <div id="cvPreview"><p>CV preview will appear here</p></div>
+    <div id="cvPreview">
+      <p>Your CV preview will appear here after clicking "Preview".</p>
+    </div>
   </div>
 </main>
 
 <section style="max-width:1000px;margin:40px auto;">
   <h2>CV Tips</h2>
-  <div id="cvTipsContainer"><p>Loading CV tips...</p></div>
+  <div id="cvTipsContainer"></div>
 </section>
 
 <script type="module">
 import { sanityClient } from './js/sanityClient.js';
 
-// ----------------------------
-// CV Preview & PDF Generation
-// ----------------------------
 const preview = document.getElementById('cvPreview');
+const cvTipsContainer = document.getElementById('cvTipsContainer');
 
-function generateCV(){
-  const fullName = document.getElementById('fullName').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const summary = document.getElementById('summary').value;
-  const education = document.getElementById('education').value;
-  const experience = document.getElementById('experience').value;
-  const skills = document.getElementById('skills').value;
-
+// --- Generate CV ---
+function generateCV() {
   preview.innerHTML = `
-    <h1>${fullName}</h1>
-    <p>${email} | ${phone}</p>
+    <h1>${fullName.value}</h1>
+    <p>${email.value} | ${phone.value}</p>
 
     <h3>Profile</h3>
-    <p style="white-space:pre-line;">${summary}</p>
+    <p style="white-space:pre-line;">${summary.value}</p>
 
     <h3>Education</h3>
-    <p style="white-space:pre-line;">${education}</p>
+    <p style="white-space:pre-line;">${education.value}</p>
 
     <h3>Experience</h3>
-    <p style="white-space:pre-line;">${experience}</p>
+    <p style="white-space:pre-line;">${experience.value}</p>
 
     <h3>Skills</h3>
-    <p style="white-space:pre-line;">${skills}</p>
+    <p style="white-space:pre-line;">${skills.value}</p>
   `;
 }
 
-function downloadPDF(){
+// --- Download CV as PDF ---
+function downloadPDF() {
   html2pdf().from(preview).save("My_CV.pdf");
 }
 
-// ----------------------------
-// Load CV Tips from Sanity
-// ----------------------------
-const container = document.getElementById('cvTipsContainer');
-
-async function fetchCVTips() {
+// --- Load CV Tips from Sanity ---
+async function fetchCvTips() {
   try {
-    const tips = await sanityClient.fetch(`*[_type=="cvTip"] | order(title asc){_id,title,description,category}`);
-    container.innerHTML = '';
+    const query = `*[_type=="cvTip"] | order(_createdAt desc){
+      _id,
+      title,
+      content
+    }`;
+    const tips = await sanityClient.fetch(query);
 
-    if(!tips.length){
-      container.innerHTML = "<p>No CV tips available.</p>";
+    cvTipsContainer.innerHTML = '';
+    if (tips.length === 0) {
+      cvTipsContainer.innerHTML = "<p>No CV tips available yet.</p>";
       return;
     }
 
@@ -107,29 +103,28 @@ async function fetchCVTips() {
       div.style.padding = "15px";
       div.style.marginBottom = "10px";
       div.style.borderRadius = "8px";
-
-      div.innerHTML = `
-        <strong>${tip.title} (${tip.category})</strong>
-        <p style="white-space:pre-line;">${tip.description}</p>
-      `;
-      container.appendChild(div);
+      div.innerHTML = `<strong>${tip.title}</strong><p style="white-space:pre-line;">${tip.content}</p>`;
+      cvTipsContainer.appendChild(div);
     });
-  } catch(err){
-    container.innerHTML = "<p>Failed to load CV tips.</p>";
-    console.error("Sanity fetch error:", err);
+
+  } catch (err) {
+    cvTipsContainer.innerHTML = "<p>Failed to load CV tips.</p>";
+    console.error('Sanity fetch error:', err);
   }
 }
 
 // Initial fetch
-fetchCVTips();
+fetchCvTips();
 </script>
 
 <footer>
-  <p>© 2026 Career Unified</p>
+  <p>Career Unified – Build your CV and improve your career opportunities</p>
 </footer>
 
 </body>
 </html>
+
+
 
 
 
