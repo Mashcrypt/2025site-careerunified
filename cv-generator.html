@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>CV Generator – Career Unified</title>
-
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/cv-generator.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-
 <body>
 
 <header>
@@ -17,10 +15,10 @@
 
 <nav>
   <a href="index.html">Home</a>
-  <a href="bursaries.html">Bursaries</a>
   <a href="jobs.html">Jobs</a>
-  <a href="cv-generator.html" class="active">Generate CV</a>
+  <a href="bursaries.html">Bursaries</a>
   <a href="varsity.html">Varsity</a>
+  <a href="cv-generator.html" class="active">Generate CV</a>
 </nav>
 
 <main>
@@ -28,101 +26,81 @@
     <input id="fullName" placeholder="Full Name">
     <input id="email" placeholder="Email">
     <input id="phone" placeholder="Phone">
-
     <textarea id="summary" placeholder="Profile"></textarea>
     <textarea id="education" placeholder="Education"></textarea>
     <textarea id="experience" placeholder="Experience"></textarea>
     <textarea id="skills" placeholder="Skills"></textarea>
-
     <button onclick="generateCV()">Preview</button>
     <button onclick="downloadPDF()">Download PDF</button>
   </div>
 
   <div class="preview-card">
-    <div id="cvPreview">
-      <p>Your CV preview will appear here after clicking "Preview".</p>
-    </div>
+    <div id="cvPreview"></div>
   </div>
+
+  <section style="max-width:1000px;margin:40px auto;">
+    <h2>CV Tips</h2>
+    <div id="cvTipsContainer"></div>
+  </section>
 </main>
 
-<section style="max-width:1000px;margin:40px auto;">
-  <h2>CV Tips</h2>
-  <div id="cvTipsContainer"></div>
-</section>
+<footer>
+  <p>© 2026 Career Unified</p>
+</footer>
 
-<script type="module">
-import { sanityClient } from './js/sanityClient.js';
-
+<script src="js/sanityClient.js"></script>
+<script>
 const preview = document.getElementById('cvPreview');
-const cvTipsContainer = document.getElementById('cvTipsContainer');
 
-// --- Generate CV ---
 function generateCV() {
   preview.innerHTML = `
-    <h1>${fullName.value}</h1>
-    <p>${email.value} | ${phone.value}</p>
-
+    <h1>${document.getElementById('fullName').value}</h1>
+    <p>${document.getElementById('email').value} | ${document.getElementById('phone').value}</p>
     <h3>Profile</h3>
-    <p style="white-space:pre-line;">${summary.value}</p>
-
+    <p style="white-space:pre-line;">${document.getElementById('summary').value}</p>
     <h3>Education</h3>
-    <p style="white-space:pre-line;">${education.value}</p>
-
+    <p style="white-space:pre-line;">${document.getElementById('education').value}</p>
     <h3>Experience</h3>
-    <p style="white-space:pre-line;">${experience.value}</p>
-
+    <p style="white-space:pre-line;">${document.getElementById('experience').value}</p>
     <h3>Skills</h3>
-    <p style="white-space:pre-line;">${skills.value}</p>
+    <p style="white-space:pre-line;">${document.getElementById('skills').value}</p>
   `;
 }
 
-// --- Download CV as PDF ---
 function downloadPDF() {
   html2pdf().from(preview).save("My_CV.pdf");
 }
 
-// --- Load CV Tips from Sanity ---
+// Load CV Tips from Sanity
+const tipsContainer = document.getElementById('cvTipsContainer');
 async function fetchCvTips() {
-  try {
-    const query = `*[_type=="cvTip"] | order(_createdAt desc){
-      _id,
-      title,
-      content
-    }`;
-    const tips = await sanityClient.fetch(query);
-
-    cvTipsContainer.innerHTML = '';
-    if (tips.length === 0) {
-      cvTipsContainer.innerHTML = "<p>No CV tips available yet.</p>";
-      return;
-    }
-
-    tips.forEach(tip => {
-      const div = document.createElement('div');
-      div.style.background = "#fff";
-      div.style.padding = "15px";
-      div.style.marginBottom = "10px";
-      div.style.borderRadius = "8px";
-      div.innerHTML = `<strong>${tip.title}</strong><p style="white-space:pre-line;">${tip.content}</p>`;
-      cvTipsContainer.appendChild(div);
-    });
-
-  } catch (err) {
-    cvTipsContainer.innerHTML = "<p>Failed to load CV tips.</p>";
-    console.error('Sanity fetch error:', err);
+  const tips = await window.sanityClient.fetch(`*[_type=="cvTip"] | order(_createdAt desc){
+    title,
+    content
+  }`);
+  
+  if (!tips.length) {
+    tipsContainer.innerHTML = "<p>No CV tips available yet.</p>";
+    return;
   }
+
+  tips.forEach(tip => {
+    const div = document.createElement('div');
+    div.style.background="#fff";
+    div.style.padding="15px";
+    div.style.marginBottom="10px";
+    div.style.borderRadius="8px";
+    div.innerHTML = `<strong>${tip.title}</strong><p style="white-space:pre-line;">${tip.content}</p>`;
+    tipsContainer.appendChild(div);
+  });
 }
 
-// Initial fetch
 fetchCvTips();
 </script>
-
-<footer>
-  <p>Career Unified – Build your CV and improve your career opportunities</p>
-</footer>
-
 </body>
 </html>
+
+
 
 
 
