@@ -3,12 +3,41 @@ export default {
   title: 'Job',
   type: 'document',
   fields: [
-    { name: 'title', title: 'Job Title', type: 'string' },
-    { name: 'company', title: 'Company', type: 'string' },
-    { name: 'description', title: 'Job Description', type: 'text' },
-    { name: 'location', title: 'Location', type: 'string' },
-    { name: 'salary', title: 'Salary', type: 'string' },
-    { name: 'applyLink', title: 'Application Link', type: 'url' },
+    {
+      name: 'title',
+      title: 'Job Title',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'company',
+      title: 'Company',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'description',
+      title: 'Job Description',
+      type: 'text',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'salary',
+      title: 'Salary',
+      type: 'string'
+    },
+    {
+      name: 'applyLink',
+      title: 'Application Link',
+      type: 'url',
+      validation: Rule => Rule.required().uri({ allowRelative: false })
+    },
     {
       name: 'category',
       title: 'Category',
@@ -18,8 +47,10 @@ export default {
           { title: 'Internship / Graduate', value: 'internship' },
           { title: 'Temporary Contract', value: 'temporary' },
           { title: 'Freelance', value: 'freelance' }
-        ]
-      }
+        ],
+        layout: 'radio'
+      },
+      validation: Rule => Rule.required()
     },
     {
       name: 'jobType',
@@ -29,14 +60,18 @@ export default {
         list: ['Full-time', 'Part-time', 'Contract', 'Remote']
       }
     },
-    { name: 'posted', title: 'Date Posted', type: 'date' },
-    { name: 'deadline', title: 'Closing Date', type: 'date' },
     {
-      name: 'views',
-      title: 'Views',
-      type: 'number',
-      initialValue: 0,
-      readOnly: true
+      name: 'posted',
+      title: 'Date Posted',
+      type: 'date',
+      validation: Rule => Rule.required()
+    },
+    {
+      name: 'deadline',
+      title: 'Closing Date',
+      type: 'date',
+      validation: Rule => Rule.required()
     }
   ]
 }
+
