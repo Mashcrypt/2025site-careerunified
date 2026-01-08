@@ -8,13 +8,6 @@
 
 <style>
 /* ================= Header/Nav ================= */
-header {
-  text-align: center;
-  padding: 20px 0;
-}
-header h1 { margin-bottom: 6px; }
-header p { margin-top: 0; color: #4b5563; font-weight: 500; }
-
 nav.main-nav {
   display: flex;
   justify-content: space-between;
@@ -35,6 +28,13 @@ nav.main-nav a.logo {
 nav.main-nav a.active { text-decoration: underline; }
 
 /* ================= Jobs Layout ================= */
+header {
+  text-align: center;
+  padding: 20px 0;
+}
+header h1 { margin-bottom: 6px; }
+header p { margin-top: 0; color: white; font-weight: 500; }
+
 .jobs-container {
   display: flex;
   gap: 20px;
@@ -93,7 +93,7 @@ nav.main-nav a.active { text-decoration: underline; }
   transition: 0.25s ease;
 }
 .job-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
-.job-card.selected { border-left: 4px solid #16a34a; }
+.job-card.selected { border-left: 4px solid #60a5fa; background: #ebf8ff; } /* Light blue for selected */
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company { font-size: 13px; font-weight: 600; color: #111827; }
 .job-card .meta { font-size: 12.5px; color: #4b5563; margin-top: 2px; }
@@ -117,12 +117,7 @@ nav.main-nav a.active { text-decoration: underline; }
 </head>
 <body>
 
-<!-- HEADER & NAV -->
-<header>
-  <h1>Available Jobs</h1>
-  <p>Find your next opportunity</p>
-</header>
-
+<!-- NAVIGATION -->
 <nav class="main-nav">
   <a href="index.html" class="logo">Career Unified</a>
   <div class="nav-links">
@@ -133,6 +128,13 @@ nav.main-nav a.active { text-decoration: underline; }
   </div>
 </nav>
 
+<!-- HEADER -->
+<header>
+  <h1>Available Jobs</h1>
+  <p>Find your next opportunity</p>
+</header>
+
+<!-- MAIN -->
 <main class="jobs-container">
   <div class="jobs-left">
     <div class="search-filter-container">
@@ -260,6 +262,8 @@ down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'
 
 </body>
 </html>
+
+
 
 
 
