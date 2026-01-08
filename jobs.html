@@ -24,31 +24,80 @@ footer { text-align: center; }
 .search-filter-container { display: flex; gap: 10px; margin-bottom: 15px; }
 .search-filter-container input,
 .search-filter-container select,
-.search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-.search-filter-container button { background: #1e3a8a; color: white; font-weight: 600; cursor: pointer; border: none; }
+.search-filter-container button {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+.search-filter-container button {
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
 .search-filter-container button:hover { background: #162c6f; }
 
 /* Job Cards */
 .jobs-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.job-card { background: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.25s ease; }
+.job-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
 .job-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
 .job-card.selected { border-left: 4px solid #1e3a8a; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company { font-size: 13px; font-weight: 600; color: #111827; }
 .job-card .meta { font-size: 12.5px; color: #4b5563; margin-top: 2px; }
-.job-card .salary { margin-top: 6px; font-size: 13.5px; font-weight: 700; color: #15803d; font-family: "Inter", "Segoe UI", system-ui, sans-serif; letter-spacing: 0.2px; }
+.job-card .salary {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #15803d;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
 
 /* Preview */
 .fade-in { animation: fadeIn 0.35s ease; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-.apply-btn { display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(8px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.apply-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #16a34a;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+}
 
 /* Scroll Buttons */
-.scroll-btn { position: fixed; right: 20px; padding: 10px 14px; border-radius: 50%; border: none; background: #1e3a8a; color: white; cursor: pointer; display: none; z-index: 999; }
+.scroll-btn {
+  position: fixed;
+  right: 20px;
+  padding: 10px 14px;
+  border-radius: 50%;
+  border: none;
+  background: #1e3a8a;
+  color: white;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+}
 #scrollUp { bottom: 80px; }
 #scrollDown { bottom: 30px; }
 
-@media (max-width: 900px) { .jobs-container { flex-direction: column; } }
+@media (max-width: 900px) {
+  .jobs-container { flex-direction: column; }
+}
 </style>
 </head>
 
@@ -68,6 +117,7 @@ footer { text-align: center; }
 </nav>
 
 <main class="jobs-container">
+
   <div class="jobs-left">
     <div class="search-filter-container">
       <input type="text" id="jobSearch" placeholder="Search job title, company, keyword">
@@ -79,11 +129,14 @@ footer { text-align: center; }
       </select>
       <button id="sortBtn">Sort by Closing Date</button>
     </div>
+
     <ul class="jobs-list" id="jobList"></ul>
   </div>
+
   <div class="jobs-preview" id="jobPreview">
     <p>Select a job to view details</p>
   </div>
+
 </main>
 
 <footer>
@@ -93,117 +146,13 @@ footer { text-align: center; }
 <button id="scrollUp" class="scroll-btn">↑</button>
 <button id="scrollDown" class="scroll-btn">↓</button>
 
-<script type="module">
-import { sanityClient } from './js/sanityClient.js';
-
-const jobList = document.getElementById('jobList');
-const jobPreview = document.getElementById('jobPreview');
-const searchInput = document.getElementById('jobSearch');
-const categoryFilter = document.getElementById('categoryFilter');
-const sortBtn = document.getElementById('sortBtn');
-
-let jobs = [];
-let selectedIndex = null;
-
-async function fetchJobs() {
-  try {
-    const query = `*[_type == "job"] | order(deadline asc){
-      _id,
-      title,
-      company,
-      description,
-      location,
-      salary,
-      applyLink,
-      posted,
-      deadline,
-      category,
-      jobType
-    }`;
-    jobs = await sanityClient.fetch(query);
-    renderJobs();
-  } catch (err) {
-    jobList.innerHTML = '<li>Failed to load jobs from Sanity.</li>';
-    console.error(err);
-  }
-}
-
-function renderJobs() {
-  const term = searchInput.value.toLowerCase();
-  const cat = categoryFilter.value;
-
-  const filtered = jobs.filter(j => {
-    const matchCat = cat === 'all' || j.category === cat;
-    const matchSearch = j.title.toLowerCase().includes(term) || j.company.toLowerCase().includes(term) || j.description.toLowerCase().includes(term);
-    return matchCat && matchSearch;
-  }).sort((a,b)=> new Date(a.deadline) - new Date(b.deadline));
-
-  jobList.innerHTML = '';
-
-  if (!filtered.length) {
-    jobList.innerHTML = '<li>No jobs found.</li>';
-    jobPreview.innerHTML = '<p>Select a job to view details</p>';
-    return;
-  }
-
-  filtered.forEach((job, index) => {
-    const li = document.createElement('li');
-    li.className = 'job-card';
-    if (index === selectedIndex) li.classList.add('selected');
-
-    li.innerHTML = `
-      <h3>${job.title}</h3>
-      <p class="company">${job.company}</p>
-      <p class="meta">${job.location}</p>
-      <p class="salary">${job.salary || 'N/A'}</p>
-      <p class="meta">Posted: ${job.posted || 'N/A'} • Closing: ${job.deadline || 'N/A'}</p>
-    `;
-
-    li.onclick = () => {
-      selectedIndex = index;
-      showPreview(job);
-      renderJobs();
-    };
-
-    jobList.appendChild(li);
-  });
-}
-
-function showPreview(job){
-  jobPreview.innerHTML = `
-    <div class="fade-in">
-      <h2>${job.title}</h2>
-      <p class="company">${job.company}</p>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
-      <p><strong>Posted:</strong> ${job.posted || 'N/A'} | <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
-      <div style="white-space:pre-line;margin-top:12px;">${job.description}</div>
-      <a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>
-    </div>
-  `;
-}
-
-searchInput.addEventListener('input', renderJobs);
-categoryFilter.addEventListener('change', renderJobs);
-sortBtn.addEventListener('click', renderJobs);
-
-/* Scroll Buttons */
-const scrollUp = document.getElementById('scrollUp');
-const scrollDown = document.getElementById('scrollDown');
-window.addEventListener('scroll', () => {
-  const show = window.scrollY > 300;
-  scrollUp.style.display = show ? 'block' : 'none';
-  scrollDown.style.display = show ? 'block' : 'none';
-});
-scrollUp.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
-scrollDown.onclick = () => window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-
-// Initial fetch
-fetchJobs();
-</script>
+<!-- ✅ FINAL: external JS only -->
+<script type="module" src="js/jobs.js"></script>
 
 </body>
 </html>
+
+
 
 
 
