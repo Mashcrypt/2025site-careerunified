@@ -23,25 +23,29 @@ nav {
   display: flex;
   justify-content: center;
   padding: 15px 0;
-  background: #fff;
+  background: #1e3a8a; /* Blue like Home page */
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
   margin-bottom: 20px;
 }
 nav a {
   margin: 0 12px;
   text-decoration: none;
-  color: #1e3a8a;
+  color: #fff; /* All nav links white */
   font-weight:600;
 }
-nav a.active { color: #16a34a; }
+nav a.active {
+  color: #fff;
+  border-bottom: 2px solid #16a34a; /* subtle green indicator for active page */
+  padding-bottom:2px;
+}
 
 /* HEADER */
 header {
   text-align: center;
   padding: 25px 15px;
 }
-header h1 { margin:0; font-size:2rem; }
-header p { margin-top:5px; color:#374151; font-weight:500; }
+header h1 { margin:0; font-size:2rem; color:#1e3a8a; }
+header p { margin-top:5px; color:#fff; font-weight:500; } /* white subtitle */
 
 /* MAIN LAYOUT */
 main {
@@ -126,13 +130,13 @@ main {
 .main-footer {
   text-align:center;
   padding:25px 0;
-  background:#f9fafb;
-  color:#374151;
+  background:#1e3a8a; /* blue like Home page */
+  color:#fff;
 }
 .main-footer a {
   margin:0 10px;
   text-decoration:none;
-  color:#1e3a8a;
+  color:#fff;
   font-weight:500;
 }
 </style>
@@ -246,6 +250,8 @@ function fillTip(index) {
 
 </body>
 </html>
+
+
 
 
 
