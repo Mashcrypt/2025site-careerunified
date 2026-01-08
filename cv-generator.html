@@ -22,30 +22,40 @@ body {
 nav {
   display: flex;
   justify-content: center;
-  padding: 15px 0;
+  padding: 12px 0;
   background: #1e3a8a; /* Blue like Home page */
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-  margin-bottom: 20px;
+  border-bottom: 2px solid #93c5fd; /* thinner separator under nav */
 }
 nav a {
   margin: 0 12px;
   text-decoration: none;
-  color: #fff; /* All nav links white */
+  color: #fff;
   font-weight:600;
+  padding-bottom:2px;
 }
 nav a.active {
-  color: #fff;
-  border-bottom: 2px solid #16a34a; /* subtle green indicator for active page */
-  padding-bottom:2px;
+  border-bottom: 2px solid #93c5fd; /* Home page accent color */
 }
 
 /* HEADER */
 header {
   text-align: center;
-  padding: 25px 15px;
+  padding: 20px 15px;
+  border-bottom: 1px solid #d1d5db; /* thin line to separate nav */
+  margin-bottom: 25px;
 }
-header h1 { margin:0; font-size:2rem; color:#1e3a8a; }
-header p { margin-top:5px; color:#fff; font-weight:500; } /* white subtitle */
+header h1 {
+  margin:0;
+  font-size:2.5rem;
+  color:#1e3a8a; /* Visible and strong */
+}
+header p {
+  margin-top:5px;
+  color:#fff; /* white subtitle */
+  font-weight:500;
+  font-size:1.1rem;
+}
 
 /* MAIN LAYOUT */
 main {
@@ -136,7 +146,7 @@ main {
 .main-footer a {
   margin:0 10px;
   text-decoration:none;
-  color:#fff;
+  color:#93c5fd; /* Same color as nav active underline */
   font-weight:500;
 }
 </style>
@@ -250,6 +260,8 @@ function fillTip(index) {
 
 </body>
 </html>
+
+
 
 
 
