@@ -7,17 +7,68 @@
 <link rel="stylesheet" href="css/jobs.css">
 <style>
 /* =============================== */
-/* Jobs Page Specific Styles       */
+/* NAVBAR */
+.main-nav {
+  padding-bottom: 6px;
+  background: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-nav .logo {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.main-nav .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 22px;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+.main-nav .nav-links a.active {
+  border-bottom: 3px solid #facc15;
+}
+
 /* =============================== */
+/* HEADER WITH GRADIENT */
+header {
+  text-align: center;
+  padding: 70px 15px 55px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* =============================== */
+/* Jobs Page Styles */
 .jobs-container {
   display: flex;
   max-width: 1200px;
   margin: 30px auto;
   gap: 20px;
 }
-.jobs-left {
-  flex: 1;
-}
+.jobs-left { flex: 1; }
 .jobs-preview {
   flex: 1;
   background: #fff;
@@ -35,13 +86,11 @@
   transition: 0.25s ease;
 }
 .job-card:hover {
-  background-color: #d0e7ff; /* light blue hover */
+  background-color: #d0e7ff;
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
-.job-card.selected {
-  border-left: 4px solid #1e3a8a;
-}
+.job-card.selected { border-left: 4px solid #facc15; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
 .jobs-preview h2 { color:#1e3a8a; }
@@ -86,7 +135,7 @@
 <!-- HEADER -->
 <header>
   <h1>Available Jobs</h1>
-  <p style="color:white;">Find your next opportunity</p>
+  <p>Find your next opportunity</p>
 </header>
 
 <!-- MAIN JOBS CONTAINER -->
@@ -224,6 +273,7 @@ down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'
 
 </body>
 </html>
+
 
 
 
