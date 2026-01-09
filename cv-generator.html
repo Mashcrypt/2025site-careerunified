@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CV Generator – Career Unified</title>
+<title>Generate CV – Career Unified</title>
 
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/cv-generator.css">
@@ -17,53 +17,63 @@ body {
   color: #111827;
 }
 
-/* ============ NAV BAR ============ */
+/* ============ NAV BAR (HOME STYLE) ============ */
 nav {
-  display: flex;
-  justify-content: center;
   background: #1e3a8a;
-  padding: 12px 0;
-  border-bottom: 2px solid #F4B400;
+  padding: 14px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #facc15;
 }
 
-nav a {
+.nav-brand {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-links a {
   color: #fff;
   text-decoration: none;
-  margin: 0 14px;
+  margin-left: 22px;
   font-weight: 600;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
 }
 
-nav a.active {
-  border-bottom: 3px solid #F4B400;
+.nav-links a.active {
+  border-bottom: 3px solid #facc15;
 }
 
 /* ============ HEADER ============ */
 header {
   text-align: center;
-  padding: 20px 15px;
-  border-bottom: 1px solid #e5e7eb; /* reduced line */
+  padding: 35px 15px 25px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 header h1 {
-  font-size: 2.6rem;
+  font-size: 3rem;
   margin: 0;
   color: #1e3a8a;
+  font-weight: 800;
 }
 
 header p {
-  margin-top: 6px;
-  color: #fff;
-  font-weight: 500;
+  margin-top: 8px;
+  font-size: 1.05rem;
+  color: #374151;
 }
 
 /* ============ MAIN LAYOUT ============ */
 main {
   max-width: 1200px;
-  margin: 30px auto 50px;
+  margin: 40px auto 50px;
   display: flex;
-  gap: 20px;
+  gap: 24px;
   flex-wrap: wrap;
+  padding: 0 15px;
 }
 
 /* ============ FORM CARD ============ */
@@ -71,23 +81,24 @@ main {
   flex: 1 1 420px;
   background: #fff;
   padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 .form-card input,
 .form-card textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 12px;
   margin-bottom: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
+  font-size: 0.95rem;
 }
 
 .form-card button {
-  padding: 10px 18px;
+  padding: 11px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   margin-right: 10px;
@@ -108,8 +119,8 @@ main {
   flex: 1 1 500px;
   background: #fff;
   padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   max-height: 85vh;
   overflow-y: auto;
 }
@@ -120,16 +131,21 @@ main {
 }
 
 /* ============ CV TIPS ============ */
+section {
+  margin-top: 40px;
+}
+
 #cvTipsContainer {
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 20px auto 60px;
+  padding: 0 15px;
 }
 
 #cvTipsContainer div {
   background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
@@ -137,19 +153,19 @@ main {
 footer {
   background: #1e3a8a;
   text-align: center;
-  padding: 25px 0;
+  padding: 26px 0;
 }
 
 footer a {
-  color: #F4B400;
+  color: #facc15;
   text-decoration: none;
-  margin: 0 12px;
+  margin: 0 14px;
   font-weight: 500;
 }
 
 footer p {
   color: #fff;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 </style>
 </head>
@@ -158,16 +174,19 @@ footer p {
 
 <!-- NAV -->
 <nav>
-  <a href="index.html">Home</a>
-  <a href="jobs.html">Jobs</a>
-  <a href="bursaries.html">Bursaries</a>
-  <a href="varsity.html">Varsity</a>
-  <a href="cv-generator.html" class="active">Generate CV</a>
+  <a href="index.html" class="nav-brand">Career Unified</a>
+
+  <div class="nav-links">
+    <a href="jobs.html">Jobs</a>
+    <a href="bursaries.html">Bursaries</a>
+    <a href="varsity.html">Varsity</a>
+    <a href="cv-generator.html" class="active">Generate CV</a>
+  </div>
 </nav>
 
 <!-- HEADER -->
 <header>
-  <h1>CV Generator</h1>
+  <h1>Generate CV</h1>
   <p>Build a professional CV and download it instantly</p>
 </header>
 
@@ -258,6 +277,8 @@ if(!tips.length){
 
 </body>
 </html>
+
+
 
 
 
