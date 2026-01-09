@@ -7,17 +7,68 @@
 <link rel="stylesheet" href="css/bursaries.css">
 <style>
 /* =============================== */
-/* Bursaries Page Styles           */
+/* NAV BAR */
+.main-nav {
+  padding-bottom: 6px;
+  background: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-nav .logo {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.main-nav .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 22px;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+.main-nav .nav-links a.active {
+  border-bottom: 3px solid #facc15;
+}
+
 /* =============================== */
+/* HEADER WITH GRADIENT */
+header {
+  text-align: center;
+  padding: 70px 15px 55px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* =============================== */
+/* Bursaries Page Styles */
 .bursaries-container {
   display: flex;
   max-width: 1200px;
   margin: 30px auto;
   gap: 20px;
 }
-.bursaries-left {
-  flex: 1;
-}
+.bursaries-left { flex: 1; }
 .bursaries-preview {
   flex: 1;
   background: #fff;
@@ -40,9 +91,7 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
-.bursary-card.selected {
-  border-left: 4px solid #1e3a8a;
-}
+.bursary-card.selected { border-left: 4px solid #facc15; }
 .bursary-card strong { font-size: 15px; }
 .bursary-card p { margin: 4px 0; color: #111827; }
 .read-more { color: #1e3a8a; cursor: pointer; font-weight: 600; }
@@ -83,7 +132,7 @@
 <!-- HEADER -->
 <header>
   <h1>Available Bursaries</h1>
-  <p style="color:white;">Find bursaries and apply early</p>
+  <p>Find bursaries and apply early</p>
 </header>
 
 <!-- MAIN -->
@@ -214,6 +263,8 @@ down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smoot
 </script>
 </body>
 </html>
+
+
 
 
 
