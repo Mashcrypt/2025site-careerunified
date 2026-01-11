@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Recruiter Dashboard – Career Unified</title>
+
+<link rel="stylesheet" href="css/recruiter-dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<header class="dash-header">
+  <h1>Recruiter Dashboard</h1>
+  <p>Access top talent & track performance</p>
+</header>
+
+<section class="stats-grid">
+  <div class="stat-card">
+    <h3>CVs Viewed</h3>
+    <span id="viewsCount">0</span>
+  </div>
+
+  <div class="stat-card">
+    <h3>Credits Left</h3>
+    <span id="creditsCount">0</span>
+  </div>
+
+  <div class="stat-card">
+    <h3>Plan</h3>
+    <span id="planType">Free</span>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <h2>Upgrade Your Access</h2>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <h3>Free</h3>
+      <p class="price">R0</p>
+      <ul>
+        <li>Preview CVs only</li>
+        <li>Limited views</li>
+      </ul>
+      <button disabled>Current Plan</button>
+    </div>
+
+    <div class="price-card highlight">
+      <h3>Sponsored</h3>
+      <p class="price">R15 / CV</p>
+      <ul>
+        <li>Full CV access</li>
+        <li>Pay per view</li>
+      </ul>
+      <button onclick="upgradePlan('sponsored')">Activate</button>
+    </div>
+
+    <div class="price-card premium">
+      <h3>Premier</h3>
+      <p class="price">R499 / month</p>
+      <ul>
+        <li>Unlimited CVs</li>
+        <li>Advanced analytics</li>
+        <li>Priority support</li>
+      </ul>
+      <button onclick="upgradePlan('premier')">Go Premier</button>
+    </div>
+  </div>
+</section>
+
+<section class="analytics">
+  <h2>CV View Analytics</h2>
+  <canvas id="viewsChart"></canvas>
+</section>
+
+<script src="js/recruiter-dashboard.js"></script>
+</body>
+</html>
