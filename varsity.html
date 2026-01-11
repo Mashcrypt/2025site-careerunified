@@ -57,7 +57,6 @@ header {
   color: #fff;
   margin: 0;
   width: 100vw;
-  border-radius: 0;
   box-sizing: border-box;
 }
 
@@ -65,7 +64,6 @@ header h1 {
   margin: 0;
   font-size: 3rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
 }
 
 header p {
@@ -117,18 +115,53 @@ header p {
 .urgent { color:#b91c1c; font-weight:600; margin-left:8px; }
 
 /* Search + Sort */
-#searchInput { padding:8px 12px; border-radius:6px; border:1px solid #ccc; width:60%; margin:0 10px 20px 0; }
-#sortDeadlineBtn { padding:8px 12px; border-radius:6px; border:none; background:#1e3a8a; color:white; cursor:pointer; font-weight:600; }
+#searchInput {
+  padding:8px 12px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  width:60%;
+  margin:0 10px 20px 0;
+}
+#sortDeadlineBtn {
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  background:#1e3a8a;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
 
 /* Footer */
-.main-footer { text-align:center; margin-top:50px; padding:25px 0; background:#1e3a8a; color:white; width:100vw; box-sizing:border-box; }
+.main-footer {
+  text-align:center;
+  margin-top:50px;
+  padding:25px 0;
+  background:#1e3a8a;
+  color:white;
+  width:100vw;
+  box-sizing:border-box;
+}
 
 /* Scroll Buttons */
-.scroll-btn { position: fixed; right: 20px; padding: 10px 14px; border-radius: 50%; border: none; background: #1e3a8a; color: white; cursor: pointer; display: none; z-index: 999; }
+.scroll-btn {
+  position: fixed;
+  right: 20px;
+  padding: 10px 14px;
+  border-radius: 50%;
+  border: none;
+  background: #1e3a8a;
+  color: white;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+}
 #scrollUp { bottom: 80px; }
 #scrollDown { bottom: 30px; }
 
-@media (max-width:900px){#searchInput{width:100%;margin-bottom:10px}}
+@media (max-width:900px){
+  #searchInput{width:100%;margin-bottom:10px}
+}
 </style>
 </head>
 <body>
@@ -182,37 +215,56 @@ const sortBtn = document.getElementById('sortDeadlineBtn');
 let universities = [];
 
 async function fetchUniversities() {
-  universities = await window.sanityClient.fetch(`*[_type=="university"] | order(deadline asc){
-    _id,
-    name,
-    link,
-    deadline,
-    description
-  }`);
+  universities = await window.sanityClient.fetch(`
+    *[_type=="university"] | order(deadline asc){
+      _id,
+      name,
+      applicationLink,
+      deadline,
+      notes
+    }
+  `);
   renderList();
 }
 
 function renderList() {
   const query = searchInput.value.toLowerCase();
   varsityList.innerHTML = '';
-  const filtered = universities.filter(u=>u.name.toLowerCase().includes(query));
-  if(!filtered.length){
+  const filtered = universities.filter(u =>
+    u.name.toLowerCase().includes(query)
+  );
+
+  if (!filtered.length) {
     varsityList.innerHTML = "<li>No universities match your search.</li>";
     return;
   }
+
   const today = new Date();
-  filtered.forEach(uni=>{
-    const deadlineDate = new Date(uni.deadline);
-    const isOpen = deadlineDate >= today;
-    const diffDays = Math.ceil((deadlineDate-today)/(1000*60*60*24));
-    const isUrgent = diffDays <= 7 && isOpen;
+
+  filtered.forEach(uni => {
+    const deadlineDate = uni.deadline ? new Date(uni.deadline) : null;
+    const isOpen = deadlineDate ? deadlineDate >= today : true;
+    const diffDays = deadlineDate
+      ? Math.ceil((deadlineDate - today) / (1000*60*60*24))
+      : null;
+    const isUrgent = diffDays !== null && diffDays <= 7 && isOpen;
+
+    const safeUrl =
+      uni.applicationLink && uni.applicationLink.startsWith('http')
+        ? uni.applicationLink
+        : null;
 
     const li = document.createElement('li');
-    li.className="varsity-card";
+    li.className = "varsity-card";
     li.innerHTML = `
-      <a href="${uni.link}" target="_blank">${uni.name}</a>
-      <small>Deadline: ${uni.deadline}</small>
-      <span class="status ${isOpen?'open':'closed'}">${isOpen?'Open':'Closed'}</span>
+      ${safeUrl
+        ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name}</a>`
+        : `<span>${uni.name}</span>`
+      }
+      <small>Deadline: ${uni.deadline || 'TBA'}</small>
+      <span class="status ${isOpen ? 'open' : 'closed'}">
+        ${isOpen ? 'Open' : 'Closed'}
+      </span>
       ${isUrgent ? '<span class="urgent">Urgent!</span>' : ''}
     `;
     varsityList.appendChild(li);
@@ -220,8 +272,8 @@ function renderList() {
 }
 
 searchInput.addEventListener('input', renderList);
-sortBtn.addEventListener('click', ()=>{
-  universities.sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
+sortBtn.addEventListener('click', () => {
+  universities.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
   renderList();
 });
 
@@ -230,12 +282,17 @@ fetchUniversities();
 // SCROLL BUTTONS
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
-window.addEventListener('scroll',()=>{ up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none'; });
-up.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+window.addEventListener('scroll', () => {
+  up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
+});
+up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
 </script>
+
 </body>
 </html>
+
+
 
 
 
