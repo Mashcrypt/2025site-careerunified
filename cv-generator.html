@@ -38,7 +38,6 @@ nav {
   text-decoration: none;
   margin-left: 22px;
   font-weight: 600;
-  padding-bottom: 4px;
 }
 
 .nav-links a.active {
@@ -55,8 +54,7 @@ header {
 
 header h1 {
   font-size: 3.6rem;
-  margin: 0 0 12px;
-  font-weight: 800;
+  margin-bottom: 12px;
 }
 
 header p {
@@ -81,21 +79,15 @@ main {
   padding: 26px;
   border-radius: 14px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  margin-bottom: 30px;
 }
 
 .upload-card h2 {
   color: #1e3a8a;
-  margin-top: 0;
-}
-
-.upload-card input {
-  margin: 10px 0;
 }
 
 .upload-status {
-  margin-top: 8px;
   font-weight: 600;
+  margin-top: 8px;
 }
 
 /* ============ FORM CARD ============ */
@@ -191,12 +183,11 @@ footer p {
 
 <main>
 
-  <!-- UPLOAD EXISTING CV -->
+  <!-- UPLOAD CV -->
   <div class="upload-card">
     <h2>📤 Upload Existing CV</h2>
-    <p>If you already have a CV, upload it here.</p>
     <input type="file" id="cvFile" accept=".pdf,.doc,.docx">
-    <br>
+    <br><br>
     <button onclick="uploadCV()">Upload CV</button>
     <p id="uploadStatus" class="upload-status"></p>
   </div>
@@ -233,7 +224,7 @@ footer p {
   <p>© 2026 Career Unified</p>
 </footer>
 
-<!-- FIREBASE + AUTH + STORAGE -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -257,20 +248,29 @@ const db = getFirestore(app);
 let currentUser = null;
 
 onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "login.html";
   currentUser = user;
 });
 
-window.uploadCV = async function () {
-  const file = document.getElementById("cvFile").files[0];
-  const status = document.getElementById("uploadStatus");
-  if (!file) return status.textContent = "Select a CV first.";
+function requireAuth(action) {
+  if (!currentUser) {
+    alert(`Please log in to ${action}.`);
+    window.location.href = "login.html?redirect=cv-generator.html";
+    return false;
+  }
+  return true;
+}
 
-  const refPath = ref(storage, `cvs/${currentUser.uid}/${file.name}`);
-  status.textContent = "Uploading CV...";
+window.uploadCV = async () => {
+  if (!requireAuth("upload your CV")) return;
 
-  await uploadBytes(refPath, file);
-  const url = await getDownloadURL(refPath);
+  const file = cvFile.files[0];
+  if (!file) return uploadStatus.textContent = "Select a file.";
+
+  uploadStatus.textContent = "Uploading...";
+
+  const fileRef = ref(storage, `cvs/${currentUser.uid}/${file.name}`);
+  await uploadBytes(fileRef, file);
+  const url = await getDownloadURL(fileRef);
 
   await setDoc(doc(db, "users", currentUser.uid), {
     email: currentUser.email,
@@ -278,15 +278,16 @@ window.uploadCV = async function () {
     updatedAt: serverTimestamp()
   }, { merge: true });
 
-  status.textContent = "CV uploaded successfully!";
+  uploadStatus.textContent = "✅ CV uploaded successfully!";
 };
 </script>
 
-<!-- EXISTING CV LOGIC (UNCHANGED) -->
 <script>
-const preview = document.getElementById('cvPreview');
+const preview = document.getElementById("cvPreview");
 
 function generateCV(){
+  if (!requireAuth("generate your CV")) return;
+
   preview.innerHTML = `
     <h1>${fullName.value}</h1>
     <p>${email.value} | ${phone.value}</p>
@@ -298,12 +299,15 @@ function generateCV(){
 }
 
 function downloadPDF(){
+  if (!requireAuth("download your CV")) return;
   html2pdf().from(preview).save("My_CV.pdf");
 }
 </script>
 
 </body>
 </html>
+
+
 
 
 
