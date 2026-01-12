@@ -5,51 +5,148 @@
 <title>Jobs – Career Unified</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/jobs.css">
-
 <style>
 /* =============================== */
 /* RESET BODY & GLOBAL LAYOUT */
-body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: #f5f5f7; color: #111827; overflow-x: hidden; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f7;
+  color: #111827;
+  overflow-x: hidden;
+}
+
 /* =============================== */
 /* NAVBAR FULL WIDTH */
-.main-nav { padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; width: 100vw; box-sizing: border-box; background: #1e3a8a; }
-.main-nav .logo { color: #fff; font-size: 1.4rem; font-weight: 700; text-decoration: none; }
-.main-nav .nav-links a { color: #fff; text-decoration: none; margin-left: 22px; font-weight: 600; padding-bottom: 4px; }
-.main-nav .nav-links a.active { border-bottom: 3px solid #facc15; }
+.main-nav {
+  padding: 14px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  box-sizing: border-box;
+  background: #1e3a8a;
+}
+
+.main-nav .logo {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.main-nav .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 22px;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+.main-nav .nav-links a.active {
+  border-bottom: 3px solid #facc15;
+}
+
 /* =============================== */
 /* HEADER FULL WIDTH WITH GRADIENT */
-header { text-align: center; padding: 70px 15px 55px; background: linear-gradient(90deg, #1e3a8a, #2563eb); color: #fff; margin: 0; width: 100vw; border-radius: 0; box-sizing: border-box; }
-header h1 { margin: 0; font-size: 3rem; font-weight: 800; letter-spacing: 0.5px; }
-header p { margin-top: 10px; font-size: 1.2rem; font-weight: 500; color: #e5e7eb; }
+header {
+  text-align: center;
+  padding: 70px 15px 55px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+  margin: 0;
+  width: 100vw;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
 /* =============================== */
 /* Jobs Page Styles */
-.jobs-container { display: flex; max-width: 1200px; margin: 30px auto; gap: 20px; }
+.jobs-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 30px auto;
+  gap: 20px;
+}
 .jobs-left { flex: 1; }
-.jobs-preview { flex: 1; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); min-height: 420px; }
-.job-card { background: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.25s ease; position: relative; }
-.job-card:hover { background-color: #d0e7ff; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
+.jobs-preview {
+  flex: 1;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  min-height: 420px;
+}
+.job-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.25s ease;
+  position: relative;
+}
+.job-card:hover {
+  background-color: #d0e7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
 .job-card.selected { border-left: 4px solid #facc15; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
+
 /* Badge */
-.job-badge { position: absolute; top: 10px; right: 12px; padding: 2px 8px; background: #facc15; color: #1e3a8a; font-size: 11px; font-weight: 700; border-radius: 6px; }
+.job-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 2px 8px;
+  background: #facc15;
+  color: #1e3a8a;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
 /* Preview */
 .jobs-preview h2 { color:#1e3a8a; }
 .jobs-preview p { margin: 6px 0; }
+
 /* Search Filter */
 .search-filter-container { display: flex; gap: 10px; margin-bottom: 15px; }
-.search-filter-container input, .search-filter-container select, .search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+.search-filter-container input,
+.search-filter-container select,
+.search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
 .search-filter-container button { background: #1e3a8a; color: white; font-weight: 600; cursor: pointer; border: none; }
 .search-filter-container button:hover { background: #162c6f; }
+
 /* Fade Animation */
 .fade-in { animation: fadeIn 0.35s ease; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
 /* Apply button */
 .apply-btn { display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+
 /* Scroll Buttons */
 .scroll-btn { position: fixed; right: 20px; padding: 10px 14px; border-radius: 50%; border: none; background: #1e3a8a; color: white; cursor: pointer; display: none; z-index: 999; }
 #scrollUp { bottom: 80px; }
 #scrollDown { bottom: 30px; }
+
 @media (max-width: 900px) { .jobs-container { flex-direction: column; } }
 </style>
 </head>
@@ -64,7 +161,7 @@ header p { margin-top: 10px; font-size: 1.2rem; font-weight: 500; color: #e5e7eb
     <a href="varsity.html">Varsity</a>
     <a href="cv-generator.html">Generate CV</a>
     <a href="signup.html">Sign Up</a>
-    <a href="login.html">Login</a>
+    <a href="login.html">Login</a> 
   </div>
 </nav>
 
@@ -111,24 +208,25 @@ header p { margin-top: 10px; font-size: 1.2rem; font-weight: 500; color: #e5e7eb
 
 <!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+  // Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
-  authDomain: "career-unified.firebaseapp.com",
-  projectId: "career-unified",
-  storageBucket: "career-unified.appspot.com",
-  messagingSenderId: "101656817742",
-  appId: "1:101656817742:web:22c9a58a822a714e54931f",
-  measurementId: "G-2Z934XRVXT"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+    authDomain: "career-unified.firebaseapp.com",
+    projectId: "career-unified",
+    storageBucket: "career-unified.appspot.com",
+    messagingSenderId: "101656817742",
+    appId: "1:101656817742:web:22c9a58a822a714e54931f",
+    measurementId: "G-2Z934XRVXT"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-let currentUser = null;
-onAuthStateChanged(auth, user => currentUser = user);
+  // Track login state globally
+  let currentUser = null;
+  onAuthStateChanged(auth, user => currentUser = user);
 </script>
 
 <!-- SANITY CLIENT -->
@@ -138,12 +236,27 @@ onAuthStateChanged(auth, user => currentUser = user);
 <script>
 const jobList = document.getElementById('jobList');
 const jobPreview = document.getElementById('jobPreview');
+
 let jobs = [];
 let selectedIndex = null;
 
 async function fetchJobs() {
   jobs = await window.sanityClient.fetch(`*[_type == "job"] | order(deadline asc){
-    _id, title, company, description, location, salary, applyLink, posted, deadline, category, jobType, isSponsored, isPremier, sponsoredUntil, badge
+    _id,
+    title,
+    company,
+    description,
+    location,
+    salary,
+    applyLink,
+    posted,
+    deadline,
+    category,
+    jobType,
+    isSponsored,
+    isPremier,
+    sponsoredUntil,
+    badge
   }`);
   renderJobs();
 }
@@ -193,13 +306,11 @@ function renderJobs() {
       <p class="meta"><strong>Posted:</strong> ${job.posted || 'N/A'} • <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
       ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
     `;
-
     li.onclick = () => {
       selectedIndex = index;
       showPreview(job);
       renderJobs();
     };
-
     jobList.appendChild(li);
   });
 }
@@ -211,7 +322,7 @@ function showPreview(job) {
   else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
   else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
 
-  const applyButton = currentUser
+  const applyButton = currentUser 
     ? `<a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>`
     : `<a class="apply-btn" href="login.html">Login to Apply</a>`;
 
@@ -247,6 +358,8 @@ down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'
 
 </body>
 </html>
+
+
 
 
 
