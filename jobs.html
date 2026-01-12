@@ -9,184 +9,52 @@
 <style>
 /* =============================== */
 /* RESET BODY & GLOBAL LAYOUT */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #f5f5f7;
-  color: #111827;
-  overflow-x: hidden;
-}
-
+body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: #f5f5f7; color: #111827; overflow-x: hidden; }
 /* =============================== */
 /* NAVBAR FULL WIDTH */
-.main-nav {
-  padding: 14px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100vw;
-  box-sizing: border-box;
-  background: #1e3a8a;
-}
-.main-nav .logo {
-  color: #fff;
-  font-size: 1.4rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-.main-nav .nav-links a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 22px;
-  font-weight: 600;
-  padding-bottom: 4px;
-}
-.main-nav .nav-links a.active {
-  border-bottom: 3px solid #facc15;
-}
-
+.main-nav { padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; width: 100vw; box-sizing: border-box; background: #1e3a8a; }
+.main-nav .logo { color: #fff; font-size: 1.4rem; font-weight: 700; text-decoration: none; }
+.main-nav .nav-links a { color: #fff; text-decoration: none; margin-left: 22px; font-weight: 600; padding-bottom: 4px; }
+.main-nav .nav-links a.active { border-bottom: 3px solid #facc15; }
 /* =============================== */
 /* HEADER FULL WIDTH WITH GRADIENT */
-header {
-  text-align: center;
-  padding: 70px 15px 55px;
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
-  color: #fff;
-  margin: 0;
-  width: 100vw;
-  border-radius: 0;
-  box-sizing: border-box;
-}
-header h1 {
-  margin: 0;
-  font-size: 3rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-header p {
-  margin-top: 10px;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #e5e7eb;
-}
-
+header { text-align: center; padding: 70px 15px 55px; background: linear-gradient(90deg, #1e3a8a, #2563eb); color: #fff; margin: 0; width: 100vw; border-radius: 0; box-sizing: border-box; }
+header h1 { margin: 0; font-size: 3rem; font-weight: 800; letter-spacing: 0.5px; }
+header p { margin-top: 10px; font-size: 1.2rem; font-weight: 500; color: #e5e7eb; }
 /* =============================== */
 /* Jobs Page Styles */
-.jobs-container {
-  display: flex;
-  max-width: 1200px;
-  margin: 30px auto;
-  gap: 20px;
-}
+.jobs-container { display: flex; max-width: 1200px; margin: 30px auto; gap: 20px; }
 .jobs-left { flex: 1; }
-.jobs-preview {
-  flex: 1;
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  min-height: 420px;
-}
-.job-card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 12px 14px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: 0.25s ease;
-  position: relative;
-}
-.job-card:hover {
-  background-color: #d0e7ff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-}
-.job-card.selected {
-  border-left: 4px solid #facc15;
-}
+.jobs-preview { flex: 1; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); min-height: 420px; position: relative; }
+.job-card { background: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.25s ease; position: relative; }
+.job-card:hover { background-color: #d0e7ff; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
+.job-card.selected { border-left: 4px solid #facc15; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
-
 /* Badge */
-.job-badge {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: 2px 8px;
-  background: #facc15;
-  color: #1e3a8a;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 6px;
-}
-
+.job-badge { position: absolute; top: 10px; right: 12px; padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; }
+.job-badge.premier { background: gold; color: #1e3a8a; }
+.job-badge.sponsored { background: #3b82f6; color: #fff; }
 /* Preview */
 .jobs-preview h2 { color:#1e3a8a; }
 .jobs-preview p { margin: 6px 0; }
-
 /* Search Filter */
-.search-filter-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-.search-filter-container input, .search-filter-container select, .search-filter-container button {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-.search-filter-container button {
-  background: #1e3a8a;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-}
+.search-filter-container { display: flex; gap: 10px; margin-bottom: 15px; }
+.search-filter-container input, .search-filter-container select, .search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+.search-filter-container button { background: #1e3a8a; color: white; font-weight: 600; cursor: pointer; border: none; }
 .search-filter-container button:hover { background: #162c6f; }
-
 /* Fade Animation */
 .fade-in { animation: fadeIn 0.35s ease; }
-@keyframes fadeIn {
-  from { opacity:0; transform: translateY(8px); }
-  to { opacity:1; transform: translateY(0); }
-}
-
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
 /* Apply button */
-.apply-btn {
-  display: inline-block;
-  margin-top: 15px;
-  background: #16a34a;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
+.apply-btn { display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; }
 /* Scroll Buttons */
-.scroll-btn {
-  position: fixed;
-  right: 20px;
-  padding: 10px 14px;
-  border-radius: 50%;
-  border: none;
-  background: #1e3a8a;
-  color: white;
-  cursor: pointer;
-  display: none;
-  z-index: 999;
-}
+.scroll-btn { position: fixed; right: 20px; padding: 10px 14px; border-radius: 50%; border: none; background: #1e3a8a; color: white; cursor: pointer; display: none; z-index: 999; }
 #scrollUp { bottom: 80px; }
 #scrollDown { bottom: 30px; }
-
-@media (max-width: 900px) {
-  .jobs-container { flex-direction: column; }
-}
+@media (max-width: 900px) { .jobs-container { flex-direction: column; } }
 </style>
 </head>
-
 <body>
 
 <!-- NAVIGATION -->
@@ -289,7 +157,9 @@ function renderJobs() {
 
   const filtered = jobs.filter(j => {
     const matchCat = category === 'all' || j.category === category;
-    const matchSearch = j.title.toLowerCase().includes(searchTerm) || j.company.toLowerCase().includes(searchTerm) || j.description.toLowerCase().includes(searchTerm);
+    const matchSearch = j.title.toLowerCase().includes(searchTerm) ||
+                        j.company.toLowerCase().includes(searchTerm) ||
+                        j.description.toLowerCase().includes(searchTerm);
     return matchCat && matchSearch;
   });
 
@@ -307,15 +177,16 @@ function renderJobs() {
     return;
   }
 
-  filtered.forEach((job,index) => {
+  filtered.forEach((job, index) => {
     const li = document.createElement('li');
     li.className = 'job-card';
     if (index === selectedIndex) li.classList.add('selected');
 
     let badgeText = '';
-    if (job.badge) badgeText = job.badge;
-    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
-    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
+    let badgeClass = '';
+    if (job.badge) { badgeText = job.badge; badgeClass = 'premier'; }
+    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) { badgeText = 'Premier'; badgeClass = 'premier'; }
+    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) { badgeText = 'Sponsored'; badgeClass = 'sponsored'; }
 
     li.innerHTML = `
       <h3>${job.title}</h3>
@@ -323,7 +194,7 @@ function renderJobs() {
       <p class="meta"><strong>Location:</strong> ${job.location}</p>
       <p class="salary"><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p class="meta"><strong>Posted:</strong> ${job.posted || 'N/A'} • <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      ${badgeText ? `<span class="job-badge ${badgeClass}">${badgeText}</span>` : ''}
     `;
 
     li.onclick = () => {
@@ -339,9 +210,10 @@ function renderJobs() {
 function showPreview(job) {
   const today = new Date();
   let badgeText = '';
-  if (job.badge) badgeText = job.badge;
-  else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
-  else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
+  let badgeClass = '';
+  if (job.badge) { badgeText = job.badge; badgeClass = 'premier'; }
+  else if (job.isPremier && new Date(job.sponsoredUntil) >= today) { badgeText = 'Premier'; badgeClass = 'premier'; }
+  else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) { badgeText = 'Sponsored'; badgeClass = 'sponsored'; }
 
   const applyButton = currentUser
     ? `<a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>`
@@ -351,7 +223,7 @@ function showPreview(job) {
     <div class="fade-in">
       <h2>${job.title}</h2>
       <p class="company"><strong>Company:</strong> ${job.company}</p>
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      ${badgeText ? `<span class="job-badge ${badgeClass}">${badgeText}</span>` : ''}
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p><strong>Posted:</strong> ${job.posted || 'N/A'} | <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
@@ -376,8 +248,11 @@ window.addEventListener('scroll', () => {
 up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
 </script>
+
 </body>
 </html>
+
+
 
 
 
