@@ -25,16 +25,14 @@ header p { margin-top: 10px; font-size: 1.2rem; font-weight: 500; color: #e5e7eb
 /* Jobs Page Styles */
 .jobs-container { display: flex; max-width: 1200px; margin: 30px auto; gap: 20px; }
 .jobs-left { flex: 1; }
-.jobs-preview { flex: 1; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); min-height: 420px; position: relative; }
+.jobs-preview { flex: 1; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); min-height: 420px; }
 .job-card { background: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.25s ease; position: relative; }
 .job-card:hover { background-color: #d0e7ff; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
 .job-card.selected { border-left: 4px solid #facc15; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
 /* Badge */
-.job-badge { position: absolute; top: 10px; right: 12px; padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; }
-.job-badge.premier { background: gold; color: #1e3a8a; }
-.job-badge.sponsored { background: #3b82f6; color: #fff; }
+.job-badge { position: absolute; top: 10px; right: 12px; padding: 2px 8px; background: #facc15; color: #1e3a8a; font-size: 11px; font-weight: 700; border-radius: 6px; }
 /* Preview */
 .jobs-preview h2 { color:#1e3a8a; }
 .jobs-preview p { margin: 6px 0; }
@@ -183,10 +181,9 @@ function renderJobs() {
     if (index === selectedIndex) li.classList.add('selected');
 
     let badgeText = '';
-    let badgeClass = '';
-    if (job.badge) { badgeText = job.badge; badgeClass = 'premier'; }
-    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) { badgeText = 'Premier'; badgeClass = 'premier'; }
-    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) { badgeText = 'Sponsored'; badgeClass = 'sponsored'; }
+    if (job.badge) badgeText = job.badge;
+    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
+    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
 
     li.innerHTML = `
       <h3>${job.title}</h3>
@@ -194,7 +191,7 @@ function renderJobs() {
       <p class="meta"><strong>Location:</strong> ${job.location}</p>
       <p class="salary"><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p class="meta"><strong>Posted:</strong> ${job.posted || 'N/A'} • <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
-      ${badgeText ? `<span class="job-badge ${badgeClass}">${badgeText}</span>` : ''}
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
     `;
 
     li.onclick = () => {
@@ -210,10 +207,9 @@ function renderJobs() {
 function showPreview(job) {
   const today = new Date();
   let badgeText = '';
-  let badgeClass = '';
-  if (job.badge) { badgeText = job.badge; badgeClass = 'premier'; }
-  else if (job.isPremier && new Date(job.sponsoredUntil) >= today) { badgeText = 'Premier'; badgeClass = 'premier'; }
-  else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) { badgeText = 'Sponsored'; badgeClass = 'sponsored'; }
+  if (job.badge) badgeText = job.badge;
+  else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
+  else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
 
   const applyButton = currentUser
     ? `<a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>`
@@ -223,7 +219,7 @@ function showPreview(job) {
     <div class="fade-in">
       <h2>${job.title}</h2>
       <p class="company"><strong>Company:</strong> ${job.company}</p>
-      ${badgeText ? `<span class="job-badge ${badgeClass}">${badgeText}</span>` : ''}
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p><strong>Posted:</strong> ${job.posted || 'N/A'} | <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
@@ -251,6 +247,8 @@ down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'
 
 </body>
 </html>
+
+
 
 
 
