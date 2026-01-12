@@ -14,7 +14,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background: #f5f5f7;
   color: #111827;
-  overflow-x: hidden;
+  overflow-x: hidden; /* prevent horizontal scroll */
 }
 
 /* =============================== */
@@ -24,7 +24,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100vw;
+  width: 100vw;          /* full viewport width */
   box-sizing: border-box;
   background: #1e3a8a;
 }
@@ -55,9 +55,9 @@ header {
   padding: 70px 15px 55px;
   background: linear-gradient(90deg, #1e3a8a, #2563eb);
   color: #fff;
-  margin: 0;
-  width: 100vw;
-  border-radius: 0;
+  margin: 0;            /* remove bottom margin */
+  width: 100vw;         /* full viewport width */
+  border-radius: 0;     /* remove rounding on edges */
   box-sizing: border-box;
 }
 
@@ -99,7 +99,6 @@ header p {
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: 0.25s ease;
-  position: relative;
 }
 .job-card:hover {
   background-color: #d0e7ff;
@@ -109,21 +108,6 @@ header p {
 .job-card.selected { border-left: 4px solid #facc15; }
 .job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
 .job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
-
-/* Badge */
-.job-badge {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: 2px 8px;
-  background: #facc15;
-  color: #1e3a8a;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 6px;
-}
-
-/* Preview */
 .jobs-preview h2 { color:#1e3a8a; }
 .jobs-preview p { margin: 6px 0; }
 
@@ -160,8 +144,6 @@ header p {
     <a href="bursaries.html">Bursaries</a>
     <a href="varsity.html">Varsity</a>
     <a href="cv-generator.html">Generate CV</a>
-    <a href="signup.html">Sign Up</a>
-    <a href="login.html">Login</a> 
   </div>
 </nav>
 
@@ -206,33 +188,10 @@ header p {
 <button id="scrollUp" class="scroll-btn">↑</button>
 <button id="scrollDown" class="scroll-btn">↓</button>
 
-<!-- FIREBASE -->
-<script type="module">
-  // Firebase SDK
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
-    authDomain: "career-unified.firebaseapp.com",
-    projectId: "career-unified",
-    storageBucket: "career-unified.appspot.com",
-    messagingSenderId: "101656817742",
-    appId: "1:101656817742:web:22c9a58a822a714e54931f",
-    measurementId: "G-2Z934XRVXT"
-  };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Track login state globally
-  let currentUser = null;
-  onAuthStateChanged(auth, user => currentUser = user);
-</script>
-
 <!-- SANITY CLIENT -->
 <script src="js/sanityClient.js"></script>
 
-<!-- JOBS LOGIC WITH LOGIN CHECK -->
+<!-- JOBS LOGIC -->
 <script>
 const jobList = document.getElementById('jobList');
 const jobPreview = document.getElementById('jobPreview');
@@ -252,11 +211,7 @@ async function fetchJobs() {
     posted,
     deadline,
     category,
-    jobType,
-    isSponsored,
-    isPremier,
-    sponsoredUntil,
-    badge
+    jobType
   }`);
   renderJobs();
 }
@@ -264,7 +219,6 @@ async function fetchJobs() {
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
   const category = document.getElementById('categoryFilter').value;
-  const today = new Date();
 
   const filtered = jobs.filter(j => {
     const matchCat = category === 'all' || j.category === category;
@@ -272,14 +226,7 @@ function renderJobs() {
                         j.company.toLowerCase().includes(searchTerm) ||
                         j.description.toLowerCase().includes(searchTerm);
     return matchCat && matchSearch;
-  });
-
-  filtered.sort((a,b) => {
-    const aPriority = (a.isPremier && new Date(a.sponsoredUntil) >= today ? 2 : a.isSponsored && new Date(a.sponsoredUntil) >= today ? 1 : 0);
-    const bPriority = (b.isPremier && new Date(b.sponsoredUntil) >= today ? 2 : b.isSponsored && new Date(b.sponsoredUntil) >= today ? 1 : 0);
-    if (bPriority !== aPriority) return bPriority - aPriority;
-    return new Date(a.deadline) - new Date(b.deadline);
-  });
+  }).sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
 
   jobList.innerHTML = '';
   if (!filtered.length) {
@@ -292,19 +239,12 @@ function renderJobs() {
     const li = document.createElement('li');
     li.className = 'job-card';
     if (index === selectedIndex) li.classList.add('selected');
-
-    let badgeText = '';
-    if (job.badge) badgeText = job.badge;
-    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
-    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
-
     li.innerHTML = `
       <h3>${job.title}</h3>
       <p class="company"><strong>Company:</strong> ${job.company || 'Confidential'}</p>
       <p class="meta"><strong>Location:</strong> ${job.location}</p>
       <p class="salary"><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p class="meta"><strong>Posted:</strong> ${job.posted || 'N/A'} • <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
     `;
     li.onclick = () => {
       selectedIndex = index;
@@ -316,26 +256,15 @@ function renderJobs() {
 }
 
 function showPreview(job) {
-  const today = new Date();
-  let badgeText = '';
-  if (job.badge) badgeText = job.badge;
-  else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
-  else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
-
-  const applyButton = currentUser 
-    ? `<a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>`
-    : `<a class="apply-btn" href="login.html">Login to Apply</a>`;
-
   jobPreview.innerHTML = `
     <div class="fade-in">
       <h2>${job.title}</h2>
       <p class="company"><strong>Company:</strong> ${job.company}</p>
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p><strong>Posted:</strong> ${job.posted || 'N/A'} | <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
       <div style="white-space:pre-line;margin-top:12px;">${job.description}</div>
-      ${applyButton}
+      <a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>
     </div>
   `;
 }
@@ -349,6 +278,7 @@ fetchJobs();
 // ================= SCROLL BUTTONS =================
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
+
 window.addEventListener('scroll', () => {
   up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
 });
@@ -358,6 +288,8 @@ down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'
 
 </body>
 </html>
+
+
 
 
 
