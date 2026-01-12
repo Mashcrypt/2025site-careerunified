@@ -8,6 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+.badge-sponsored {
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  color: #000;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-left: 6px;
+  font-weight: 600;
+}
+</style>
 </head>
 
 <body>
@@ -21,8 +33,8 @@
     <a href="varsity.html">Varsity</a>
     <a href="cv-generator.html">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="signup.html">Sign Up</a>   <!-- new -->
-    <a href="login.html">Login</a> 
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
   </div>
 </nav>
 
@@ -109,7 +121,31 @@
 <script src="js/sanityClient.js"></script>
 
 <script>
-// ================= RECENT JOBS =================
+/* ===============================
+   SPONSORED / PREMIER HELPERS
+================================ */
+
+function isActiveSponsored(job) {
+  if (!job.sponsoredUntil) return true;
+  return new Date(job.sponsoredUntil) >= new Date();
+}
+
+function getPriority(job) {
+  if (job.isPremier && isActiveSponsored(job)) return 3;
+  if (job.isSponsored && isActiveSponsored(job)) return 2;
+  return 1;
+}
+
+function getBadge(job) {
+  if (job.isPremier && isActiveSponsored(job)) return "Premier";
+  if (job.isSponsored && isActiveSponsored(job)) return "Sponsored";
+  return "";
+}
+
+/* ===============================
+   RECENT JOBS (LOGIC UNCHANGED)
+================================ */
+
 const homeJobList = document.getElementById('homeJobList');
 const statJobs = document.getElementById('statJobs');
 
@@ -120,26 +156,39 @@ async function renderRecentJobs() {
     location,
     category,
     posted,
-    deadline
+    deadline,
+    isSponsored,
+    isPremier,
+    sponsoredUntil
   }`);
 
   statJobs.innerText = jobs.length + '+';
 
-  const today = new Date();
+  /* 🔥 PRIORITY SORT (ADDED) */
+  jobs.sort((a,b)=> getPriority(b) - getPriority(a));
 
+  const today = new Date();
   homeJobList.innerHTML = '';
+
   jobs.slice(0, 9).forEach(job => {
     const deadlineDate = new Date(job.deadline);
     const isUrgent = (deadlineDate - today)/(1000*60*60*24) <= 7;
+    const badge = getBadge(job);
 
     const card = document.createElement('div');
     card.className='job-card';
     card.innerHTML=`
-      <h3>${job.title} <span class="badge">${job.category}</span></h3>
+      <h3>
+        ${job.title}
+        <span class="badge">${job.category}</span>
+        ${badge ? `<span class="badge-sponsored">${badge}</span>` : ''}
+      </h3>
       <p class="company">${job.company || 'Confidential'}</p>
       <p>${job.location}</p>
-      <p class="meta">Posted: ${job.posted} • Closing: ${job.deadline}
-      ${isUrgent ? '<span class="urgent">Urgent</span>' : ''}</p>
+      <p class="meta">
+        Posted: ${job.posted} • Closing: ${job.deadline}
+        ${isUrgent ? '<span class="urgent">Urgent</span>' : ''}
+      </p>
       <a href="jobs.html" class="apply-link">View & Apply</a>
     `;
     homeJobList.appendChild(card);
@@ -148,7 +197,7 @@ async function renderRecentJobs() {
 
 renderRecentJobs();
 
-// ================= SEARCH =================
+/* ================= SEARCH ================= */
 function performSearch(){
   const term = document.getElementById('homeSearch').value.trim();
   if(!term) return alert('Please enter a keyword');
@@ -156,7 +205,7 @@ function performSearch(){
   window.location.href='jobs.html';
 }
 
-// ================= SCROLL =================
+/* ================= SCROLL ================= */
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
 
@@ -169,6 +218,8 @@ down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smoot
 
 </body>
 </html>
+
+
 
 
 
