@@ -2,6 +2,7 @@ export default {
   name: 'job',
   title: 'Job',
   type: 'document',
+
   fields: [
     {
       name: 'title',
@@ -72,33 +73,78 @@ export default {
       type: 'date',
       validation: Rule => Rule.required()
     },
-    // ===========================
-    // Sponsored / Premier Fields
-    // ===========================
+
+    /* ===============================
+       MONETISATION (CONTROLLED)
+    =============================== */
+
     {
-      name: 'isSponsored',
-      title: 'Is Sponsored?',
-      type: 'boolean',
-      description: 'Check if this job should be featured (Sponsored)'
+      name: 'listingTier',
+      title: 'Listing Tier',
+      type: 'string',
+      description: 'Choose how this job is promoted',
+      options: {
+        list: [
+          { title: 'Normal (Free)', value: 'normal' },
+          { title: 'Sponsored', value: 'sponsored' },
+          { title: 'Premier', value: 'premier' }
+        ],
+        layout: 'radio'
+      },
+      initialValue: 'normal',
+      validation: Rule => Rule.required()
     },
-    {
-      name: 'isPremier',
-      title: 'Is Premier?',
-      type: 'boolean',
-      description: 'Check if this job is a high-priority premium job'
-    },
+
     {
       name: 'sponsoredUntil',
-      title: 'Sponsored Until',
+      title: 'Promotion Active Until',
       type: 'date',
-      description: 'Date until which the job remains sponsored or premier'
+      description: 'Required for Sponsored or Premier listings',
+      hidden: ({ parent }) => parent?.listingTier === 'normal',
+      validation: Rule =>
+        Rule.custom((value, context) => {
+          const tier = context.parent?.listingTier;
+          if (tier !== 'normal' && !value) {
+            return 'Promotion expiry date is required for Sponsored or Premier jobs';
+          }
+          return true;
+        })
     },
+
     {
       name: 'badge',
-      title: 'Badge Text',
+      title: 'Custom Badge Text',
       type: 'string',
-      description: 'Optional custom badge text (e.g., Featured, Premium)'
+      description: 'Optional override (e.g. "Featured", "Top Employer")',
+      hidden: ({ parent }) => parent?.listingTier === 'normal'
     }
-  ]
+  ],
+
+  /* ===============================
+     COMPUTED PREVIEW (VERY IMPORTANT)
+  =============================== */
+
+  preview: {
+    select: {
+      title: 'title',
+      company: 'company',
+      tier: 'listingTier',
+      until: 'sponsoredUntil'
+    },
+    prepare({ title, company, tier, until }) {
+      let subtitle = company;
+
+      if (tier !== 'normal') {
+        subtitle += ` • ${tier.toUpperCase()}`;
+        if (until) subtitle += ` (until ${until})`;
+      }
+
+      return {
+        title,
+        subtitle
+      };
+    }
+  }
 }
+
 
