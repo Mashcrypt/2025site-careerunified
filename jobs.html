@@ -1,209 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Jobs | Career Unified</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Jobs – Career Unified</title>
 
-  <link rel="stylesheet" href="css/jobs.css" />
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/jobs.css">
 
-  <style>
-    .job-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      font-size: 12px;
-      border-radius: 12px;
-      font-weight: 600;
-      margin-top: 6px;
-      background: linear-gradient(135deg, #ffb703, #fb8500);
-      color: #000;
-    }
-    .job-card.selected {
-      outline: 2px solid #ffb703;
-    }
-  </style>
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f7;
+  color: #111827;
+  overflow-x: hidden;
+}
+
+.main-nav {
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  background: #1e3a8a;
+}
+
+.main-nav .logo,
+.main-nav .nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+header {
+  text-align: center;
+  padding: 70px 15px 55px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+}
+
+.jobs-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 30px auto;
+  gap: 20px;
+}
+
+.jobs-left { flex: 1; }
+.jobs-preview {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  min-height: 420px;
+}
+
+.job-card {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.job-card.selected {
+  border-left: 4px solid #facc15;
+}
+
+.job-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: #facc15;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.apply-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #16a34a;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
 
 <body>
 
+<!-- NAV -->
+<nav class="main-nav">
+  <a href="index.html" class="logo">Career Unified</a>
+  <div class="nav-links">
+    <a href="jobs.html">Jobs</a>
+    <a href="bursaries.html">Bursaries</a>
+    <a href="varsity.html">Varsity</a>
+    <a href="cv-generator.html">Generate CV</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
 <header>
   <h1>Available Jobs</h1>
+  <p>Find your next opportunity</p>
 </header>
 
-<section class="filters">
-  <input type="text" id="jobSearch" placeholder="Search jobs..." />
-
-  <select id="categoryFilter">
-    <option value="all">All Categories</option>
-    <option value="internship">Internship / Graduate</option>
-    <option value="temporary">Temporary Contract</option>
-    <option value="freelance">Freelance</option>
-  </select>
-</section>
-
 <main class="jobs-container">
-  <ul id="jobList"></ul>
+  <div class="jobs-left">
+    <input id="jobSearch" placeholder="Search jobs..." />
+    <select id="categoryFilter">
+      <option value="all">All</option>
+      <option value="internship">Internship</option>
+      <option value="temporary">Temporary</option>
+      <option value="freelance">Freelance</option>
+    </select>
+    <button id="sortBtn">Sort</button>
+    <ul id="jobList"></ul>
+  </div>
 
-  <div id="jobPreview" class="job-preview">
-    <p>Select a job to preview details</p>
+  <div class="jobs-preview" id="jobPreview">
+    <p>Select a job to view details</p>
   </div>
 </main>
 
+<!-- FIREBASE LOGIN STATE -->
 <script type="module">
-  import { createClient } from "https://cdn.skypack.dev/@sanity/client";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-  const sanityClient = createClient({
-    projectId: "YOUR_PROJECT_ID",
-    dataset: "production",
-    apiVersion: "2024-01-01",
-    useCdn: true
-  });
+const firebaseConfig = {
+  apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+  authDomain: "career-unified.firebaseapp.com",
+  projectId: "career-unified",
+};
 
-  const jobList = document.getElementById("jobList");
-  const jobPreview = document.getElementById("jobPreview");
-  const jobSearch = document.getElementById("jobSearch");
-  const categoryFilter = document.getElementById("categoryFilter");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-  let jobs = [];
-  let selectedIndex = -1;
+window.currentUser = null;
+onAuthStateChanged(auth, user => {
+  window.currentUser = user;
+  console.log("Auth state:", user ? "Logged in" : "Logged out");
+});
+</script>
 
-  /* ===============================
-     🔥 SPONSORED / PREMIER FIX
-  =============================== */
+<!-- SANITY CLIENT -->
+<script src="js/sanityClient.js"></script>
 
-  function isActiveSponsored(job) {
-    if (!job.sponsoredUntil) return true;
-    return new Date(job.sponsoredUntil) >= new Date();
-  }
+<!-- JOB LOGIC -->
+<script>
+console.log("Jobs page loaded");
 
-  function getPriority(job) {
-    if (job.isPremier && isActiveSponsored(job)) return 3;
-    if (job.isSponsored && isActiveSponsored(job)) return 2;
-    return 1;
-  }
+const jobList = document.getElementById('jobList');
+const jobPreview = document.getElementById('jobPreview');
 
-  function getBadge(job) {
-    if (job.isPremier && isActiveSponsored(job)) return "Premier";
-    if (job.isSponsored && isActiveSponsored(job)) return "Sponsored";
-    return "";
-  }
+let jobs = [];
+let selectedIndex = null;
 
-  /* ===============================
-     FETCH JOBS FROM SANITY
-  =============================== */
-
-  async function fetchJobs() {
-    jobs = await sanityClient.fetch(`
-      *[_type == "job"] | order(posted desc){
-        title,
-        company,
-        description,
-        location,
-        salary,
-        applyLink,
-        category,
-        jobType,
-        posted,
-        deadline,
-        isSponsored,
-        isPremier,
-        sponsoredUntil
+async function fetchJobs() {
+  try {
+    jobs = await window.sanityClient.fetch(`
+      *[_type=="job"] | order(deadline asc){
+        title, company, description, location, salary,
+        applyLink, posted, deadline, category,
+        isSponsored, isPremier, sponsoredUntil, badge
       }
     `);
-
+    console.log("Jobs fetched:", jobs.length);
     renderJobs();
+  } catch (err) {
+    console.error("Fetch jobs failed:", err);
+  }
+}
+
+function renderJobs() {
+  if (!Array.isArray(jobs)) {
+    console.warn("Jobs is not an array");
+    return;
   }
 
-  /* ===============================
-     RENDER JOB LIST
-  =============================== */
+  const today = new Date();
+  jobList.innerHTML = '';
 
-  function renderJobs() {
-    const searchTerm = jobSearch.value.toLowerCase();
-    const category = categoryFilter.value;
+  jobs.forEach((job, index) => {
+    const li = document.createElement('li');
+    li.className = 'job-card';
+    if (index === selectedIndex) li.classList.add('selected');
 
-    const filtered = jobs.filter(job => {
-      const matchCategory =
-        category === "all" || job.category === category;
+    let badgeText = '';
+    if (job.badge) badgeText = job.badge;
+    else if (job.isPremier && new Date(job.sponsoredUntil) >= today) badgeText = 'Premier';
+    else if (job.isSponsored && new Date(job.sponsoredUntil) >= today) badgeText = 'Sponsored';
 
-      const matchSearch =
-        job.title?.toLowerCase().includes(searchTerm) ||
-        job.company?.toLowerCase().includes(searchTerm) ||
-        job.description?.toLowerCase().includes(searchTerm);
-
-      return matchCategory && matchSearch;
-    });
-
-    /* 🔥 PRIORITY SORT */
-    filtered.sort((a, b) => {
-      const priorityDiff = getPriority(b) - getPriority(a);
-      if (priorityDiff !== 0) return priorityDiff;
-
-      return new Date(a.deadline) - new Date(b.deadline);
-    });
-
-    jobList.innerHTML = "";
-
-    filtered.forEach((job, index) => {
-      const badgeText = getBadge(job);
-
-      const li = document.createElement("li");
-      li.className = "job-card";
-      if (index === selectedIndex) li.classList.add("selected");
-
-      li.innerHTML = `
-        <h3>${job.title}</h3>
-        <p><strong>${job.company || "Confidential"}</strong></p>
-        <p>${job.location}</p>
-        <p>Salary: ${job.salary || "N/A"}</p>
-        <p>Closing: ${job.deadline || "N/A"}</p>
-        ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ""}
-      `;
-
-      li.onclick = () => {
-        selectedIndex = index;
-        showPreview(job);
-        renderJobs();
-      };
-
-      jobList.appendChild(li);
-    });
-  }
-
-  /* ===============================
-     JOB PREVIEW
-  =============================== */
-
-  function showPreview(job) {
-    const badgeText = getBadge(job);
-
-    jobPreview.innerHTML = `
-      <h2>${job.title}</h2>
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ""}
-      <p><strong>Company:</strong> ${job.company || "Confidential"}</p>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p><strong>Job Type:</strong> ${job.jobType || "N/A"}</p>
-      <p><strong>Salary:</strong> ${job.salary || "N/A"}</p>
-      <p><strong>Description:</strong></p>
-      <p>${job.description}</p>
-      <a href="${job.applyLink}" target="_blank" class="apply-btn">
-        Apply Now
-      </a>
+    li.innerHTML = `
+      <h3>${job.title}</h3>
+      <p>${job.company}</p>
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
     `;
-  }
 
-  /* ===============================
-     EVENTS
-  =============================== */
+    li.onclick = () => {
+      selectedIndex = index;
+      showPreview(job);
+      renderJobs();
+    };
 
-  jobSearch.addEventListener("input", renderJobs);
-  categoryFilter.addEventListener("change", renderJobs);
+    jobList.appendChild(li);
+  });
+}
 
-  fetchJobs();
+function showPreview(job) {
+  const applyButton = window.currentUser
+    ? `<a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>`
+    : `<a class="apply-btn" href="login.html">Login to Apply</a>`;
+
+  jobPreview.innerHTML = `
+    <div class="fade-in">
+      <h2>${job.title}</h2>
+      <p>${job.company}</p>
+      <p>${job.location}</p>
+      <p>${job.description}</p>
+      ${applyButton}
+    </div>
+  `;
+}
+
+fetchJobs();
 </script>
 
 </body>
 </html>
+
+
 
 
 
