@@ -19,6 +19,23 @@
   margin-left: 6px;
   font-weight: 600;
 }
+
+/* ===============================
+   PREMIER VISUAL HIGHLIGHT
+================================ */
+
+.job-card.premier {
+  border: 2px solid #facc15;
+  background: linear-gradient(180deg, #fffbea, #ffffff);
+  box-shadow: 0 0 0 rgba(250, 204, 21, 0);
+  transform: scale(1);
+  transition: all 0.25s ease;
+}
+
+.job-card.premier:hover {
+  box-shadow: 0 10px 30px rgba(250, 204, 21, 0.35);
+  transform: scale(1.02);
+}
 </style>
 </head>
 
@@ -122,7 +139,7 @@
 
 <script>
 /* ===============================
-   LISTING TIER HELPERS (FIXED)
+   LISTING TIER HELPERS
 ================================ */
 
 function isPromotionActive(job) {
@@ -143,7 +160,7 @@ function getBadge(job) {
 }
 
 /* ===============================
-   RECENT JOBS (LOGIC PRESERVED)
+   RECENT JOBS (LOGIC UNCHANGED)
 ================================ */
 
 const homeJobList = document.getElementById('homeJobList');
@@ -163,7 +180,6 @@ async function renderRecentJobs() {
 
   statJobs.innerText = jobs.length + '+';
 
-  // 🔥 PRIORITY FIRST, THEN RECENT
   jobs.sort((a, b) => {
     const tierDiff = getPriority(b) - getPriority(a);
     if (tierDiff !== 0) return tierDiff;
@@ -179,7 +195,8 @@ async function renderRecentJobs() {
     const badge = getBadge(job);
 
     const card = document.createElement('div');
-    card.className = 'job-card';
+    card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
+
     card.innerHTML = `
       <h3>
         ${job.title}
@@ -194,6 +211,7 @@ async function renderRecentJobs() {
       </p>
       <a href="jobs.html" class="apply-link">View & Apply</a>
     `;
+
     homeJobList.appendChild(card);
   });
 }
@@ -221,6 +239,8 @@ down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smoot
 
 </body>
 </html>
+
+
 
 
 
