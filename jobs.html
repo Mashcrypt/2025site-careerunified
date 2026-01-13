@@ -14,7 +14,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background: #f5f5f7;
   color: #111827;
-  overflow-x: hidden; /* prevent horizontal scroll */
+  overflow-x: hidden;
 }
 
 /* =============================== */
@@ -24,7 +24,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100vw;          /* full viewport width */
+  width: 100vw;
   box-sizing: border-box;
   background: #1e3a8a;
 }
@@ -49,15 +49,13 @@ body {
 }
 
 /* =============================== */
-/* HEADER FULL WIDTH WITH GRADIENT */
+/* HEADER */
 header {
   text-align: center;
   padding: 70px 15px 55px;
   background: linear-gradient(90deg, #1e3a8a, #2563eb);
   color: #fff;
-  margin: 0;            /* remove bottom margin */
-  width: 100vw;         /* full viewport width */
-  border-radius: 0;     /* remove rounding on edges */
+  width: 100vw;
   box-sizing: border-box;
 }
 
@@ -65,13 +63,11 @@ header h1 {
   margin: 0;
   font-size: 3rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
 }
 
 header p {
   margin-top: 10px;
   font-size: 1.2rem;
-  font-weight: 500;
   color: #e5e7eb;
 }
 
@@ -84,6 +80,7 @@ header p {
   gap: 20px;
 }
 .jobs-left { flex: 1; }
+
 .jobs-preview {
   flex: 1;
   background: #fff;
@@ -92,6 +89,7 @@ header p {
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   min-height: 420px;
 }
+
 .job-card {
   background: #fff;
   border-radius: 10px;
@@ -99,44 +97,64 @@ header p {
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: 0.25s ease;
+  position: relative;
 }
+
 .job-card:hover {
   background-color: #d0e7ff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
-.job-card.selected { border-left: 4px solid #facc15; }
-.job-card h3 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #1e3a8a; }
-.job-card .company, .job-card .meta, .job-card .salary { font-size: 13px; color: #111827; margin: 2px 0; }
+
+.job-card.selected {
+  border-left: 4px solid #facc15;
+}
+
+.job-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 2px 8px;
+  background: #facc15;
+  color: #1e3a8a;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
 .jobs-preview h2 { color:#1e3a8a; }
-.jobs-preview p { margin: 6px 0; }
 
 /* Search Filter */
-.search-filter-container { display: flex; gap: 10px; margin-bottom: 15px; }
-.search-filter-container input,
-.search-filter-container select,
-.search-filter-container button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-.search-filter-container button { background: #1e3a8a; color: white; font-weight: 600; cursor: pointer; border: none; }
-.search-filter-container button:hover { background: #162c6f; }
+.search-filter-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
 
 /* Fade Animation */
-.fade-in { animation: fadeIn 0.35s ease; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.fade-in {
+  animation: fadeIn 0.35s ease;
+}
 
-/* Apply button */
-.apply-btn { display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; }
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(8px); }
+  to { opacity:1; transform: translateY(0); }
+}
 
-/* Scroll Buttons */
-.scroll-btn { position: fixed; right: 20px; padding: 10px 14px; border-radius: 50%; border: none; background: #1e3a8a; color: white; cursor: pointer; display: none; z-index: 999; }
-#scrollUp { bottom: 80px; }
-#scrollDown { bottom: 30px; }
-
-@media (max-width: 900px) { .jobs-container { flex-direction: column; } }
+.apply-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #16a34a;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+}
 </style>
 </head>
+
 <body>
 
-<!-- NAVIGATION -->
 <nav class="main-nav">
   <a href="index.html" class="logo">Career Unified</a>
   <div class="nav-links">
@@ -147,13 +165,11 @@ header p {
   </div>
 </nav>
 
-<!-- HEADER -->
 <header>
   <h1>Available Jobs</h1>
   <p>Find your next opportunity</p>
 </header>
 
-<!-- MAIN JOBS CONTAINER -->
 <main class="jobs-container">
   <div class="jobs-left">
     <div class="search-filter-container">
@@ -168,30 +184,18 @@ header p {
     </div>
     <ul class="jobs-list" id="jobList"></ul>
   </div>
+
   <div class="jobs-preview" id="jobPreview">
     <p>Select a job to view details</p>
   </div>
 </main>
 
-<!-- FOOTER -->
 <footer class="main-footer">
-  <div class="footer-links">
-    <a href="about-us.html">About Us</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms & Conditions</a>
-    <a href="contact-us.html">Contact Us</a>
-  </div>
   <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
 
-<!-- SCROLL BUTTONS -->
-<button id="scrollUp" class="scroll-btn">↑</button>
-<button id="scrollDown" class="scroll-btn">↓</button>
-
-<!-- SANITY CLIENT -->
 <script src="js/sanityClient.js"></script>
 
-<!-- JOBS LOGIC -->
 <script>
 const jobList = document.getElementById('jobList');
 const jobPreview = document.getElementById('jobPreview');
@@ -200,7 +204,7 @@ let jobs = [];
 let selectedIndex = null;
 
 async function fetchJobs() {
-  jobs = await window.sanityClient.fetch(`*[_type == "job"] | order(deadline asc){
+  jobs = await window.sanityClient.fetch(`*[_type == "job"]{
     _id,
     title,
     company,
@@ -211,58 +215,84 @@ async function fetchJobs() {
     posted,
     deadline,
     category,
-    jobType
+    jobType,
+    listingTier,
+    sponsoredUntil,
+    badge
   }`);
   renderJobs();
+}
+
+function getPriority(job) {
+  const today = new Date();
+  if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
+    if (new Date(job.sponsoredUntil) < today) return 0;
+  }
+  if (job.listingTier === 'premier') return 2;
+  if (job.listingTier === 'sponsored') return 1;
+  return 0;
 }
 
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
   const category = document.getElementById('categoryFilter').value;
 
-  const filtered = jobs.filter(j => {
-    const matchCat = category === 'all' || j.category === category;
-    const matchSearch = j.title.toLowerCase().includes(searchTerm) ||
-                        j.company.toLowerCase().includes(searchTerm) ||
-                        j.description.toLowerCase().includes(searchTerm);
-    return matchCat && matchSearch;
-  }).sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+  const filtered = jobs
+    .filter(j => {
+      return (category === 'all' || j.category === category) &&
+        (j.title.toLowerCase().includes(searchTerm) ||
+         j.company.toLowerCase().includes(searchTerm) ||
+         j.description.toLowerCase().includes(searchTerm));
+    })
+    .sort((a,b) => {
+      const pDiff = getPriority(b) - getPriority(a);
+      if (pDiff !== 0) return pDiff;
+      return new Date(a.deadline) - new Date(b.deadline);
+    });
 
   jobList.innerHTML = '';
-  if (!filtered.length) {
-    jobList.innerHTML = '<li>No jobs found.</li>';
-    jobPreview.innerHTML = '<p>Select a job to view details</p>';
-    return;
-  }
 
   filtered.forEach((job, index) => {
     const li = document.createElement('li');
     li.className = 'job-card';
     if (index === selectedIndex) li.classList.add('selected');
+
+    let badgeText = job.badge ||
+      (job.listingTier === 'premier' ? 'Premier' :
+       job.listingTier === 'sponsored' ? 'Sponsored' : '');
+
     li.innerHTML = `
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
       <h3>${job.title}</h3>
-      <p class="company"><strong>Company:</strong> ${job.company || 'Confidential'}</p>
-      <p class="meta"><strong>Location:</strong> ${job.location}</p>
-      <p class="salary"><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
-      <p class="meta"><strong>Posted:</strong> ${job.posted || 'N/A'} • <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
+      <p class="company"><strong>Company:</strong> ${job.company}</p>
+      <p><strong>Location:</strong> ${job.location}</p>
+      <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
+      <p><strong>Closing:</strong> ${job.deadline}</p>
     `;
+
     li.onclick = () => {
       selectedIndex = index;
       showPreview(job);
       renderJobs();
     };
+
     jobList.appendChild(li);
   });
 }
 
 function showPreview(job) {
+  let badgeText = job.badge ||
+    (job.listingTier === 'premier' ? 'Premier' :
+     job.listingTier === 'sponsored' ? 'Sponsored' : '');
+
   jobPreview.innerHTML = `
     <div class="fade-in">
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
       <h2>${job.title}</h2>
-      <p class="company"><strong>Company:</strong> ${job.company}</p>
+      <p><strong>Company:</strong> ${job.company}</p>
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
-      <p><strong>Posted:</strong> ${job.posted || 'N/A'} | <strong>Closing:</strong> ${job.deadline || 'N/A'}</p>
+      <p><strong>Posted:</strong> ${job.posted} | <strong>Closing:</strong> ${job.deadline}</p>
       <div style="white-space:pre-line;margin-top:12px;">${job.description}</div>
       <a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>
     </div>
@@ -274,20 +304,12 @@ document.getElementById('categoryFilter').addEventListener('change', renderJobs)
 document.getElementById('sortBtn').addEventListener('click', renderJobs);
 
 fetchJobs();
-
-// ================= SCROLL BUTTONS =================
-const up = document.getElementById('scrollUp');
-const down = document.getElementById('scrollDown');
-
-window.addEventListener('scroll', () => {
-  up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
 </script>
 
 </body>
 </html>
+
+
 
 
 
