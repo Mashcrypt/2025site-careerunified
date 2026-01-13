@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CV Builder – Career Unified</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,296 +10,621 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-/* =========================================================
-   RESET & BASE
-========================================================= */
-* { box-sizing: border-box; }
-
-body {
+* { 
+  box-sizing: border-box; 
   margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: #f1f3f7;
-  color: #111827;
+  padding: 0;
 }
 
-/* =========================================================
-   NAV
-========================================================= */
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8f9fb;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+/* NAV */
 nav {
-  background: #1e3a8a;
-  padding: 14px 28px;
+  background: #fff;
+  padding: 16px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .nav-brand {
-  color: #fff;
+  color: #2563eb;
   font-weight: 800;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   text-decoration: none;
 }
 
 .nav-links a {
-  color: #fff;
-  margin-left: 22px;
-  font-weight: 600;
+  color: #4b5563;
+  margin-left: 32px;
+  font-weight: 500;
   text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: #2563eb;
 }
 
 .nav-links a.active {
-  border-bottom: 3px solid #facc15;
+  color: #2563eb;
+  font-weight: 600;
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 header {
-  background: linear-gradient(90deg,#1e3a8a,#2563eb);
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   color: #fff;
-  padding: 70px 16px 55px;
+  padding: 80px 40px 60px;
   text-align: center;
 }
 
 header h1 {
-  font-size: 3rem;
-  margin-bottom: 12px;
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+  font-weight: 800;
 }
 
 header p {
-  font-size: 1.1rem;
-  color: #e5e7eb;
+  font-size: 1.25rem;
+  color: #e0e7ff;
+  font-weight: 400;
 }
 
-/* =========================================================
-   MAIN
-========================================================= */
+/* MAIN */
 main {
   max-width: 1400px;
-  margin: 40px auto 80px;
-  padding: 0 18px;
+  margin: 0 auto;
+  padding: 60px 40px 100px;
 }
 
-/* =========================================================
-   TEMPLATE GALLERY
-========================================================= */
+/* TEMPLATE GALLERY */
+.templates {
+  margin-bottom: 80px;
+}
+
 .templates h2 {
-  color: #1e3a8a;
-  font-size: 2rem;
-  margin-bottom: 18px;
+  color: #111827;
+  font-size: 2.25rem;
+  margin-bottom: 32px;
+  font-weight: 700;
 }
 
-.template-row {
-  display: flex;
-  gap: 22px;
-  overflow-x: auto;
-  padding-bottom: 18px;
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 32px;
 }
 
 .template-card {
-  min-width: 280px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.08);
-  padding: 18px;
-}
-
-.template-preview {
-  height: 320px;
-  border-radius: 10px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  font-size: 0.7rem;
-}
-
-.template-preview .left {
-  width: 35%;
-  background: #f3f4f6;
-  padding: 12px;
-}
-
-.template-preview .right {
-  width: 65%;
-  padding: 12px;
-}
-
-.template-preview .name {
-  font-weight: 800;
-  font-size: 0.95rem;
-}
-
-.template-preview .role {
-  font-size: 0.7rem;
-  color: #374151;
-}
-
-.template-preview .section {
-  margin-top: 10px;
-}
-
-.template-preview .section h4 {
-  margin: 0 0 4px;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  color: #1e3a8a;
-}
-
-.template-preview.flex {
-  display: flex;
-}
-
-.template-card button {
-  margin-top: 14px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  font-weight: 700;
-  background: #1e3a8a;
-  color: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-/* =========================================================
-   BUILDER (HIDDEN INITIALLY)
-========================================================= */
+.template-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.template-preview {
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Template 1 - Modern Green */
+.template-1 {
+  display: flex;
+}
+
+.template-1 .t-left {
+  width: 38%;
+  background: #10b981;
+  color: #fff;
+  padding: 32px 24px;
+}
+
+.template-1 .t-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #d1d5db;
+  margin: 0 auto 20px;
+  overflow: hidden;
+}
+
+.template-1 .t-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.template-1 .t-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.template-1 .t-role {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.template-1 .t-section {
+  margin-bottom: 20px;
+}
+
+.template-1 .t-section h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.template-1 .t-section p {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.template-1 .t-right {
+  width: 62%;
+  padding: 32px 28px;
+  background: #fff;
+}
+
+.template-1 .t-right .t-section {
+  margin-bottom: 24px;
+}
+
+.template-1 .t-right .t-section h4 {
+  font-size: 0.85rem;
+  color: #111827;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.template-1 .t-right .t-section p {
+  font-size: 0.8rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* Template 2 - Clean Professional */
+.template-2 {
+  padding: 32px 28px;
+}
+
+.template-2 .t-header {
+  text-align: center;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.template-2 .t-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  margin: 0 auto 16px;
+}
+
+.template-2 .t-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.template-2 .t-role {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.template-2 .t-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.template-2 .t-section h4 {
+  font-size: 0.8rem;
+  color: #2563eb;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.template-2 .t-section p {
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Template 3 - Bold Blue */
+.template-3 {
+  display: flex;
+}
+
+.template-3 .t-left {
+  width: 35%;
+  background: #1e40af;
+  color: #fff;
+  padding: 32px 24px;
+}
+
+.template-3 .t-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  background: #3b82f6;
+  margin-bottom: 20px;
+}
+
+.template-3 .t-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.template-3 .t-role {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+
+.template-3 .t-section {
+  margin-bottom: 20px;
+}
+
+.template-3 .t-section h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.template-3 .t-section p {
+  font-size: 0.75rem;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+.template-3 .t-right {
+  width: 65%;
+  padding: 32px 28px;
+  background: #fff;
+}
+
+.template-3 .t-right .t-section h4 {
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.template-3 .t-right .t-section p {
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.template-card button {
+  width: 100%;
+  padding: 16px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.template-card button:hover {
+  background: #1e40af;
+}
+
+/* BUILDER */
 .builder {
   display: none;
-  margin-top: 50px;
-  gap: 26px;
+  gap: 40px;
+  margin-top: 60px;
 }
 
 .builder.active {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: 400px 1fr;
 }
 
-/* =========================================================
-   FORM
-========================================================= */
+/* FORM */
 .form-card {
   background: #fff;
-  padding: 26px;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.08);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  height: fit-content;
+  position: sticky;
+  top: 100px;
 }
 
 .form-card h3 {
-  margin-top: 0;
-  color: #1e3a8a;
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
 }
 
 .form-card input,
 .form-card textarea {
   width: 100%;
-  padding: 11px;
-  margin-bottom: 12px;
+  padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+  outline: none;
+  border-color: #2563eb;
 }
 
 .form-card textarea {
-  min-height: 80px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .form-card button {
-  padding: 11px 18px;
+  flex: 1;
+  padding: 14px;
   border-radius: 8px;
   border: none;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  margin-right: 10px;
+  transition: all 0.2s;
 }
 
-.btn-primary { background:#1e3a8a; color:#fff; }
-.btn-success { background:#16a34a; color:#fff; }
+.btn-primary { 
+  background: #2563eb; 
+  color: #fff; 
+}
 
-/* =========================================================
-   CV PREVIEW (REAL RESUME LAYOUT)
-========================================================= */
+.btn-primary:hover {
+  background: #1e40af;
+}
+
+.btn-success { 
+  background: #10b981; 
+  color: #fff; 
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+/* CV PREVIEW */
 .cv-wrapper {
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.08);
-  padding: 0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
 .cv {
   display: flex;
-  min-height: 950px;
+  min-height: 1000px;
 }
 
 .cv .sidebar {
-  width: 32%;
-  background: #f3f4f6;
-  padding: 28px;
+  width: 35%;
+  background: #10b981;
+  color: #fff;
+  padding: 48px 36px;
 }
 
-.cv .main {
-  width: 68%;
-  padding: 32px;
+.cv .sidebar h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  font-weight: 800;
 }
 
-.cv h1 {
-  margin: 0;
-  font-size: 2.2rem;
-}
-
-.cv .title {
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 20px;
+.cv .sidebar .title {
+  font-size: 1rem;
+  opacity: 0.95;
+  margin-bottom: 36px;
+  font-weight: 400;
 }
 
 .cv section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .cv section h3 {
   font-size: 0.85rem;
   text-transform: uppercase;
-  color: #1e3a8a;
-  margin-bottom: 8px;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  font-weight: 700;
 }
 
-.cv p {
+.cv .sidebar section h3 {
+  color: #fff;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  padding-bottom: 8px;
+}
+
+.cv .sidebar p {
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  opacity: 0.95;
 }
 
-/* =========================================================
-   RECRUITER MATCH
-========================================================= */
-.recruiter {
-  margin-top: 45px;
+.cv .main {
+  width: 65%;
+  padding: 48px 44px;
   background: #fff;
-  padding: 26px;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.08);
+}
+
+.cv .main section h3 {
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.cv .main p {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #4b5563;
+}
+
+/* RECRUITER MATCH */
+.recruiter {
+  margin-top: 80px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 48px;
+  border-radius: 16px;
+  text-align: center;
 }
 
 .recruiter h2 {
-  color: #1e3a8a;
+  color: #111827;
+  font-size: 2rem;
+  margin-bottom: 16px;
+  font-weight: 700;
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
+.recruiter p {
+  color: #4b5563;
+  font-size: 1.1rem;
+  margin-bottom: 28px;
+}
+
+.recruiter input[type="file"] {
+  display: none;
+}
+
+.recruiter label {
+  display: inline-block;
+  padding: 16px 32px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.recruiter label:hover {
+  background: #1e40af;
+}
+
+/* FOOTER */
 footer {
-  background: #1e3a8a;
-  padding: 26px 0;
+  background: #111827;
+  padding: 40px;
   text-align: center;
 }
 
 footer a {
-  color: #facc15;
-  margin: 0 14px;
+  color: #60a5fa;
+  margin: 0 16px;
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+footer a:hover {
+  color: #3b82f6;
 }
 
 footer p {
-  color: #fff;
+  color: #9ca3af;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .builder.active {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-card {
+    position: relative;
+    top: 0;
+  }
+  
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2.5rem;
+  }
+  
+  nav {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .nav-links a {
+    margin: 0 12px;
+  }
+  
+  .cv {
+    flex-direction: column;
+  }
+  
+  .cv .sidebar,
+  .cv .main {
+    width: 100%;
+  }
 }
 </style>
 </head>
@@ -317,141 +643,248 @@ footer p {
 
 <header>
   <h1>Professional CV Builder</h1>
-  <p>Recruiter-approved templates used by real professionals</p>
+  <p>Create a stunning resume in minutes with our professional templates</p>
 </header>
 
 <main>
 
 <section class="templates">
-<h2>Select a Resume Template</h2>
+  <h2>Choose Your Template</h2>
+  
+  <div class="template-grid">
+    
+    <div class="template-card" onclick="activateBuilder()">
+      <div class="template-preview template-1">
+        <div class="t-left">
+          <div class="t-photo"></div>
+          <div class="t-name">Herman Walton</div>
+          <div class="t-role">Student</div>
+          <div class="t-section">
+            <h4>Skills</h4>
+            <p>Communication<br>Microsoft Office<br>Team Leadership<br>Problem Solving</p>
+          </div>
+          <div class="t-section">
+            <h4>Languages</h4>
+            <p>English<br>Spanish</p>
+          </div>
+        </div>
+        <div class="t-right">
+          <div class="t-section">
+            <h4>Profile</h4>
+            <p>Motivated student seeking internship opportunities to apply academic knowledge in real-world settings.</p>
+          </div>
+          <div class="t-section">
+            <h4>Experience</h4>
+            <p><strong>Sales Associate</strong><br>Big Apple Bookstore, New York<br>Sept 2023 - Present</p>
+          </div>
+          <div class="t-section">
+            <h4>Education</h4>
+            <p><strong>Bachelor of Communications</strong><br>New York University<br>2021 - 2024</p>
+          </div>
+        </div>
+      </div>
+      <button>Use This Template</button>
+    </div>
 
-<div class="template-row">
+    <div class="template-card" onclick="activateBuilder()">
+      <div class="template-preview template-2">
+        <div class="t-header">
+          <div class="t-photo"></div>
+          <div class="t-name">Marion Diaz</div>
+          <div class="t-role">Legal Administrative Assistant</div>
+        </div>
+        <div class="t-content">
+          <div>
+            <div class="t-section">
+              <h4>Profile</h4>
+              <p>Highly motivated legal professional with dedication to supporting the success of a law office.</p>
+            </div>
+            <div class="t-section">
+              <h4>Skills</h4>
+              <p>Time Management<br>Legal Documentation<br>Client Relations<br>Case Management</p>
+            </div>
+          </div>
+          <div>
+            <div class="t-section">
+              <h4>Employment</h4>
+              <p><strong>Legal Admin Assistant</strong><br>Ellis & Powers Attorneys<br>New York, NY<br>Mar 2022 - Present</p>
+            </div>
+            <div class="t-section">
+              <h4>Education</h4>
+              <p><strong>Paralegal Studies</strong><br>Boston University<br>Jun 2021 - Dec 2022</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button>Use This Template</button>
+    </div>
 
-<div class="template-card">
-<div class="template-preview flex">
-<div class="left">
-<div class="name">Herman Walton</div>
-<div class="role">Student</div>
-<div class="section"><h4>Skills</h4><p>Communication<br>Office Tools</p></div>
-</div>
-<div class="right">
-<div class="section"><h4>Profile</h4><p>Motivated student seeking internship.</p></div>
-<div class="section"><h4>Experience</h4><p>Sales Associate</p></div>
-</div>
-</div>
-<button onclick="activateBuilder()">Use this template</button>
-</div>
+    <div class="template-card" onclick="activateBuilder()">
+      <div class="template-preview template-3">
+        <div class="t-left">
+          <div class="t-photo"></div>
+          <div class="t-name">Dr. Emmit Jackson</div>
+          <div class="t-role">Doctor</div>
+          <div class="t-section">
+            <h4>Skills</h4>
+            <p>Strong Communication<br>Best Medicine Practice<br>Patient Management<br>Quality Assurance</p>
+          </div>
+          <div class="t-section">
+            <h4>Languages</h4>
+            <p>English<br>Spanish</p>
+          </div>
+        </div>
+        <div class="t-right">
+          <div class="t-section">
+            <h4>Profile</h4>
+            <p>Passionate physician with extensive experience in internal medicine and hospital settings. Adept at promptly diagnosing and engineering for the best patient treatment.</p>
+          </div>
+          <div class="t-section">
+            <h4>Employment History</h4>
+            <p><strong>Physician at Internal Medicine</strong><br>Mount Sinai Medical Group, New York<br>May 2013 - Sep 2019</p>
+          </div>
+          <div class="t-section">
+            <h4>Education</h4>
+            <p><strong>Doctor of Medicine</strong><br>New York University<br>Aug 2005 - May 2006</p>
+          </div>
+        </div>
+      </div>
+      <button>Use This Template</button>
+    </div>
 
-<div class="template-card">
-<div class="template-preview flex">
-<div class="left">
-<div class="name">Marion Diaz</div>
-<div class="role">Legal Assistant</div>
-</div>
-<div class="right">
-<div class="section"><h4>Employment</h4><p>Legal Admin – NYC</p></div>
-</div>
-</div>
-<button onclick="activateBuilder()">Use this template</button>
-</div>
-
-<div class="template-card">
-<div class="template-preview flex">
-<div class="left">
-<div class="name">Dr. Emmit Jackson</div>
-<div class="role">Doctor</div>
-</div>
-<div class="right">
-<div class="section"><h4>Profile</h4><p>Internal medicine specialist.</p></div>
-</div>
-</div>
-<button onclick="activateBuilder()">Use this template</button>
-</div>
-
-</div>
+  </div>
 </section>
 
 <div id="builder" class="builder">
 
-<div class="form-card">
-<h3>Edit Your CV</h3>
-<input id="name" placeholder="Full Name">
-<input id="title" placeholder="Professional Title">
-<textarea id="profile" placeholder="Profile Summary"></textarea>
-<textarea id="education" placeholder="Education"></textarea>
-<textarea id="experience" placeholder="Employment History"></textarea>
-<textarea id="skills" placeholder="Skills"></textarea>
-<button class="btn-primary" onclick="updateCV()">Update Preview</button>
-<button class="btn-success" onclick="downloadPDF()">Download PDF</button>
-</div>
+  <div class="form-card">
+    <h3>Edit Your CV</h3>
+    
+    <div class="form-group">
+      <label>Full Name</label>
+      <input id="name" placeholder="John Smith">
+    </div>
+    
+    <div class="form-group">
+      <label>Professional Title</label>
+      <input id="title" placeholder="Software Developer">
+    </div>
+    
+    <div class="form-group">
+      <label>Profile Summary</label>
+      <textarea id="profile" placeholder="Write a brief summary about yourself..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Education</label>
+      <textarea id="education" placeholder="Your educational background..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Employment History</label>
+      <textarea id="experience" placeholder="Your work experience..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Skills</label>
+      <textarea id="skills" placeholder="List your key skills..."></textarea>
+    </div>
+    
+    <div class="form-actions">
+      <button class="btn-primary" onclick="updateCV()">Update Preview</button>
+      <button class="btn-success" onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
 
-<div class="cv-wrapper">
-<div id="cvPreview" class="cv">
-<div class="sidebar">
-<h1 id="cvName">Your Name</h1>
-<div class="title" id="cvTitle">Professional Title</div>
-<section>
-<h3>Skills</h3>
-<p id="cvSkills">Your skills</p>
-</section>
-</div>
-<div class="main">
-<section>
-<h3>Profile</h3>
-<p id="cvProfile">Profile summary</p>
-</section>
-<section>
-<h3>Employment History</h3>
-<p id="cvExperience">Experience</p>
-</section>
-<section>
-<h3>Education</h3>
-<p id="cvEducation">Education</p>
-</section>
-</div>
-</div>
-</div>
+  <div class="cv-wrapper">
+    <div id="cvPreview" class="cv">
+      <div class="sidebar">
+        <h1 id="cvName">Your Name</h1>
+        <div class="title" id="cvTitle">Professional Title</div>
+        <section>
+          <h3>Skills</h3>
+          <p id="cvSkills">Your skills will appear here</p>
+        </section>
+      </div>
+      <div class="main">
+        <section>
+          <h3>Profile</h3>
+          <p id="cvProfile">Your profile summary will appear here</p>
+        </section>
+        <section>
+          <h3>Employment History</h3>
+          <p id="cvExperience">Your work experience will appear here</p>
+        </section>
+        <section>
+          <h3>Education</h3>
+          <p id="cvEducation">Your education will appear here</p>
+        </section>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <section class="recruiter">
-<h2>Recruiter Match</h2>
-<p>Upload your CV to be discovered by verified employers.</p>
-<input type="file">
+  <h2>Get Discovered by Top Employers</h2>
+  <p>Upload your CV to be matched with verified recruiters looking for talent like you</p>
+  <input type="file" id="cvUpload" accept=".pdf,.doc,.docx">
+  <label for="cvUpload">Upload Your CV</label>
 </section>
 
 </main>
 
 <footer>
-<a href="about-us.html">About</a>
-<a href="privacy.html">Privacy</a>
-<a href="terms.html">Terms</a>
-<a href="contact-us.html">Contact</a>
-<p>© 2026 Career Unified</p>
+  <div>
+    <a href="about-us.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact-us.html">Contact</a>
+  </div>
+  <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
 
 <script>
-function activateBuilder(){
-  document.getElementById('builder').classList.add('active');
-  window.scrollTo({top: document.getElementById('builder').offsetTop - 40, behavior:'smooth'});
+function activateBuilder() {
+  const builder = document.getElementById('builder');
+  builder.classList.add('active');
+  setTimeout(() => {
+    builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
-function updateCV(){
-  cvName.textContent = name.value || 'Your Name';
-  cvTitle.textContent = title.value || 'Professional Title';
-  cvProfile.textContent = profile.value;
-  cvEducation.textContent = education.value;
-  cvExperience.textContent = experience.value;
-  cvSkills.textContent = skills.value;
+function updateCV() {
+  const nameVal = document.getElementById('name').value;
+  const titleVal = document.getElementById('title').value;
+  const profileVal = document.getElementById('profile').value;
+  const eduVal = document.getElementById('education').value;
+  const expVal = document.getElementById('experience').value;
+  const skillsVal = document.getElementById('skills').value;
+  
+  document.getElementById('cvName').textContent = nameVal || 'Your Name';
+  document.getElementById('cvTitle').textContent = titleVal || 'Professional Title';
+  document.getElementById('cvProfile').textContent = profileVal || 'Your profile summary will appear here';
+  document.getElementById('cvEducation').textContent = eduVal || 'Your education will appear here';
+  document.getElementById('cvExperience').textContent = expVal || 'Your work experience will appear here';
+  document.getElementById('cvSkills').textContent = skillsVal || 'Your skills will appear here';
 }
 
-function downloadPDF(){
-  html2pdf().from(document.getElementById('cvPreview')).save('My_CV.pdf');
+function downloadPDF() {
+  const element = document.getElementById('cvPreview');
+  const opt = {
+    margin: 0,
+    filename: 'My_Professional_CV.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
 }
 </script>
 
 </body>
 </html>
+
 
 
 
