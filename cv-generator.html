@@ -1365,100 +1365,139 @@ footer p {
 </footer>
 
 <script>
+/* ===============================
+   CAROUSEL LOGIC (ARROWS + TOUCH)
+   SAFE DROP-IN FIX
+================================ */
+
 let currentSlide = 0;
 let selectedTemplate = null;
-const templates = document.querySelectorAll('.template-card');
-const totalTemplates = templates.length;
-const track = document.getElementById('carouselTrack');
 
+const track = document.getElementById("carouselTrack");
+const cards = document.querySelectorAll(".template-card");
+
+let cardWidth = 0;
+let visibleCards = 3;
+
+/* ---------- CALCULATE LAYOUT ---------- */
+function calculateCarousel() {
+  if (!cards.length) return;
+
+  cardWidth = cards[0].offsetWidth + 32; // card width + gap
+
+  if (window.innerWidth <= 768) {
+    visibleCards = 1;
+  } else if (window.innerWidth <= 1024) {
+    visibleCards = 2;
+  } else {
+    visibleCards = 3;
+  }
+
+  updateCarousel();
+}
+
+/* ---------- UPDATE POSITION ---------- */
+function updateCarousel() {
+  const maxSlide = cards.length - visibleCards;
+  if (currentSlide < 0) currentSlide = 0;
+  if (currentSlide > maxSlide) currentSlide = maxSlide;
+
+  track.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
+}
+
+/* ---------- ARROW CONTROLS ---------- */
 function slideCarousel(direction) {
-  const cardsToShow = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
-  const maxSlide = totalTemplates - cardsToShow;
-  
   currentSlide += direction;
-  
-  if (currentSlide < 0) currentSlide = 
-              <div class="t-section">
-                <h4>Professional Profile</h4>
-                <p>Results-driven Marketing Manager with 8+ years of experience developing and executing successful digital marketing campaigns. Proven track record of increasing brand awareness and driving revenue growth through innovative strategies.</p>
-              </div>
-              <div class="t-section">
-                <h4>Work Experience</h4>
-                <p><strong>Senior Marketing Manager</strong><br>Tech Solutions Inc., New York, NY<br>Jan 2020 - Present<br>• Led team of 12 marketing professionals<br>• Increased organic traffic by 250% in 2 years<br>• Managed $2M annual marketing budget</p>
-                <p style="margin-top:12px;"><strong>Marketing Coordinator</strong><br>Digital Agency Co., Boston, MA<br>Jun 2016 - Dec 2019<br>• Developed content strategies for 20+ clients<br>• Improved client retention rate by 35%</p>
-              </div>
-              <div class="t-section">
-                <h4>Education</h4>
-                <p><strong>Master of Business Administration</strong><br>Harvard Business School<br>2014 - 2016</p>
-                <p style="margin-top:8px;"><strong>Bachelor of Marketing</strong><br>Boston University<br>2010 - 2014</p>
-              </div>
-            </div>
-          </div>
-          <button>Select Template</button>
-        </div>
+  updateCarousel();
+}
 
-        <!-- Template 2 -->
-        <div class="template-card" data-template="2" data-style="style-2" onclick="selectTemplate(this)">
-          <div class="template-preview template-2">
-            <div class="t-header">
-              <div class="t-photo"></div>
-              <div class="t-name">Michael Chen</div>
-              <div class="t-role">Software Engineer</div>
-              <p style="font-size:0.75rem;color:#6b7280;margin-top:8px;">michael.chen@email.com | (555) 987-6543 | San Francisco, CA</p>
-            </div>
-            <div class="t-content">
-              <div>
-                <div class="t-section">
-                  <h4>Profile</h4>
-                  <p>Innovative software engineer with 6 years of experience building scalable web applications. Specialized in full-stack development with expertise in React, Node.js, and cloud technologies.</p>
-                </div>
-                <div class="t-section">
-                  <h4>Technical Skills</h4>
-                  <p>JavaScript, TypeScript, React, Node.js, Python, AWS, Docker, PostgreSQL, MongoDB, Git, CI/CD</p>
-                </div>
-                <div class="t-section">
-                  <h4>Certifications</h4>
-                  <p>• AWS Certified Developer<br>• Google Cloud Professional</p>
-                </div>
-              </div>
-              <div>
-                <div class="t-section">
-                  <h4>Experience</h4>
-                  <p><strong>Senior Software Engineer</strong><br>CloudTech Inc., San Francisco<br>2021 - Present<br>Led development of microservices architecture serving 5M+ users</p>
-                  <p style="margin-top:10px;"><strong>Software Developer</strong><br>StartupX, Seattle, WA<br>2018 - 2021<br>Built core product features using React and Node.js</p>
-                </div>
-                <div class="t-section">
-                  <h4>Education</h4>
-                  <p><strong>BS Computer Science</strong><br>Stanford University<br>2014 - 2018<br>GPA: 3.8/4.0</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button>Select Template</button>
-        </div>
+/* ---------- TEMPLATE SELECT ---------- */
+function selectTemplate(card) {
+  cards.forEach(c => c.classList.remove("selected"));
+  card.classList.add("selected");
 
-        <!-- Template 3 -->
-        <div class="template-card" data-template="3" data-style="style-3" onclick="selectTemplate(this)">
-          <div class="template-preview template-3">
-            <div class="t-left">
-              <div class="t-photo"></div>
-              <div class="t-name">Dr. Emily Rodriguez</div>
-              <div class="t-role">Physician</div>
-              <div class="t-contact" style="margin-top:20px;">
-                <p>📧 e.rodriguez@hospital.com</p>
-                <p>📱 (555) 234-5678</p>
-                <p>📍 Chicago, IL</p>
-              </div>
-              <div class="t-section">
-                <h4>Specializations</h4>
-                <p>• Internal Medicine<br>• Cardiology<br>• Patient Care<br>• Diagnostic Procedures<br>• Medical Research</p>
-              </div>
-              <div class="t-section">
-                <h4>Certifications</h4>
-                <p>Board Certified - Internal Medicine<br>ACLS Certified<br>BLS Instructor</p>
-              </div>
-            </div>
-            <div class="t-right">
+  selectedTemplate = card.dataset.style;
+
+  document.getElementById("builder").classList.add("active");
+
+  const preview = document.getElementById("cvPreview");
+  preview.className = `cv ${selectedTemplate}`;
+
+  window.scrollTo({
+    top: document.getElementById("builder").offsetTop - 80,
+    behavior: "smooth"
+  });
+}
+
+/* ---------- TOUCH / SWIPE SUPPORT ---------- */
+let startX = 0;
+let endX = 0;
+
+track.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+track.addEventListener("touchmove", e => {
+  endX = e.touches[0].clientX;
+});
+
+track.addEventListener("touchend", () => {
+  const diff = startX - endX;
+
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      slideCarousel(1);  // swipe left
+    } else {
+      slideCarousel(-1); // swipe right
+    }
+  }
+
+  startX = 0;
+  endX = 0;
+});
+
+/* ---------- CV UPDATE ---------- */
+function updateCV() {
+  document.getElementById("cvName").innerText =
+    document.getElementById("name").value || "Your Name";
+
+  document.getElementById("cvTitle").innerText =
+    document.getElementById("title").value || "Professional Title";
+
+  document.getElementById("cvContact").innerText =
+    document.getElementById("contact").value;
+
+  document.getElementById("cvProfile").innerText =
+    document.getElementById("profile").value;
+
+  document.getElementById("cvEducation").innerText =
+    document.getElementById("education").value;
+
+  document.getElementById("cvExperience").innerText =
+    document.getElementById("experience").value;
+
+  document.getElementById("cvSkills").innerText =
+    document.getElementById("skills").value;
+}
+
+/* ---------- PDF DOWNLOAD ---------- */
+function downloadPDF() {
+  const element = document.getElementById("cvPreview");
+
+  html2pdf().set({
+    margin: 0,
+    filename: "CareerUnified_CV.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+  }).from(element).save();
+}
+
+/* ---------- INIT ---------- */
+window.addEventListener("resize", calculateCarousel);
+window.addEventListener("load", calculateCarousel);
+</script>
+
 
 
 
