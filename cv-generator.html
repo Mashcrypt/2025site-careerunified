@@ -34,55 +34,88 @@
         .carousel-container { position: relative; max-width: 1200px; margin: 0 auto; }
         .carousel-wrapper { overflow: hidden; padding: 20px 0; }
         .carousel-track { display: flex; transition: transform 0.5s ease; gap: 32px; }
+
         .template-card { min-width: 380px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s ease; cursor: pointer; border: 3px solid transparent; }
         .template-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
         .template-card.selected { border-color: #2563eb; box-shadow: 0 20px 40px rgba(37,99,235,0.3); }
+
+        /* Template Counter Badge */
+        .template-counter {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
         .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #2563eb; z-index: 10; transition: all 0.2s; }
         .carousel-btn:hover { background: #2563eb; color: #fff; }
         .carousel-btn.prev { left: -25px; }
         .carousel-btn.next { right: -25px; }
 
-        /* PREVIEW STYLES */
         .template-preview { height: 520px; position: relative; overflow: hidden; background: #fff; }
-        .template-card button { width: 100%; padding: 16px; background: #2563eb; color: #fff; border: none; font-weight: 600; font-size: 1rem; cursor: pointer; }
 
-        /* BUILDER LAYOUT */
+        /* Template Component Styles */
+        .template-1, .template-6, .template-11 { display: flex; }
+        .template-1 .t-left, .template-6 .t-left, .template-11 .t-left { width: 38%; background: #10b981; color: #fff; padding: 32px 24px; font-size: 0.75rem; }
+        .template-6 .t-left { background: #8b5cf6; }
+        .template-11 .t-left { background: #f59e0b; }
+        .t-photo { width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.3); margin: 0 auto 16px; }
+        .t-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; text-align: center; }
+        .t-role { font-size: 0.8rem; opacity: 0.9; text-align: center; margin-bottom: 20px; }
+        .t-contact { font-size: 0.7rem; margin-bottom: 20px; opacity: 0.9; }
+        .t-section { margin-bottom: 18px; }
+        .t-section h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
+        .t-section p { font-size: 0.7rem; line-height: 1.5; }
+        .template-1 .t-right, .template-6 .t-right, .template-11 .t-right { width: 62%; padding: 32px 24px; background: #fff; font-size: 0.75rem; }
+
+        /* Template 4, 9, 14 - Minimal */
+        .template-4, .template-9, .template-14 { padding: 40px 32px; }
+        .template-4 .t-header, .template-9 .t-header, .template-14 .t-header { margin-bottom: 28px; }
+        .template-4 .t-name, .template-9 .t-name, .template-14 .t-name { font-size: 1.8rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+        .template-4 .t-section h4, .template-9 .t-section h4, .template-14 .t-section h4 { font-size: 0.8rem; color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; margin-bottom: 10px; }
+
+        /* Template 5, 10, 15 - Creative */
+        .template-5, .template-10, .template-15 { position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0; }
+        .template-5 .t-overlay, .template-10 .t-overlay, .template-15 .t-overlay { background: rgba(255,255,255,0.95); margin: 20px; padding: 32px 28px; border-radius: 12px; height: calc(100% - 40px); font-size: 0.7rem; }
+        
+        .template-card button { width: 100%; padding: 16px; background: #2563eb; color: #fff; border: none; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+        .template-card button:hover { background: #1e40af; }
+
+        /* BUILDER */
         .builder { display: none; gap: 40px; margin-top: 60px; }
         .builder.active { display: grid; grid-template-columns: 400px 1fr; }
 
         /* FORM */
         .form-card { background: #fff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); height: fit-content; position: sticky; top: 100px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px; }
-        .form-card input, .form-card textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; }
-        .btn-primary { background: #2563eb; color: #fff; width: 100%; padding: 14px; border-radius: 8px; border: none; cursor: pointer; margin-top: 10px; font-weight: 600;}
-
-        /* CV OUTPUT STYLES */
-        #cvPreview { background: white; min-height: 800px; }
-        .cv { min-height: 1000px; display: flex; }
+        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 8px; }
+        .form-card input, .form-card textarea { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #d1d5db; font-family: 'Inter', sans-serif; }
         
-        /* Style 1 (Sidebar Green) */
-        .cv.style-1 .sidebar { width: 35%; background: #10b981; color: #fff; padding: 40px; }
-        .cv.style-1 .main { width: 65%; padding: 40px; }
+        /* CV PREVIEW */
+        .cv-wrapper { background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .cv.style-1 { display: flex; min-height: 1000px; }
+        .cv.style-1 .sidebar { width: 35%; background: #10b981; color: #fff; padding: 48px 36px; }
+        .cv.style-1 .main { width: 65%; padding: 48px 44px; background: #fff; }
+        .cv.style-2 { padding: 48px 44px; min-height: 1000px; }
 
-        /* Style 2 (Clean/Centered) */
-        .cv.style-2 { display: block; padding: 50px; }
-        .cv.style-2 h1 { text-align: center; color: #2563eb; }
-
-        /* Style 3 (Counter/Bold) */
-        .cv.style-3 .sidebar { width: 35%; background: #1e40af; color: #fff; padding: 40px; }
-        .cv.style-3 .main { width: 65%; padding: 40px; }
-
-        footer { background: #111827; padding: 40px; text-align: center; color: white; margin-top: 50px; }
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .builder.active { grid-template-columns: 1fr; }
+            .form-card { position: relative; top: 0; }
+        }
     </style>
 </head>
-
 <body>
 
 <nav>
     <a class="nav-brand" href="#">Career Unified</a>
     <div class="nav-links">
         <a href="#">Jobs</a>
+        <a href="#">Bursaries</a>
+        <a href="#">Varsity</a>
         <a href="#" class="active">CV Builder</a>
     </div>
 </nav>
@@ -98,26 +131,80 @@
         <div class="carousel-container">
             <button class="carousel-btn prev" onclick="slideCarousel(-1)">‹</button>
             <button class="carousel-btn next" onclick="slideCarousel(1)">›</button>
+            
             <div class="carousel-wrapper">
                 <div class="carousel-track" id="carouselTrack">
+                    
                     <div class="template-card" data-template="1" data-style="style-1" onclick="selectTemplate(this)">
-                        <div class="template-preview" style="background:#f0fdf4; display: flex; align-items: center; justify-content: center;">
-                            <div style="text-align: center;"><h3>Modern Green</h3><p>Side Profile</p></div>
+                        <div class="template-counter">Template 1 out of 15</div>
+                        <div class="template-preview template-1">
+                            <div class="t-left">
+                                <div class="t-photo"></div>
+                                <div class="t-name">Sarah Johnson</div>
+                                <div class="t-role">Marketing Manager</div>
+                                <div class="t-contact">
+                                    <p>📧 sarah.j@email.com</p>
+                                    <p>📱 +1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="t-right">
+                                <div class="t-section"><h4>Summary</h4><p>Professional summary here...</p></div>
+                            </div>
                         </div>
                         <button>Select Template</button>
                     </div>
-                    <div class="template-card" data-template="2" data-style="style-2" onclick="selectTemplate(this)">
-                        <div class="template-preview" style="background:#eff6ff; display: flex; align-items: center; justify-content: center;">
-                            <div style="text-align: center;"><h3>Clean Professional</h3><p>Centered Minimal</p></div>
+
+                    <div class="template-card" data-template="4" data-style="style-2" onclick="selectTemplate(this)">
+                        <div class="template-counter">Template 4 out of 15</div>
+                        <div class="template-preview template-4">
+                            <div class="t-header">
+                                <div class="t-name">James Anderson</div>
+                                <div class="t-role">Financial Analyst</div>
+                            </div>
+                            <div class="t-section"><h4>Summary</h4><p>Analytical expert...</p></div>
                         </div>
                         <button>Select Template</button>
                     </div>
-                    <div class="template-card" data-template="3" data-style="style-3" onclick="selectTemplate(this)">
-                        <div class="template-preview" style="background:#eef2ff; display: flex; align-items: center; justify-content: center;">
-                            <div style="text-align: center;"><h3>Counter Template</h3><p>Bold Blue Sidebar</p></div>
+
+                    <div class="template-card" data-template="5" data-style="style-2" onclick="selectTemplate(this)">
+                        <div class="template-counter">Template 5 out of 15</div>
+                        <div class="template-preview template-5">
+                            <div class="t-overlay">
+                                <div class="t-name">Isabella Martinez</div>
+                                <div class="t-role">Graphic Designer</div>
+                                <div class="t-section"><h4>About Me</h4><p>Creative lead...</p></div>
+                            </div>
                         </div>
                         <button>Select Template</button>
                     </div>
+
+                    <div class="template-card" data-template="6" data-style="style-1" onclick="selectTemplate(this)">
+                        <div class="template-counter">Template 6 out of 15</div>
+                        <div class="template-preview template-6">
+                            <div class="t-left">
+                                <div class="t-photo"></div>
+                                <div class="t-name">David Kim</div>
+                                <div class="t-role">Data Scientist</div>
+                            </div>
+                            <div class="t-right">
+                                <div class="t-section"><h4>Summary</h4><p>Expert in AI...</p></div>
+                            </div>
+                        </div>
+                        <button>Select Template</button>
+                    </div>
+
+                    <div class="template-card" data-template="7" data-style="style-2" onclick="selectTemplate(this)">
+                        <div class="template-counter">Template 7 out of 15</div>
+                        <div class="template-preview template-7">
+                            <div class="t-header">
+                                <div class="t-name">Sophia Williams</div>
+                                <div class="t-role">HR Manager</div>
+                            </div>
+                            <div class="t-section"><h4>Profile</h4><p>HR strategist...</p></div>
+                        </div>
+                        <button>Select Template</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -125,14 +212,14 @@
 
     <div class="builder">
         <div class="form-card">
-            <h3>Your Details</h3>
+            <h3>Edit Details</h3>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="fullName" placeholder="e.g. John Doe">
+                <input type="text" id="fullName" placeholder="John Doe">
             </div>
             <div class="form-group">
                 <label>Job Title</label>
-                <input type="text" id="jobTitle" placeholder="e.g. Software Engineer">
+                <input type="text" id="jobTitle" placeholder="Software Engineer">
             </div>
             <div class="form-group">
                 <label>Email</label>
@@ -143,139 +230,126 @@
                 <textarea id="summary"></textarea>
             </div>
             <div class="form-group">
-                <label>Skills</label>
-                <input type="text" id="skills" placeholder="Skill 1, Skill 2...">
+                <label>Experience</label>
+                <textarea id="experience"></textarea>
             </div>
-            <button class="btn-primary" onclick="downloadCV()">Download PDF</button>
+            <div class="form-actions">
+                <button class="btn-success" onclick="downloadCV()">Download PDF</button>
+            </div>
         </div>
 
-        <div class="cv-wrapper">
-            <div id="cvPreview">
-                <div style="padding: 40px; text-align: center; color: #9ca3af;">
-                    Select a template to start building
-                </div>
+        <div class="cv-wrapper" id="cvPreview">
             </div>
-        </div>
     </div>
 </main>
 
-<footer>
-    <p>&copy; 2026 Career Unified. All rights reserved.</p>
-</footer>
-
 <script>
-    /* --- Carousel Logic --- */
-    let currentSlideIndex = 0;
-    function slideCarousel(direction) {
-        const track = document.getElementById("carouselTrack");
-        const cards = document.querySelectorAll(".template-card");
-        const cardWidth = cards[0].offsetWidth + 32;
-        const maxIndex = cards.length - 1;
+/* ============================================================
+   CAROUSEL LOGIC
+   ============================================================ */
+let currentSlideIndex = 0;
 
-        currentSlideIndex += direction;
-        if (currentSlideIndex < 0) currentSlideIndex = 0;
-        if (currentSlideIndex > maxIndex) currentSlideIndex = maxIndex;
+function slideCarousel(direction) {
+    const track = document.getElementById("carouselTrack");
+    const wrapper = document.querySelector(".carousel-wrapper");
+    if (!track || !wrapper) return;
 
-        track.style.transform = `translateX(-${currentSlideIndex * cardWidth}px)`;
-    }
+    const cards = track.querySelectorAll(".template-card");
+    const gap = 32;
+    const cardWidth = cards[0].offsetWidth + gap;
+    const visibleCards = Math.floor(wrapper.offsetWidth / cardWidth);
+    const maxIndex = Math.max(0, cards.length - visibleCards);
 
-    /* --- CV Builder Logic --- */
-    let activeTemplate = null;
-    const cvState = {
-        name: "Your Name",
-        title: "Job Title",
-        email: "hello@reallygreatsite.com",
-        summary: "Professional summary goes here...",
-        skills: "Management, Marketing, Design"
-    };
+    currentSlideIndex += direction;
+    if (currentSlideIndex < 0) currentSlideIndex = 0;
+    if (currentSlideIndex > maxIndex) currentSlideIndex = maxIndex;
 
-    const templatePresets = {
-        1: { name: "Sarah Johnson", title: "Marketing Manager", skills: "SEO, SEM, Analytics" },
-        2: { name: "Michael Chen", title: "Software Engineer", skills: "Java, Python, React" },
-        3: { name: "Counter Template", title: "Executive", skills: "Leadership, Strategy" }
-    };
+    track.style.transform = `translateX(-${currentSlideIndex * cardWidth}px)`;
+}
 
-    window.selectTemplate = function(card) {
-        document.querySelectorAll(".template-card").forEach(c => c.classList.remove("selected"));
-        card.classList.add("selected");
-        
-        activeTemplate = card.dataset.style;
-        const preset = templatePresets[card.dataset.template];
-        
-        Object.assign(cvState, preset);
-        
-        document.querySelector(".builder").classList.add("active");
-        syncFormInputs();
-        renderCV();
-        
-        // Scroll to builder
-        window.scrollTo({ top: document.querySelector('.builder').offsetTop - 100, behavior: 'smooth' });
-    };
+/* ============================================================
+   CV BUILDER LOGIC
+   ============================================================ */
+let activeTemplate = null;
+const cvState = { name: "", title: "", email: "", summary: "", experience: "" };
 
-    function syncFormInputs() {
-        document.getElementById("fullName").value = cvState.name;
-        document.getElementById("jobTitle").value = cvState.title;
-        document.getElementById("email").value = cvState.email;
-        document.getElementById("summary").value = cvState.summary;
-        document.getElementById("skills").value = cvState.skills;
+const templatePresets = {
+    1: { name: "Sarah Johnson", title: "Marketing Manager", email: "sarah@j.com", summary: "Marketing leader...", experience: "Senior Manager at Tech" },
+    4: { name: "James Anderson", title: "Financial Analyst", email: "james@a.com", summary: "Detail oriented...", experience: "Analyst at GS" },
+    5: { name: "Isabella Martinez", title: "Graphic Designer", email: "isabella@m.com", summary: "Creative...", experience: "Lead at Agency" },
+    6: { name: "David Kim", title: "Data Scientist", email: "david@k.com", summary: "AI Expert...", experience: "Lead at AWS" },
+    7: { name: "Sophia Williams", title: "HR Manager", email: "sophia@w.com", summary: "HR strategy...", experience: "HR at Tech Inc" }
+};
 
-        const inputs = ["fullName", "jobTitle", "email", "summary", "skills"];
-        inputs.forEach(id => {
-            document.getElementById(id).oninput = (e) => {
-                const key = id === "fullName" ? "name" : id === "jobTitle" ? "title" : id;
-                cvState[key] = e.target.value;
-                renderCV();
-            };
-        });
-    }
+window.selectTemplate = function(card) {
+    document.querySelectorAll(".template-card").forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+    activeTemplate = card.dataset.style;
 
-    function renderCV() {
-        const preview = document.getElementById("cvPreview");
-        if (!activeTemplate) return;
+    const preset = templatePresets[card.dataset.template] || {};
+    Object.assign(cvState, preset);
 
-        preview.innerHTML = `
-            <div class="cv ${activeTemplate}">
+    document.querySelector(".builder").classList.add("active");
+    syncForm();
+    renderCV();
+    
+    // Auto scroll to builder
+    document.querySelector(".builder").scrollIntoView({ behavior: 'smooth' });
+};
+
+function syncForm() {
+    const ids = ["fullName", "jobTitle", "email", "summary", "experience"];
+    const keys = ["name", "title", "email", "summary", "experience"];
+
+    ids.forEach((id, index) => {
+        const el = document.getElementById(id);
+        const key = keys[index];
+        el.value = cvState[key] || "";
+        el.oninput = (e) => {
+            cvState[key] = e.target.value;
+            renderCV();
+        };
+    });
+}
+
+function renderCV() {
+    const preview = document.getElementById("cvPreview");
+    if (!preview || !activeTemplate) return;
+
+    preview.innerHTML = `
+        <div class="cv ${activeTemplate}">
+            ${activeTemplate === 'style-1' ? `
                 <div class="sidebar">
-                    <h1 style="font-size: 24px; margin-bottom: 10px;">${cvState.name}</h1>
-                    <p style="margin-bottom: 20px; font-weight: bold;">${cvState.title}</p>
-                    <div style="margin-top: 30px;">
-                        <h4 style="text-transform: uppercase; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); margin-bottom: 10px;">Contact</h4>
-                        <p style="font-size: 13px;">${cvState.email}</p>
-                    </div>
-                    <div style="margin-top: 30px;">
-                        <h4 style="text-transform: uppercase; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); margin-bottom: 10px;">Skills</h4>
-                        <p style="font-size: 13px;">${cvState.skills}</p>
-                    </div>
+                    <h1>${cvState.name}</h1>
+                    <div class="title">${cvState.title}</div>
+                    <section><h3>Contact</h3><p>${cvState.email}</p></section>
                 </div>
                 <div class="main">
-                    <section style="margin-bottom: 30px;">
-                        <h3 style="color: #1e40af; text-transform: uppercase; font-size: 14px; margin-bottom: 10px; border-bottom: 2px solid #eee;">Profile</h3>
-                        <p style="font-size: 14px; color: #4b5563;">${cvState.summary}</p>
-                    </section>
-                    <section>
-                        <h3 style="color: #1e40af; text-transform: uppercase; font-size: 14px; margin-bottom: 10px; border-bottom: 2px solid #eee;">Work Experience</h3>
-                        <p style="font-size: 14px; color: #4b5563;">Add your experience details in the form...</p>
-                    </section>
+                    <section><h3>Profile</h3><p>${cvState.summary}</p></section>
+                    <section><h3>Experience</h3><p>${cvState.experience}</p></section>
                 </div>
-            </div>
-        `;
-    }
+            ` : `
+                <div class="cv-header">
+                    <h1>${cvState.name}</h1>
+                    <div class="title">${cvState.title}</div>
+                    <p>${cvState.email}</p>
+                </div>
+                <section><h3>Summary</h3><p>${cvState.summary}</p></section>
+                <section><h3>Experience</h3><p>${cvState.experience}</p></section>
+            `}
+        </div>
+    `;
+}
 
-    window.downloadCV = function() {
-        const element = document.getElementById('cvPreview');
-        const opt = {
-            margin: 0,
-            filename: 'My_CV.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    };
+window.downloadCV = function() {
+    const preview = document.getElementById("cvPreview");
+    html2pdf().from(preview).save("CV_Export.pdf");
+};
 </script>
 
 </body>
 </html>
+
 
 
 
