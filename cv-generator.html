@@ -1352,6 +1352,99 @@ footer p {
   <label for="cvUpload">Upload Your CV</label>
 </section>
 
+<script>
+/* ===============================
+   GLOBAL STATE
+================================ */
+let selectedTemplate = null;
+let currentStyle = null;
+let currentIndex = 0;
+let startX = 0;
+
+/* ===============================
+   TEMPLATE SELECTION
+================================ */
+function selectTemplate(card) {
+  document.querySelectorAll('.template-card').forEach(c => {
+    c.classList.remove('selected');
+  });
+
+  card.classList.add('selected');
+  selectedTemplate = card.dataset.template;
+  currentStyle = card.dataset.style;
+
+  document.querySelector('.builder').classList.add('active');
+  renderCV();
+}
+
+/* ===============================
+   CV RENDERING
+================================ */
+function renderCV() {
+  const wrapper = document.getElementById('cvPreview');
+  if (!wrapper || !currentStyle) return;
+
+  wrapper.className = 'cv ' + currentStyle;
+}
+
+/* ===============================
+   PDF DOWNLOAD
+================================ */
+function downloadPDF() {
+  const element = document.getElementById('cvPreview');
+  if (!element) return;
+
+  html2pdf().set({
+    margin: 0,
+    filename: 'CareerUnified-CV.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(element).save();
+}
+
+/* ===============================
+   CAROUSEL LOGIC
+================================ */
+function slideCarousel(direction) {
+  const track = document.getElementById('carouselTrack');
+  const cards = document.querySelectorAll('.template-card');
+  const visible = 3;
+
+  currentIndex += direction;
+  currentIndex = Math.max(0, Math.min(currentIndex, cards.length - visible));
+
+  const offset = -(currentIndex * (cards[0].offsetWidth + 32));
+  track.style.transform = `translateX(${offset}px)`;
+}
+
+/* ===============================
+   TOUCH SUPPORT
+================================ */
+const track = document.getElementById('carouselTrack');
+
+if (track) {
+  track.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  track.addEventListener('touchend', e => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+
+    if (Math.abs(diff) > 50) {
+      slideCarousel(diff > 0 ? 1 : -1);
+    }
+  });
+}
+
+/* ===============================
+   DEBUG CONFIRMATION
+================================ */
+console.log('✅ CV Builder JS loaded successfully');
+</script>
+
+  
 </main>
 
 <footer>
@@ -1497,6 +1590,7 @@ function downloadPDF() {
 window.addEventListener("resize", calculateCarousel);
 window.addEventListener("load", calculateCarousel);
 </script>
+
 
 
 
