@@ -825,7 +825,103 @@ footer p {
 /* ============================================================
    CV BUILDER ENGINE – ADDITIVE EXTENSION (SAFE)
    ============================================================ */
+<script>
+/* ============================================================
+   CAROUSEL + TOUCH SUPPORT (SAFE ADDITIVE FIX)
+   ============================================================ */
 
+let currentSlideIndex = 0;
+let startX = 0;
+let isDragging = false;
+
+/* ------------------------------------------------------------
+   CORE SLIDE FUNCTION (USED BY BUTTONS + TOUCH)
+------------------------------------------------------------ */
+function slideCarousel(direction) {
+  const track = document.getElementById("carouselTrack");
+  const wrapper = document.querySelector(".carousel-wrapper");
+  if (!track || !wrapper) return;
+
+  const cards = track.querySelectorAll(".template-card");
+  if (!cards.length) return;
+
+  const gap = 32;
+  const cardWidth = cards[0].offsetWidth + gap;
+  const visibleCards = Math.floor(wrapper.offsetWidth / cardWidth);
+  const maxIndex = Math.max(0, cards.length - visibleCards);
+
+  currentSlideIndex += direction;
+
+  if (currentSlideIndex < 0) currentSlideIndex = 0;
+  if (currentSlideIndex > maxIndex) currentSlideIndex = maxIndex;
+
+  track.style.transform =
+    `translateX(-${currentSlideIndex * cardWidth}px)`;
+}
+
+/* ------------------------------------------------------------
+   TOUCH SUPPORT (MOBILE / TABLET)
+------------------------------------------------------------ */
+(function enableTouchCarousel() {
+  const track = document.getElementById("carouselTrack");
+  if (!track) return;
+
+  track.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+  }, { passive: true });
+
+  track.addEventListener("touchmove", e => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const delta = startX - currentX;
+
+    if (Math.abs(delta) > 60) {
+      slideCarousel(delta > 0 ? 1 : -1);
+      isDragging = false;
+    }
+  }, { passive: true });
+
+  track.addEventListener("touchend", () => {
+    isDragging = false;
+  });
+})();
+
+/* ------------------------------------------------------------
+   OPTIONAL: MOUSE DRAG SUPPORT (DESKTOP)
+------------------------------------------------------------ */
+(function enableMouseDrag() {
+  const track = document.getElementById("carouselTrack");
+  if (!track) return;
+
+  let mouseStartX = 0;
+  let dragging = false;
+
+  track.addEventListener("mousedown", e => {
+    dragging = true;
+    mouseStartX = e.clientX;
+    track.style.cursor = "grabbing";
+  });
+
+  window.addEventListener("mouseup", () => {
+    dragging = false;
+    track.style.cursor = "grab";
+  });
+
+  track.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const delta = mouseStartX - e.clientX;
+
+    if (Math.abs(delta) > 80) {
+      slideCarousel(delta > 0 ? 1 : -1);
+      dragging = false;
+    }
+  });
+})();
+</script>
+
+
+    
 /* ------------------------------
    GLOBAL STATE (NON-INTRUSIVE)
 -------------------------------- */
@@ -1636,6 +1732,7 @@ function slideCarousel(direction) {
               </div>
             </div>
             <div class="t-right">
+
 
 
 
