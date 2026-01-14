@@ -1390,18 +1390,54 @@ function renderCV() {
 /* ===============================
    PDF DOWNLOAD
 ================================ */
+<script>
 function downloadPDF() {
-  const element = document.getElementById('cvPreview');
-  if (!element) return;
+  const original = document.getElementById('cvPreview');
+  if (!original) return;
 
-  html2pdf().set({
-    margin: 0,
-    filename: 'CareerUnified-CV.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(element).save();
+  // Clone CV
+  const clone = original.cloneNode(true);
+
+  // Create offscreen container
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'fixed';
+  wrapper.style.top = '-10000px';
+  wrapper.style.left = '0';
+  wrapper.style.width = '210mm';
+  wrapper.style.background = '#ffffff';
+  wrapper.appendChild(clone);
+
+  document.body.appendChild(wrapper);
+
+  // Force layout reflow
+  clone.style.display = 'block';
+
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0,
+        filename: 'CareerUnified-CV.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        }
+      })
+      .from(clone)
+      .save()
+      .then(() => {
+        document.body.removeChild(wrapper);
+      });
+  }, 300);
 }
+</script>
+
 
 /* ===============================
    CAROUSEL LOGIC
@@ -1590,6 +1626,7 @@ function downloadPDF() {
 window.addEventListener("resize", calculateCarousel);
 window.addEventListener("load", calculateCarousel);
 </script>
+
 
 
 
