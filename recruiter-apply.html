@@ -1,72 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Recruiter Application – Career Unified</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "career-unified.firebaseapp.com",
-  projectId: "career-unified",
-};
+  /* 🔐 YOUR REAL FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+    authDomain: "career-unified.firebaseapp.com",
+    projectId: "career-unified",
+    storageBucket: "career-unified.firebasestorage.app",
+    messagingSenderId: "101656817742",
+    appId: "1:101656817742:web:22c9a58a822a714e54931f",
+    measurementId: "G-2Z934XRVXT"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-let currentUser = null;
+  let currentUser = null;
 
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    alert("Please log in first");
-    window.location.href = "login.html";
-  }
-  currentUser = user;
-});
-
-window.submitApplication = async () => {
-  const company = companyName.value.trim();
-  const website = companyWebsite.value.trim();
-  const message = reason.value.trim();
-
-  if (!company || !website) {
-    alert("All fields are required");
-    return;
-  }
-
-  await addDoc(collection(db, "recruiterApplications"), {
-    userId: currentUser.uid,
-    companyName: company,
-    companyWebsite: website,
-    message,
-    status: "pending",
-    submittedAt: serverTimestamp()
+  /* 🔐 REQUIRE LOGIN */
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      alert("Please log in to apply as a recruiter.");
+      window.location.href = "login.html";
+      return;
+    }
+    currentUser = user;
   });
 
-  await setDoc(doc(db, "users", currentUser.uid), {
-    role: "recruiter",
-    recruiterStatus: "pending",
-    companyName: company,
-    createdAt: serverTimestamp()
-  }, { merge: true });
+  /* 📩 SUBMIT APPLICATION */
+  window.submitRecruiterApplication = async () => {
+    if (!currentUser) {
+      alert("Authentication not ready. Please wait.");
+      return;
+    }
 
-  alert("Application submitted. Await approval.");
-  window.location.href = "index.html";
-};
+    const companyName = document.getElementById("companyName").value.trim();
+    const companyWebsite = document.getElementById("companyWebsite").value.trim();
+    const reason = document.getElementById("reason").value.trim();
+
+    if (!companyName || !companyWebsite || !reason) {
+      alert("All fields are required.");
+      return;
+    }
+
+    try {
+      /* Create recruiter application */
+      await addDoc(collection(db, "recruiterApplications"), {
+        userId: currentUser.uid,
+        companyName,
+        companyWebsite,
+        reason,
+        status: "pending",
+        submittedAt: serverTimestamp()
+      });
+
+      /* Update user profile */
+      await setDoc(
+        doc(db, "users", currentUser.uid),
+        {
+          role: "recruiter",
+          recruiterStatus: "pending",
+          companyName,
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      alert("Application submitted successfully.");
+      window.location.href = "recruiter-dashboard.html";
+
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert("Submission failed. Check console for details.");
+    }
+  };
 </script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    padding: 40px;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  input, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    background: #1e40af;
+  }
+</style>
 </head>
 
 <body>
-<h1>Recruiter Application</h1>
 
-<input id="companyName" placeholder="Company Name"><br><br>
-<input id="companyWebsite" placeholder="Company Website"><br><br>
-<textarea id="reason" placeholder="Why should we approve you?"></textarea><br><br>
+  <button onclick="location.href='recruiter-apply.html'">
+  Become a Recruiter
+</button>
 
-<button onclick="submitApplication()">Submit</button>
+  <div class="container">
+    <h1>Recruiter Application</h1>
+
+    <input id="companyName" placeholder="Company Name" />
+    <input id="companyWebsite" placeholder="Company Website" />
+    <textarea id="reason" placeholder="Why should we approve you?"></textarea>
+
+    <button onclick="submitRecruiterApplication()">
+      Submit Application
+    </button>
+  </div>
 </body>
 </html>
+
