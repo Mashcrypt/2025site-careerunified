@@ -18,6 +18,7 @@
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  // 🔐 Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
     authDomain: "career-unified.firebaseapp.com",
@@ -27,24 +28,24 @@
     appId: "1:101656817742:web:22c9a58a822a714e54931f"
   };
 
-  const ADMIN_UID = "X3eReX1WGpQSR1svO4JIBFDqFUJ3";
-
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
   let currentUser = null;
 
-  onAuthStateChanged(auth, async user => {
-    if (!user || user.uid !== ADMIN_UID) {
-      alert("Access denied");
-      window.location.href = "index.html";
-      return;
-    }
-    currentUser = user;
-    loadApplications();
-  });
+  // 🔹 List of admin UIDs (add as many as you need)
+  const ADMIN_UIDS = [
+    "X3eReX1WGpQSR1svO4JIBFDqFUJ3", // YOUR ACCOUNT
+    // Add more UIDs if needed
+  ];
 
+  // 🔹 Check if current user is admin
+  function isAdmin(user) {
+    return user && ADMIN_UIDS.includes(user.uid);
+  }
+
+  // 🔹 Load pending applications
   async function loadApplications() {
     const q = query(
       collection(db, "recruiterApplications"),
@@ -55,10 +56,15 @@
     const container = document.getElementById("applications");
     container.innerHTML = "";
 
+    if (snapshot.empty) {
+      container.innerHTML = "<p>No pending applications.</p>";
+      return;
+    }
+
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       const div = document.createElement("div");
-
+      div.style.marginBottom = "20px";
       div.innerHTML = `
         <strong>${data.companyName}</strong><br>
         Website: ${data.companyWebsite}<br>
@@ -68,44 +74,70 @@
         <button onclick="reject('${docSnap.id}')">Reject</button>
         <hr>
       `;
-
       container.appendChild(div);
     });
   }
 
+  // 🔹 Approve application
   window.approve = async (applicationId, userId) => {
-    await updateDoc(doc(db, "recruiterApplications", applicationId), {
-      status: "approved",
-      reviewedAt: serverTimestamp()
-    });
-
-    await updateDoc(doc(db, "users", userId), {
-      recruiterStatus: "approved"
-    });
-
-    alert("Recruiter approved");
-    loadApplications();
+    try {
+      await updateDoc(doc(db, "recruiterApplications", applicationId), {
+        status: "approved",
+        reviewedAt: serverTimestamp()
+      });
+      await updateDoc(doc(db, "users", userId), {
+        recruiterStatus: "approved"
+      });
+      alert("Recruiter approved");
+      loadApplications();
+    } catch (err) {
+      console.error(err);
+      alert("Error approving application");
+    }
   };
 
+  // 🔹 Reject application
   window.reject = async (applicationId) => {
-    await updateDoc(doc(db, "recruiterApplications", applicationId), {
-      status: "rejected",
-      reviewedAt: serverTimestamp()
-    });
-
-    alert("Recruiter rejected");
-    loadApplications();
+    try {
+      await updateDoc(doc(db, "recruiterApplications", applicationId), {
+        status: "rejected",
+        reviewedAt: serverTimestamp()
+      });
+      alert("Recruiter rejected");
+      loadApplications();
+    } catch (err) {
+      console.error(err);
+      alert("Error rejecting application");
+    }
   };
+
+  // 🔹 Auth state check
+  onAuthStateChanged(auth, user => {
+    console.log("Logged in UID:", user?.uid);
+    if (!isAdmin(user)) {
+      alert("Access denied. Admins only.");
+      window.location.href = "index.html";
+      return;
+    }
+    currentUser = user;
+    loadApplications();
+  });
 </script>
 
 <style>
-  body { font-family: Arial, sans-serif; padding: 30px; }
-  button { margin-right: 10px; }
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f9f9f9; }
+  h1 { text-align: center; margin-bottom: 30px; }
+  button { margin-right: 10px; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; }
+  button:hover { opacity: 0.8; }
+  button:first-of-type { background-color: #16a34a; color: white; }
+  button:last-of-type { background-color: #dc2626; color: white; }
+  hr { margin-top: 15px; margin-bottom: 15px; }
 </style>
 </head>
 
 <body>
   <h1>Admin – Recruiter Applications</h1>
-  <div id="applications"></div>
+  <div id="applications">Loading...</div>
 </body>
 </html>
+
