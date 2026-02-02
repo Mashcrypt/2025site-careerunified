@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign Up – Career Unified</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* =========================================================
@@ -10,28 +14,31 @@
 ========================================================= */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
   min-height: 100vh;
   margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
 /* =========================================================
-   SIGNUP CARD (HEIGHT REDUCED ONLY)
+   SIGNUP CARD
 ========================================================= */
 .signup-container {
   background: #ffffff;
-  width: 420px;
-  max-width: 95%;
-  padding: 30px 34px; /* ⬅ reduced from 44px 38px */
+  width: 100%;
+  max-width: 480px;
+  padding: 40px 36px;
   border-radius: 20px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
   animation: fadeUp 0.5s ease;
 }
@@ -39,7 +46,7 @@ body {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -48,49 +55,78 @@ body {
 }
 
 /* =========================================================
+   LOGO & BRANDING
+========================================================= */
+.logo {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.logo-text {
+  font-size: 1.875rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =========================================================
    HEADINGS
 ========================================================= */
 .signup-container h2 {
-  margin-bottom: 4px; /* ⬅ reduced */
-  color: #1e3a8a;
-  font-size: 1.9rem;
+  margin-bottom: 6px;
+  color: #111827;
+  font-size: 1.875rem;
   font-weight: 700;
 }
 
 .subtitle {
-  font-size: 13px;
+  font-size: 0.9rem;
   color: #6b7280;
-  margin-bottom: 18px; /* ⬅ reduced from 26px */
+  margin-bottom: 24px;
 }
 
 /* =========================================================
    ROLE SELECTOR
 ========================================================= */
+.role-selector-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  display: block;
+  margin-bottom: 10px;
+}
+
 .role-selector {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 14px; /* ⬅ reduced */
+  margin-bottom: 24px;
 }
 
 .role-card {
-  flex: 1;
-  padding: 14px 10px;
+  padding: 16px 12px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  text-align: center;
+  background: #ffffff;
 }
 
 .role-card h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #1f2937;
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 600;
 }
 
 .role-card p {
-  font-size: 12px;
+  font-size: 0.8rem;
   color: #6b7280;
-  margin-top: 4px;
+  margin: 0;
 }
 
 .role-card.active {
@@ -98,8 +134,29 @@ body {
   background: #eff6ff;
 }
 
+.role-card.active h4 {
+  color: #2563eb;
+}
+
 .role-card:hover {
-  border-color: #2563eb;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   FORM GROUPS
+========================================================= */
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
 /* =========================================================
@@ -111,17 +168,22 @@ body {
 
 .signup-container input {
   width: 100%;
-  padding: 13px 14px;
-  margin: 7px 0; /* ⬅ reduced from 10px */
+  padding: 14px 16px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
-  font-size: 14px;
+  font-size: 16px; /* Prevent iOS zoom */
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
 }
 
 .signup-container input:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.signup-container input::placeholder {
+  color: #9ca3af;
 }
 
 /* =========================================================
@@ -129,13 +191,50 @@ body {
 ========================================================= */
 .toggle-password {
   position: absolute;
-  right: 14px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.875rem;
   color: #2563eb;
   font-weight: 600;
+  user-select: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.toggle-password:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+/* =========================================================
+   PASSWORD STRENGTH
+========================================================= */
+.password-strength {
+  margin-top: 8px;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.password-strength.show {
+  display: block;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.password-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+  text-align: left;
 }
 
 /* =========================================================
@@ -143,23 +242,36 @@ body {
 ========================================================= */
 button {
   width: 100%;
-  padding: 13px;
-  margin-top: 12px; /* ⬅ reduced */
+  padding: 14px;
+  margin-top: 8px;
   border-radius: 10px;
   border: none;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 #signupBtn {
-  background: #1e3a8a;
+  background: #2563eb;
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-#signupBtn:hover {
-  background: #162c6f;
-  box-shadow: 0 10px 18px rgba(30, 58, 138, 0.25);
+#signupBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
 }
 
 /* =========================================================
@@ -168,8 +280,8 @@ button {
 .divider {
   display: flex;
   align-items: center;
-  margin: 14px 0 10px; /* ⬅ reduced */
-  font-size: 12px;
+  margin: 24px 0;
+  font-size: 0.875rem;
   color: #6b7280;
 }
 
@@ -182,7 +294,7 @@ button {
 }
 
 .divider span {
-  padding: 0 10px;
+  padding: 0 12px;
 }
 
 /* =========================================================
@@ -194,13 +306,15 @@ button {
   justify-content: center;
   gap: 10px;
   background: #ffffff;
-  color: #111827;
+  color: #374151;
   border: 1px solid #d1d5db;
+  margin-top: 0;
 }
 
-.google-btn:hover {
+.google-btn:hover:not(:disabled) {
   background: #f9fafb;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  border-color: #9ca3af;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .google-icon {
@@ -209,29 +323,177 @@ button {
 }
 
 /* =========================================================
-   FOOTER
+   ERROR & SUCCESS MESSAGES
 ========================================================= */
-.signup-container p {
-  margin-top: 12px; /* ⬅ reduced */
-  font-size: 13px;
-  color: #4b5563;
+#errorMsg {
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: #fee2e2;
+  border-radius: 8px;
+  display: none;
 }
 
-.signup-container p a {
-  color: #1e3a8a;
+#errorMsg:not(:empty) {
+  display: block;
+}
+
+#successMsg {
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 0.875rem;
+  color: #16a34a;
+  background: #dcfce7;
+  border-radius: 8px;
+  display: none;
+}
+
+#successMsg.show {
+  display: block;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.login-link {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.login-link a {
+  color: #2563eb;
   text-decoration: none;
   font-weight: 600;
 }
 
-.signup-container p a:hover {
+.login-link a:hover {
   text-decoration: underline;
 }
 
-#errorMsg {
-  margin-top: 8px; /* ⬅ reduced */
-  font-size: 13px;
-  color: #dc2626;
-  min-height: 16px; /* ⬅ reduced */
+/* =========================================================
+   LOADING STATE
+========================================================= */
+.loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==============================
+   MOBILE RESPONSIVENESS
+============================== */
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .signup-container {
+    max-width: 100%;
+    padding: 32px 24px;
+    margin-top: 20px;
+    border-radius: 16px;
+  }
+
+  .logo-text {
+    font-size: 1.625rem;
+  }
+
+  .signup-container h2 {
+    font-size: 1.625rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+  }
+
+  .role-selector {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .role-card {
+    padding: 14px 10px;
+  }
+
+  .role-card h4 {
+    font-size: 0.875rem;
+  }
+
+  .role-card p {
+    font-size: 0.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .divider {
+    margin: 20px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 28px 20px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .signup-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.813rem;
+  }
+
+  .role-selector {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .role-card {
+    padding: 12px;
+  }
+
+  .signup-container input,
+  button {
+    font-size: 15px;
+  }
+}
+
+/* ==============================
+   ACCESSIBILITY
+============================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+button:focus-visible,
+input:focus-visible,
+.role-card:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 </style>
 </head>
@@ -239,31 +501,55 @@ button {
 <body>
 
 <div class="signup-container">
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-text">Career Unified</div>
+  </div>
 
   <h2>Create your account</h2>
   <div class="subtitle">Choose how you want to use Career Unified</div>
 
   <!-- ROLE SELECTOR -->
+  <label class="role-selector-label">I am a:</label>
   <div class="role-selector">
-    <div class="role-card active" data-role="user">
-      <h4>Job Seeker | Student</h4>
+    <div class="role-card active" data-role="user" tabindex="0">
+      <h4>Job Seeker</h4>
       <p>Find jobs & apply</p>
     </div>
-    <div class="role-card" data-role="recruiter">
+    <div class="role-card" data-role="recruiter" tabindex="0">
       <h4>Recruiter</h4>
       <p>Post & manage jobs</p>
     </div>
   </div>
 
-  <input type="text" id="fullName" placeholder="Full name">
-  <input type="email" id="email" placeholder="Email address">
-
-  <div class="field">
-    <input type="password" id="password" placeholder="Password">
-    <span class="toggle-password" id="togglePassword">Show</span>
+  <!-- Full Name -->
+  <div class="form-group">
+    <label class="form-label" for="fullName">Full name</label>
+    <input type="text" id="fullName" placeholder="John Doe" autocomplete="name">
   </div>
 
-  <button id="signupBtn">Create account</button>
+  <!-- Email -->
+  <div class="form-group">
+    <label class="form-label" for="email">Email address</label>
+    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <label class="form-label" for="password">Password</label>
+    <div class="field">
+      <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password">
+      <span class="toggle-password" id="togglePassword">Show</span>
+    </div>
+    <div class="password-strength" id="passwordStrength">
+      <div class="password-strength-bar" id="passwordStrengthBar"></div>
+    </div>
+    <div class="password-hint" id="passwordHint">At least 6 characters</div>
+  </div>
+
+  <button id="signupBtn">
+    <span id="signupBtnText">Create account</span>
+  </button>
 
   <div class="divider"><span>or continue with</span></div>
 
@@ -274,11 +560,19 @@ button {
       <path fill="#FBBC05" d="M10.58 28.44c-.48-1.44-.76-2.97-.76-4.44s.27-3 .76-4.44l-8.02-6.22C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.66l8.02-6.22z"/>
       <path fill="#34A853" d="M24 48c6.48 0 11.9-2.13 15.86-5.78l-7.18-5.58c-1.99 1.34-4.53 2.13-8.68 2.13-6.26 0-11.64-3.59-13.42-8.94l-8.02 6.22C6.52 42.62 14.62 48 24 48z"/>
     </svg>
-    Sign up with Google
+    <span id="googleBtnText">Sign up with Google</span>
   </button>
 
-  <p>Already have an account? <a href="login.html">Log in</a></p>
-  <p id="errorMsg"></p>
+  <!-- Error Message -->
+  <div id="errorMsg"></div>
+
+  <!-- Success Message -->
+  <div id="successMsg"></div>
+
+  <!-- Login Link -->
+  <p class="login-link">
+    Already have an account? <a href="login.html">Log in</a>
+  </p>
 </div>
 
 <script type="module">
@@ -303,6 +597,90 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+/* ================= DOM ELEMENTS ================= */
+const fullNameInput = document.getElementById('fullName');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const signupBtn = document.getElementById('signupBtn');
+const signupBtnText = document.getElementById('signupBtnText');
+const googleBtn = document.getElementById('googleSignup');
+const googleBtnText = document.getElementById('googleBtnText');
+const errorMsg = document.getElementById('errorMsg');
+const successMsg = document.getElementById('successMsg');
+const passwordStrength = document.getElementById('passwordStrength');
+const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+const passwordHint = document.getElementById('passwordHint');
+
+/* ================= HELPER FUNCTIONS ================= */
+function showError(message) {
+  errorMsg.textContent = message;
+  errorMsg.style.display = 'block';
+  successMsg.classList.remove('show');
+}
+
+function showSuccess(message) {
+  successMsg.textContent = message;
+  successMsg.classList.add('show');
+  errorMsg.style.display = 'none';
+}
+
+function clearMessages() {
+  errorMsg.textContent = '';
+  errorMsg.style.display = 'none';
+  successMsg.classList.remove('show');
+}
+
+function setLoading(button, isLoading) {
+  button.disabled = isLoading;
+  if (button === signupBtn) {
+    signupBtnText.innerHTML = isLoading ? '<span class="loading"></span>' : 'Create account';
+  } else if (button === googleBtn) {
+    googleBtnText.textContent = isLoading ? 'Signing up...' : 'Sign up with Google';
+  }
+}
+
+/* ================= PASSWORD STRENGTH ================= */
+passwordInput.addEventListener('input', () => {
+  const password = passwordInput.value;
+  const strength = calculatePasswordStrength(password);
+  
+  if (password.length > 0) {
+    passwordStrength.classList.add('show');
+    
+    // Update bar
+    passwordStrengthBar.style.width = strength.percentage + '%';
+    passwordStrengthBar.style.background = strength.color;
+    
+    // Update hint
+    passwordHint.textContent = strength.message;
+    passwordHint.style.color = strength.color;
+  } else {
+    passwordStrength.classList.remove('show');
+    passwordHint.textContent = 'At least 6 characters';
+    passwordHint.style.color = '#6b7280';
+  }
+});
+
+function calculatePasswordStrength(password) {
+  let score = 0;
+  
+  if (password.length >= 6) score += 25;
+  if (password.length >= 8) score += 25;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 25;
+  if (/\d/.test(password)) score += 15;
+  if (/[^a-zA-Z\d]/.test(password)) score += 10;
+  
+  if (score <= 25) {
+    return { percentage: 25, color: '#dc2626', message: 'Weak password' };
+  } else if (score <= 50) {
+    return { percentage: 50, color: '#f59e0b', message: 'Fair password' };
+  } else if (score <= 75) {
+    return { percentage: 75, color: '#3b82f6', message: 'Good password' };
+  } else {
+    return { percentage: 100, color: '#16a34a', message: 'Strong password' };
+  }
+}
+
 /* ================= ROLE SELECTION ================= */
 let selectedRole = "user";
 
@@ -312,13 +690,18 @@ document.querySelectorAll('.role-card').forEach(card => {
     card.classList.add('active');
     selectedRole = card.dataset.role;
   };
+  
+  // Keyboard support
+  card.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      card.click();
+    }
+  });
 });
 
 /* ================= PASSWORD TOGGLE ================= */
 document.getElementById('togglePassword').onclick = () => {
-  const passwordInput = document.getElementById('password');
   const toggle = document.getElementById('togglePassword');
-
   if (passwordInput.type === "password") {
     passwordInput.type = "text";
     toggle.textContent = "Hide";
@@ -341,15 +724,38 @@ onAuthStateChanged(auth, async user => {
 });
 
 /* ================= EMAIL SIGNUP ================= */
-document.getElementById('signupBtn').onclick = async () => {
-  const fullName = document.getElementById('fullName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+signupBtn.onclick = async () => {
+  const fullName = fullNameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
+  clearMessages();
+
+  // Validation
   if (!fullName || !email || !password) {
-    document.getElementById('errorMsg').textContent = "All fields are required.";
+    showError("Please fill in all fields.");
     return;
   }
+
+  if (fullName.length < 2) {
+    showError("Please enter your full name.");
+    fullNameInput.focus();
+    return;
+  }
+
+  if (!email.includes('@')) {
+    showError("Please enter a valid email address.");
+    emailInput.focus();
+    return;
+  }
+
+  if (password.length < 6) {
+    showError("Password must be at least 6 characters.");
+    passwordInput.focus();
+    return;
+  }
+
+  setLoading(signupBtn, true);
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -362,14 +768,34 @@ document.getElementById('signupBtn').onclick = async () => {
       createdAt: serverTimestamp()
     });
 
-    window.location.href = "index.html";
+    showSuccess("Account created successfully! Redirecting...");
+    
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+
   } catch (error) {
-    document.getElementById('errorMsg').textContent = error.message;
+    console.error('Signup error:', error);
+    
+    let message = 'Failed to create account. Please try again.';
+    if (error.code === 'auth/email-already-in-use') {
+      message = 'This email is already registered. Please log in instead.';
+    } else if (error.code === 'auth/invalid-email') {
+      message = 'Invalid email address.';
+    } else if (error.code === 'auth/weak-password') {
+      message = 'Password is too weak. Please use a stronger password.';
+    }
+    
+    showError(message);
+    setLoading(signupBtn, false);
   }
 };
 
 /* ================= GOOGLE SIGNUP ================= */
-document.getElementById('googleSignup').onclick = async () => {
+googleBtn.onclick = async () => {
+  clearMessages();
+  setLoading(googleBtn, true);
+
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
@@ -381,13 +807,46 @@ document.getElementById('googleSignup').onclick = async () => {
       createdAt: serverTimestamp()
     }, { merge: true });
 
-    window.location.href = "index.html";
+    showSuccess("Account created successfully! Redirecting...");
+    
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+
   } catch (error) {
-    document.getElementById('errorMsg').textContent = error.message;
+    console.error('Google signup error:', error);
+    
+    let message = 'Google sign-up failed. Please try again.';
+    if (error.code === 'auth/popup-closed-by-user') {
+      message = 'Sign-up cancelled. Please try again.';
+    } else if (error.code === 'auth/popup-blocked') {
+      message = 'Pop-up blocked. Please allow pop-ups and try again.';
+    }
+    
+    showError(message);
+    setLoading(googleBtn, false);
   }
 };
-</script>
 
+/* ================= ENTER KEY SUPPORT ================= */
+passwordInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    signupBtn.click();
+  }
+});
+
+emailInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    passwordInput.focus();
+  }
+});
+
+fullNameInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    emailInput.focus();
+  }
+});
+</script>
 
 </body>
 </html>
