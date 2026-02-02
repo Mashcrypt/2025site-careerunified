@@ -1,446 +1,861 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Career Unified – Jobs, Bursaries & University Opportunities in South Africa</title>
-  <meta name="description" content="Discover the latest jobs, bursaries, and university application deadlines in South Africa. Apply early, find scholarships, and kickstart your career with Career Unified.">
-  <meta name="google-site-verification" content="JKMm0zr9nLbLB8JJt0WMWRy54LR7Ae6gTlexinyCMuI" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up – Career Unified</title>
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:title" content="Career Unified – Jobs, Bursaries & Universities in South Africa">
-  <meta property="og:description" content="Find internships, jobs, bursaries, and university application deadlines. Career Unified helps South African students and graduates succeed.">
-  <meta property="og:url" content="https://careerunified.com/">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://careerunified.com/images/social-share.png">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Career Unified – Jobs, Bursaries & Universities in South Africa">
-  <meta name="twitter:description" content="Find jobs, bursaries, and university opportunities in South Africa. Apply early and secure your career opportunities.">
-  <meta name="twitter:image" content="https://careerunified.com/images/social-share.png">
+<style>
+/* =========================================================
+   GLOBAL RESET & BASE
+========================================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Career Unified",
-    "url": "https://careerunified.com/",
-    "description": "Discover jobs, bursaries, and university application deadlines in South Africa. Career Unified helps students and graduates find opportunities early.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://careerunified.com/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* =========================================================
+   SIGNUP CARD
+========================================================= */
+.signup-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  padding: 40px 36px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  </script>
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+/* =========================================================
+   LOGO & BRANDING
+========================================================= */
+.logo {
+  display: inline-block;
+  margin-bottom: 20px;
+}
 
-  <link rel="stylesheet" href="css/style.css">
+.logo-text {
+  font-size: 1.875rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+.signup-container h2 {
+  margin-bottom: 6px;
+  color: #111827;
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* =========================================================
+   ROLE SELECTOR
+========================================================= */
+.role-selector-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.role-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.role-card {
+  padding: 16px 12px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  background: #ffffff;
+}
+
+.role-card h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.role-card p {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.role-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.role-card.active h4 {
+  color: #2563eb;
+}
+
+.role-card:hover {
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   FORM GROUPS
+========================================================= */
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+/* =========================================================
+   INPUT FIELDS
+========================================================= */
+.field {
+  position: relative;
+}
+
+.signup-container input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 16px; /* Prevent iOS zoom */
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.signup-container input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.signup-container input::placeholder {
+  color: #9ca3af;
+}
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #2563eb;
+  font-weight: 600;
+  user-select: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.toggle-password:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+/* =========================================================
+   PASSWORD STRENGTH
+========================================================= */
+.password-strength {
+  margin-top: 8px;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.password-strength.show {
+  display: block;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.password-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+  text-align: left;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#signupBtn {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+#signupBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  padding: 0 12px;
+}
+
+/* =========================================================
+   GOOGLE BUTTON
+========================================================= */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  margin-top: 0;
+}
+
+.google-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* =========================================================
+   ERROR & SUCCESS MESSAGES
+========================================================= */
+#errorMsg {
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: #fee2e2;
+  border-radius: 8px;
+  display: none;
+}
+
+#errorMsg:not(:empty) {
+  display: block;
+}
+
+#successMsg {
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 0.875rem;
+  color: #16a34a;
+  background: #dcfce7;
+  border-radius: 8px;
+  display: none;
+}
+
+#successMsg.show {
+  display: block;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.login-link {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.login-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   LOADING STATE
+========================================================= */
+.loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==============================
+   MOBILE RESPONSIVENESS
+============================== */
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .signup-container {
+    max-width: 100%;
+    padding: 32px 24px;
+    margin-top: 20px;
+    border-radius: 16px;
+  }
+
+  .logo-text {
+    font-size: 1.625rem;
+  }
+
+  .signup-container h2 {
+    font-size: 1.625rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+  }
+
+  .role-selector {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .role-card {
+    padding: 14px 10px;
+  }
+
+  .role-card h4 {
+    font-size: 0.875rem;
+  }
+
+  .role-card p {
+    font-size: 0.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .divider {
+    margin: 20px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 28px 20px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .signup-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.813rem;
+  }
+
+  .role-selector {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .role-card {
+    padding: 12px;
+  }
+
+  .signup-container input,
+  button {
+    font-size: 15px;
+  }
+}
+
+/* ==============================
+   ACCESSIBILITY
+============================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+button:focus-visible,
+input:focus-visible,
+.role-card:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+</style>
 </head>
 
 <body>
 
-<!-- NAVIGATION -->
-<nav class="main-nav">
-
-  <!-- DESKTOP VIEW -->
-  <a href="index.html" class="logo desktop-nav">Career Unified</a>
-
-  <div class="nav-links desktop-nav">
-    <a href="jobs.html">Jobs</a>
-    <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsity</a>
-    <a href="cv-generator.html">Generate CV</a>
-    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="signup.html">Sign Up</a>
-    <a href="login.html">Login</a>
-    
-    <!-- My Account Icon (Desktop) -->
-    <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-      <svg viewBox="0 0 24 24">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-    </a>
+<div class="signup-container">
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-text">Career Unified</div>
   </div>
 
-  <!-- MOBILE VIEW -->
-  <div class="mobile-nav">
-    <!-- Clickable Logo -->
-    <a href="index.html" class="mobile-logo">Career Unified</a>
-    
-    <div class="mobile-nav-right">
-      <!-- Account Icon - Direct Link -->
-      <a href="account-page.html" class="icon-btn" aria-label="My Account">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </a>
+  <h2>Create your account</h2>
+  <div class="subtitle">Choose how you want to use Career Unified</div>
 
-      <!-- Menu Icon -->
-      <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-        <svg viewBox="0 0 24 24">
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
+  <!-- ROLE SELECTOR -->
+  <label class="role-selector-label">I am a:</label>
+  <div class="role-selector">
+    <div class="role-card active" data-role="user" tabindex="0">
+      <h4>Job Seeker</h4>
+      <p>Find jobs & apply</p>
+    </div>
+    <div class="role-card" data-role="recruiter" tabindex="0">
+      <h4>Recruiter</h4>
+      <p>Post & manage jobs</p>
     </div>
   </div>
 
-</nav>
+  <!-- Full Name -->
+  <div class="form-group">
+    <label class="form-label" for="fullName">Full name</label>
+    <input type="text" id="fullName" placeholder="John Doe" autocomplete="name">
+  </div>
 
-<!-- MOBILE SLIDE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="jobs.html">Jobs</a>
-  <a href="bursaries.html">Bursaries</a>
-  <a href="varsity.html">Varsity</a>
-  <a href="cv-generator.html">Generate CV</a>
-  <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-  <a href="recruiter-apply.html">Apply as Recruiter</a>
-  <a href="signup.html">Sign Up</a>
-  <a href="login.html">Login</a>
+  <!-- Email -->
+  <div class="form-group">
+    <label class="form-label" for="email">Email address</label>
+    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <label class="form-label" for="password">Password</label>
+    <div class="field">
+      <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password">
+      <span class="toggle-password" id="togglePassword">Show</span>
+    </div>
+    <div class="password-strength" id="passwordStrength">
+      <div class="password-strength-bar" id="passwordStrengthBar"></div>
+    </div>
+    <div class="password-hint" id="passwordHint">At least 6 characters</div>
+  </div>
+
+  <button id="signupBtn">
+    <span id="signupBtnText">Create account</span>
+  </button>
+
+  <div class="divider"><span>or continue with</span></div>
+
+  <button id="googleSignup" class="google-btn">
+    <svg class="google-icon" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.7 1.22 9.18 3.6l6.86-6.86C35.9 2.38 30.47 0 24 0 14.62 0 6.52 5.38 2.56 13.22l8.02 6.22C12.36 13.09 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.5 24c0-1.64-.15-3.21-.43-4.73H24v9.02h12.66c-.55 2.97-2.2 5.49-4.66 7.19l7.18 5.58C43.44 36.98 46.5 30.98 46.5 24z"/>
+      <path fill="#FBBC05" d="M10.58 28.44c-.48-1.44-.76-2.97-.76-4.44s.27-3 .76-4.44l-8.02-6.22C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.66l8.02-6.22z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.9-2.13 15.86-5.78l-7.18-5.58c-1.99 1.34-4.53 2.13-8.68 2.13-6.26 0-11.64-3.59-13.42-8.94l-8.02 6.22C6.52 42.62 14.62 48 24 48z"/>
+    </svg>
+    <span id="googleBtnText">Sign up with Google</span>
+  </button>
+
+  <!-- Error Message -->
+  <div id="errorMsg"></div>
+
+  <!-- Success Message -->
+  <div id="successMsg"></div>
+
+  <!-- Login Link -->
+  <p class="login-link">
+    Already have an account? <a href="login.html">Log in</a>
+  </p>
 </div>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
+  updateProfile, onAuthStateChanged, getIdTokenResult
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<!-- HERO -->
-<header class="hero">
-  <h1>Career Unified</h1>
-  <p class="slogan">One click from your dream</p>
+const firebaseConfig = {
+  apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+  authDomain: "career-unified.firebaseapp.com",
+  projectId: "career-unified",
+  storageBucket: "career-unified.appspot.com",
+  messagingSenderId: "101656817742",
+  appId: "1:101656817742:web:22c9a58a822a714e54931f"
+};
 
-  <form class="hero-search" onsubmit="performSearch(); return false;">
-    <input type="text" id="homeSearch" placeholder="Search jobs, companies, bursaries, universities...">
-    <button type="submit">Search</button>
-  </form>
-</header>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-<!-- QUICK STATS -->
-<section class="quick-stats">
-  <div class="stat">
-    <h3 id="statJobs">0+</h3>
-    <p>Jobs Available</p>
-  </div>
-  <div class="stat">
-   <h3 id="statBursaries">0+</h3>
-   <p>Bursaries</p>
-  </div>
-  <div class="stat">
-    <h3 id="statVarsity">0</h3>
-    <p>Universities</p>
-  </div>
-  <div class="stat">
-    <h3>100%</h3>
-    <p>Free Tools</p>
-  </div>
-</section>
+/* ================= DOM ELEMENTS ================= */
+const fullNameInput = document.getElementById('fullName');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const signupBtn = document.getElementById('signupBtn');
+const signupBtnText = document.getElementById('signupBtnText');
+const googleBtn = document.getElementById('googleSignup');
+const googleBtnText = document.getElementById('googleBtnText');
+const errorMsg = document.getElementById('errorMsg');
+const successMsg = document.getElementById('successMsg');
+const passwordStrength = document.getElementById('passwordStrength');
+const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+const passwordHint = document.getElementById('passwordHint');
 
-<!-- MAIN -->
-<main class="container">
-  <h2 class="section-title">Recent Job Openings</h2>
-  <div class="job-cards" id="homeJobList"></div>
-</main>
+/* ================= HELPER FUNCTIONS ================= */
+function showError(message) {
+  errorMsg.textContent = message;
+  errorMsg.style.display = 'block';
+  successMsg.classList.remove('show');
+}
 
-<!-- HOW IT WORKS -->
-<section class="how-it-works">
-  <h2>How Career Unified Works</h2>
+function showSuccess(message) {
+  successMsg.textContent = message;
+  successMsg.classList.add('show');
+  errorMsg.style.display = 'none';
+}
 
-  <div class="steps">
-    <div class="step reveal">
-      <span>1</span>
-      <h3>Search & Explore</h3>
-      <p>Find jobs, bursaries, and university opportunities using our smart search.</p>
-    </div>
+function clearMessages() {
+  errorMsg.textContent = '';
+  errorMsg.style.display = 'none';
+  successMsg.classList.remove('show');
+}
 
-    <div class="step reveal">
-      <span>2</span>
-      <h3>Apply with Confidence</h3>
-      <p>View verified listings, deadlines, and use free tools like CV generation.</p>
-    </div>
-
-    <div class="step reveal">
-      <span>3</span>
-      <h3>Move Your Career Forward</h3>
-      <p>Track opportunities, get updates, and never miss important closing dates.</p>
-    </div>
-  </div>
-</section>
-
-<!-- WHY CAREER UNIFIED -->
-<section class="why-cu">
-  <h2>Why Career Unified?</h2>
-  <p class="why-subtitle">
-    Built for South African students, graduates, and job seekers.
-  </p>
-
-  <div class="why-grid">
-
-    <div class="why-card reveal">
-      <h3>What we do</h3>
-      <p>
-        We bring together verified jobs, bursaries, and university opportunities in one place — updated daily.
-      </p>
-    </div>
-
-    <div class="why-card reveal">
-      <h3>Who it's for</h3>
-      <p>
-        For students, graduates, and job seekers who want real opportunities without scams or paywalls.
-      </p>
-    </div>
-
-    <div class="why-card reveal">
-      <h3>Why you should stay</h3>
-      <p>
-        We track deadlines, remove expired posts, and give you free tools so you never miss a chance.
-      </p>
-    </div>
-
-    <div class="why-card reveal highlight">
-      <h3>Why choose Career Unified?</h3>
-      <p>
-        Unlike other platforms that charge or show outdated listings, Career Unified is free, transparent, and focused on real South African opportunities.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- COOKIE NOTICE -->
-<div id="cookieNotice" class="cookie-notice">
-  <p>
-    Career Unified uses browser storage (cookies & localStorage) to improve your experience,
-    remember preferences, and analyse site usage.
-    By continuing to use this site, you agree to this.
-    <a href="privacy.html">Learn more</a>
-  </p>
-  <button id="acceptCookies">Accept</button>
-</div>
-
-<script>
-(function () {
-  const notice = document.getElementById('cookieNotice');
-  const acceptBtn = document.getElementById('acceptCookies');
-
-  if (localStorage.getItem('cookiesAccepted') === 'true') {
-    notice.style.display = 'none';
+function setLoading(button, isLoading) {
+  button.disabled = isLoading;
+  if (button === signupBtn) {
+    signupBtnText.innerHTML = isLoading ? '<span class="loading"></span>' : 'Create account';
+  } else if (button === googleBtn) {
+    googleBtnText.textContent = isLoading ? 'Signing up...' : 'Sign up with Google';
   }
+}
 
-  acceptBtn.addEventListener('click', () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    notice.style.display = 'none';
-  });
-})();
-</script>
-
-<!-- FOOTER -->
-<footer class="main-footer">
-  <div class="footer-links">
-    <a href="about-us.html">About Us</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms & Conditions</a>
-    <a href="contact-us.html">Contact Us</a>
-  </div>
-  <p>© 2026 Career Unified. All rights reserved.</p>
-</footer>
-
-<!-- SCROLL BUTTONS -->
-<button id="scrollUp" class="scroll-btn">↑</button>
-<button id="scrollDown" class="scroll-btn">↓</button>
-
-<!-- SANITY CLIENT -->
-<script src="js/sanityClient.js"></script>
-
-<script>
+/* ================= PASSWORD STRENGTH ================= */
+passwordInput.addEventListener('input', () => {
+  const password = passwordInput.value;
+  const strength = calculatePasswordStrength(password);
   
-  /* ===============================
-   CACHE HELPERS
-================================ */
-function loadCache(key) {
-  try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
-  } catch {
-    return null;
+  if (password.length > 0) {
+    passwordStrength.classList.add('show');
+    
+    // Update bar
+    passwordStrengthBar.style.width = strength.percentage + '%';
+    passwordStrengthBar.style.background = strength.color;
+    
+    // Update hint
+    passwordHint.textContent = strength.message;
+    passwordHint.style.color = strength.color;
+  } else {
+    passwordStrength.classList.remove('show');
+    passwordHint.textContent = 'At least 6 characters';
+    passwordHint.style.color = '#6b7280';
   }
-}
+});
 
-function saveCache(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-/* ===============================
-   LISTING TIER HELPERS
-================================ */
-
-function isPromotionActive(job) {
-  if (!job.sponsoredUntil) return true;
-  return new Date(job.sponsoredUntil) >= new Date();
-}
-
-function getPriority(job) {
-  if (job.listingTier === 'premier' && isPromotionActive(job)) return 3;
-  if (job.listingTier === 'sponsored' && isPromotionActive(job)) return 2;
-  return 1;
-}
-
-function getBadge(job) {
-  if (job.listingTier === 'premier' && isPromotionActive(job)) return 'Premier';
-  if (job.listingTier === 'sponsored' && isPromotionActive(job)) return 'Sponsored';
-  return '';
-}
-
-/* ===============================
-   RECENT JOBS (LOGIC UNCHANGED)
-================================ */
-
-const homeJobList = document.getElementById('homeJobList');
-const statJobs = document.getElementById('statJobs');
-
-async function renderRecentJobs() {
-
-  // 1️⃣ Show cached jobs instantly
-  const cachedJobs = loadCache("home_jobs_cache");
-  if (cachedJobs && cachedJobs.length) {
-    renderJobsUI(cachedJobs);
-  }
-
-  // 2️⃣ Fetch fresh jobs in background
-  let jobs = await window.sanityClient.fetch(`*[_type=="job"] | order(posted desc){
-    title,
-    company,
-    location,
-    category,
-    posted,
-    deadline,
-    listingTier,
-    sponsoredUntil
-  }`);
-
-  // 3️⃣ Save fresh data
-  saveCache("home_jobs_cache", jobs);
-
-  // 4️⃣ Render updated data
-  renderJobsUI(jobs);
-}
+function calculatePasswordStrength(password) {
+  let score = 0;
   
-function renderJobsUI(jobs) {
-  statJobs.innerText = jobs.length + '+';
-
-  jobs.sort((a, b) => {
-    const tierDiff = getPriority(b) - getPriority(a);
-    if (tierDiff !== 0) return tierDiff;
-    return new Date(b.posted) - new Date(a.posted);
-  });
-
-  const today = new Date();
-  homeJobList.innerHTML = '';
-
-  jobs.slice(0, 9).forEach(job => {
-    const deadlineDate = new Date(job.deadline);
-    const isUrgent = (deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7;
-    const badge = getBadge(job);
-
-    const card = document.createElement('a');
-    card.href = "jobs.html?job=" + encodeURIComponent(job.title);
-    card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
-    card.style.textDecoration = "none";
-    card.style.color = "inherit";
-
-    card.innerHTML = `
-      <h3>
-        ${job.title}
-        <span class="badge">${job.category}</span>
-        ${badge ? `<span class="badge-sponsored">${badge}</span>` : ''}
-      </h3>
-      <p class="company">${job.company || 'Confidential'}</p>
-      <p>${job.location}</p>
-      <p class="meta">
-        Posted: ${job.posted} • Closing: ${job.deadline}
-        ${isUrgent ? '<span class="urgent">Urgent</span>' : ''}
-      </p>
-    `;
-
-    homeJobList.appendChild(card);
-  });
+  if (password.length >= 6) score += 25;
+  if (password.length >= 8) score += 25;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 25;
+  if (/\d/.test(password)) score += 15;
+  if (/[^a-zA-Z\d]/.test(password)) score += 10;
+  
+  if (score <= 25) {
+    return { percentage: 25, color: '#dc2626', message: 'Weak password' };
+  } else if (score <= 50) {
+    return { percentage: 50, color: '#f59e0b', message: 'Fair password' };
+  } else if (score <= 75) {
+    return { percentage: 75, color: '#3b82f6', message: 'Good password' };
+  } else {
+    return { percentage: 100, color: '#16a34a', message: 'Strong password' };
+  }
 }
 
+/* ================= ROLE SELECTION ================= */
+let selectedRole = "user";
 
-renderRecentJobs();
-const statBursaries = document.getElementById("statBursaries");
-const statVarsity = document.getElementById("statVarsity");
-
-async function loadStats(){
-  const bursaries = await sanityClient.fetch(`*[_type=="bursary"]{_id}`);
-  const varsities = await sanityClient.fetch(`*[_type=="university"]{_id}`);
-
-  statBursaries.innerText = bursaries.length + "+";
-  statVarsity.innerText = varsities.length;
-}
-
-loadStats();
-
-/* ================= SEARCH ================= */
-function performSearch(){
-  const term = document.getElementById('homeSearch').value.trim();
-  if(!term) return alert('Please enter a keyword');
-  localStorage.setItem('homeSearchTerm', term.toLowerCase());
-  window.location.href='jobs.html';
-}
-
-/* ================= REVEAL ANIMATIONS ================= */
-const revealElements = document.querySelectorAll('.reveal');
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('show');
+document.querySelectorAll('.role-card').forEach(card => {
+  card.onclick = () => {
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    selectedRole = card.dataset.role;
+  };
+  
+  // Keyboard support
+  card.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      card.click();
     }
   });
-}, { threshold: 0.2 });
-
-revealElements.forEach(el => observer.observe(el));
-
- 
-/* ================= SCROLL ================= */
-const up = document.getElementById('scrollUp');
-const down = document.getElementById('scrollDown');
-
-window.addEventListener('scroll',()=>{
-  up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
 });
-up.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 
+/* ================= PASSWORD TOGGLE ================= */
+document.getElementById('togglePassword').onclick = () => {
+  const toggle = document.getElementById('togglePassword');
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggle.textContent = "Hide";
+  } else {
+    passwordInput.type = "password";
+    toggle.textContent = "Show";
+  }
+};
 
-/* ================= MOBILE NAVIGATION ================= */
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
-
-if (menuBtn) {
-  menuBtn.onclick = () => {
-    const isOpen = mobileMenu.style.display === "block";
-    mobileMenu.style.display = isOpen ? "none" : "block";
-  };
-}
-
-// Close menu when clicking outside
-document.addEventListener("click", e => {
-  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
-    if (mobileMenu) mobileMenu.style.display = "none";
+/* ================= AUTO REDIRECT ================= */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    try {
+      const token = await getIdTokenResult(user, true);
+      if (token.claims.recruiter) {
+        window.location.href = "recruiter-dashboard.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    } catch (error) {
+      console.error('Error checking claims:', error);
+      window.location.href = "index.html";
+    }
   }
 });
 
+/* ================= EMAIL SIGNUP ================= */
+signupBtn.onclick = async () => {
+  const fullName = fullNameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  clearMessages();
+
+  // Validation
+  if (!fullName || !email || !password) {
+    showError("Please fill in all fields.");
+    return;
+  }
+
+  if (fullName.length < 2) {
+    showError("Please enter your full name.");
+    fullNameInput.focus();
+    return;
+  }
+
+  if (!email.includes('@')) {
+    showError("Please enter a valid email address.");
+    emailInput.focus();
+    return;
+  }
+
+  if (password.length < 6) {
+    showError("Password must be at least 6 characters.");
+    passwordInput.focus();
+    return;
+  }
+
+  setLoading(signupBtn, true);
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, { displayName: fullName });
+
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      fullName,
+      email,
+      role: selectedRole,
+      createdAt: serverTimestamp()
+    });
+
+    showSuccess("Account created successfully! Redirecting...");
+    
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+
+  } catch (error) {
+    console.error('Signup error:', error);
+    
+    let message = 'Failed to create account. Please try again.';
+    if (error.code === 'auth/email-already-in-use') {
+      message = 'This email is already registered. Please log in instead.';
+    } else if (error.code === 'auth/invalid-email') {
+      message = 'Invalid email address.';
+    } else if (error.code === 'auth/weak-password') {
+      message = 'Password is too weak. Please use a stronger password.';
+    }
+    
+    showError(message);
+    setLoading(signupBtn, false);
+  }
+};
+
+/* ================= GOOGLE SIGNUP ================= */
+googleBtn.onclick = async () => {
+  clearMessages();
+  setLoading(googleBtn, true);
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      fullName: user.displayName,
+      email: user.email,
+      role: selectedRole,
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
+    showSuccess("Account created successfully! Redirecting...");
+    
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+
+  } catch (error) {
+    console.error('Google signup error:', error);
+    
+    let message = 'Google sign-up failed. Please try again.';
+    if (error.code === 'auth/popup-closed-by-user') {
+      message = 'Sign-up cancelled. Please try again.';
+    } else if (error.code === 'auth/popup-blocked') {
+      message = 'Pop-up blocked. Please allow pop-ups and try again.';
+    }
+    
+    showError(message);
+    setLoading(googleBtn, false);
+  }
+};
+
+/* ================= ENTER KEY SUPPORT ================= */
+passwordInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    signupBtn.click();
+  }
+});
+
+emailInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    passwordInput.focus();
+  }
+});
+
+fullNameInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    emailInput.focus();
+  }
+});
 </script>
 
 </body>
 </html>
+
 
 
 
