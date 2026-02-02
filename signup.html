@@ -712,16 +712,7 @@ document.getElementById('togglePassword').onclick = () => {
 };
 
 /* ================= AUTO REDIRECT ================= */
-onAuthStateChanged(auth, async user => {
-  if (user) {
-    const token = await getIdTokenResult(user, true);
-    if (token.claims.recruiter) {
-      window.location.href = "recruiter-dashboard.html";
-    } else {
-      window.location.href = "index.html";
-    }
-  }
-});
+
 
 /* ================= EMAIL SIGNUP ================= */
 signupBtn.onclick = async () => {
