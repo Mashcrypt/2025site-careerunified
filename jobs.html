@@ -919,10 +919,15 @@ function renderJobs() {
          j.description.toLowerCase().includes(searchTerm));
     })
     .sort((a,b) => {
-      const pDiff = getPriority(b) - getPriority(a);
-      if (pDiff !== 0) return pDiff;
-      return new Date(a.deadline) - new Date(b.deadline);
-    });
+  const pDiff = getPriority(b) - getPriority(a);
+  if (pDiff !== 0) return pDiff;
+
+  const tasteDiff = getTasteScore(b) - getTasteScore(a);
+  if (tasteDiff !== 0) return tasteDiff;
+
+  return new Date(a.deadline) - new Date(b.deadline);
+});
+
 
   jobList.innerHTML = "";
 
@@ -962,6 +967,8 @@ function renderJobs() {
       selectedIndex = index;
       showPreview(job);
       renderJobs();
+      trackUserInterest(job);
+
       
       // Scroll to preview on mobile
       if (window.innerWidth <= 900) {
@@ -976,6 +983,32 @@ function renderJobs() {
   });
 }
 
+function trackUserInterest(job){
+  let profile = JSON.parse(localStorage.getItem("jobTaste")) || {
+    categories: {},
+    locations: {},
+    jobTypes: {}
+  };
+
+  profile.categories[job.category] = (profile.categories[job.category] || 0) + 1;
+  profile.locations[job.location] = (profile.locations[job.location] || 0) + 1;
+  profile.jobTypes[job.jobType] = (profile.jobTypes[job.jobType] || 0) + 1;
+
+  localStorage.setItem("jobTaste", JSON.stringify(profile));
+}
+
+function getTasteScore(job){
+  const profile = JSON.parse(localStorage.getItem("jobTaste"));
+  if (!profile) return 0;
+
+  return (
+    (profile.categories[job.category] || 0) * 3 +
+    (profile.locations[job.location] || 0) * 2 +
+    (profile.jobTypes[job.jobType] || 0) * 2
+  );
+}
+
+  
 // Show job preview
 function showPreview(job, direction = "left") {
   let badgeText = job.badge ||
@@ -1074,6 +1107,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
