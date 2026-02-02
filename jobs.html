@@ -470,22 +470,26 @@ header p {
 /* ===============================
   STICKY FOLLOWING JOB PREVIEW PANEL
 =============================== */
+/* Allow natural page scrolling */
 .jobs-container{
-  height: calc(100vh - 180px);
-  overflow: hidden;
+  min-height: 100vh;
 }
 
+/* Keep job list scrollable */
 .jobs-left{
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
-  max-height: 100%;
   padding-right: 10px;
 }
 
+/* Make preview sticky WITHOUT breaking scroll */
 .jobs-preview{
   position: sticky;
   top: 20px;
-  height: fit-content;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
+
 /* ===============================
    FIX BADGE OVERLAP IN PREVIEW
 =============================== */
@@ -573,6 +577,12 @@ header p {
     transform: translateX(0);
     opacity: 1;
   }
+}
+  
+/* Allow animation to play */
+.jobs-preview > .preview-slide{
+  width: 100%;
+  flex-shrink: 0;
 }
 
 </style>
@@ -1013,14 +1023,19 @@ setInterval(fetchJobs, 5 * 60 * 1000);
 let touchStartX = 0;
 let touchEndX = 0;
 
-jobPreview.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
+document.addEventListener("touchstart", e => {
+  if (e.target.closest("#jobPreview")) {
+    touchStartX = e.changedTouches[0].screenX;
+  }
 });
 
-jobPreview.addEventListener("touchend", e => {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
+document.addEventListener("touchend", e => {
+  if (e.target.closest("#jobPreview")) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }
 });
+
 
 function handleSwipe() {
   const threshold = 50; // minimum swipe distance
@@ -1059,6 +1074,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
