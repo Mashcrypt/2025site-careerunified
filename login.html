@@ -513,8 +513,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-window.redirected = false;
-
 
 /* ================= DOM ELEMENTS ================= */
 const emailInput = document.getElementById('email');
@@ -569,7 +567,7 @@ document.getElementById('togglePassword').onclick = () => {
 /* ================= REDIRECT BASED ON CLAIMS ================= */
 async function redirectUser(user) {
   try {
-    const tokenResult = await getIdTokenResult(user, true);
+    const tokenResult = await getIdTokenResult(user);
     if (tokenResult.claims.recruiter) {
       window.location.href = "recruiter-dashboard.html";
     } else {
@@ -699,12 +697,10 @@ emailInput.addEventListener('keypress', (e) => {
 
 /* ================= AUTO REDIRECT ================= */
 onAuthStateChanged(auth, async user => {
-  if (user && !window.redirected) {
-    window.redirected = true;
+  if (user) {
     await redirectUser(user);
   }
 });
-
 </script>
 
 </body>
