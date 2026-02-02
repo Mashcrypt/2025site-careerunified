@@ -30,8 +30,12 @@
 </script>
 
 <title>Varsity – Career Unified</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/varsity.css">
+
 <style>
 /* =============================== */
 /* RESET BODY & GLOBAL LAYOUT */
@@ -39,156 +43,255 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
-  background: #f5f5f7;
+  background: #f7f9fc;
   color: #111827;
   overflow-x: hidden;
-}
-
-/* =============================== */
-/* NAVBAR FULL WIDTH */
-.main-nav {
-  padding: 14px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100vw;
-  box-sizing: border-box;
-  background: #1e3a8a;
-}
-
-.main-nav .logo {
-  color: #fff;
-  font-size: 1.4rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.main-nav .nav-links a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 22px;
-  font-weight: 600;
-  padding-bottom: 4px;
-}
-
-.main-nav .nav-links a.active {
-  border-bottom: 3px solid #facc15;
 }
 
 /* =============================== */
 /* HEADER FULL WIDTH WITH GRADIENT */
 header {
   text-align: center;
-  padding: 70px 15px 55px;
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  padding: 70px 20px 55px;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: #fff;
   margin: 0;
-  width: 100vw;
+  width: 100%;
   box-sizing: border-box;
 }
 
 header h1 {
   margin: 0;
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 header p {
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 400;
   color: #e5e7eb;
 }
 
 /* =============================== */
-/* University List */
+/* MAIN CONTENT */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Search & Filter Container */
+.search-controls {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#searchInput {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+#searchInput::placeholder {
+  color: #9ca3af;
+}
+
+#sortDeadlineBtn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+#sortDeadlineBtn:hover {
+  background: #1d4ed8;
+}
+
+#sortDeadlineBtn:active {
+  transform: scale(0.98);
+}
+
+/* =============================== */
+/* UNIVERSITY LIST */
 #varsityList {
   max-width: 1000px;
-  margin: 0 auto 50px auto;
+  margin: 0 auto;
   padding: 0;
   list-style: none;
 }
 
 .varsity-card {
   background: #fff;
-  border-radius: 10px;
-  padding: 15px 20px;
-  margin-bottom: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  transition: 0.25s ease;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .varsity-card:hover {
-  background: #e0f2fe;
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
   transform: translateY(-2px);
 }
 
-.varsity-card a {
-  font-size: 1.1rem;
+.varsity-card a,
+.varsity-card > span {
+  font-size: 1.15rem;
   text-decoration: none;
   color: #1e3a8a;
   font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.varsity-card a:hover {
+  color: #2563eb;
 }
 
 .varsity-card small {
   display: block;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+/* Status & Urgent Labels */
+.varsity-card .labels {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status.open {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status.closed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.urgent {
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.urgent::before {
+  content: '⚠️';
+  margin-right: 4px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
   color: #374151;
-  margin-top: 4px;
-}
-
-.status { font-weight:600; margin-left:8px; }
-.status.open { color:#16a34a; }
-.status.closed { color:#dc2626; }
-.urgent { color:#b91c1c; font-weight:600; margin-left:8px; }
-
-/* Search + Sort */
-#searchInput {
-  padding:8px 12px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  width:60%;
-  margin:0 10px 20px 0;
-}
-#sortDeadlineBtn {
-  padding:8px 12px;
-  border-radius:6px;
-  border:none;
-  background:#1e3a8a;
-  color:white;
-  cursor:pointer;
-  font-weight:600;
+  margin-bottom: 8px;
 }
 
 /* Footer */
 .main-footer {
-  text-align:center;
-  margin-top:50px;
-  padding:25px 0;
-  background:#1e3a8a;
-  color:white;
-  width:100vw;
-  box-sizing:border-box;
+  text-align: center;
+  margin-top: 60px;
+  padding: 30px 20px;
+  background: #1e3a8a;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.footer-links {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: #facc15;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
 }
 
 /* Scroll Buttons */
 .scroll-btn {
   position: fixed;
   right: 20px;
-  padding: 10px 14px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
-  background: #1e3a8a;
+  background: #2563eb;
   color: white;
   cursor: pointer;
   display: none;
   z-index: 999;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
 }
-#scrollUp { bottom: 80px; }
-#scrollDown { bottom: 30px; }
 
-@media (max-width:900px){
-  #searchInput{width:100%;margin-bottom:10px}
+.scroll-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
 }
+
+#scrollUp { bottom: 90px; }
+#scrollDown { bottom: 30px; }
 
 /* =============================== */
 /* SKELETON LOADING */
@@ -196,7 +299,9 @@ header p {
   position: relative;
   overflow: hidden;
   background: #e5e7eb;
+  border-radius: 12px;
 }
+
 .skeleton::after {
   content: "";
   position: absolute;
@@ -207,17 +312,103 @@ header p {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
   animation: shimmer 1.3s infinite;
 }
+
 @keyframes shimmer {
   100% { left: 100%; }
 }
 
 .skeleton-varsity {
-  height: 70px;
-  border-radius: 10px;
-  margin-bottom: 12px;
+  height: 90px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
-  
+/* =============================== */
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  header {
+    padding: 50px 20px 40px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+
+  header p {
+    font-size: 1rem;
+  }
+
+  main {
+    padding: 30px 16px;
+  }
+
+  .search-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #searchInput,
+  #sortDeadlineBtn {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  #varsityList {
+    padding: 0;
+  }
+
+  .varsity-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .varsity-card a,
+  .varsity-card > span {
+    font-size: 1.05rem;
+  }
+
+  .varsity-card small {
+    font-size: 0.85rem;
+  }
+
+  .scroll-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    right: 16px;
+  }
+
+  #scrollUp { bottom: 80px; }
+  #scrollDown { bottom: 24px; }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  header h1 {
+    font-size: 1.75rem;
+  }
+
+  header p {
+    font-size: 0.9rem;
+  }
+
+  main {
+    padding: 24px 12px;
+  }
+
+  .varsity-card {
+    padding: 14px;
+  }
+
+  .varsity-card a,
+  .varsity-card > span {
+    font-size: 1rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -295,11 +486,12 @@ header p {
 
 <!-- MAIN -->
 <main>
-  <div style="max-width:1000px; margin: 0 auto 50px auto;">
+  <div class="search-controls">
     <input type="text" id="searchInput" placeholder="Search universities..." />
     <button id="sortDeadlineBtn">Sort by Earliest Deadline</button>
-    <ul id="varsityList"></ul>
   </div>
+  
+  <ul id="varsityList"></ul>
 </main>
 
 <!-- FOOTER -->
@@ -320,18 +512,19 @@ header p {
 <script src="js/sanityClient.js"></script>
 <script>
 // ===== Skeleton loader =====
+const varsityList = document.getElementById('varsityList');
+
 function showVarsitySkeletons(){
   varsityList.innerHTML = "";
   for(let i=0;i<8;i++){
     const li = document.createElement("li");
-    li.className = "varsity-card skeleton skeleton-varsity";
+    li.className = "skeleton skeleton-varsity";
     varsityList.appendChild(li);
   }
 }
+
 showVarsitySkeletons();
 
-  
-const varsityList = document.getElementById('varsityList');
 const searchInput = document.getElementById('searchInput');
 const sortBtn = document.getElementById('sortDeadlineBtn');
 let universities = [];
@@ -367,9 +560,10 @@ async function fetchUniversities() {
       notes
     }
   `);
-// ===== Save to cache =====
-localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
-localStorage.setItem(VARSITY_CACHE_TIME, Date.now());
+  
+  // ===== Save to cache =====
+  localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
+  localStorage.setItem(VARSITY_CACHE_TIME, Date.now());
 
   injectUniversitySchema();
   renderList();
@@ -409,8 +603,6 @@ if (!last || Date.now() - last > CACHE_TTL) {
 
 setInterval(fetchUniversities, 5 * 60 * 1000);
 
-
-
 function renderList() {
   const query = searchInput.value.toLowerCase();
   varsityList.innerHTML = '';
@@ -419,7 +611,12 @@ function renderList() {
   );
 
   if (!filtered.length) {
-    varsityList.innerHTML = "<li>No universities match your search.</li>";
+    varsityList.innerHTML = `
+      <div class="empty-state">
+        <h3>No universities found</h3>
+        <p>Try adjusting your search terms</p>
+      </div>
+    `;
     return;
   }
 
@@ -440,16 +637,23 @@ function renderList() {
 
     const li = document.createElement('li');
     li.className = "varsity-card";
+    
+    const labelsHTML = `
+      <div class="labels">
+        <span class="status ${isOpen ? 'open' : 'closed'}">
+          ${isOpen ? 'Open' : 'Closed'}
+        </span>
+        ${isUrgent ? '<span class="urgent">Urgent!</span>' : ''}
+      </div>
+    `;
+    
     li.innerHTML = `
       ${safeUrl
         ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name}</a>`
         : `<span>${uni.name}</span>`
       }
-      <small>Deadline: ${uni.deadline || 'TBA'}</small>
-      <span class="status ${isOpen ? 'open' : 'closed'}">
-        ${isOpen ? 'Open' : 'Closed'}
-      </span>
-      ${isUrgent ? '<span class="urgent">Urgent!</span>' : ''}
+      <small>📅 Deadline: ${uni.deadline || 'TBA'}</small>
+      ${labelsHTML}
     `;
     varsityList.appendChild(li);
   });
@@ -461,8 +665,6 @@ sortBtn.addEventListener('click', () => {
   renderList();
 });
 
-
-
 // SCROLL BUTTONS
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
@@ -471,7 +673,6 @@ window.addEventListener('scroll', () => {
 });
 up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
-
 
 /* ================= MOBILE NAVIGATION ================= */
 const menuBtn = document.getElementById("menuBtn");
@@ -494,6 +695,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
