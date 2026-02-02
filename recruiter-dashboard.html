@@ -1626,12 +1626,285 @@ body {
 .favorite-star.active {
   fill: #fbbf24;
 }   
- 
+/* ======================================================
+   MOBILE RESPONSIVE DESIGN
+====================================================== */
+@media (max-width: 900px) {
+  
+  /* SIDEBAR - Hide by default on mobile */
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  .sidebar.mobile-open {
+    left: 0;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Mobile overlay */
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+  
+  .mobile-overlay.active {
+    display: block;
+  }
+  
+  /* MAIN - Full width on mobile */
+  .main {
+    padding: 16px;
+    width: 100%;
+  }
+  
+  /* Mobile header with menu button */
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #1e3a8a;
+    color: white;
+    margin: -16px -16px 20px -16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .mobile-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .menu-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  
+  /* STATS - 2 columns on mobile */
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .stat {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .stat i {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .stat h3 {
+    font-size: 20px;
+  }
+  
+  .stat span {
+    font-size: 12px;
+  }
+  
+  /* CV GRID - 1 column on mobile */
+  .cv-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .cv-card {
+    padding: 16px;
+  }
+  
+  /* JOBS TABLE - Stack on mobile */
+  .jobs-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px 0;
+  }
+  
+  .jobs-head {
+    display: none;
+  }
+  
+  .jobs-row > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .jobs-row > div::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #2563eb;
+    margin-right: 12px;
+  }
+  
+  .actions {
+    justify-content: flex-end;
+  }
+  
+  /* POST JOB FORM - Stack on mobile */
+  #post-job .row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  #post-job .cv-card {
+    padding: 20px 16px;
+  }
+  
+  #post-job .btn-container,
+  #post-job .btn-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  #post-job .primary-btn {
+    width: 100%;
+  }
+  
+  /* ANALYTICS - Stack on mobile */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .metric-card {
+    padding: 20px;
+  }
+  
+  .metric-value {
+    font-size: 28px;
+  }
+  
+  .chart-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .chart-container {
+    padding: 20px 16px;
+  }
+  
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .chart-filter {
+    width: 100%;
+  }
+  
+  .bar-label {
+    min-width: 100px;
+    font-size: 13px;
+  }
+  
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .export-buttons {
+    flex-direction: column;
+  }
+  
+  .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* FILTER PANEL - Stack on mobile */
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* PIPELINE - Horizontal scroll on mobile */
+  .pipeline-columns {
+    grid-template-columns: repeat(6, 240px);
+    overflow-x: auto;
+  }
+  
+  /* COMPARISON - Stack on mobile */
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* MODAL - Full width on mobile */
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    padding: 20px;
+  }
+  
+  /* Section headings */
+  .section h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  
+  /* Even smaller adjustments */
+  .mobile-header h1 {
+    font-size: 1.1rem;
+  }
+  
+  .stats {
+    gap: 10px;
+  }
+  
+  .stat {
+    padding: 12px;
+  }
+  
+  .stat h3 {
+    font-size: 18px;
+  }
+  
+  .cv-card {
+    padding: 14px;
+  }
+  
+  .metric-card {
+    padding: 16px;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+  }
+} 
      
 </style>
 </head>
 
 <body>
+<!-- Mobile Header -->
+<div class="mobile-header" style="display: none;">
+  <h1 id="mobilePageTitle">Dashboard</h1>
+  <button class="menu-toggle" onclick="toggleMobileSidebar()">
+    <i class='bx bx-menu'></i>
+  </button>
+</div>
+
+<!-- Mobile Overlay -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
 
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
@@ -1728,54 +2001,54 @@ body {
       </div>
 
       <!-- JOB ROW -->
-      <div class="jobs-row">
-        <div>
-          <strong>Senior Full Stack Engineer</strong>
-          <div class="job-location">
-            <i class='bx bx-map'></i> London, UK
-          </div>
-        </div>
+<div class="jobs-row">
+  <div data-label="Title">
+    <strong>Senior Full Stack Engineer</strong>
+    <div class="job-location">
+      <i class='bx bx-map'></i> London, UK
+    </div>
+  </div>
 
-        <div class="applied">3+ Applied</div>
+  <div data-label="Applications" class="applied">3+ Applied</div>
 
-        <div class="dates">
-          <span>Oct 27, 2024</span>
-          <small>Expires: Apr 25, 2025</small>
-        </div>
+  <div data-label="Dates" class="dates">
+    <span>Oct 27, 2024</span>
+    <small>Expires: Apr 25, 2025</small>
+  </div>
 
-        <div class="status active">Active</div>
+  <div data-label="Status" class="status active">Active</div>
 
-        <div class="actions">
-          <button title="View"><i class='bx bx-show'></i></button>
-          <button title="Edit"><i class='bx bx-edit'></i></button>
-          <button title="Delete"><i class='bx bx-trash'></i></button>
-        </div>
-      </div>
+  <div data-label="Actions" class="actions">
+    <button title="View"><i class='bx bx-show'></i></button>
+    <button title="Edit"><i class='bx bx-edit'></i></button>
+    <button title="Delete"><i class='bx bx-trash'></i></button>
+  </div>
+</div>
 
-      <!-- JOB ROW -->
-      <div class="jobs-row">
-        <div>
-          <strong>Senior Product Designer</strong>
-          <div class="job-location">
-            <i class='bx bx-map'></i> London, UK
-          </div>
-        </div>
+<!-- JOB ROW -->
+<div class="jobs-row">
+  <div data-label="Title">
+    <strong>Senior Product Designer</strong>
+    <div class="job-location">
+      <i class='bx bx-map'></i> London, UK
+    </div>
+  </div>
 
-        <div class="applied">3+ Applied</div>
+  <div data-label="Applications" class="applied">3+ Applied</div>
 
-        <div class="dates">
-          <span>Oct 20, 2024</span>
-          <small>Expires: Apr 20, 2025</small>
-        </div>
+  <div data-label="Dates" class="dates">
+    <span>Oct 20, 2024</span>
+    <small>Expires: Apr 20, 2025</small>
+  </div>
 
-        <div class="status active">Active</div>
+  <div data-label="Status" class="status active">Active</div>
 
-        <div class="actions">
-          <button><i class='bx bx-show'></i></button>
-          <button><i class='bx bx-edit'></i></button>
-          <button><i class='bx bx-trash'></i></button>
-        </div>
-      </div>
+  <div data-label="Actions" class="actions">
+    <button><i class='bx bx-show'></i></button>
+    <button><i class='bx bx-edit'></i></button>
+    <button><i class='bx bx-trash'></i></button>
+  </div>
+</div>
 
     </div>
   </div>
@@ -3388,7 +3661,65 @@ window.exportAnalytics = function(format) {
     }
   }
 }
-     
+/* ======================================================
+   MOBILE NAVIGATION
+====================================================== */
+function toggleMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('active');
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  
+  sidebar.classList.remove('mobile-open');
+  overlay.classList.remove('active');
+}
+
+// Show mobile header on small screens
+function handleMobileLayout() {
+  const mobileHeader = document.querySelector('.mobile-header');
+  
+  if (window.innerWidth <= 900) {
+    if (mobileHeader) mobileHeader.style.display = 'flex';
+  } else {
+    if (mobileHeader) mobileHeader.style.display = 'none';
+    closeMobileSidebar();
+  }
+}
+
+// Update mobile page title when switching sections
+const originalShowSection = showSection;
+window.showSection = function(id, el) {
+  originalShowSection(id, el);
+  
+  const mobileTitle = document.getElementById('mobilePageTitle');
+  if (mobileTitle) {
+    const titles = {
+      'dashboard': 'Dashboard',
+      'company': 'Company Profile',
+      'post-job': 'Post a Job',
+      'jobs': 'Manage Jobs',
+      'cvs': 'CV Library',
+      'billing': 'Packages',
+      'analytics': 'Analytics'
+    };
+    mobileTitle.textContent = titles[id] || 'Dashboard';
+  }
+  
+  // Close mobile sidebar after selection
+  if (window.innerWidth <= 900) {
+    closeMobileSidebar();
+  }
+}
+
+// Initialize on load
+window.addEventListener('load', handleMobileLayout);
+window.addEventListener('resize', handleMobileLayout);    
 </script>
 
 </body>
