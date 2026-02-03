@@ -139,47 +139,6 @@ header p {
 }
 
 /* =============================== */
-/* SMART MATCH BANNER */
-.smart-match-banner{
-  background: linear-gradient(135deg,#fef3c7,#fef08a);
-  border: 1px solid #fde047;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #92400e;
-  flex-wrap: wrap;
-}
-
-.smart-match-banner strong{
-  color:#78350f;
-}
-
-.smart-match-banner span {
-  flex: 1;
-  min-width: 150px;
-}
-
-.smart-match-banner button{
-  margin-left:auto;
-  background:none;
-  border:none;
-  color:#ca8a04;
-  font-weight:600;
-  cursor:pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.smart-match-banner button:hover{
-  background: rgba(202, 138, 4, 0.1);
-}
-
-/* =============================== */
 /* BURSARY CARDS LIST */
 #bursaryList {
   list-style: none;
@@ -269,26 +228,26 @@ header p {
 }
 
 .close-preview-btn {
-  background: #ef4444;
-  color: white;
+  background: transparent;
   border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
   cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  line-height: 1;
-  transition: all 0.2s;
+  transition: transform 0.2s;
   flex-shrink: 0;
-  padding: 0;
 }
 
 .close-preview-btn:hover {
-  background: #dc2626;
-  transform: scale(1.05);
+  transform: scale(1.1);
+}
+
+.close-preview-btn svg {
+  width: 28px;
+  height: 28px;
+  stroke: #3b82f6;
+  stroke-width: 2.5;
 }
 
 .bursaries-preview h2 {
@@ -554,6 +513,7 @@ header p {
     font-size: 1rem;
   }
 
+  /* Stack layout on mobile */
   .bursaries-container {
     flex-direction: column;
     margin: 20px auto;
@@ -580,20 +540,17 @@ header p {
     max-height: 70vh;
   }
 
+  /* Filter */
   .filter {
     margin-bottom: 16px;
   }
 
   .filter select {
     padding: 14px 16px;
-    font-size: 16px;
+    font-size: 16px; /* Prevents iOS zoom */
   }
 
-  .smart-match-banner {
-    font-size: 13px;
-    padding: 10px 14px;
-  }
-
+  /* Bursary Cards */
   .bursary-card {
     padding: 14px;
   }
@@ -606,6 +563,7 @@ header p {
     font-size: 0.85rem;
   }
 
+  /* Bursary Preview */
   .bursaries-preview h2 {
     font-size: 1.3rem;
   }
@@ -626,12 +584,12 @@ header p {
     font-size: 16px;
   }
 
-  .close-preview-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
+  .close-preview-btn svg {
+    width: 24px;
+    height: 24px;
   }
 
+  /* Footer */
   .footer-links {
     flex-direction: column;
     gap: 8px;
@@ -641,6 +599,7 @@ header p {
     font-size: 14px;
   }
 
+  /* Scroll Buttons */
   .scroll-btn {
     width: 44px;
     height: 44px;
@@ -652,6 +611,8 @@ header p {
   #scrollDown { bottom: 24px; }
 }
 
+/* =============================== */
+/* EXTRA SMALL SCREENS */
 @media (max-width: 400px) {
   header h1 {
     font-size: 1.75rem;
@@ -749,12 +710,6 @@ header p {
       <select id="facultyFilter">
         <option value="All">All Bursaries</option>
       </select>
-    </div>
-
-    <!-- Smart Match Banner -->
-    <div id="smartMatchBanner" class="smart-match-banner">
-      🎓 <strong>Smart Bursary Matching</strong>
-      <span>Click bursaries to train your recommendations</span>
     </div>
 
     <!-- Bursary List -->
@@ -883,67 +838,6 @@ function injectBursarySchema() {
   document.head.appendChild(script);
 }
 
-// Smart matching functions
-function isSmartMatchActive(){
-  const profile = JSON.parse(localStorage.getItem("bursaryTaste"));
-  if(!profile) return false;
-
-  const total =
-    Object.values(profile.faculties).reduce((a,b)=>a+b,0) +
-    Object.values(profile.providers).reduce((a,b)=>a+b,0);
-
-  return total > 3;
-}
-
-function updateSmartMatchBanner(){
-  const banner = document.getElementById("smartMatchBanner");
-
-  if(isSmartMatchActive()){
-    banner.innerHTML = `
-      🎓 <strong>Smart Bursary Matching</strong>
-      <span>Personalized based on your activity</span>
-      <button id="resetTaste">Reset</button>
-    `;
-  } else {
-    banner.innerHTML = `
-      🎓 <strong>Smart Bursary Matching</strong>
-      <span>Click bursaries to train your recommendations</span>
-    `;
-  }
-
-  const btn = document.getElementById("resetTaste");
-  if(btn){
-    btn.onclick = ()=>{
-      localStorage.removeItem("bursaryTaste");
-      updateSmartMatchBanner();
-      renderBursaries(facultyFilter.value);
-    };
-  }
-}
-
-function trackUserInterest(bursary){
-  let profile = JSON.parse(localStorage.getItem("bursaryTaste")) || {
-    faculties: {},
-    providers: {}
-  };
-
-  profile.faculties[bursary.faculty] = (profile.faculties[bursary.faculty] || 0) + 1;
-  profile.providers[bursary.provider] = (profile.providers[bursary.provider] || 0) + 1;
-
-  localStorage.setItem("bursaryTaste", JSON.stringify(profile));
-  updateSmartMatchBanner();
-}
-
-function getTasteScore(bursary){
-  const profile = JSON.parse(localStorage.getItem("bursaryTaste"));
-  if (!profile) return 0;
-
-  return (
-    (profile.faculties[bursary.faculty] || 0) * 3 +
-    (profile.providers[bursary.provider] || 0) * 2
-  );
-}
-
 // Load cached bursaries instantly
 loadCachedBursaries();
 
@@ -955,7 +849,7 @@ function loadCachedBursaries() {
     bursaries = JSON.parse(cached);
     injectBursarySchema();
     populateFacultyFilter();
-    renderBursaries('All');
+    renderBursaries();
     console.log("⚡ Loaded bursaries from cache");
   } catch (e) {
     console.warn("Cache invalid");
@@ -1004,7 +898,7 @@ async function fetchBursaries() {
 
     injectBursarySchema();
     populateFacultyFilter();
-    renderBursaries(facultyFilter.value);
+    renderBursaries();
     console.log("🔄 Bursaries updated from Sanity");
 
   } catch (err) {
@@ -1012,19 +906,24 @@ async function fetchBursaries() {
   }
 }
 
+// Show default preview
+function showDefaultPreview() {
+  bursaryPreview.innerHTML = `
+    <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+      <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+        <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+      </svg>
+      <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
+    </div>
+  `;
+}
+
 // Render bursaries list
 function renderBursaries(filter = 'All') {
   bursaryList.innerHTML = '';
-  
-  // Filter by faculty
-  const facultyFiltered = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
-  
-  // Sort by taste score and deadline
-  filteredBursaries = facultyFiltered.sort((a, b) => {
-    const tasteDiff = getTasteScore(b) - getTasteScore(a);
-    if (tasteDiff !== 0) return tasteDiff;
-    return new Date(a.deadline) - new Date(b.deadline);
-  });
+  filteredBursaries = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
 
   if (!filteredBursaries.length) {
     bursaryList.innerHTML = `
@@ -1038,7 +937,6 @@ function renderBursaries(filter = 'All') {
       </div>
     `;
     showDefaultPreview();
-    updateSmartMatchBanner();
     return;
   }
 
@@ -1075,7 +973,6 @@ function renderBursaries(filter = 'All') {
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
       showPreview(b, direction);
       renderBursaries(filter);
-      trackUserInterest(b);
       
       // Scroll to preview on mobile
       if (window.innerWidth <= 900) {
@@ -1088,22 +985,6 @@ function renderBursaries(filter = 'All') {
 
     bursaryList.appendChild(li);
   });
-
-  updateSmartMatchBanner();
-}
-
-// Show default preview
-function showDefaultPreview() {
-  bursaryPreview.innerHTML = `
-    <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-      <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
-        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
-        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
-        <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
-      </svg>
-      <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
-    </div>
-  `;
 }
 
 // Extract clean link
@@ -1127,7 +1008,12 @@ function showPreview(b, direction = "left") {
     <div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
       <div class="preview-header">
         <h2>${b.name}</h2>
-        <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">×</button>
+        <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
+          <svg viewBox="0 0 24 24" fill="none">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
       <div class="preview-content-wrapper">
         <div class="preview-info">
@@ -1253,7 +1139,6 @@ function goToNextBursary() {
   if (selectedIndex < filteredBursaries.length - 1) {
     selectedIndex++;
     showPreview(filteredBursaries[selectedIndex], "left");
-    trackUserInterest(filteredBursaries[selectedIndex]);
     renderBursaries(facultyFilter.value);
   }
 }
@@ -1263,7 +1148,6 @@ function goToPreviousBursary() {
   if (selectedIndex > 0) {
     selectedIndex--;
     showPreview(filteredBursaries[selectedIndex], "right");
-    trackUserInterest(filteredBursaries[selectedIndex]);
     renderBursaries(facultyFilter.value);
   }
 }
@@ -1282,6 +1166,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
