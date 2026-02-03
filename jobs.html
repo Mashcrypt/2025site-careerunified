@@ -57,11 +57,15 @@ header p {
   margin: 30px auto;
   gap: 20px;
   padding: 0 20px;
+  min-height: 100vh;
 }
 
 .jobs-left {
   flex: 1;
-  min-width: 0; /* Fix flexbox overflow */
+  min-width: 0;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .jobs-preview {
@@ -74,7 +78,9 @@ header p {
   position: sticky;
   top: 20px;
   max-height: calc(100vh - 40px);
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* =============================== */
@@ -128,6 +134,47 @@ header p {
 }
 
 /* =============================== */
+/* SMART MATCH BANNER */
+.smart-match-banner{
+  background: linear-gradient(135deg,#ecfeff,#e0f2fe);
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #0369a1;
+  flex-wrap: wrap;
+}
+
+.smart-match-banner strong{
+  color:#0c4a6e;
+}
+
+.smart-match-banner span {
+  flex: 1;
+  min-width: 150px;
+}
+
+.smart-match-banner button{
+  margin-left:auto;
+  background:none;
+  border:none;
+  color:#0284c7;
+  font-weight:600;
+  cursor:pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.smart-match-banner button:hover{
+  background: rgba(2, 132, 199, 0.1);
+}
+
+/* =============================== */
 /* JOB CARDS LIST */
 .jobs-list {
   list-style: none;
@@ -164,7 +211,7 @@ header p {
   font-size: 1.1rem;
   color: #1e3a8a;
   margin-bottom: 8px;
-  padding-right: 80px; /* Space for badge */
+  padding-right: 80px;
 }
 
 .job-card p {
@@ -200,15 +247,34 @@ header p {
   color: #1e3a8a;
   font-size: 1.75rem;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .jobs-preview p {
   margin: 8px 0;
   color: #4b5563;
+  flex-shrink: 0;
 }
 
 .jobs-preview strong {
   color: #1f2937;
+}
+
+.jobs-preview .job-badge{
+  position: relative;
+  top: 0;
+  right: 0;
+  display: inline-block;
+  margin-bottom: 12px;
+  z-index: 1;
+}
+
+.preview-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .jobs-preview .description-content {
@@ -219,21 +285,27 @@ header p {
   border-radius: 8px;
   line-height: 1.7;
   color: #374151;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* =============================== */
 /* APPLY BUTTON */
 .apply-btn {
-  display: inline-block;
-  margin-top: 20px;
+  display: block;
   background: #16a34a;
   color: white;
-  padding: 12px 24px;
+  padding: 14px;
   border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
   font-size: 15px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 10px;
+  box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
 }
 
 .apply-btn:hover {
@@ -296,6 +368,48 @@ header p {
 }
 
 /* =============================== */
+/* SWIPE ANIMATIONS */
+.preview-slide {
+  animation-duration: 0.35s;
+  animation-fill-mode: both;
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.slide-left {
+  animation-name: slideLeft;
+}
+
+.slide-right {
+  animation-name: slideRight;
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* =============================== */
 /* FOOTER */
 .main-footer {
   background: #1e3a8a;
@@ -335,6 +449,26 @@ header p {
 }
 
 /* =============================== */
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state svg {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.empty-state h3 {
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* =============================== */
 /* MOBILE RESPONSIVE */
 @media (max-width: 900px) {
   
@@ -350,7 +484,6 @@ header p {
     font-size: 1rem;
   }
 
-  /* Stack layout on mobile */
   .jobs-container {
     flex-direction: column;
     margin: 20px auto;
@@ -361,16 +494,22 @@ header p {
   .jobs-left,
   .jobs-preview {
     width: 100%;
+    max-height: none;
+  }
+
+  .jobs-left {
+    overflow-y: visible;
+    padding-right: 0;
   }
 
   .jobs-preview {
     position: static;
-    max-height: none;
     padding: 20px;
     margin-top: 0;
+    min-height: 500px;
+    max-height: 70vh;
   }
 
-  /* Search & Filters */
   .search-filter-container {
     flex-direction: column;
     gap: 12px;
@@ -382,10 +521,14 @@ header p {
     width: 100%;
     min-width: auto;
     padding: 14px 16px;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: 16px;
   }
 
-  /* Job Cards */
+  .smart-match-banner {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
   .job-card {
     padding: 14px;
   }
@@ -399,7 +542,6 @@ header p {
     font-size: 0.85rem;
   }
 
-  /* Job Preview */
   .jobs-preview h2 {
     font-size: 1.4rem;
   }
@@ -420,7 +562,6 @@ header p {
     font-size: 16px;
   }
 
-  /* Footer */
   .footer-links {
     flex-direction: column;
     gap: 8px;
@@ -431,8 +572,6 @@ header p {
   }
 }
 
-/* =============================== */
-/* EXTRA SMALL SCREENS */
 @media (max-width: 400px) {
   header h1 {
     font-size: 1.75rem;
@@ -447,144 +586,6 @@ header p {
     padding: 3px 8px;
   }
 }
-
-/* =============================== */
-/* EMPTY STATE */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #6b7280;
-}
-
-.empty-state svg {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 16px;
-  opacity: 0.3;
-}
-
-.empty-state h3 {
-  color: #374151;
-  margin-bottom: 8px;
-}
-/* ===============================
-  STICKY FOLLOWING JOB PREVIEW PANEL
-=============================== */
-/* Allow natural page scrolling */
-.jobs-container{
-  min-height: 100vh;
-}
-
-/* Keep job list scrollable */
-.jobs-left{
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-/* Make preview sticky WITHOUT breaking scroll */
-.jobs-preview{
-  position: sticky;
-  top: 20px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-}
-
-/* ===============================
-   FIX BADGE OVERLAP IN PREVIEW
-=============================== */
-.jobs-preview .job-badge{
-  position: relative;
-  top: 0;
-  right: 0;
-  display: inline-block;
-  margin-bottom: 12px;
-  z-index: 1;
-}
-
-/* ===============================
-   STICKY APPLY BUTTON
-=============================== */
-
-/* Turn preview into a flex column */
-.jobs-preview{
-  display: flex;
-  flex-direction: column;
-}
-
-/* Make only the content scroll */
-.jobs-preview .fade-in{
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Scroll only the description area */
-.jobs-preview .description-content{
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
-
-/* Stick the apply button */
-.jobs-preview .apply-btn{
-  position: sticky;
-  bottom: 0;
-  background: #16a34a;
-  padding: 14px;
-  text-align: center;
-  z-index: 5;
-  box-shadow: 0 -6px 12px rgba(0,0,0,0.1);
-}
-/* ===============================
-   SWIPE ANIMATIONS (Job Preview)
-=============================== */
-
-.jobs-preview {
-  overflow: hidden;
-}
-
-.preview-slide {
-  animation-duration: 0.35s;
-  animation-fill-mode: both;
-}
-
-.slide-left {
-  animation-name: slideLeft;
-}
-
-.slide-right {
-  animation-name: slideRight;
-}
-
-@keyframes slideLeft {
-  from {
-    transform: translateX(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideRight {
-  from {
-    transform: translateX(-40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-  
-/* Allow animation to play */
-.jobs-preview > .preview-slide{
-  width: 100%;
-  flex-shrink: 0;
-}
-
 </style>
 </head>
 
@@ -606,7 +607,6 @@ header p {
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
     
-    <!-- My Account Icon (Desktop) -->
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -617,11 +617,9 @@ header p {
 
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <!-- Clickable Logo -->
     <a href="index.html" class="mobile-logo">Career Unified</a>
     
     <div class="mobile-nav-right">
-      <!-- Account Icon - Direct Link -->
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
         <svg viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -629,7 +627,6 @@ header p {
         </svg>
       </a>
 
-      <!-- Menu Icon -->
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
         <svg viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -654,7 +651,6 @@ header p {
   <a href="login.html">Login</a>
 </div>
 
-
 <!-- HEADER -->
 <header>
   <h1>Available Jobs</h1>
@@ -674,6 +670,12 @@ header p {
         <option value="freelance">Freelance</option>
       </select>
       <button id="sortBtn">Sort by Deadline</button>
+    </div>
+
+    <!-- Smart Match Banner -->
+    <div id="smartMatchBanner" class="smart-match-banner">
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Click jobs to train your recommendations</span>
     </div>
 
     <!-- Job List -->
@@ -736,7 +738,7 @@ if (menuBtn) {
   menuBtn.onclick = () => {
     const isOpen = mobileMenu.style.display === "block";
     mobileMenu.style.display = isOpen ? "none" : "block";
-    accountMenu.style.display = "none";
+    if (accountMenu) accountMenu.style.display = "none";
   };
 }
 
@@ -774,6 +776,7 @@ const CACHE_TIME_KEY = "careerUnifiedJobsCacheTime";
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 let jobs = [];
+let filteredJobs = [];
 let selectedIndex = null;
 
 // Show skeleton loaders
@@ -906,12 +909,77 @@ function getPriority(job) {
   return 0;
 }
 
+// Smart matching functions
+function isSmartMatchActive(){
+  const profile = JSON.parse(localStorage.getItem("jobTaste"));
+  if(!profile) return false;
+
+  const total =
+    Object.values(profile.categories).reduce((a,b)=>a+b,0) +
+    Object.values(profile.locations).reduce((a,b)=>a+b,0) +
+    Object.values(profile.jobTypes).reduce((a,b)=>a+b,0);
+
+  return total > 3;
+}
+
+function updateSmartMatchBanner(){
+  const banner = document.getElementById("smartMatchBanner");
+
+  if(isSmartMatchActive()){
+    banner.innerHTML = `
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Personalized based on your activity</span>
+      <button id="resetTaste">Reset</button>
+    `;
+  } else {
+    banner.innerHTML = `
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Click jobs to train your recommendations</span>
+    `;
+  }
+
+  const btn = document.getElementById("resetTaste");
+  if(btn){
+    btn.onclick = ()=>{
+      localStorage.removeItem("jobTaste");
+      updateSmartMatchBanner();
+      renderJobs();
+    };
+  }
+}
+
+function trackUserInterest(job){
+  let profile = JSON.parse(localStorage.getItem("jobTaste")) || {
+    categories: {},
+    locations: {},
+    jobTypes: {}
+  };
+
+  profile.categories[job.category] = (profile.categories[job.category] || 0) + 1;
+  profile.locations[job.location] = (profile.locations[job.location] || 0) + 1;
+  profile.jobTypes[job.jobType] = (profile.jobTypes[job.jobType] || 0) + 1;
+
+  localStorage.setItem("jobTaste", JSON.stringify(profile));
+  updateSmartMatchBanner();
+}
+
+function getTasteScore(job){
+  const profile = JSON.parse(localStorage.getItem("jobTaste"));
+  if (!profile) return 0;
+
+  return (
+    (profile.categories[job.category] || 0) * 3 +
+    (profile.locations[job.location] || 0) * 2 +
+    (profile.jobTypes[job.jobType] || 0) * 2
+  );
+}
+
 // Render jobs list
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
   const category = document.getElementById('categoryFilter').value;
 
-  const filtered = jobs
+  filteredJobs = jobs
     .filter(j => {
       return (category === 'all' || j.category === category) &&
         (j.title.toLowerCase().includes(searchTerm) ||
@@ -919,19 +987,18 @@ function renderJobs() {
          j.description.toLowerCase().includes(searchTerm));
     })
     .sort((a,b) => {
-  const pDiff = getPriority(b) - getPriority(a);
-  if (pDiff !== 0) return pDiff;
+      const pDiff = getPriority(b) - getPriority(a);
+      if (pDiff !== 0) return pDiff;
 
-  const tasteDiff = getTasteScore(b) - getTasteScore(a);
-  if (tasteDiff !== 0) return tasteDiff;
+      const tasteDiff = getTasteScore(b) - getTasteScore(a);
+      if (tasteDiff !== 0) return tasteDiff;
 
-  return new Date(a.deadline) - new Date(b.deadline);
-});
-
+      return new Date(a.deadline) - new Date(b.deadline);
+    });
 
   jobList.innerHTML = "";
 
-  if (filtered.length === 0) {
+  if (filteredJobs.length === 0) {
     jobList.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
@@ -942,10 +1009,11 @@ function renderJobs() {
         <p>Try adjusting your search or filters</p>
       </div>
     `;
+    updateSmartMatchBanner();
     return;
   }
 
-  filtered.forEach((job, index) => {
+  filteredJobs.forEach((job, index) => {
     const li = document.createElement("li");
     li.className = "job-card";
     if (index === selectedIndex) li.classList.add("selected");
@@ -964,12 +1032,13 @@ function renderJobs() {
     `;
 
     li.onclick = () => {
+      const previousIndex = selectedIndex;
       selectedIndex = index;
-      showPreview(job);
+      const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
+      showPreview(job, direction);
       renderJobs();
       trackUserInterest(job);
 
-      
       // Scroll to preview on mobile
       if (window.innerWidth <= 900) {
         document.getElementById('jobPreview').scrollIntoView({ 
@@ -981,34 +1050,10 @@ function renderJobs() {
 
     jobList.appendChild(li);
   });
+
+  updateSmartMatchBanner();
 }
 
-function trackUserInterest(job){
-  let profile = JSON.parse(localStorage.getItem("jobTaste")) || {
-    categories: {},
-    locations: {},
-    jobTypes: {}
-  };
-
-  profile.categories[job.category] = (profile.categories[job.category] || 0) + 1;
-  profile.locations[job.location] = (profile.locations[job.location] || 0) + 1;
-  profile.jobTypes[job.jobType] = (profile.jobTypes[job.jobType] || 0) + 1;
-
-  localStorage.setItem("jobTaste", JSON.stringify(profile));
-}
-
-function getTasteScore(job){
-  const profile = JSON.parse(localStorage.getItem("jobTaste"));
-  if (!profile) return 0;
-
-  return (
-    (profile.categories[job.category] || 0) * 3 +
-    (profile.locations[job.location] || 0) * 2 +
-    (profile.jobTypes[job.jobType] || 0) * 2
-  );
-}
-
-  
 // Show job preview
 function showPreview(job, direction = "left") {
   let badgeText = job.badge ||
@@ -1023,8 +1068,10 @@ function showPreview(job, direction = "left") {
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
       <p><strong>Posted:</strong> ${job.posted} | <strong>Closing:</strong> ${job.deadline}</p>
-      <div class="description-content">${job.description}</div>
-      <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+      <div class="preview-content-wrapper">
+        <div class="description-content">${job.description}</div>
+        <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+      </div>
     </div>
   `;
   injectJobSchema(job);
@@ -1055,53 +1102,73 @@ setInterval(fetchJobs, 5 * 60 * 1000);
 
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
 
 document.addEventListener("touchstart", e => {
   if (e.target.closest("#jobPreview")) {
-    touchStartX = e.changedTouches[0].screenX;
+    // Only detect swipe if not scrolling the description
+    const descriptionContent = e.target.closest(".description-content");
+    if (!descriptionContent) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }
   }
-});
+}, { passive: true });
 
 document.addEventListener("touchend", e => {
   if (e.target.closest("#jobPreview")) {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
+    const descriptionContent = e.target.closest(".description-content");
+    if (!descriptionContent && touchStartX !== 0) {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+      touchStartX = 0;
+      touchStartY = 0;
+    }
   }
-});
-
+}, { passive: true });
 
 function handleSwipe() {
   const threshold = 50; // minimum swipe distance
+  const verticalThreshold = 30; // max vertical movement to be considered horizontal swipe
 
-  // Swipe left → next job
-  if (touchStartX - touchEndX > threshold) {
-    goToNextJob();
-  }
+  const horizontalDiff = Math.abs(touchStartX - touchEndX);
+  const verticalDiff = Math.abs(touchStartY - touchEndY);
 
-  // Swipe right → previous job
-  if (touchEndX - touchStartX > threshold) {
-    goToPreviousJob();
+  // Only process if swipe is more horizontal than vertical
+  if (horizontalDiff > verticalThreshold && horizontalDiff > verticalDiff) {
+    // Swipe left → next job
+    if (touchStartX - touchEndX > threshold) {
+      goToNextJob();
+    }
+
+    // Swipe right → previous job
+    if (touchEndX - touchStartX > threshold) {
+      goToPreviousJob();
+    }
   }
 }
 
 function goToNextJob() {
-  if (selectedIndex === null) return;
-  if (selectedIndex < jobs.length - 1) {
+  if (selectedIndex === null || filteredJobs.length === 0) return;
+  if (selectedIndex < filteredJobs.length - 1) {
     selectedIndex++;
-    showPreview(jobs[selectedIndex], "left");
+    showPreview(filteredJobs[selectedIndex], "left");
+    trackUserInterest(filteredJobs[selectedIndex]);
     renderJobs();
   }
 }
 
 function goToPreviousJob() {
-  if (selectedIndex === null) return;
+  if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex > 0) {
     selectedIndex--;
-    showPreview(jobs[selectedIndex], "right");
+    showPreview(filteredJobs[selectedIndex], "right");
+    trackUserInterest(filteredJobs[selectedIndex]);
     renderJobs();
   }
 }
-
 
 </script>
 
