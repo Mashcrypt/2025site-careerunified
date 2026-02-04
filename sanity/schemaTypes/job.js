@@ -48,6 +48,10 @@ export default {
         list: [
           { title: 'Internship / Graduate', value: 'internship' },
           { title: 'Temporary Contract', value: 'temporary' },
+          { title: 'Permanent', value: 'permanent' },
+          { title: 'Learnershi', value: 'learnership' },
+          { title: 'Part-time', value: 'part-time' },
+          { title: 'Graduate Program', value: 'graduate program' },
           { title: 'Freelance', value: 'freelance' }
         ],
         layout: 'radio'
