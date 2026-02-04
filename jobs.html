@@ -1104,53 +1104,43 @@ if (!last || Date.now() - last > CACHE_TTL) {
 setInterval(fetchJobs, 5 * 60 * 1000);
 
 /* ===============================
-   MOBILE SWIPE BETWEEN JOBS
+   MOBILE SWIPE (SAFE VERSION)
+   This NEVER blocks vertical scrolling
 =============================== */
 
-let touchStartX = 0;
-let touchEndX = 0;
-let touchStartY = 0;
-let touchEndY = 0;
+let startX = 0;
+let startY = 0;
 
 document.addEventListener("touchstart", e => {
-  if (e.target.closest("#jobPreview")) {
-    const descriptionContent = e.target.closest(".description-content");
-    if (!descriptionContent && Math.abs(e.changedTouches[0].screenY - touchStartY) < 10) {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    }
-  }
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+
+  // If user is touching the description, allow scrolling
+  if (!preview || desc) return;
+
+  const touch = e.changedTouches[0];
+  startX = touch.screenX;
+  startY = touch.screenY;
 }, { passive: true });
 
 document.addEventListener("touchend", e => {
-  if (e.target.closest("#jobPreview")) {
-    const descriptionContent = e.target.closest(".description-content");
-    if (!descriptionContent && touchStartX !== 0) {
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
-      handleSwipe();
-      touchStartX = 0;
-      touchStartY = 0;
-    }
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+
+  // If user was scrolling text, ignore swipe logic
+  if (!preview || desc) return;
+
+  const touch = e.changedTouches[0];
+  const dx = touch.screenX - startX;
+  const dy = touch.screenY - startY;
+
+  // Only horizontal swipes
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToNextJob();
+    else goToPreviousJob();
   }
 }, { passive: true });
 
-function handleSwipe() {
-  const threshold = 50;
-  const verticalThreshold = 30;
-
-  const horizontalDiff = Math.abs(touchStartX - touchEndX);
-  const verticalDiff = Math.abs(touchStartY - touchEndY);
-
-  if (horizontalDiff > 50 && horizontalDiff > verticalDiff) {
-    if (touchStartX - touchEndX > threshold) {
-      goToNextJob();
-    }
-    if (touchEndX - touchStartX > threshold) {
-      goToPreviousJob();
-    }
-  }
-}
 
 function goToNextJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
@@ -1208,6 +1198,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
