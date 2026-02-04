@@ -101,7 +101,7 @@ header p {
   position: sticky;
   top: 20px;
   max-height: calc(100vh - 40px);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
 }
@@ -263,7 +263,7 @@ header p {
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .preview-info {
@@ -289,7 +289,9 @@ header p {
   color: #374151;
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   margin-bottom: 10px;
 }
 
@@ -538,6 +540,7 @@ header p {
     margin-top: 0;
     min-height: 500px;
     max-height: 70vh;
+    overflow: visible;
   }
 
   /* Filter */
@@ -1087,6 +1090,7 @@ setInterval(fetchBursaries, 5 * 60 * 1000);
 
 /* ===============================
    MOBILE SWIPE BETWEEN BURSARIES
+   FIXED: Now allows vertical scrolling
 =============================== */
 
 let touchStartX = 0;
@@ -1097,6 +1101,7 @@ let touchEndY = 0;
 document.addEventListener("touchstart", e => {
   if (e.target.closest("#bursaryPreview")) {
     const descriptionContent = e.target.closest(".description-content");
+    // Only initialize swipe if NOT in description AND movement is minimal
     if (!descriptionContent) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
@@ -1119,12 +1124,12 @@ document.addEventListener("touchend", e => {
 
 function handleSwipe() {
   const threshold = 50;
-  const verticalThreshold = 30;
 
   const horizontalDiff = Math.abs(touchStartX - touchEndX);
   const verticalDiff = Math.abs(touchStartY - touchEndY);
 
-  if (horizontalDiff > verticalThreshold && horizontalDiff > verticalDiff) {
+  // Only trigger swipe if horizontal movement is dominant AND significant
+  if (horizontalDiff > 50 && horizontalDiff > verticalDiff) {
     if (touchStartX - touchEndX > threshold) {
       goToNextBursary();
     }
@@ -1166,6 +1171,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
