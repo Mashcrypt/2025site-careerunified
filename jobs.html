@@ -633,8 +633,7 @@ header p {
     font-size: 1.2rem;
   }
 }
-  
-  .heart-icon {
+ .heart-icon {
   width: 22px;
   height: 22px;
   fill: none;
@@ -740,6 +739,11 @@ header p {
       <button id="sortBtn">Sort by Deadline</button>
     </div>
 
+    <!-- Smart Match Banner -->
+    <div id="smartMatchBanner" class="smart-match-banner">
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Click jobs to train your recommendations</span>
+    </div>
 
     <!-- Job List -->
     <ul class="jobs-list" id="jobList"></ul>
@@ -985,6 +989,21 @@ function isSmartMatchActive(){
   return total > 3;
 }
 
+function updateSmartMatchBanner(){
+  const banner = document.getElementById("smartMatchBanner");
+
+  if(isSmartMatchActive()){
+    banner.innerHTML = `
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Personalized based on your activity</span>
+      <button id="resetTaste">Reset</button>
+    `;
+  } else {
+    banner.innerHTML = `
+      🎯 <strong>Smart Job Matching</strong>
+      <span>Click jobs to train your recommendations</span>
+    `;
+  }
 
   const btn = document.getElementById("resetTaste");
   if(btn){
@@ -1083,9 +1102,13 @@ function renderJobs() {
       (job.listingTier === 'premier' ? 'Premier' :
        job.listingTier === 'sponsored' ? 'Sponsored' : '');
 
-    li.innerHTML = `
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
-      <h3>${job.title}</h3>
+       li.innerHTML = `
+  ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+  
+  <svg class="heart-icon" data-id="${job._id}" data-type="job" viewBox="0 0 24 24">
+    <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
+  </svg>
+  <h3>${job.title}</h3>
       <p><strong>Company:</strong> ${job.company}</p>
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
@@ -1112,7 +1135,9 @@ function renderJobs() {
     jobList.appendChild(li);
   });
 
-  updateSmartMatchBanner();
+updateSmartMatchBanner();
+updateHearts();
+
 }
   
 // Show job preview
@@ -1250,11 +1275,45 @@ function goToPreviousJob() {
     renderJobs();
   }
 }
+/* ===============================
+   BOOKMARK SYSTEM
+=============================== */
+
+let bookmarks = JSON.parse(localStorage.getItem("careerUnifiedBookmarks") || "[]");
+
+function toggleBookmark(id, type) {
+  const key = type + ":" + id;
+
+  if (bookmarks.includes(key)) {
+    bookmarks = bookmarks.filter(x => x !== key);
+  } else {
+    bookmarks.push(key);
+  }
+
+  localStorage.setItem("careerUnifiedBookmarks", JSON.stringify(bookmarks));
+  updateHearts();
+}
+
+function updateHearts() {
+  document.querySelectorAll(".heart-icon").forEach(h => {
+    const key = h.dataset.type + ":" + h.dataset.id;
+    h.classList.toggle("saved", bookmarks.includes(key));
+  });
+}
+
+document.addEventListener("click", e => {
+  if (e.target.closest(".heart-icon")) {
+    e.stopPropagation();   // prevents job opening
+    const heart = e.target.closest(".heart-icon");
+    toggleBookmark(heart.dataset.id, heart.dataset.type);
+  }
+});
 
 </script>
 
 </body>
 </html>
+
 
 
 
