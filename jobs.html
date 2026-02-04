@@ -633,6 +633,25 @@ header p {
     font-size: 1.2rem;
   }
 }
+  
+  .heart-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 2;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.heart-icon.saved {
+  fill: #ef4444;
+  transform: scale(1.2);
+}
+
 </style>
 </head>
 
@@ -651,6 +670,7 @@ header p {
     <a href="cv-generator.html">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
+    <a href="saved-jobs.html"> Saved Jobs</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
     
@@ -694,6 +714,7 @@ header p {
   <a href="cv-generator.html">Generate CV</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
+  <a href="saved-jobs.html"> Saved Jobs</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
@@ -719,11 +740,6 @@ header p {
       <button id="sortBtn">Sort by Deadline</button>
     </div>
 
-    <!-- Smart Match Banner -->
-    <div id="smartMatchBanner" class="smart-match-banner">
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Click jobs to train your recommendations</span>
-    </div>
 
     <!-- Job List -->
     <ul class="jobs-list" id="jobList"></ul>
@@ -969,21 +985,6 @@ function isSmartMatchActive(){
   return total > 3;
 }
 
-function updateSmartMatchBanner(){
-  const banner = document.getElementById("smartMatchBanner");
-
-  if(isSmartMatchActive()){
-    banner.innerHTML = `
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Personalized based on your activity</span>
-      <button id="resetTaste">Reset</button>
-    `;
-  } else {
-    banner.innerHTML = `
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Click jobs to train your recommendations</span>
-    `;
-  }
 
   const btn = document.getElementById("resetTaste");
   if(btn){
@@ -1254,6 +1255,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
