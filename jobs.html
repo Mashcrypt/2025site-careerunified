@@ -78,7 +78,7 @@ header p {
   position: sticky;
   top: 20px;
   max-height: calc(100vh - 40px);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
 }
@@ -133,46 +133,6 @@ header p {
   background: #1e40af;
 }
 
-/* =============================== */
-/* SMART MATCH BANNER */
-.smart-match-banner{
-  background: linear-gradient(135deg,#ecfeff,#e0f2fe);
-  border: 1px solid #bae6fd;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #0369a1;
-  flex-wrap: wrap;
-}
-
-.smart-match-banner strong{
-  color:#0c4a6e;
-}
-
-.smart-match-banner span {
-  flex: 1;
-  min-width: 150px;
-}
-
-.smart-match-banner button{
-  margin-left:auto;
-  background:none;
-  border:none;
-  color:#0284c7;
-  font-weight:600;
-  cursor:pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.smart-match-banner button:hover{
-  background: rgba(2, 132, 199, 0.1);
-}
 
 /* =============================== */
 /* JOB CARDS LIST */
@@ -230,7 +190,8 @@ header p {
 .job-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
+  right: 46px;
+  z-index: 2;
   padding: 4px 10px;
   background: #facc15;
   color: #1e3a8a;
@@ -289,6 +250,7 @@ header p {
   display: inline-block;
   margin-bottom: 12px;
   z-index: 1;
+  margin-right: 12px;
 }
 
 .preview-content-wrapper {
@@ -296,7 +258,7 @@ header p {
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .preview-info {
@@ -324,6 +286,8 @@ header p {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 10px;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 /* =============================== */
@@ -633,23 +597,29 @@ header p {
     font-size: 1.2rem;
   }
 }
- .heart-icon {
+.heart-icon {
   width: 22px;
   height: 22px;
   fill: none;
-  stroke: #ef4444;
+  stroke: #60a5fa;   /* light blue */
   stroke-width: 2;
   position: absolute;
   top: 14px;
   right: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.25s ease;
+}
+
+.heart-icon:hover {
+  transform: scale(1.15);
 }
 
 .heart-icon.saved {
-  fill: #ef4444;
-  transform: scale(1.2);
+  fill: #60a5fa;
+  stroke: #60a5fa;
+  filter: drop-shadow(0 0 6px rgba(96,165,250,0.6));
 }
+
 
 </style>
 </head>
@@ -739,11 +709,6 @@ header p {
       <button id="sortBtn">Sort by Deadline</button>
     </div>
 
-    <!-- Smart Match Banner -->
-    <div id="smartMatchBanner" class="smart-match-banner">
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Click jobs to train your recommendations</span>
-    </div>
 
     <!-- Job List -->
     <ul class="jobs-list" id="jobList"></ul>
@@ -976,70 +941,6 @@ function getPriority(job) {
   return 0;
 }
 
-// Smart matching functions
-function isSmartMatchActive(){
-  const profile = JSON.parse(localStorage.getItem("jobTaste"));
-  if(!profile) return false;
-
-  const total =
-    Object.values(profile.categories).reduce((a,b)=>a+b,0) +
-    Object.values(profile.locations).reduce((a,b)=>a+b,0) +
-    Object.values(profile.jobTypes).reduce((a,b)=>a+b,0);
-
-  return total > 3;
-}
-
-function updateSmartMatchBanner(){
-  const banner = document.getElementById("smartMatchBanner");
-
-  if(isSmartMatchActive()){
-    banner.innerHTML = `
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Personalized based on your activity</span>
-      <button id="resetTaste">Reset</button>
-    `;
-  } else {
-    banner.innerHTML = `
-      🎯 <strong>Smart Job Matching</strong>
-      <span>Click jobs to train your recommendations</span>
-    `;
-  }
-
-  const btn = document.getElementById("resetTaste");
-  if(btn){
-    btn.onclick = ()=>{
-      localStorage.removeItem("jobTaste");
-      updateSmartMatchBanner();
-      renderJobs();
-    };
-  }
-}
-
-function trackUserInterest(job){
-  let profile = JSON.parse(localStorage.getItem("jobTaste")) || {
-    categories: {},
-    locations: {},
-    jobTypes: {}
-  };
-
-  profile.categories[job.category] = (profile.categories[job.category] || 0) + 1;
-  profile.locations[job.location] = (profile.locations[job.location] || 0) + 1;
-  profile.jobTypes[job.jobType] = (profile.jobTypes[job.jobType] || 0) + 1;
-
-  localStorage.setItem("jobTaste", JSON.stringify(profile));
-  updateSmartMatchBanner();
-}
-
-function getTasteScore(job){
-  const profile = JSON.parse(localStorage.getItem("jobTaste"));
-  if (!profile) return 0;
-
-  return (
-    (profile.categories[job.category] || 0) * 3 +
-    (profile.locations[job.location] || 0) * 2 +
-    (profile.jobTypes[job.jobType] || 0) * 2
-  );
-}
 
 // Show default preview
 function showDefaultPreview() {
@@ -1069,9 +970,6 @@ function renderJobs() {
     .sort((a,b) => {
       const pDiff = getPriority(b) - getPriority(a);
       if (pDiff !== 0) return pDiff;
-
-      const tasteDiff = getTasteScore(b) - getTasteScore(a);
-      if (tasteDiff !== 0) return tasteDiff;
 
       return new Date(a.deadline) - new Date(b.deadline);
     });
@@ -1121,7 +1019,6 @@ function renderJobs() {
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
       showPreview(job, direction);
       renderJobs();
-      trackUserInterest(job);
 
       // Scroll to preview on mobile
       if (window.innerWidth <= 900) {
@@ -1135,7 +1032,6 @@ function renderJobs() {
     jobList.appendChild(li);
   });
 
-updateSmartMatchBanner();
 updateHearts();
 
 }
@@ -1219,7 +1115,7 @@ let touchEndY = 0;
 document.addEventListener("touchstart", e => {
   if (e.target.closest("#jobPreview")) {
     const descriptionContent = e.target.closest(".description-content");
-    if (!descriptionContent) {
+    if (!descriptionContent && Math.abs(e.changedTouches[0].screenY - touchStartY) < 10) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }
@@ -1246,7 +1142,7 @@ function handleSwipe() {
   const horizontalDiff = Math.abs(touchStartX - touchEndX);
   const verticalDiff = Math.abs(touchStartY - touchEndY);
 
-  if (horizontalDiff > verticalThreshold && horizontalDiff > verticalDiff) {
+  if (horizontalDiff > 50 && horizontalDiff > verticalDiff) {
     if (touchStartX - touchEndX > threshold) {
       goToNextJob();
     }
@@ -1271,7 +1167,6 @@ function goToPreviousJob() {
   if (selectedIndex > 0) {
     selectedIndex--;
     showPreview(filteredJobs[selectedIndex], "right");
-    trackUserInterest(filteredJobs[selectedIndex]);
     renderJobs();
   }
 }
@@ -1313,6 +1208,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
