@@ -652,7 +652,7 @@ function renderList() {
         ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name}</a>`
         : `<span>${uni.name}</span>`
       }
-      <small>📅 Deadline: ${uni.deadline || 'TBA'}</small>
+      <small> Deadline: ${uni.deadline || 'TBA'}</small>
       ${labelsHTML}
     `;
     varsityList.appendChild(li);
@@ -695,6 +695,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
