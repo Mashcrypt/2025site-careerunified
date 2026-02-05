@@ -629,6 +629,31 @@ header p {
     font-size: 1.2rem;
   }
 }
+
+.bursary-heart {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #3b82f6;
+  stroke-width: 2.2;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 5;
+}
+
+.bursary-heart:hover {
+  transform: scale(1.15);
+}
+
+.bursary-heart.saved {
+  fill: #3b82f6;
+  stroke: #3b82f6;
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
+}
+
 </style>
 </head>
 
@@ -754,6 +779,30 @@ header p {
 <script src="js/sanityClient.js"></script>
 
 <script>
+
+const SAVED_KEY = "careerUnifiedSavedJobs";
+
+function getSaved(){
+  return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]");
+}
+
+function saveItem(item){
+  const saved = getSaved();
+  if(!saved.find(s => s.id === item.id)){
+    saved.push(item);
+    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+  }
+}
+
+function removeItem(id){
+  let saved = getSaved().filter(i => i.id !== id);
+  localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+}
+
+function isSaved(id){
+  return getSaved().some(i => i.id === id);
+}
+
 /* ================================
    MOBILE NAVIGATION
 ================================ */
@@ -957,14 +1006,22 @@ function renderBursaries(filter = 'All') {
     li.className = 'bursary-card';
     if (index === selectedIndex) li.classList.add('selected');
 
-    li.innerHTML = `
-      <strong>${b.name}</strong>
-      <p><strong>Faculty:</strong> ${b.faculty}</p>
-      <p><strong>Provider:</strong> ${b.provider}</p>
-      <p><strong>Deadline:</strong> ${b.deadline} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
-      <p id="desc-${index}">${shortDesc}</p>
-      ${readMore}
-    `;
+    const id = "bursary-" + b._id;
+const saved = isSaved(id);
+
+li.innerHTML = `
+  <svg class="bursary-heart ${saved ? "saved" : ""}" viewBox="0 0 24 24">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+  </svg>
+
+  <strong>${b.name}</strong>
+  <p><strong>Faculty:</strong> ${b.faculty}</p>
+  <p><strong>Provider:</strong> ${b.provider}</p>
+  <p><strong>Deadline:</strong> ${b.deadline} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
+  <p id="desc-${index}">${shortDesc}</p>
+  ${readMore}
+`;
+
 
     li.onclick = (e) => {
       // Don't trigger if clicking "Read more"
@@ -990,6 +1047,30 @@ function renderBursaries(filter = 'All') {
     };
 
     bursaryList.appendChild(li);
+    const heart = li.querySelector(".bursary-heart");
+
+heart.addEventListener("click", e => {
+  e.stopPropagation(); // prevent opening preview
+
+  if (isSaved(id)) {
+    removeItem(id);
+    heart.classList.remove("saved");
+  } else {
+    saveItem({
+      id,
+      type: "bursary",
+      title: b.name,
+      faculty: b.faculty,
+      provider: b.provider,
+      deadline: b.deadline,
+      link: extractLink(b.applicationLink),
+      source: "Bursaries"
+    });
+    heart.classList.add("saved");
+  }
+});
+
+    
   });
 }
 
@@ -1174,6 +1255,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
