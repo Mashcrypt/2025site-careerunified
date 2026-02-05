@@ -505,14 +505,14 @@ header p {
   }
 
   .jobs-preview {
-  position: static;
-  padding: 20px;
-  margin-top: 0;
-  min-height: 500px;
-  max-height: 70vh;
-  overflow-y: auto;  /* ← ADD THIS LINE */
-  -webkit-overflow-scrolling: touch;  /* ← ADD THIS LINE */
-}
+    position: static;
+    padding: 20px;
+    margin-top: 0;
+    min-height: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .search-filter-container {
     flex-direction: column;
@@ -554,12 +554,12 @@ header p {
     font-size: 0.9rem;
   }
 
- .jobs-preview .description-content {
-  font-size: 0.9rem;
-  padding: 14px;
-  max-height: none;  /* ← ADD THIS LINE */
-  overflow-y: visible;  /* ← ADD THIS LINE */
-}
+  .jobs-preview .description-content {
+    font-size: 0.9rem;
+    padding: 14px;
+    max-height: none;
+    overflow-y: visible;
+  }
 
   .apply-btn {
     width: 100%;
@@ -582,7 +582,6 @@ header p {
     font-size: 14px;
   }
 }
-  
 
 @media (max-width: 400px) {
   header h1 {
@@ -607,7 +606,7 @@ header p {
   width: 22px;
   height: 22px;
   fill: none;
-  stroke: #60a5fa;   /* light blue */
+  stroke: #60a5fa;
   stroke-width: 2;
   position: absolute;
   top: 14px;
@@ -625,8 +624,6 @@ header p {
   stroke: #60a5fa;
   filter: drop-shadow(0 0 6px rgba(96,165,250,0.6));
 }
-
-
 </style>
 </head>
 
@@ -634,10 +631,8 @@ header p {
 
 <!-- NAVIGATION -->
 <nav class="main-nav">
-
   <!-- DESKTOP VIEW -->
   <a href="index.html" class="logo desktop-nav">Career Unified</a>
-
   <div class="nav-links desktop-nav">
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
@@ -645,10 +640,9 @@ header p {
     <a href="cv-generator.html">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-jobs.html"> Saved Jobs</a>
+    <a href="saved-jobs.html">Saved Jobs</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-    
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -660,7 +654,6 @@ header p {
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
     <a href="index.html" class="mobile-logo">Career Unified</a>
-    
     <div class="mobile-nav-right">
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
         <svg viewBox="0 0 24 24">
@@ -668,7 +661,6 @@ header p {
           <circle cx="12" cy="7" r="4"/>
         </svg>
       </a>
-
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
         <svg viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -678,7 +670,6 @@ header p {
       </button>
     </div>
   </div>
-
 </nav>
 
 <!-- MOBILE SLIDE MENU -->
@@ -689,7 +680,7 @@ header p {
   <a href="cv-generator.html">Generate CV</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
-  <a href="saved-jobs.html"> Saved Jobs</a>
+  <a href="saved-jobs.html">Saved Jobs</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
@@ -714,7 +705,6 @@ header p {
       </select>
       <button id="sortBtn">Sort by Deadline</button>
     </div>
-
 
     <!-- Job List -->
     <ul class="jobs-list" id="jobList"></ul>
@@ -760,6 +750,12 @@ header p {
   <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
 
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase.js"></script>
+
 <!-- SANITY CLIENT -->
 <script src="js/sanityClient.js"></script>
 
@@ -768,31 +764,19 @@ header p {
    MOBILE NAVIGATION
 ================================ */
 const menuBtn = document.getElementById("menuBtn");
-const accountBtn = document.getElementById("accountBtn");
 const mobileMenu = document.getElementById("mobileMenu");
-const accountMenu = document.getElementById("accountMenu");
 
 if (menuBtn) {
   menuBtn.onclick = () => {
     const isOpen = mobileMenu.style.display === "block";
     mobileMenu.style.display = isOpen ? "none" : "block";
-    if (accountMenu) accountMenu.style.display = "none";
-  };
-}
-
-if (accountBtn) {
-  accountBtn.onclick = () => {
-    const isOpen = accountMenu.style.display === "block";
-    accountMenu.style.display = isOpen ? "none" : "block";
-    mobileMenu.style.display = "none";
   };
 }
 
 // Close menus when clicking outside
 document.addEventListener("click", e => {
-  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu") && !e.target.closest(".account-menu")) {
+  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
     if (mobileMenu) mobileMenu.style.display = "none";
-    if (accountMenu) accountMenu.style.display = "none";
   }
 });
 
@@ -816,6 +800,128 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let jobs = [];
 let filteredJobs = [];
 let selectedIndex = null;
+
+/* ===============================
+   FIREBASE FIRESTORE BOOKMARK SYSTEM
+=============================== */
+
+// Firebase Auth & Firestore state
+let userId = null;
+let savedJobs = new Set();
+
+// Listen for auth state changes
+if (typeof firebase !== 'undefined' && firebase.auth) {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      userId = user.uid;
+      loadSavedJobs();
+    } else {
+      userId = null;
+      savedJobs.clear();
+      updateHearts();
+    }
+  });
+}
+
+// Load user's saved jobs from Firestore
+async function loadSavedJobs() {
+  if (!userId) return;
+  
+  try {
+    const snapshot = await firebase.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('saved')
+      .get();
+    
+    savedJobs.clear();
+    snapshot.forEach(doc => {
+      savedJobs.add(doc.id);
+    });
+    
+    updateHearts();
+    console.log('✅ Loaded', savedJobs.size, 'saved jobs from Firestore');
+  } catch (error) {
+    console.error('Error loading saved jobs:', error);
+  }
+}
+
+// Toggle save for a job
+async function toggleSaveJob(job) {
+  if (!userId) {
+    alert('Please log in to save jobs');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const docId = 'job_' + job._id;
+  const ref = firebase.firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('saved')
+    .doc(docId);
+
+  try {
+    if (savedJobs.has(docId)) {
+      // Remove from saved
+      await ref.delete();
+      savedJobs.delete(docId);
+      console.log('❌ Removed from saved jobs');
+    } else {
+      // Add to saved
+      await ref.set({
+        type: 'job',
+        title: job.title,
+        company: job.company,
+        deadline: job.deadline,
+        location: job.location,
+        salary: job.salary || null,
+        applyLink: job.applyLink,
+        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      savedJobs.add(docId);
+      console.log('✅ Added to saved jobs');
+    }
+    
+    updateHearts();
+  } catch (error) {
+    console.error('Error toggling save:', error);
+    alert('Failed to save job. Please try again.');
+  }
+}
+
+// Update heart icon states
+function updateHearts() {
+  document.querySelectorAll('.heart-icon').forEach(heart => {
+    const jobCard = heart.closest('.job-card');
+    if (jobCard && jobCard.dataset.id) {
+      const docId = 'job_' + jobCard.dataset.id;
+      heart.classList.toggle('saved', savedJobs.has(docId));
+    }
+  });
+}
+
+// Heart click handler
+document.addEventListener('click', e => {
+  if (e.target.closest('.heart-icon')) {
+    e.stopPropagation(); // prevents job card from opening
+    const heart = e.target.closest('.heart-icon');
+    const jobCard = heart.closest('.job-card');
+    
+    if (jobCard && jobCard.dataset.jobData) {
+      try {
+        const job = JSON.parse(jobCard.dataset.jobData);
+        toggleSaveJob(job);
+      } catch (error) {
+        console.error('Error parsing job data:', error);
+      }
+    }
+  }
+});
+
+/* ===============================
+   JOB LOADING & RENDERING
+=============================== */
 
 // Show skeleton loaders
 function showSkeletons() {
@@ -947,7 +1053,6 @@ function getPriority(job) {
   return 0;
 }
 
-
 // Show default preview
 function showDefaultPreview() {
   jobPreview.innerHTML = `
@@ -976,7 +1081,6 @@ function renderJobs() {
     .sort((a,b) => {
       const pDiff = getPriority(b) - getPriority(a);
       if (pDiff !== 0) return pDiff;
-
       return new Date(a.deadline) - new Date(b.deadline);
     });
 
@@ -993,33 +1097,39 @@ function renderJobs() {
         <p>Try adjusting your search or filters</p>
       </div>
     `;
-    updateSmartMatchBanner();
     return;
   }
 
   filteredJobs.forEach((job, index) => {
     const li = document.createElement("li");
     li.className = "job-card";
+    li.dataset.id = job._id; // Store job ID for heart icon
+    li.dataset.jobData = JSON.stringify(job); // Store full job data for saving
+    
     if (index === selectedIndex) li.classList.add("selected");
 
     let badgeText = job.badge ||
       (job.listingTier === 'premier' ? 'Premier' :
        job.listingTier === 'sponsored' ? 'Sponsored' : '');
 
-       li.innerHTML = `
-  ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
-  
-  <svg class="heart-icon" data-id="${job._id}" data-type="job" viewBox="0 0 24 24">
-    <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
-  </svg>
-  <h3>${job.title}</h3>
+    li.innerHTML = `
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      
+      <svg class="heart-icon" viewBox="0 0 24 24">
+        <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
+      </svg>
+      
+      <h3>${job.title}</h3>
       <p><strong>Company:</strong> ${job.company}</p>
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
       <p><strong>Closing:</strong> ${job.deadline}</p>
     `;
 
-    li.onclick = () => {
+    li.onclick = (e) => {
+      // Don't open if clicking heart
+      if (e.target.closest('.heart-icon')) return;
+      
       const previousIndex = selectedIndex;
       selectedIndex = index;
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
@@ -1038,8 +1148,7 @@ function renderJobs() {
     jobList.appendChild(li);
   });
 
-updateHearts();
-
+  updateHearts();
 }
   
 // Show job preview
@@ -1111,7 +1220,6 @@ setInterval(fetchJobs, 5 * 60 * 1000);
 
 /* ===============================
    MOBILE SWIPE (SAFE VERSION)
-   This NEVER blocks vertical scrolling
 =============================== */
 
 let startX = 0;
@@ -1121,7 +1229,6 @@ document.addEventListener("touchstart", e => {
   const preview = e.target.closest("#jobPreview");
   const desc = e.target.closest(".description-content");
 
-  // If user is touching the description, allow scrolling
   if (!preview || desc) return;
 
   const touch = e.changedTouches[0];
@@ -1133,27 +1240,23 @@ document.addEventListener("touchend", e => {
   const preview = e.target.closest("#jobPreview");
   const desc = e.target.closest(".description-content");
 
-  // If user was scrolling text, ignore swipe logic
   if (!preview || desc) return;
 
   const touch = e.changedTouches[0];
   const dx = touch.screenX - startX;
   const dy = touch.screenY - startY;
 
-  // Only horizontal swipes
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
     if (dx < 0) goToNextJob();
     else goToPreviousJob();
   }
 }, { passive: true });
 
-
 function goToNextJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex < filteredJobs.length - 1) {
     selectedIndex++;
     showPreview(filteredJobs[selectedIndex], "left");
-    trackUserInterest(filteredJobs[selectedIndex]);
     renderJobs();
   }
 }
@@ -1166,44 +1269,11 @@ function goToPreviousJob() {
     renderJobs();
   }
 }
-/* ===============================
-   BOOKMARK SYSTEM
-=============================== */
-
-let bookmarks = JSON.parse(localStorage.getItem("careerUnifiedBookmarks") || "[]");
-
-function toggleBookmark(id, type) {
-  const key = type + ":" + id;
-
-  if (bookmarks.includes(key)) {
-    bookmarks = bookmarks.filter(x => x !== key);
-  } else {
-    bookmarks.push(key);
-  }
-
-  localStorage.setItem("careerUnifiedBookmarks", JSON.stringify(bookmarks));
-  updateHearts();
-}
-
-function updateHearts() {
-  document.querySelectorAll(".heart-icon").forEach(h => {
-    const key = h.dataset.type + ":" + h.dataset.id;
-    h.classList.toggle("saved", bookmarks.includes(key));
-  });
-}
-
-document.addEventListener("click", e => {
-  if (e.target.closest(".heart-icon")) {
-    e.stopPropagation();   // prevents job opening
-    const heart = e.target.closest(".heart-icon");
-    toggleBookmark(heart.dataset.id, heart.dataset.type);
-  }
-});
-
 </script>
 
 </body>
 </html>
+
 
 
 
