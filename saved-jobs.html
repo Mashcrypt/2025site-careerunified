@@ -2,121 +2,1106 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Saved Jobs – Career Unified</title>
+<title>Saved Items – Career Unified</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #f7f9fc;
+/* =============================== */
+/* RESET & BASE */
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
-header {
-  background: #1e3a8a;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  color: #1a202c;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* =============================== */
+/* HEADER */
+.page-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: white;
-  padding: 40px 20px;
+  padding: 60px 20px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.5;
+}
+
+.page-header h1 {
+  font-size: 2.75rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(to right, #ffffff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+.header-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
   text-align: center;
 }
 
-.saved-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 20px;
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #60a5fa;
+  display: block;
+  line-height: 1;
 }
 
-.saved-job {
+.stat-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* =============================== */
+/* CONTAINER */
+.saved-container {
+  max-width: 1100px;
+  margin: -20px auto 40px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+}
+
+/* =============================== */
+/* TABS */
+.tabs-wrapper {
   background: white;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  margin-bottom: 12px;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.tabs-header {
   display: flex;
-  justify-content: space-between;
+  border-bottom: 2px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 18px 24px;
+  background: transparent;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.tab-btn.active {
+  color: #0f172a;
+  background: white;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 3px 3px 0 0;
+}
+
+.tab-count {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.tab-btn.active .tab-count {
+  background: #3b82f6;
+  color: white;
+}
+
+/* =============================== */
+/* FILTER & SEARCH */
+.filter-section {
+  background: white;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
   align-items: center;
 }
 
-.saved-job strong {
-  color: #1e3a8a;
-  font-size: 1.1rem;
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px 12px 44px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  background: #f8fafc url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>') no-repeat 14px center;
 }
 
-.saved-job small {
-  color: #6b7280;
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-select {
+  padding: 12px 36px 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+  background: #f8fafc url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 12px center;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.clear-all-btn {
+  padding: 12px 20px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clear-all-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.clear-all-btn:active {
+  transform: translateY(0);
+}
+
+/* =============================== */
+/* TAB CONTENT */
+.tab-content {
+  display: none;
+  background: white;
+  padding: 24px;
+  border-radius: 0 0 16px 16px;
+  min-height: 400px;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================== */
+/* SAVED ITEMS GRID */
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.saved-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.saved-item:hover {
+  border-color: #3b82f6;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.item-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  flex: 1;
+  margin: 0;
 }
 
 .remove-btn {
-  background: none;
-  border: none;
+  background: #fee2e2;
   color: #ef4444;
-  font-size: 18px;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.remove-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
+.remove-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+
+.item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.meta-row svg {
+  width: 16px;
+  height: 16px;
+  stroke: #64748b;
+  flex-shrink: 0;
+}
+
+.meta-row strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+.item-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-type-badge.bursary {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.action-btn.secondary {
+  background: white;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+}
+
+.action-btn.secondary:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =============================== */
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+}
+
+.empty-state-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+  opacity: 0.2;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: #334155;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.empty-state-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.empty-state-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =============================== */
+/* FOOTER */
+.main-footer {
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 30px 20px;
+  margin-top: 60px;
+}
+
+.footer-links {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-links a {
+  color: #60a5fa;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* =============================== */
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .page-header p {
+    font-size: 0.95rem;
+  }
+
+  .header-stats {
+    gap: 24px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .saved-container {
+    padding: 0 12px;
+  }
+
+  .tabs-header {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    padding: 14px 20px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .search-input,
+  .filter-select,
+  .clear-all-btn {
+    width: 100%;
+  }
+
+  .saved-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .item-actions {
+    flex-direction: column;
+  }
+
+  .empty-state {
+    padding: 60px 16px;
+  }
+
+  .empty-state-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.25rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: 40px 16px 30px;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .header-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .item-title {
+    font-size: 1rem;
+  }
+
+  .meta-row {
+    font-size: 0.85rem;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>❤️ Saved Jobs</h1>
-  <p>Jobs you bookmarked</p>
+<!-- NAVIGATION -->
+<nav class="main-nav">
+  <!-- DESKTOP VIEW -->
+  <a href="index.html" class="logo desktop-nav">Career Unified</a>
+  <div class="nav-links desktop-nav">
+    <a href="jobs.html">Jobs</a>
+    <a href="bursaries.html">Bursaries</a>
+    <a href="varsity.html">Varsity</a>
+    <a href="cv-generator.html">Generate CV</a>
+    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="recruiter-apply.html">Apply as Recruiter</a>
+    <a href="saved-jobs.html">Saved Items</a>
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
+    <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- MOBILE VIEW -->
+  <div class="mobile-nav">
+    <a href="index.html" class="mobile-logo">Career Unified</a>
+    <div class="mobile-nav-right">
+      <a href="account-page.html" class="icon-btn" aria-label="My Account">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+      <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+        <svg viewBox="0 0 24 24">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE SLIDE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="jobs.html">Jobs</a>
+  <a href="bursaries.html">Bursaries</a>
+  <a href="varsity.html">Varsity</a>
+  <a href="cv-generator.html">Generate CV</a>
+  <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+  <a href="recruiter-apply.html">Apply as Recruiter</a>
+  <a href="saved-jobs.html">Saved Items</a>
+  <a href="signup.html">Sign Up</a>
+  <a href="login.html">Login</a>
+</div>
+
+<!-- HEADER -->
+<header class="page-header">
+  <h1>Saved Items</h1>
+  <p>Your bookmarked jobs and bursaries in one place</p>
+  <div class="header-stats">
+    <div class="stat-item">
+      <span class="stat-number" id="totalJobs">0</span>
+      <span class="stat-label">Jobs</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" id="totalBursaries">0</span>
+      <span class="stat-label">Bursaries</span>
+    </div>
+  </div>
 </header>
 
-<div class="saved-container" id="savedJobs"></div>
+<!-- MAIN CONTENT -->
+<main class="saved-container">
+  <div class="tabs-wrapper">
+    <!-- Tabs Header -->
+    <div class="tabs-header">
+      <button class="tab-btn active" data-tab="jobs">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        Jobs
+        <span class="tab-count" id="jobsCount">0</span>
+      </button>
+      <button class="tab-btn" data-tab="bursaries">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+        Bursaries
+        <span class="tab-count" id="bursariesCount">0</span>
+      </button>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search saved items...">
+      <select class="filter-select" id="sortFilter">
+        <option value="recent">Recently Saved</option>
+        <option value="title">Title (A-Z)</option>
+        <option value="deadline">Deadline</option>
+      </select>
+      <button class="clear-all-btn" id="clearAllBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Clear All
+      </button>
+    </div>
+
+    <!-- Jobs Tab Content -->
+    <div class="tab-content active" id="jobsContent">
+      <div class="saved-grid" id="jobsGrid"></div>
+    </div>
+
+    <!-- Bursaries Tab Content -->
+    <div class="tab-content" id="bursariesContent">
+      <div class="saved-grid" id="bursariesGrid"></div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+  <div class="footer-links">
+    <a href="about-us.html">About Us</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms & Conditions</a>
+    <a href="contact-us.html">Contact Us</a>
+  </div>
+  <p>© 2026 Career Unified. All rights reserved.</p>
+</footer>
 
 <script src="js/sanityClient.js"></script>
-
 <script>
-const saved = JSON.parse(localStorage.getItem("careerUnifiedBookmarks") || "[]")
-  .filter(x => x.startsWith("job:"))
-  .map(x => x.replace("job:", ""));
+/* ================================
+   MOBILE NAVIGATION
+================================ */
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
 
-const container = document.getElementById("savedJobs");
-
-if (saved.length === 0) {
-  container.innerHTML = "<p>You have no saved jobs yet.</p>";
-  throw "";
+if (menuBtn) {
+  menuBtn.onclick = () => {
+    const isOpen = mobileMenu.style.display === "block";
+    mobileMenu.style.display = isOpen ? "none" : "block";
+  };
 }
 
-const query = `*[_type=="job" && _id in ${JSON.stringify(saved)}]{
-  _id,
-  title,
-  company,
-  location,
-  salary,
-  applyLink
-}`;
-
-sanityClient.fetch(query).then(jobs => {
-  if (!jobs.length) {
-    container.innerHTML = "<p>No saved jobs found.</p>";
-    return;
+document.addEventListener("click", e => {
+  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+    if (mobileMenu) mobileMenu.style.display = "none";
   }
+});
 
-  jobs.forEach(job => {
-    const div = document.createElement("div");
-    div.className = "saved-job";
-    div.innerHTML = `
-      <div>
-        <strong>${job.title}</strong><br>
-        <small>${job.company} • ${job.location}</small>
-      </div>
-      <div>
-        <a href="${job.applyLink}" target="_blank">Apply</a>
-        <button class="remove-btn" onclick="removeJob('${job._id}')">✖</button>
-      </div>
-    `;
-    container.appendChild(div);
+/* ================================
+   SAVED ITEMS LOGIC
+================================ */
+const BOOKMARK_KEY = "careerUnifiedBookmarks";
+
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+}
+
+function saveBookmarks(bookmarks) {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+}
+
+function removeBookmark(id, type) {
+  const key = type + ":" + id;
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => x !== key);
+  saveBookmarks(bookmarks);
+  loadSavedItems();
+}
+
+function clearAll(type) {
+  if (!confirm(`Are you sure you want to remove all saved ${type}?`)) return;
+  
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => !x.startsWith(type + ":"));
+  saveBookmarks(bookmarks);
+  loadSavedItems();
+}
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabName = btn.dataset.tab;
+    
+    // Update active states
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    btn.classList.add('active');
+    document.getElementById(tabName + 'Content').classList.add('active');
   });
 });
 
-function removeJob(id) {
-  let data = JSON.parse(localStorage.getItem("careerUnifiedBookmarks") || "[]");
-  data = data.filter(x => x !== "job:" + id);
-  localStorage.setItem("careerUnifiedBookmarks", JSON.stringify(data));
-  location.reload();
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const searchTerm = e.target.value.toLowerCase();
+  const activeTab = document.querySelector('.tab-content.active');
+  const items = activeTab.querySelectorAll('.saved-item');
+  
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+  });
+});
+
+// Clear all button
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+  clearAll(activeTab === 'jobs' ? 'job' : 'bursary');
+});
+
+// Empty state component
+function renderEmptyState(type) {
+  const icon = type === 'job' ? `
+    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+  ` : `
+    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+      <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+    </svg>
+  `;
+
+  const title = type === 'job' ? 'No Saved Jobs Yet' : 'No Saved Bursaries Yet';
+  const description = type === 'job' 
+    ? 'Start building your collection by saving jobs you\'re interested in. Click the heart icon on any job listing to save it here.'
+    : 'Start building your collection by saving bursaries you\'re interested in. Click the heart icon on any bursary listing to save it here.';
+  const link = type === 'job' ? 'jobs.html' : 'bursaries.html';
+  const linkText = type === 'job' ? 'Browse Jobs' : 'Browse Bursaries';
+
+  return `
+    <div class="empty-state">
+      ${icon}
+      <h3>${title}</h3>
+      <p>${description}</p>
+      <a href="${link}" class="empty-state-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        ${linkText}
+      </a>
+    </div>
+  `;
 }
+
+// Render saved items
+async function loadSavedItems() {
+  const bookmarks = getBookmarks();
+  
+  const jobIds = bookmarks
+    .filter(x => x.startsWith("job:"))
+    .map(x => x.replace("job:", ""));
+    
+  const bursaryIds = bookmarks
+    .filter(x => x.startsWith("bursary:"))
+    .map(x => x.replace("bursary:", ""));
+
+  // Update counts
+  document.getElementById('totalJobs').textContent = jobIds.length;
+  document.getElementById('totalBursaries').textContent = bursaryIds.length;
+  document.getElementById('jobsCount').textContent = jobIds.length;
+  document.getElementById('bursariesCount').textContent = bursaryIds.length;
+
+  // Load jobs
+  if (jobIds.length === 0) {
+    document.getElementById('jobsGrid').innerHTML = renderEmptyState('job');
+  } else {
+    const jobsQuery = `*[_type=="job" && _id in ${JSON.stringify(jobIds)}]{
+      _id,
+      title,
+      company,
+      location,
+      salary,
+      deadline,
+      applyLink
+    }`;
+    
+    try {
+      const jobs = await window.sanityClient.fetch(jobsQuery);
+      renderJobs(jobs);
+    } catch (err) {
+      console.error('Error loading jobs:', err);
+      document.getElementById('jobsGrid').innerHTML = '<p style="text-align:center;color:#64748b;">Error loading saved jobs</p>';
+    }
+  }
+
+  // Load bursaries
+  if (bursaryIds.length === 0) {
+    document.getElementById('bursariesGrid').innerHTML = renderEmptyState('bursary');
+  } else {
+    const bursariesQuery = `*[_type=="bursary" && _id in ${JSON.stringify(bursaryIds)}]{
+      _id,
+      name,
+      provider,
+      faculty,
+      deadline,
+      applicationLink
+    }`;
+    
+    try {
+      const bursaries = await window.sanityClient.fetch(bursariesQuery);
+      renderBursaries(bursaries);
+    } catch (err) {
+      console.error('Error loading bursaries:', err);
+      document.getElementById('bursariesGrid').innerHTML = '<p style="text-align:center;color:#64748b;">Error loading saved bursaries</p>';
+    }
+  }
+}
+
+function renderJobs(jobs) {
+  const grid = document.getElementById('jobsGrid');
+  
+  if (!jobs.length) {
+    grid.innerHTML = renderEmptyState('job');
+    return;
+  }
+
+  grid.innerHTML = jobs.map(job => `
+    <div class="saved-item">
+      <div class="item-header">
+        <h3 class="item-title">${job.title}</h3>
+        <button class="remove-btn" onclick="removeBookmark('${job._id}', 'job')" title="Remove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="item-meta">
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          ${job.company} • ${job.location}
+        </div>
+        
+        ${job.salary ? `
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <strong>${job.salary}</strong>
+        </div>
+        ` : ''}
+        
+        ${job.deadline ? `
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Closes: ${job.deadline}
+        </div>
+        ` : ''}
+      </div>
+
+      <div class="item-type-badge">Job</div>
+
+      <div class="item-actions">
+        <a href="${job.applyLink}" target="_blank" rel="noopener" class="action-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Apply Now
+        </a>
+        <a href="jobs.html" class="action-btn secondary">
+          View Details
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBursaries(bursaries) {
+  const grid = document.getElementById('bursariesGrid');
+  
+  if (!bursaries.length) {
+    grid.innerHTML = renderEmptyState('bursary');
+    return;
+  }
+
+  grid.innerHTML = bursaries.map(bursary => {
+    const link = extractLink(bursary.applicationLink);
+    
+    return `
+    <div class="saved-item">
+      <div class="item-header">
+        <h3 class="item-title">${bursary.name}</h3>
+        <button class="remove-btn" onclick="removeBookmark('${bursary._id}', 'bursary')" title="Remove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="item-meta">
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          ${bursary.provider}
+        </div>
+        
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          ${bursary.faculty}
+        </div>
+        
+        ${bursary.deadline ? `
+        <div class="meta-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Closes: ${bursary.deadline}
+        </div>
+        ` : ''}
+      </div>
+
+      <div class="item-type-badge bursary">Bursary</div>
+
+      <div class="item-actions">
+        ${link ? `
+        <a href="${link}" target="_blank" rel="noopener" class="action-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Apply Now
+        </a>
+        ` : '<button class="action-btn primary" disabled style="opacity:0.5">No Link Available</button>'}
+        <a href="bursaries.html" class="action-btn secondary">
+          View Details
+        </a>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function extractLink(raw) {
+  if (!raw) return null;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    return trimmed.startsWith("http") ? trimmed : "https://" + trimmed;
+  }
+  if (raw.current) return raw.current.trim();
+  if (raw.href) return raw.href.trim();
+  return null;
+}
+
+// Initialize
+loadSavedItems();
 </script>
 
 </body>
