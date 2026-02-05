@@ -782,29 +782,63 @@ header p {
 <script src="js/sanityClient.js"></script>
 
 <script>
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "firebase/firestore";
 
-const SAVED_KEY = "careerUnifiedSavedJobs";
+const auth = getAuth();
+const db = getFirestore();
 
-function getSaved(){
-  return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]");
-}
+let userId = null;
+let savedItems = new Set();
 
-function saveItem(item){
-  const saved = getSaved();
-  if(!saved.find(s => s.id === item.id)){
-    saved.push(item);
-    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+onAuthStateChanged(auth, user => {
+  if (user) {
+    userId = user.uid;
+    loadSavedItems();
   }
+});
+
+async function loadSavedItems() {
+  if (!userId) return;
+
+  const snap = await getDocs(collection(db, "users", userId, "saved"));
+  savedItems.clear();
+
+  snap.forEach(doc => {
+    savedItems.add(doc.id);
+  });
+
+  renderBursaries(facultyFilter.value);
 }
 
-function removeItem(id){
-  let saved = getSaved().filter(i => i.id !== id);
-  localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+async function toggleBursarySave(b) {
+  if (!userId) {
+    alert("Please log in to save bursaries");
+    return;
+  }
+
+  const id = "bursary_" + b._id;
+  const ref = doc(db, "users", userId, "saved", id);
+
+  if (savedItems.has(id)) {
+    await deleteDoc(ref);
+    savedItems.delete(id);
+  } else {
+    await setDoc(ref, {
+      type: "bursary",
+      title: b.name,
+      faculty: b.faculty,
+      provider: b.provider,
+      deadline: b.deadline,
+      link: extractLink(b.applicationLink),
+      savedAt: new Date()
+    });
+    savedItems.add(id);
+  }
+
+  renderBursaries(facultyFilter.value);
 }
 
-function isSaved(id){
-  return getSaved().some(i => i.id === id);
-}
 
 /* ================================
    MOBILE NAVIGATION
@@ -1009,8 +1043,9 @@ function renderBursaries(filter = 'All') {
     li.className = 'bursary-card';
     if (index === selectedIndex) li.classList.add('selected');
 
-    const id = "bursary-" + b._id;
-const saved = isSaved(id);
+    const id = "bursary_" + b._id;
+const saved = savedItems.has(id);
+
 
 li.innerHTML = `
   <svg class="bursary-heart ${saved ? "saved" : ""}" viewBox="0 0 24 24">
@@ -1053,25 +1088,10 @@ li.innerHTML = `
     const heart = li.querySelector(".bursary-heart");
 
 heart.addEventListener("click", e => {
-  e.stopPropagation(); // prevent opening preview
-
-  if (isSaved(id)) {
-    removeItem(id);
-    heart.classList.remove("saved");
-  } else {
-    saveItem({
-      id,
-      type: "bursary",
-      title: b.name,
-      faculty: b.faculty,
-      provider: b.provider,
-      deadline: b.deadline,
-      link: extractLink(b.applicationLink),
-      source: "Bursaries"
-    });
-    heart.classList.add("saved");
-  }
+  e.stopPropagation();
+  toggleBursarySave(b);
 });
+
 
     
   });
@@ -1258,6 +1278,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
