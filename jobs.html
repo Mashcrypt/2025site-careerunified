@@ -835,17 +835,30 @@ async function loadSavedJobs() {
       .get();
     
     savedJobs.clear();
+    
+    // Clear localStorage bookmarks for jobs before syncing
+    let bookmarks = getBookmarks();
+    bookmarks = bookmarks.filter(x => !x.startsWith('job:'));
+    
     snapshot.forEach(doc => {
       savedJobs.add(doc.id);
+      
+      // Also sync to localStorage
+      const data = doc.data();
+      if (data.type === 'job') {
+        const jobId = doc.id.replace('job_', '');
+        bookmarks.push(`job:${jobId}`);
+      }
     });
     
+    saveBookmarks(bookmarks);
     updateHearts();
-    console.log('✅ Loaded', savedJobs.size, 'saved jobs from Firestore');
+    console.log('✅ Loaded', savedJobs.size, 'saved jobs from Firestore and synced to localStorage');
   } catch (error) {
     console.error('Error loading saved jobs:', error);
   }
 }
-
+  
 // Toggle save for a job
 async function toggleSaveJob(job) {
   if (!userId) {
@@ -866,6 +879,10 @@ async function toggleSaveJob(job) {
       // Remove from saved
       await ref.delete();
       savedJobs.delete(docId);
+      
+      // Also remove from localStorage
+      removeFromLocalStorage('job', job._id);
+      
       console.log('❌ Removed from saved jobs');
     } else {
       // Add to saved
@@ -880,6 +897,10 @@ async function toggleSaveJob(job) {
         savedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       savedJobs.add(docId);
+      
+      // Also add to localStorage
+      addToLocalStorage('job', job._id);
+      
       console.log('✅ Added to saved jobs');
     }
     
@@ -889,7 +910,33 @@ async function toggleSaveJob(job) {
     alert('Failed to save job. Please try again.');
   }
 }
+// LocalStorage helper functions for saved-items.html integration
+const BOOKMARK_KEY = "careerUnifiedBookmarks";
 
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+}
+
+function saveBookmarks(list) {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
+}
+
+function addToLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  
+  if (!bookmarks.includes(key)) {
+    bookmarks.push(key);
+    saveBookmarks(bookmarks);
+  }
+}
+
+function removeFromLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => x !== key);
+  saveBookmarks(bookmarks);
+}
 // Update heart icon states
 function updateHearts() {
   document.querySelectorAll('.heart-icon').forEach(heart => {
@@ -1273,6 +1320,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
