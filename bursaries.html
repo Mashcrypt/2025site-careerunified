@@ -739,9 +739,9 @@ header p {
   <div class="bursaries-left">
     <!-- Filter -->
     <div class="filter">
-      <label for="facultyFilter">Filter by Faculty:</label>
-      <select id="facultyFilter">
-        <option value="All">All Faculties</option>
+      <label for="categoryFilter">Filter by Category:</label>
+      <select id="categoryFilter">
+        <option value="All">All Categories</option>
       </select>
     </div>
 
@@ -807,7 +807,7 @@ async function loadSavedItems() {
       savedItems.add(doc.id);
     });
 
-    renderBursaries(facultyFilter.value);
+    renderBursaries(categoryFilter.value);
   } catch (error) {
     console.error("Error loading saved items:", error);
   }
@@ -830,7 +830,7 @@ async function toggleBursarySave(b) {
       await setDoc(ref, {
         type: "bursary",
         name: b.name,
-        faculty: b.faculty,
+        category: b.category,
         provider: b.provider,
         applicationLink: extractLink(b.applicationLink),
         savedAt: new Date()
@@ -838,7 +838,7 @@ async function toggleBursarySave(b) {
       savedItems.add(id);
     }
 
-    renderBursaries(facultyFilter.value);
+    renderBursaries(categoryFilter.value);
   } catch (error) {
     console.error("Error toggling save:", error);
     alert("Error saving bursary. Please try again.");
@@ -872,7 +872,7 @@ document.addEventListener("click", e => {
    BURSARIES PAGE LOGIC
 ================================ */
 const bursaryList = document.getElementById('bursaryList');
-const facultyFilter = document.getElementById('facultyFilter');
+const categoryFilter = document.getElementById('categoryFilter');
 const bursaryPreview = document.getElementById('bursaryPreview');
 
 // Cache system
@@ -903,7 +903,7 @@ function loadCachedBursaries() {
 
   try {
     bursaries = JSON.parse(cached);
-    populateFacultyFilter();
+    populateCategoryFilter();
     renderBursaries();
     console.log("⚡ Loaded bursaries from cache");
   } catch (e) {
@@ -911,28 +911,32 @@ function loadCachedBursaries() {
   }
 }
 
-// Populate faculty filter
-function populateFacultyFilter() {
-  facultyFilter.innerHTML = `<option value="All">All Faculties</option>`;
-  const faculties = Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort();
-  faculties.forEach(c => {
+// Populate category filter
+function populateCategoryFilter() {
+  categoryFilter.innerHTML = `<option value="All">All Categories</option>`;
+  const categories = Array.from(new Set(bursaries.map(b => b.category).filter(Boolean))).sort();
+  categories.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
     opt.textContent = c;
-    facultyFilter.appendChild(opt);
+    categoryFilter.appendChild(opt);
   });
 }
 
 // Fetch fresh bursaries from Sanity
 async function fetchBursaries() {
-  const query = `*[_type=="bursary"] | order(deadline asc){
+  const query = `*[_type=="bursary"] | order(closingDate desc){
     _id,
     name,
+    category,
     provider,
-    faculty,
     description,
+    eligibility,
+    value,
+    closingDate,
     applicationLink,
-    deadline
+    contactEmail,
+    contactPhone
   }`;
 
   try {
@@ -942,7 +946,7 @@ async function fetchBursaries() {
     localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
     localStorage.setItem(BURSARY_CACHE_TIME, Date.now());
 
-    populateFacultyFilter();
+    populateCategoryFilter();
     renderBursaries();
     console.log("🔄 Bursaries updated from Sanity:", bursaries.length, "bursaries found");
 
@@ -990,17 +994,17 @@ function formatDate(dateString) {
 }
 
 // Check if bursary is open
-function isBursaryOpen(deadline) {
-  if (!deadline) return true;
+function isBursaryOpen(closingDate) {
+  if (!closingDate) return true;
   const today = new Date();
-  const deadlineDate = new Date(deadline);
-  return deadlineDate >= today;
+  const deadline = new Date(closingDate);
+  return deadline >= today;
 }
 
 // Render bursaries list
 function renderBursaries(filter = 'All') {
   bursaryList.innerHTML = '';
-  filteredBursaries = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
+  filteredBursaries = filter === 'All' ? bursaries : bursaries.filter(b => b.category === filter);
 
   if (!filteredBursaries.length) {
     bursaryList.innerHTML = `
@@ -1010,7 +1014,7 @@ function renderBursaries(filter = 'All') {
           <path d="m21 21-4.35-4.35"/>
         </svg>
         <h3>No bursaries found</h3>
-        <p>Try selecting a different faculty</p>
+        <p>Try selecting a different category</p>
       </div>
     `;
     showDefaultPreview();
@@ -1026,8 +1030,8 @@ function renderBursaries(filter = 'All') {
       ? `<span class="read-more" data-index="${index}">Read more</span>` 
       : '';
 
-    const isOpen = isBursaryOpen(b.deadline);
-    const formattedDate = formatDate(b.deadline);
+    const isOpen = isBursaryOpen(b.closingDate);
+    const formattedDate = formatDate(b.closingDate);
 
     const li = document.createElement('li');
     li.className = 'bursary-card';
@@ -1043,7 +1047,7 @@ function renderBursaries(filter = 'All') {
 
       <strong>${b.name}</strong>
       ${b.provider ? `<p><strong>Provider:</strong> ${b.provider}</p>` : ''}
-      ${b.faculty ? `<p><strong>Faculty:</strong> ${b.faculty}</p>` : ''}
+      ${b.category ? `<p><strong>Category:</strong> ${b.category}</p>` : ''}
       <p id="desc-${index}">${shortDesc}</p>
       ${readMore}
       <div>
@@ -1104,8 +1108,8 @@ function showPreview(b, direction = "left") {
     safeUrl = "https://" + safeUrl;
   }
 
-  const isOpen = isBursaryOpen(b.deadline);
-  const formattedDate = formatDate(b.deadline);
+  const isOpen = isBursaryOpen(b.closingDate);
+  const formattedDate = formatDate(b.closingDate);
 
   bursaryPreview.innerHTML = `
     <div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
@@ -1121,12 +1125,16 @@ function showPreview(b, direction = "left") {
       <div class="preview-content-wrapper">
         <div class="preview-info">
           ${b.provider ? `<p><strong>Provider:</strong> ${b.provider}</p>` : ''}
-          ${b.faculty ? `<p><strong>Faculty:</strong> ${b.faculty}</p>` : ''}
-          ${formattedDate ? `<p><strong>Deadline:</strong> ${formattedDate}</p>` : ''}
+          ${b.category ? `<p><strong>Category:</strong> ${b.category}</p>` : ''}
+          ${b.value ? `<p><strong>Value:</strong> ${b.value}</p>` : ''}
+          ${formattedDate ? `<p><strong>Closing Date:</strong> ${formattedDate}</p>` : ''}
           <p><strong>Status:</strong> ${isOpen ? '<span style="color: #16a34a;">Open</span>' : '<span style="color: #dc2626;">Closed</span>'}</p>
+          ${b.contactEmail ? `<p><strong>Email:</strong> ${b.contactEmail}</p>` : ''}
+          ${b.contactPhone ? `<p><strong>Phone:</strong> ${b.contactPhone}</p>` : ''}
         </div>
         <div class="description-content">
-          ${b.description ? `${b.description}` : 'No description available'}
+          ${b.description ? `<strong>Description:</strong><br>${b.description}<br><br>` : ''}
+          ${b.eligibility ? `<strong>Eligibility:</strong><br>${b.eligibility}` : ''}
         </div>
         ${
           safeUrl
@@ -1142,7 +1150,7 @@ function showPreview(b, direction = "left") {
 window.closePreview = function() {
   selectedIndex = null;
   showDefaultPreview();
-  renderBursaries(facultyFilter.value);
+  renderBursaries(categoryFilter.value);
   
   // Scroll back to list on mobile
   if (window.innerWidth <= 900) {
@@ -1173,7 +1181,7 @@ function toggleDesc(index) {
 }
 
 // Event listeners
-facultyFilter.addEventListener('change', e => {
+categoryFilter.addEventListener('change', e => {
   selectedIndex = null;
   renderBursaries(e.target.value);
   showDefaultPreview();
@@ -1244,7 +1252,7 @@ function goToNextBursary() {
   if (selectedIndex < filteredBursaries.length - 1) {
     selectedIndex++;
     showPreview(filteredBursaries[selectedIndex], "left");
-    renderBursaries(facultyFilter.value);
+    renderBursaries(categoryFilter.value);
   }
 }
 
@@ -1253,7 +1261,7 @@ function goToPreviousBursary() {
   if (selectedIndex > 0) {
     selectedIndex--;
     showPreview(filteredBursaries[selectedIndex], "right");
-    renderBursaries(facultyFilter.value);
+    renderBursaries(categoryFilter.value);
   }
 }
 
@@ -1271,6 +1279,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
