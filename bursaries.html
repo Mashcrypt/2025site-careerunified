@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <title>Bursaries – Career Unified</title>
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-<meta name="description" content="Find bursaries and scholarships in South Africa. Explore funding opportunities for students in 2026.">
+<meta name="description" content="Find bursaries, scholarships, and funding opportunities for South African students. Apply early and secure your financial aid for 2026.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:title" content="Bursaries & Scholarships South Africa – Career Unified">
-<meta property="og:description" content="Discover bursaries and funding opportunities for students in South Africa.">
+<meta property="og:description" content="Discover bursaries, scholarships, and funding opportunities for students in South Africa. Apply early and secure your financial aid.">
 <meta property="og:url" content="https://careerunified.com/bursaries.html">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://careerunified.com/images/social-share-bursaries.png">
@@ -17,8 +17,18 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bursaries & Scholarships South Africa – Career Unified">
-<meta name="twitter:description" content="Find bursaries and scholarships in South Africa.">
+<meta name="twitter:description" content="Find bursaries and scholarships for South African students. Apply early to secure funding for 2026.">
 <meta name="twitter:image" content="https://careerunified.com/images/social-share-bursaries.png">
+
+<!-- Structured Data for Bursaries -->
+<script type="application/ld+json" id="bursary-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Bursaries in South Africa",
+  "itemListElement": []
+}
+</script>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -45,7 +55,7 @@ body {
 header {
   text-align: center;
   padding: 60px 20px 50px;
-  background: linear-gradient(135deg, #7c2d12, #ea580c);
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: #fff;
 }
 
@@ -58,7 +68,7 @@ header h1 {
 header p {
   margin-top: 8px;
   font-size: 1.1rem;
-  color: #fed7aa;
+  color: #e5e7eb;
   font-weight: 500;
 }
 
@@ -124,8 +134,8 @@ header p {
 
 .filter select:focus {
   outline: none;
-  border-color: #ea580c;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* =============================== */
@@ -151,7 +161,7 @@ header p {
 }
 
 .bursary-card:hover {
-  background: #fff7ed;
+  background: #f0f7ff;
   transform: translateX(4px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -163,7 +173,7 @@ header p {
 
 .bursary-card strong {
   font-size: 1.1rem;
-  color: #7c2d12;
+  color: #1e3a8a;
   display: block;
   margin-bottom: 6px;
 }
@@ -175,35 +185,25 @@ header p {
   line-height: 1.5;
 }
 
-.bursary-badge {
+/* =============================== */
+/* URGENT BADGE */
+.urgent {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-top: 8px;
-  margin-right: 6px;
-}
-
-.badge-open {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-closed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-deadline {
   background: #fef3c7;
   color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* =============================== */
 /* READ MORE */
 .read-more {
-  color: #ea580c;
+  color: #2563eb;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
@@ -213,7 +213,7 @@ header p {
 }
 
 .read-more:hover {
-  color: #c2410c;
+  color: #1e40af;
   text-decoration: underline;
 }
 
@@ -246,12 +246,12 @@ header p {
 .close-preview-btn svg {
   width: 28px;
   height: 28px;
-  stroke: #ea580c;
+  stroke: #3b82f6;
   stroke-width: 2.5;
 }
 
 .bursaries-preview h2 {
-  color: #7c2d12;
+  color: #1e3a8a;
   font-size: 1.75rem;
   margin: 0;
   flex: 1;
@@ -348,7 +348,7 @@ header p {
 }
 
 .skeleton-bursary {
-  height: 140px;
+  height: 120px;
   margin-bottom: 12px;
 }
 
@@ -427,7 +427,7 @@ header p {
 /* =============================== */
 /* FOOTER */
 .main-footer {
-  background: #7c2d12;
+  background: #1e3a8a;
   color: white;
   text-align: center;
   padding: 30px 20px;
@@ -457,7 +457,7 @@ header p {
 .scroll-btn {
   position: fixed;
   right: 20px;
-  background: #ea580c;
+  background: #2563eb;
   color: white;
   border: none;
   width: 48px;
@@ -475,7 +475,7 @@ header p {
 #scrollDown { bottom: 30px; }
 
 .scroll-btn:hover {
-  background: #c2410c;
+  background: #1e3a8a;
   transform: translateY(-2px);
 }
 
@@ -535,14 +535,14 @@ header p {
   }
 
   .bursaries-preview {
-    position: static;
-    padding: 20px;
-    margin-top: 0;
-    min-height: 500px;
-    max-height: 70vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  position: static;
+  padding: 20px;
+  margin-top: 0;
+  min-height: 500px;
+  max-height: 70vh;
+  overflow-y: auto;  /* ← ADD THIS LINE */
+  -webkit-overflow-scrolling: touch;  /* ← ADD THIS LINE */
+}
 
   /* Filter */
   .filter {
@@ -551,7 +551,7 @@ header p {
 
   .filter select {
     padding: 14px 16px;
-    font-size: 16px;
+    font-size: 16px; /* Prevents iOS zoom */
   }
 
   /* Bursary Cards */
@@ -576,12 +576,12 @@ header p {
     font-size: 0.9rem;
   }
 
-  .bursaries-preview .description-content {
-    font-size: 0.9rem;
-    padding: 14px;
-    max-height: none;
-    overflow-y: visible;
-  }
+ .bursaries-preview .description-content {
+  font-size: 0.9rem;
+  padding: 14px;
+  max-height: none;  /* ← ADD THIS LINE */
+  overflow-y: visible;  /* ← ADD THIS LINE */
+}
 
   .apply-btn {
     width: 100%;
@@ -640,7 +640,7 @@ header p {
   width: 22px;
   height: 22px;
   fill: none;
-  stroke: #ea580c;
+  stroke: #3b82f6;
   stroke-width: 2.2;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -652,9 +652,9 @@ header p {
 }
 
 .bursary-heart.saved {
-  fill: #ea580c;
-  stroke: #ea580c;
-  filter: drop-shadow(0 0 6px rgba(234,88,12,0.6));
+  fill: #3b82f6;
+  stroke: #3b82f6;
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
 }
 
 </style>
@@ -675,7 +675,7 @@ header p {
     <a href="cv-generator.html">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-jobs.html">Saved Jobs</a>
+    <a href="saved-jobs.html"> Saved Jobs</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
     
@@ -723,15 +723,16 @@ header p {
   <a href="cv-generator.html">Generate CV</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
-  <a href="saved-jobs.html">Saved Jobs</a>
+  <a href="saved-jobs.html"> Saved Jobs</a>
+
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
 
 <!-- HEADER -->
 <header>
-  <h1>Bursaries & Scholarships</h1>
-  <p>Find funding opportunities for your education</p>
+  <h1>Available Bursaries</h1>
+  <p>Find bursaries and scholarships for South African students</p>
 </header>
 
 <!-- MAIN CONTENT -->
@@ -739,9 +740,9 @@ header p {
   <div class="bursaries-left">
     <!-- Filter -->
     <div class="filter">
-      <label for="facultyFilter">Filter by Faculty:</label>
+      <label for="facultyFilter">Filter by Faculty/Category:</label>
       <select id="facultyFilter">
-        <option value="All">All Faculties</option>
+        <option value="All">All Bursaries</option>
       </select>
     </div>
 
@@ -753,8 +754,9 @@ header p {
   <div class="bursaries-preview" id="bursaryPreview">
     <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
       <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+        <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
       </svg>
       <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
     </div>
@@ -779,9 +781,9 @@ header p {
 <!-- SANITY CLIENT -->
 <script src="js/sanityClient.js"></script>
 
-<script type="module">
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+<script>
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "firebase/firestore";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -799,18 +801,14 @@ onAuthStateChanged(auth, user => {
 async function loadSavedItems() {
   if (!userId) return;
 
-  try {
-    const snap = await getDocs(collection(db, "users", userId, "saved"));
-    savedItems.clear();
+  const snap = await getDocs(collection(db, "users", userId, "saved"));
+  savedItems.clear();
 
-    snap.forEach(doc => {
-      savedItems.add(doc.id);
-    });
+  snap.forEach(doc => {
+    savedItems.add(doc.id);
+  });
 
-    renderBursaries(facultyFilter.value);
-  } catch (error) {
-    console.error("Error loading saved items:", error);
-  }
+  renderBursaries(facultyFilter.value);
 }
 
 async function toggleBursarySave(b) {
@@ -822,49 +820,55 @@ async function toggleBursarySave(b) {
   const id = "bursary_" + b._id;
   const ref = doc(db, "users", userId, "saved", id);
 
-  try {
-    if (savedItems.has(id)) {
-      await deleteDoc(ref);
-      savedItems.delete(id);
-    } else {
-      await setDoc(ref, {
-        type: "bursary",
-        name: b.name,
-        faculty: b.faculty,
-        provider: b.provider,
-        applicationLink: extractLink(b.applicationLink),
-        savedAt: new Date()
-      });
-      savedItems.add(id);
-    }
-
-    renderBursaries(facultyFilter.value);
-  } catch (error) {
-    console.error("Error toggling save:", error);
-    alert("Error saving bursary. Please try again.");
+  if (savedItems.has(id)) {
+    await deleteDoc(ref);
+    savedItems.delete(id);
+  } else {
+    await setDoc(ref, {
+      type: "bursary",
+      title: b.name,
+      faculty: b.faculty,
+      provider: b.provider,
+      deadline: b.deadline,
+      link: extractLink(b.applicationLink),
+      savedAt: new Date()
+    });
+    savedItems.add(id);
   }
+
+  renderBursaries(facultyFilter.value);
 }
 
-// Make toggleBursarySave available globally
-window.toggleBursarySave = toggleBursarySave;
 
 /* ================================
    MOBILE NAVIGATION
 ================================ */
 const menuBtn = document.getElementById("menuBtn");
+const accountBtn = document.getElementById("accountBtn");
 const mobileMenu = document.getElementById("mobileMenu");
+const accountMenu = document.getElementById("accountMenu");
 
 if (menuBtn) {
   menuBtn.onclick = () => {
     const isOpen = mobileMenu.style.display === "block";
     mobileMenu.style.display = isOpen ? "none" : "block";
+    if (accountMenu) accountMenu.style.display = "none";
+  };
+}
+
+if (accountBtn) {
+  accountBtn.onclick = () => {
+    const isOpen = accountMenu.style.display === "block";
+    accountMenu.style.display = isOpen ? "none" : "block";
+    mobileMenu.style.display = "none";
   };
 }
 
 // Close menus when clicking outside
 document.addEventListener("click", e => {
-  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu") && !e.target.closest(".account-menu")) {
     if (mobileMenu) mobileMenu.style.display = "none";
+    if (accountMenu) accountMenu.style.display = "none";
   }
 });
 
@@ -874,6 +878,12 @@ document.addEventListener("click", e => {
 const bursaryList = document.getElementById('bursaryList');
 const facultyFilter = document.getElementById('facultyFilter');
 const bursaryPreview = document.getElementById('bursaryPreview');
+
+// Global search from homepage
+let globalSearch = localStorage.getItem("homeSearchTerm");
+if (globalSearch) {
+  localStorage.removeItem("homeSearchTerm");
+}
 
 // Cache system
 const BURSARY_CACHE = "careerUnifiedBursaryCache";
@@ -894,6 +904,32 @@ function showBursarySkeletons() {
   }
 }
 
+// Schema injection
+function injectBursarySchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Bursaries in South Africa",
+    "itemListElement": bursaries.map((b, index) => ({
+      "@type": "Scholarship",
+      "position": index + 1,
+      "name": b.name,
+      "provider": { "@type": "CollegeOrUniversity", "name": b.provider },
+      "applicationDeadline": b.deadline,
+      "url": b.applicationLink || "https://careerunified.com/bursaries.html"
+    }))
+  };
+
+  const old = document.getElementById("bursary-schema");
+  if (old) old.remove();
+
+  const script = document.createElement("script");
+  script.id = "bursary-schema";
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
 // Load cached bursaries instantly
 loadCachedBursaries();
 
@@ -903,6 +939,7 @@ function loadCachedBursaries() {
 
   try {
     bursaries = JSON.parse(cached);
+    injectBursarySchema();
     populateFacultyFilter();
     renderBursaries();
     console.log("⚡ Loaded bursaries from cache");
@@ -913,60 +950,52 @@ function loadCachedBursaries() {
 
 // Populate faculty filter
 function populateFacultyFilter() {
-  facultyFilter.innerHTML = `<option value="All">All Faculties</option>`;
-  const faculties = Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort();
-  faculties.forEach(c => {
+  facultyFilter.innerHTML = `<option value="All">All Bursaries</option>`;
+  const faculties = Array.from(new Set(bursaries.map(b => b.faculty))).sort();
+  faculties.forEach(f => {
     const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = c;
+    opt.value = f;
+    opt.textContent = f;
     facultyFilter.appendChild(opt);
   });
 }
 
 // Fetch fresh bursaries from Sanity
 async function fetchBursaries() {
-  const query = `*[_type=="bursary"] | order(deadline asc){
-    _id,
-    name,
-    provider,
-    faculty,
-    description,
-    applicationLink,
-    deadline
-  }`;
+  let query = `*[_type=="bursary"]`;
+
+  if (globalSearch) {
+    query = `*[_type=="bursary" && (
+      name match "*${globalSearch}*" ||
+      provider match "*${globalSearch}*" ||
+      faculty match "*${globalSearch}*" ||
+      description match "*${globalSearch}*"
+    )]`;
+  }
 
   try {
-    bursaries = await window.sanityClient.fetch(query);
+    bursaries = await window.sanityClient.fetch(`${query} | order(deadline asc){
+      _id,
+      name,
+      provider,
+      faculty,
+      description,
+      deadline,
+      applicationLink
+    }`);
 
     // Save to cache
     localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
     localStorage.setItem(BURSARY_CACHE_TIME, Date.now());
 
+    injectBursarySchema();
     populateFacultyFilter();
     renderBursaries();
-    console.log("🔄 Bursaries updated from Sanity:", bursaries.length, "bursaries found");
+    console.log("🔄 Bursaries updated from Sanity");
 
   } catch (err) {
     console.error("Sanity failed — using cache", err);
-    if (bursaries.length === 0) {
-      showErrorState();
-    }
   }
-}
-
-// Show error state
-function showErrorState() {
-  bursaryList.innerHTML = `
-    <div class="empty-state">
-      <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <h3>Unable to load bursaries</h3>
-      <p>Please check your connection and try again</p>
-    </div>
-  `;
 }
 
 // Show default preview
@@ -974,27 +1003,13 @@ function showDefaultPreview() {
   bursaryPreview.innerHTML = `
     <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
       <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+        <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
       </svg>
       <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
     </div>
   `;
-}
-
-// Format date
-function formatDate(dateString) {
-  if (!dateString) return null;
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-// Check if bursary is open
-function isBursaryOpen(deadline) {
-  if (!deadline) return true;
-  const today = new Date();
-  const deadlineDate = new Date(deadline);
-  return deadlineDate >= today;
 }
 
 // Render bursaries list
@@ -1017,48 +1032,40 @@ function renderBursaries(filter = 'All') {
     return;
   }
 
+  const today = new Date();
   filteredBursaries.forEach((b, index) => {
-    const shortDesc = b.description && b.description.length > 120 
-      ? b.description.substring(0, 120) + '...' 
-      : (b.description || 'No description available');
-    
-    const readMore = b.description && b.description.length > 120 
-      ? `<span class="read-more" data-index="${index}">Read more</span>` 
-      : '';
-
-    const isOpen = isBursaryOpen(b.deadline);
-    const formattedDate = formatDate(b.deadline);
+    const deadlineDate = new Date(b.deadline);
+    const isUrgent = (deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7;
+    const shortDesc = b.description.length > 150 ? b.description.substring(0, 150) + '...' : b.description;
+    const readMore = b.description.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
 
     const li = document.createElement('li');
     li.className = 'bursary-card';
     if (index === selectedIndex) li.classList.add('selected');
 
     const id = "bursary_" + b._id;
-    const saved = savedItems.has(id);
+const saved = savedItems.has(id);
 
-    li.innerHTML = `
-      <svg class="bursary-heart ${saved ? "saved" : ""}" viewBox="0 0 24 24">
-        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-      </svg>
 
-      <strong>${b.name}</strong>
-      ${b.provider ? `<p><strong>Provider:</strong> ${b.provider}</p>` : ''}
-      ${b.faculty ? `<p><strong>Faculty:</strong> ${b.faculty}</p>` : ''}
-      <p id="desc-${index}">${shortDesc}</p>
-      ${readMore}
-      <div>
-        ${isOpen ? `<span class="bursary-badge badge-open">Open</span>` : `<span class="bursary-badge badge-closed">Closed</span>`}
-        ${formattedDate ? `<span class="bursary-badge badge-deadline">Deadline: ${formattedDate}</span>` : ''}
-      </div>
-    `;
+li.innerHTML = `
+  <svg class="bursary-heart ${saved ? "saved" : ""}" viewBox="0 0 24 24">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+  </svg>
+
+  <strong>${b.name}</strong>
+  <p><strong>Faculty:</strong> ${b.faculty}</p>
+  <p><strong>Provider:</strong> ${b.provider}</p>
+  <p><strong>Deadline:</strong> ${b.deadline} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
+  <p id="desc-${index}">${shortDesc}</p>
+  ${readMore}
+`;
+
 
     li.onclick = (e) => {
-      // Don't trigger if clicking "Read more" or heart
-      if (e.target.classList.contains('read-more') || e.target.classList.contains('bursary-heart')) {
-        if (e.target.classList.contains('read-more')) {
-          e.stopPropagation();
-          toggleDesc(parseInt(e.target.dataset.index));
-        }
+      // Don't trigger if clicking "Read more"
+      if (e.target.classList.contains('read-more')) {
+        e.stopPropagation();
+        toggleDesc(parseInt(e.target.dataset.index));
         return;
       }
 
@@ -1077,13 +1084,16 @@ function renderBursaries(filter = 'All') {
       }
     };
 
-    const heart = li.querySelector(".bursary-heart");
-    heart.addEventListener("click", e => {
-      e.stopPropagation();
-      toggleBursarySave(b);
-    });
-
     bursaryList.appendChild(li);
+    const heart = li.querySelector(".bursary-heart");
+
+heart.addEventListener("click", e => {
+  e.stopPropagation();
+  toggleBursarySave(b);
+});
+
+
+    
   });
 }
 
@@ -1104,9 +1114,6 @@ function showPreview(b, direction = "left") {
     safeUrl = "https://" + safeUrl;
   }
 
-  const isOpen = isBursaryOpen(b.deadline);
-  const formattedDate = formatDate(b.deadline);
-
   bursaryPreview.innerHTML = `
     <div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
       <div class="preview-header">
@@ -1120,14 +1127,11 @@ function showPreview(b, direction = "left") {
       </div>
       <div class="preview-content-wrapper">
         <div class="preview-info">
-          ${b.provider ? `<p><strong>Provider:</strong> ${b.provider}</p>` : ''}
-          ${b.faculty ? `<p><strong>Faculty:</strong> ${b.faculty}</p>` : ''}
-          ${formattedDate ? `<p><strong>Deadline:</strong> ${formattedDate}</p>` : ''}
-          <p><strong>Status:</strong> ${isOpen ? '<span style="color: #16a34a;">Open</span>' : '<span style="color: #dc2626;">Closed</span>'}</p>
+          <p><strong>Faculty:</strong> ${b.faculty}</p>
+          <p><strong>Provider:</strong> ${b.provider}</p>
+          <p><strong>Deadline:</strong> ${b.deadline}</p>
         </div>
-        <div class="description-content">
-          ${b.description ? `${b.description}` : 'No description available'}
-        </div>
+        <div class="description-content">${b.description}</div>
         ${
           safeUrl
             ? `<a href="${safeUrl}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Now</a>`
@@ -1139,7 +1143,7 @@ function showPreview(b, direction = "left") {
 }
 
 // Close preview function
-window.closePreview = function() {
+function closePreview() {
   selectedIndex = null;
   showDefaultPreview();
   renderBursaries(facultyFilter.value);
@@ -1158,13 +1162,13 @@ function toggleDesc(index) {
   const descEl = document.getElementById(`desc-${index}`);
   const b = filteredBursaries[index];
   if (descEl.innerHTML.endsWith('...')) {
-    descEl.innerHTML = b.description || 'No description available';
+    descEl.innerHTML = b.description;
     const readMore = descEl.nextElementSibling;
     if (readMore && readMore.classList.contains('read-more')) {
       readMore.textContent = 'Read less';
     }
   } else {
-    descEl.innerHTML = (b.description || '').substring(0, 120) + '...';
+    descEl.innerHTML = b.description.substring(0, 150) + '...';
     const readMore = descEl.nextElementSibling;
     if (readMore && readMore.classList.contains('read-more')) {
       readMore.textContent = 'Read more';
@@ -1193,6 +1197,7 @@ setInterval(fetchBursaries, 5 * 60 * 1000);
 
 /* ===============================
    MOBILE SWIPE BETWEEN BURSARIES
+   FIXED: Now allows vertical scrolling
 =============================== */
 
 let touchStartX = 0;
@@ -1203,6 +1208,7 @@ let touchEndY = 0;
 document.addEventListener("touchstart", e => {
   if (e.target.closest("#bursaryPreview")) {
     const descriptionContent = e.target.closest(".description-content");
+    // Only initialize swipe if NOT in description AND movement is minimal
     if (!descriptionContent) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
@@ -1229,6 +1235,7 @@ function handleSwipe() {
   const horizontalDiff = Math.abs(touchStartX - touchEndX);
   const verticalDiff = Math.abs(touchStartY - touchEndY);
 
+  // Only trigger swipe if horizontal movement is dominant AND significant
   if (horizontalDiff > 50 && horizontalDiff > verticalDiff) {
     if (touchStartX - touchEndX > threshold) {
       goToNextBursary();
@@ -1271,6 +1278,14 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 
