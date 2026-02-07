@@ -780,25 +780,11 @@ header p {
 <script src="js/sanityClient.js"></script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD7zHT_2H3NaaJzfLPwoQv2kfwOM_u_xKI",
-  authDomain: "career-unified.firebaseapp.com",
-  projectId: "career-unified",
-  storageBucket: "career-unified.firebasestorage.app",
-  messagingSenderId: "655550460146",
-  appId: "1:655550460146:web:c4e0dc76a88c5d1d6cd4b1",
-  measurementId: "G-XTSLXCDL45"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth = getAuth();
+const db = getFirestore();
 
 let userId = null;
 let savedItems = new Set();
@@ -1285,6 +1271,7 @@ down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior:
 
 </body>
 </html>
+
 
 
 
