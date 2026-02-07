@@ -613,6 +613,7 @@ header p {
   right: 14px;
   cursor: pointer;
   transition: all 0.25s ease;
+  z-index: 10;
 }
 
 .heart-icon:hover {
@@ -754,6 +755,7 @@ header p {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="js/firebase.js"></script>
 
 <!-- SANITY CLIENT -->
@@ -814,13 +816,45 @@ if (typeof firebase !== 'undefined' && firebase.auth) {
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       userId = user.uid;
+      console.log('✅ User logged in:', user.email, 'UID:', userId);
       loadSavedJobs();
     } else {
       userId = null;
       savedJobs.clear();
       updateHearts();
+      console.log('❌ No user logged in');
     }
   });
+} else {
+  console.error('❌ Firebase not loaded properly');
+}
+
+// LocalStorage helper functions for saved-items.html integration
+const BOOKMARK_KEY = "careerUnifiedBookmarks";
+
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+}
+
+function saveBookmarks(list) {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
+}
+
+function addToLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  
+  if (!bookmarks.includes(key)) {
+    bookmarks.push(key);
+    saveBookmarks(bookmarks);
+  }
+}
+
+function removeFromLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => x !== key);
+  saveBookmarks(bookmarks);
 }
 
 // Load user's saved jobs from Firestore
@@ -858,7 +892,7 @@ async function loadSavedJobs() {
     console.error('Error loading saved jobs:', error);
   }
 }
-  
+
 // Toggle save for a job
 async function toggleSaveJob(job) {
   if (!userId) {
@@ -910,33 +944,7 @@ async function toggleSaveJob(job) {
     alert('Failed to save job. Please try again.');
   }
 }
-// LocalStorage helper functions for saved-items.html integration
-const BOOKMARK_KEY = "careerUnifiedBookmarks";
 
-function getBookmarks() {
-  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
-}
-
-function saveBookmarks(list) {
-  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
-}
-
-function addToLocalStorage(type, id) {
-  const key = `${type}:${id}`;
-  let bookmarks = getBookmarks();
-  
-  if (!bookmarks.includes(key)) {
-    bookmarks.push(key);
-    saveBookmarks(bookmarks);
-  }
-}
-
-function removeFromLocalStorage(type, id) {
-  const key = `${type}:${id}`;
-  let bookmarks = getBookmarks();
-  bookmarks = bookmarks.filter(x => x !== key);
-  saveBookmarks(bookmarks);
-}
 // Update heart icon states
 function updateHearts() {
   document.querySelectorAll('.heart-icon').forEach(heart => {
@@ -1320,6 +1328,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
