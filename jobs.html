@@ -1107,28 +1107,6 @@ function showDefaultPreview() {
   </div>`;
 }
 
-// Check if URL has a job parameter and auto-open it
-function checkAndOpenJobFromURL() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const jobId = urlParams.get('job');
-  
-  if (jobId && filteredJobs.length > 0) {
-    const index = filteredJobs.findIndex(j => j._id === jobId);
-    if (index !== -1) {
-      selectedIndex = index;
-      showPreview(filteredJobs[index], "left");
-      renderJobs();
-      
-      // Scroll to preview on mobile
-      if (window.innerWidth <= 900) {
-        setTimeout(() => {
-          document.getElementById('jobPreview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-      }
-    }
-  }
-}
-
 // Render jobs list
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
@@ -1190,11 +1168,6 @@ function renderJobs() {
       selectedIndex = index;
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
       
-      // UPDATE URL with job ID
-      const url = new URL(window.location);
-      url.searchParams.set('job', job._id);
-      window.history.pushState({}, '', url);
-      
       showPreview(job, direction);
       renderJobs();
       
@@ -1208,9 +1181,6 @@ function renderJobs() {
   });
   
   updateHearts();
-  
-  // Check URL for job parameter
-  checkAndOpenJobFromURL();
 }
 
 // Show job preview
@@ -1241,33 +1211,11 @@ function showPreview(job, direction = "left") {
   </div>`;
   
   injectJobSchema(job);
-  
-  // UPDATE PAGE META TAGS
-  document.title = `${job.title} at ${job.company} – Career Unified`;
-  
-  // Update meta description
-  let metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc) {
-    metaDesc.content = `${job.title} at ${job.company}. ${job.location}. Salary: ${job.salary || 'Not specified'}. Deadline: ${job.deadline}`;
-  }
 }
 
 // Close preview function
 function closePreview() {
   selectedIndex = null;
-  
-  // REMOVE job parameter from URL
-  const url = new URL(window.location);
-  url.searchParams.delete('job');
-  window.history.pushState({}, '', url);
-  
-  // Reset meta tags
-  document.title = 'Jobs – Career Unified';
-  let metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc) {
-    metaDesc.content = 'Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified.';
-  }
-  
   showDefaultPreview();
   renderJobs();
   
@@ -1333,12 +1281,6 @@ function goToNextJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex < filteredJobs.length - 1) {
     selectedIndex++;
-    
-    // UPDATE URL
-    const url = new URL(window.location);
-    url.searchParams.set('job', filteredJobs[selectedIndex]._id);
-    window.history.pushState({}, '', url);
-    
     showPreview(filteredJobs[selectedIndex], "left");
     renderJobs();
   }
@@ -1348,12 +1290,6 @@ function goToPreviousJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex > 0) {
     selectedIndex--;
-    
-    // UPDATE URL
-    const url = new URL(window.location);
-    url.searchParams.set('job', filteredJobs[selectedIndex]._id);
-    window.history.pushState({}, '', url);
-    
     showPreview(filteredJobs[selectedIndex], "right");
     renderJobs();
   }
@@ -1362,7 +1298,6 @@ function goToPreviousJob() {
 
 </body>
 </html>
-
 
 
 
