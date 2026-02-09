@@ -803,6 +803,8 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let jobs = [];
 let filteredJobs = [];
 let selectedIndex = null;
+let openedFromURL = false;
+
 
 /* ===============================
    FIREBASE FIRESTORE BOOKMARK SYSTEM
@@ -1004,6 +1006,7 @@ function loadCachedJobs() {
   }
 }
 
+
 // Fetch fresh jobs from Sanity
 async function fetchJobs() {
   let query = `*[_type == "job"]`;
@@ -1038,30 +1041,25 @@ async function fetchJobs() {
     console.error("Sanity failed — using cache", err);
   }
 }
-
+   
 // 🔗 Open job from URL if present
 function checkAndOpenJobFromURL() {
+  // only run ONCE (page load)
+  if (openedFromURL) return;
+  openedFromURL = true;
+
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get("job");
-
-  if (!jobId || filteredJobs.length === 0) return;
+  if (!jobId) return;
 
   const index = filteredJobs.findIndex(j => j._id === jobId);
   if (index !== -1) {
     selectedIndex = index;
     showPreview(filteredJobs[index], "left");
     renderJobs();
-
-    if (window.innerWidth <= 900) {
-      setTimeout(() => {
-        document.getElementById("jobPreview")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }, 150);
-    }
   }
 }
+
 
 // Schema injection for SEO
 function injectJobSchema(job) {
@@ -1210,9 +1208,6 @@ function renderJobs() {
   });
   
   updateHearts();
-
-  // 🔗 Auto-open job from URL if needed
-  checkAndOpenJobFromURL();
 }
 
 // Show job preview
@@ -1272,17 +1267,24 @@ document.getElementById("jobSearch").addEventListener("input", () => {
 document.getElementById("categoryFilter").addEventListener("change", renderJobs);
 document.getElementById("sortBtn").addEventListener("click", renderJobs);
 
+
 // Startup
 showSkeletons();
 
 const last = localStorage.getItem(CACHE_TIME_KEY);
 if (!last || Date.now() - last > CACHE_TTL) {
-  fetchJobs();
+  fetchJobs().then(() => {
+    checkAndOpenJobFromURL();
+  });
 } else {
-  fetchJobs(); // background refresh
+  fetchJobs().then(() => {
+    checkAndOpenJobFromURL();
+  });
 }
 
-setInterval(fetchJobs, 5 * 60 * 1000);
+setInterval(() => {
+  fetchJobs();
+}, 5 * 60 * 1000);
 
 /* ===============================
    MOBILE SWIPE (SAFE VERSION)
@@ -1336,6 +1338,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
