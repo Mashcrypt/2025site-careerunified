@@ -1,4 +1,4 @@
-import { getJob } from "./sanity.ts";
+import { getJob } from "../lib/sanity.ts";
 
 export default async (request: Request) => {
   const url = new URL(request.url);
