@@ -2,6 +2,7 @@ export default {
   name: 'company',
   title: 'Company',
   type: 'document',
+
   fields: [
     {
       name: 'name',
@@ -9,6 +10,7 @@ export default {
       type: 'string',
       validation: Rule => Rule.required()
     },
+
     {
       name: 'logo',
       title: 'Company Logo',
@@ -17,12 +19,20 @@ export default {
         hotspot: true
       },
       validation: Rule => Rule.required()
+    },
+
+    {
+      name: 'website',
+      title: 'Company Website',
+      type: 'url'
     }
   ],
+
   preview: {
     select: {
       title: 'name',
       media: 'logo'
     }
   }
-};
+}
+
