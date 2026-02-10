@@ -13,7 +13,8 @@ export default {
     {
       name: 'company',
       title: 'Company',
-      type: 'string',
+      type: 'reference',
+      to: [{ type: 'company' }],
       validation: Rule => Rule.required()
     },
     {
