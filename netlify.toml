@@ -4,3 +4,8 @@
 
 [build.environment]
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+# 🔥 This line forces /jobs to be served by the Edge Function
+[[edge_functions]]
+  path = "/jobs"
+  function = "job"
