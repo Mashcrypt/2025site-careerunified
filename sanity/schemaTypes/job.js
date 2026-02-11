@@ -11,6 +11,17 @@ export default {
       validation: Rule => Rule.required()
     },
     {
+  name: 'slug',
+  title: 'Job URL',
+  type: 'slug',
+  options: {
+    source: 'title',
+    maxLength: 80
+  },
+  validation: Rule => Rule.required()
+},
+
+    {
       name: 'company',
       title: 'Company',
       type: 'reference',
