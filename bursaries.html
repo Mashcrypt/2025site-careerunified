@@ -1087,10 +1087,11 @@ async function fetchBursaries() {
       faculty,
       description,
       deadline,
-      applicationLink
+      applicationLink,
+      providerLogo,
+      "slug": slug.current
     }`);
 
-    // Save to cache
     localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
     localStorage.setItem(BURSARY_CACHE_TIME, Date.now());
 
@@ -1103,7 +1104,7 @@ async function fetchBursaries() {
     console.error("Sanity failed — using cache", err);
   }
 }
-
+  
 // Show default preview
 function showDefaultPreview() {
   bursaryPreview.innerHTML = `
@@ -1128,6 +1129,7 @@ function extractLink(raw) {
 }
 
 // Render bursaries list
+// Modified renderBursaries function - REPLACE YOUR EXISTING ONE
 function renderBursaries(filter = 'All') {
   bursaryList.innerHTML = '';
   filteredBursaries = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
@@ -1154,9 +1156,13 @@ function renderBursaries(filter = 'All') {
     const shortDesc = b.description.length > 150 ? b.description.substring(0, 150) + '...' : b.description;
     const readMore = b.description.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
 
+    // Generate slug if not available (fallback)
+    const slug = b.slug || b.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const detailUrl = `bursary-detail.html?slug=${slug}`;
+
     const li = document.createElement('li');
     li.className = 'bursary-card';
-    li.dataset.id = b._id; // Store bursary ID for heart icon
+    li.dataset.id = b._id;
     if (index === selectedIndex) li.classList.add('selected');
 
     li.innerHTML = `
@@ -1170,13 +1176,31 @@ function renderBursaries(filter = 'All') {
       <p><strong>Deadline:</strong> ${b.deadline} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
       <p id="desc-${index}">${shortDesc}</p>
       ${readMore}
+      
+      <div class="card-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+        <button class="share-mini-btn" data-slug="${slug}" data-name="${b.name}" 
+                style="flex: 1; background: #2563eb; color: white; border: none; padding: 8px 12px; 
+                       border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; 
+                       transition: all 0.2s; font-family: 'Poppins', sans-serif;">
+          Share
+        </button>
+        <a href="${detailUrl}" 
+           style="flex: 1; background: #16a34a; color: white; text-decoration: none; 
+                  padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; 
+                  text-align: center; transition: all 0.2s;">
+          View Details
+        </a>
+      </div>
     `;
 
     li.onclick = (e) => {
-      // Don't open if clicking heart
-      if (e.target.closest('.bursary-heart')) return;
+      // Don't open if clicking heart, share button, or view details link
+      if (e.target.closest('.bursary-heart') || 
+          e.target.closest('.share-mini-btn') || 
+          e.target.closest('a[href]')) {
+        return;
+      }
       
-      // Don't trigger if clicking "Read more"
       if (e.target.classList.contains('read-more')) {
         e.stopPropagation();
         toggleDesc(parseInt(e.target.dataset.index));
@@ -1189,7 +1213,6 @@ function renderBursaries(filter = 'All') {
       showPreview(b, direction);
       renderBursaries(filter);
       
-      // Scroll to preview on mobile
       if (window.innerWidth <= 900) {
         document.getElementById('bursaryPreview').scrollIntoView({ 
           behavior: 'smooth', 
@@ -1202,6 +1225,35 @@ function renderBursaries(filter = 'All') {
   });
 
   updateHearts();
+  attachShareHandlers();
+}
+
+/* ================================
+   SHARE FUNCTIONALITY
+================================ */
+function attachShareHandlers() {
+  document.querySelectorAll('.share-mini-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const slug = btn.dataset.slug;
+      const name = btn.dataset.name;
+      shareToWhatsApp(slug, name);
+    };
+  });
+}
+
+function shareToWhatsApp(slug, name) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  const text = encodeURIComponent(`Check out this bursary: ${name}\n\n${url}`);
+  
+  // Check if on mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    window.location.href = `whatsapp://send?text=${text}`;
+  } else {
+    window.open(`https://web.whatsapp.com/send?text=${text}`, '_blank');
+  }
 }
 
 // Heart click handler
@@ -1390,10 +1442,61 @@ window.addEventListener('scroll', () => {
 
 up.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
 down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+
+function attachShareHandlers() {
+  document.querySelectorAll('.share-mini-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const slug = btn.dataset.slug;
+      const name = btn.dataset.name;
+      shareToWhatsApp(slug, name);
+    };
+  });
+}
+
+function shareToWhatsApp(slug, name) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  const text = encodeURIComponent(`Check out this bursary: ${name}\n\n${url}`);
+  
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    window.location.href = `whatsapp://send?text=${text}`;
+  } else {
+    window.open(`https://web.whatsapp.com/send?text=${text}`, '_blank');
+  }
+}
+<!-- Social Share Buttons for Multiple Platforms -->
+function shareToFacebook(slug) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+}
+
+function shareToTwitter(slug, name) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  const text = encodeURIComponent(`Check out this bursary: ${name}`);
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`, '_blank');
+}
+
+function shareToLinkedIn(slug) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+}
+  
+async function copyLink(slug) {
+  const url = `${window.location.origin}/bursary-detail.html?slug=${slug}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    alert('Link copied to clipboard!');
+  } catch (err) {
+    console.error('Failed to copy:', err);
+  }
+}
 </script>
 
 </body>
 </html>
+
 
 
 
