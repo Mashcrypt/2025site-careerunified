@@ -4,7 +4,7 @@ export default async (request: Request) => {
   const url = new URL(request.url);
   const jobId = url.searchParams.get("job");
 
-  // If no job in URL → let Netlify serve normal SPA
+  // If no job param → allow normal SPA to load
   if (!jobId) {
     return fetch(request);
   }
@@ -15,13 +15,16 @@ export default async (request: Request) => {
     return new Response("Job not found", { status: 404 });
   }
 
+  // Use company logo if available, else fallback image
   const image =
     job.companyLogo ||
-    "https://careerunified.com/static/default-company.png"; // fallback image
+    "https://careerunified.com/images/default-job.png";
 
-  const safeDescription = job.description
-    ? job.description.replace(/"/g, "'").slice(0, 160)
-    : "";
+  // Escape text safely
+  const safeTitle = job.title.replace(/"/g, "'");
+  const safeCompany = job.company.replace(/"/g, "'");
+  const safeLocation = job.location.replace(/"/g, "'");
+  const safeDesc = job.description.replace(/"/g, "'");
 
   const html = `
 <!DOCTYPE html>
@@ -29,64 +32,65 @@ export default async (request: Request) => {
 <head>
 <meta charset="UTF-8">
 
-<title>${job.title} at ${job.companyName} | Career Unified</title>
+<title>${safeTitle} – ${safeCompany} | Career Unified</title>
 
-<meta name="description" content="${job.title} at ${job.companyName} in ${job.location}. Apply before ${job.deadline}.">
+<meta name="description" content="${safeTitle} at ${safeCompany} in ${safeLocation}. Apply before ${job.deadline}.">
 
-<!-- Open Graph / WhatsApp -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="${job.title} at ${job.companyName}">
-<meta property="og:description" content="${job.title} • ${job.location} • ${job.salary || "Apply now"}">
-<meta property="og:image" content="${image}">
+<meta property="og:title" content="${safeTitle}">
+<meta property="og:description" content="Apply for ${safeTitle} at ${safeCompany} in ${safeLocation}">
 <meta property="og:url" content="https://careerunified.com/jobs?job=${job._id}">
+<meta property="og:image" content="${image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${job.title} at ${job.companyName}">
-<meta name="twitter:description" content="${job.location} • ${job.salary || "Apply now"}">
+<meta name="twitter:title" content="${safeTitle}">
+<meta name="twitter:description" content="Apply for ${safeTitle} at ${safeCompany}">
 <meta name="twitter:image" content="${image}">
 
-<!-- Google Job Posting Schema -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "JobPosting",
-  "title": "${job.title}",
-  "description": "${safeDescription}",
+  "title": "${safeTitle}",
+  "description": "${safeDesc}",
   "datePosted": "${job.posted}",
   "validThrough": "${job.deadline}",
-  "employmentType": "FULL_TIME",
   "hiringOrganization": {
     "@type": "Organization",
-    "name": "${job.companyName}",
+    "name": "${safeCompany}",
     "logo": "${image}"
   },
   "jobLocation": {
     "@type": "Place",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "${job.location}",
-      "addressCountry": "ZA"
+      "addressCountry": "ZA",
+      "addressLocality": "${safeLocation}"
     }
   }
 }
 </script>
 
-<!-- Redirect real users to SPA -->
 <meta http-equiv="refresh" content="0; url=/jobs.html?job=${job._id}">
 </head>
 
 <body>
-<h1>${job.title}</h1>
-<p>${job.companyName}</p>
-<p>${job.location}</p>
-<p>${job.salary || ""}</p>
+<h1>${safeTitle}</h1>
+<p>${safeCompany}</p>
+<p>${safeLocation}</p>
+<p>Apply before ${job.deadline}</p>
 </body>
 </html>
 `;
 
   return new Response(html, {
-    headers: { "content-type": "text/html; charset=utf-8" }
+    headers: {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "public, max-age=300"
+    }
   });
 };
+
 
