@@ -1,23 +1,8 @@
 [build]
   publish = "."
-  edge_functions = "netlify/edge-functions"
-
-[build.environment]
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
-
-# 🔥 This line forces /jobs to be served by the Edge Function
-[[edge_functions]]
-  path = "/jobs"
-  function = "job"
-
-  [build]
-  publish = "."
-  command = "npm run build"
+  command = ""
 
 [build.environment]
   NODE_VERSION = "18"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
-[[redirects]]
-  from = "/bursary/:slug"
-  to = "/bursary/:slug.html"
-  status = 200
