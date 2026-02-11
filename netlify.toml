@@ -1,8 +1,15 @@
 [build]
   publish = "."
-  command = ""
+  command = "node build-jobs.js"
+
 
 [build.environment]
   NODE_VERSION = "18"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+[[redirects]]
+  from = "/jobs/:slug"
+  to = "/jobs/:slug.html"
+  status = 200
+
 
