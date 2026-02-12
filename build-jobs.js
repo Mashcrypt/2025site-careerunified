@@ -1,5 +1,5 @@
-import fs from "fs";
-import fetch from "node-fetch";
+const fs = require("fs");
+const https = require("https");
 
 const PROJECT_ID = "qjg5raj1";
 const DATASET = "production";
@@ -17,25 +17,43 @@ const query = `
 }
 `;
 
-const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+const url =
+  "https://" +
+  PROJECT_ID +
+  ".api.sanity.io/v2023-08-01/data/query/" +
+  DATASET +
+  "?query=" +
+  encodeURIComponent(query);
 
-const res = await fetch(url);
-const data = await res.json();
+https.get(url, res => {
+  let data = "";
 
-const template = fs.readFileSync("jobs-template.html", "utf8");
+  res.on("data", chunk => {
+    data += chunk;
+  });
 
-fs.mkdirSync("jobs", { recursive: true });
+  res.on("end", () => {
+    const json = JSON.parse(data);
 
-data.result.forEach(job => {
-  let html = template
-    .replaceAll("{{title}}", job.title)
-    .replaceAll("{{company}}", job.company)
-    .replaceAll("{{location}}", job.location)
-    .replaceAll("{{salary}}", job.salary || "Not specified")
-    .replaceAll("{{deadline}}", job.deadline)
-    .replaceAll("{{logo}}", job.logo || "https://careerunified.com/default-logo.png")
-    .replaceAll("{{slug}}", job.slug.current)
-    .replaceAll("{{id}}", job._id);
+    const template = fs.readFileSync("jobs-template.html", "utf8");
 
-  fs.writeFileSync(`jobs/${job.slug.current}.html`, html);
+    fs.mkdirSync("jobs", { recursive: true });
+
+    json.result.forEach(job => {
+      let html = template
+        .replace(/{{title}}/g, job.title)
+        .replace(/{{company}}/g, job.company || "")
+        .replace(/{{location}}/g, job.location || "")
+        .replace(/{{salary}}/g, job.salary || "Not specified")
+        .replace(/{{deadline}}/g, job.deadline || "")
+        .replace(/{{logo}}/g, job.logo || "https://careerunified.com/default-logo.png")
+        .replace(/{{slug}}/g, job.slug.current)
+        .replace(/{{id}}/g, job._id);
+
+      fs.writeFileSync(`jobs/${job.slug.current}.html`, html);
+    });
+
+    console.log("Jobs built successfully");
+  });
 });
+
