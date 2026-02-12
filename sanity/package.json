@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "sanity dev",
     "start": "sanity start",
-    "build": "build": "echo 'skip build'",
+    "build": "sanity build",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
@@ -16,17 +16,17 @@
   ],
   "dependencies": {
     "@sanity/vision": "^5.1.0",
-    "react": "^19.1",
-    "react-dom": "^19.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "sanity": "^5.1.0",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
-    "@types/react": "^19.1",
-    "eslint": "^9.28",
-    "prettier": "^3.5",
-    "typescript": "^5.8"
+    "@types/react": "^19.1.0",
+    "eslint": "^9.28.0",
+    "prettier": "^3.5.0",
+    "typescript": "^5.8.0"
   },
   "prettier": {
     "semi": false,
@@ -35,3 +35,4 @@
     "singleQuote": true
   }
 }
+
