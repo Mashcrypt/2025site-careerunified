@@ -4,10 +4,9 @@
   command = "npm run build"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
-# Frontend job pages
 [[redirects]]
   from = "/jobs/:slug"
   to = "/jobs/:slug.html"
