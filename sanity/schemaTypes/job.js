@@ -10,16 +10,17 @@ export default {
       type: 'string',
       validation: Rule => Rule.required()
     },
+
     {
-  name: 'slug',
-  title: 'Job URL',
-  type: 'slug',
-  options: {
-    source: 'title',
-    maxLength: 80
-  },
-  validation: Rule => Rule.required()
-},
+      name: 'slug',
+      title: 'Job URL',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 80
+      },
+      validation: Rule => Rule.required()
+    },
 
     {
       name: 'company',
@@ -28,23 +29,27 @@ export default {
       to: [{ type: 'company' }],
       validation: Rule => Rule.required()
     },
+
     {
       name: 'description',
       title: 'Job Description',
       type: 'text',
       validation: Rule => Rule.required()
     },
+
     {
       name: 'location',
       title: 'Location',
       type: 'string',
       validation: Rule => Rule.required()
     },
+
     {
       name: 'salary',
       title: 'Salary',
       type: 'string'
     },
+
     {
       name: 'applyLink',
       title: 'Application Link',
@@ -52,6 +57,7 @@ export default {
       validation: Rule =>
         Rule.required().uri({ allowRelative: false })
     },
+
     {
       name: 'category',
       title: 'Category',
@@ -61,15 +67,16 @@ export default {
           { title: 'Internship / Graduate', value: 'internship' },
           { title: 'Temporary Contract', value: 'temporary' },
           { title: 'Permanent', value: 'permanent' },
-          { title: 'Learnershi', value: 'learnership' },
+          { title: 'Learnership', value: 'learnership' },
           { title: 'Part-time', value: 'part-time' },
-          { title: 'Graduate Program', value: 'graduate program' },
+          { title: 'Graduate Program', value: 'graduate-program' },
           { title: 'Freelance', value: 'freelance' }
         ],
         layout: 'radio'
       },
       validation: Rule => Rule.required()
     },
+
     {
       name: 'jobType',
       title: 'Job Type',
@@ -78,12 +85,14 @@ export default {
         list: ['Full-time', 'Part-time', 'Contract', 'Remote']
       }
     },
+
     {
       name: 'posted',
       title: 'Date Posted',
       type: 'date',
       validation: Rule => Rule.required()
     },
+
     {
       name: 'deadline',
       title: 'Closing Date',
@@ -120,11 +129,11 @@ export default {
       hidden: ({ parent }) => parent?.listingTier === 'normal',
       validation: Rule =>
         Rule.custom((value, context) => {
-          const tier = context.parent?.listingTier;
+          const tier = context.parent?.listingTier
           if (tier !== 'normal' && !value) {
-            return 'Promotion expiry date is required';
+            return 'Promotion expiry date is required'
           }
-          return true;
+          return true
         })
     },
 
@@ -138,31 +147,32 @@ export default {
   ],
 
   /* ===============================
-     SANITY STUDIO PREVIEW
+     SANITY STUDIO PREVIEW (FIXED)
   =============================== */
 
   preview: {
     select: {
       title: 'title',
-      company: 'company',
+      companyName: 'company.name',
       tier: 'listingTier',
       until: 'sponsoredUntil'
     },
-    prepare({ title, company, tier, until }) {
-      let subtitle = company;
+
+    prepare({ title, companyName, tier, until }) {
+      let subtitle = companyName || 'No company'
 
       if (tier && tier !== 'normal') {
-        subtitle += ` • ${tier.toUpperCase()}`;
-        if (until) subtitle += ` (until ${until})`;
+        subtitle += ` • ${tier.toUpperCase()}`
+        if (until) subtitle += ` (until ${until})`
       }
 
       return {
         title,
         subtitle
-      };
+      }
     }
   }
-};
+}
 
 
 
