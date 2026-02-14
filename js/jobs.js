@@ -1,5 +1,5 @@
 // ===============================
-// JOBS.JS – LIVE SANITY INTEGRATION
+// JOBS.JS – LIVE SANITY INTEGRATION (FIXED)
 // ===============================
 
 import { sanityClient } from './sanityClient.js';
@@ -23,19 +23,22 @@ async function fetchJobs() {
       *[_type == "job"] | order(posted desc) {
         _id,
         title,
-        company,
+        "slug": slug.current,
         description,
         location,
         salary,
         applyLink,
         category,
         posted,
-        deadline
+        deadline,
+
+        company->{
+          name
+        }
       }
     `;
 
     jobs = await sanityClient.fetch(query);
-
     renderJobs();
   } catch (err) {
     console.error('Sanity fetch error:', err);
@@ -51,10 +54,12 @@ function renderJobs() {
   const cat = categoryFilter.value;
 
   let filtered = jobs.filter(job => {
+    const companyName = job.company?.name || '';
+
     const matchCat = cat === 'all' || job.category === cat;
     const matchSearch =
       job.title.toLowerCase().includes(term) ||
-      job.company.toLowerCase().includes(term) ||
+      companyName.toLowerCase().includes(term) ||
       job.description.toLowerCase().includes(term);
 
     return matchCat && matchSearch;
@@ -78,13 +83,16 @@ function renderJobs() {
 
     li.innerHTML = `
       <h3>${job.title}</h3>
-      <p class="company">${job.company}</p>
+      <p class="company">${job.company?.name || 'Unknown Company'}</p>
       <p class="meta">${job.location}</p>
       <p class="salary">${job.salary || ''}</p>
       <p class="meta">
         Posted: ${job.posted || '—'} • Closing: ${job.deadline || '—'}
       </p>
       <p class="views">${views[job._id]} views</p>
+      <a class="job-link" href="/jobs/${job.slug}" target="_blank">
+        View Job
+      </a>
     `;
 
     li.onclick = () => {
@@ -106,16 +114,24 @@ function showPreview(job) {
   jobPreview.innerHTML = `
     <div class="fade-in">
       <h2>${job.title}</h2>
-      <p class="company">${job.company}</p>
+      <p class="company">${job.company?.name || 'Unknown Company'}</p>
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary || 'N/A'}</p>
       <p><strong>Posted:</strong> ${job.posted || '—'} |
          <strong>Closing:</strong> ${job.deadline || '—'}</p>
+
       <div style="white-space:pre-line;margin-top:12px;">
         ${job.description}
       </div>
+
       <a class="apply-btn" href="${job.applyLink}" target="_blank">
         Apply Now
+      </a>
+
+      <a class="share-btn" href="https://wa.me/?text=${encodeURIComponent(
+        'Apply here: https://careerunified.com/jobs/' + job.slug
+      )}" target="_blank">
+        Share on WhatsApp
       </a>
     </div>
   `;
@@ -132,3 +148,4 @@ document.getElementById('sortBtn').onclick = renderJobs;
 // INIT
 // ===============================
 fetchJobs();
+
