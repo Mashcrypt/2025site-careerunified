@@ -68,25 +68,31 @@ const query = encodeURIComponent(`*[_type=="job" && slug.current=="${slug}"][0]{
   description,
   location,
   salary,
-  closingDate,
+  posted,
+  deadline,
   jobType,
-  "company": company->name,
-  applicationLink
+  applyLink,
+  "company": company->name
 }`)
 
-fetch("https://qjg5raj1.api.sanity.io/v2023-10-01/data/query/production?query=" + query)
+fetch("https://qjg5raj1.api.sanity.io/v2024-01-01/data/query/production?query=" + query)
 .then(res => res.json())
 .then(data => {
   const job = data.result
 
+  if (!job) {
+    document.body.innerHTML = "<h2>Job not found</h2>"
+    return
+  }
+
   document.getElementById("title").textContent = job.title
   document.getElementById("company").textContent = job.company
-  document.getElementById("type").textContent = job.jobType
+  document.getElementById("type").textContent = job.jobType || "Full-time"
   document.getElementById("location").textContent = job.location || "South Africa"
   document.getElementById("salary").textContent = job.salary || "Market related"
-  document.getElementById("closing").textContent = job.closingDate || "Open until filled"
+  document.getElementById("closing").textContent = job.deadline || "Open until filled"
   document.getElementById("description").innerHTML = job.description
-  document.getElementById("apply").href = job.applicationLink
+  document.getElementById("apply").href = job.applyLink
 
   document.title = job.title + " | CareerUnified"
 })
