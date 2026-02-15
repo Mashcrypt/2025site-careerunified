@@ -812,7 +812,6 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let jobs = [];
 let filteredJobs = [];
 let selectedIndex = null;
-let openedFromURL = false;
 
 
 /* ===============================
@@ -1044,29 +1043,29 @@ async function fetchJobs() {
       document.getElementById("jobSearch").value = globalSearch;
     }
     
-    renderJobs();
     console.log("🔄 Jobs updated from Sanity");
   } catch (err) {
     console.error("Sanity failed — using cache", err);
   }
 }
    
-// 🔗 Open job from URL if present
+// 🔗 Open job from URL if present - FIXED VERSION
 function checkAndOpenJobFromURL() {
-  // only run ONCE (page load)
-  if (openedFromURL) return;
-  openedFromURL = true;
-
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get("job");
   if (!jobId) return;
 
+  // Find job in full jobs list
+  const job = jobs.find(j => j._id === jobId);
+  if (!job) return;
+
+  // Find its index inside filteredJobs
   const index = filteredJobs.findIndex(j => j._id === jobId);
-  if (index !== -1) {
-    selectedIndex = index;
-    showPreview(filteredJobs[index], "left");
-    renderJobs();
-  }
+  if (index === -1) return;
+
+  selectedIndex = index;
+  showPreview(job, "left");
+  renderJobs();
 }
 
 
@@ -1138,10 +1137,16 @@ function showDefaultPreview() {
   </div>`;
 }
 
-// Render jobs list
+// Render jobs list - FIXED VERSION WITH SELECTION PRESERVATION
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
   const category = document.getElementById('categoryFilter').value;
+  
+  // FIX 2: Preserve the currently selected job ID
+  let selectedJobId = null;
+  if (selectedIndex !== null && filteredJobs[selectedIndex]) {
+    selectedJobId = filteredJobs[selectedIndex]._id;
+  }
   
   filteredJobs = jobs
     .filter(j => {
@@ -1155,6 +1160,12 @@ function renderJobs() {
       if (pDiff !== 0) return pDiff;
       return new Date(a.deadline) - new Date(b.deadline);
     });
+  
+  // FIX 2: Restore selection after filtering
+  if (selectedJobId) {
+    const newIndex = filteredJobs.findIndex(j => j._id === selectedJobId);
+    selectedIndex = newIndex !== -1 ? newIndex : null;
+  }
   
   jobList.innerHTML = "";
   
@@ -1277,16 +1288,18 @@ document.getElementById("categoryFilter").addEventListener("change", renderJobs)
 document.getElementById("sortBtn").addEventListener("click", renderJobs);
 
 
-// Startup
+// Startup - FIX 3: Force URL sync after render
 showSkeletons();
 
 const last = localStorage.getItem(CACHE_TIME_KEY);
 if (!last || Date.now() - last > CACHE_TTL) {
   fetchJobs().then(() => {
+    renderJobs();
     checkAndOpenJobFromURL();
   });
 } else {
   fetchJobs().then(() => {
+    renderJobs();
     checkAndOpenJobFromURL();
   });
 }
@@ -1347,6 +1360,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
