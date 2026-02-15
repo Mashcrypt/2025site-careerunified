@@ -2,174 +2,1404 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Browse Jobs | CareerUnified</title>
-<meta name="description" content="Browse verified South African jobs. Filter by category, search companies and apply directly.">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jobs – Career Unified</title>
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="description" content="Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 
-<link rel="stylesheet" href="/css/jobs.css">
+<!-- Favicon -->
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0d47ff">
+
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+</script>
 
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#f5f7fb }
-.container { display:flex; height:100vh }
-.sidebar { width:40%; background:white; border-right:1px solid #ddd; overflow-y:auto }
-.preview { width:60%; padding:30px; overflow-y:auto }
-.job-card { padding:15px; border-bottom:1px solid #eee; cursor:pointer }
-.job-card:hover { background:#f0f4ff }
-.job-card.selected { background:#eaf0ff }
-.company { color:#555 }
-.meta { font-size:13px; color:#777 }
-.apply-btn { background:#0b5cff; color:white; padding:12px 20px; display:inline-block; margin-top:15px; border-radius:6px; text-decoration:none }
-.share-btn { display:inline-block; margin-left:10px; color:#25d366; font-weight:bold; text-decoration:none }
-.filters { padding:15px; border-bottom:1px solid #eee; display:flex; gap:10px }
-input,select { padding:10px; width:100% }
+/* =============================== */
+/* RESET & BASE */
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+body {
+font-family: 'Poppins', sans-serif;
+background: #f7f9fc;
+color: #111827;
+overflow-x: hidden;
+line-height: 1.6;
+}
+
+/* =============================== */
+/* HEADER */
+header {
+text-align: center;
+padding: 60px 20px 50px;
+background: linear-gradient(135deg, #1e3a8a, #2563eb);
+color: #fff;
+}
+
+header h1 {
+margin: 0;
+font-size: 2.5rem;
+font-weight: 700;
+}
+
+header p {
+margin-top: 8px;
+font-size: 1.1rem;
+color: #e5e7eb;
+font-weight: 500;
+}
+
+/* =============================== */
+/* JOBS PAGE LAYOUT */
+.jobs-container {
+display: flex;
+max-width: 1200px;
+margin: 30px auto;
+gap: 20px;
+padding: 0 20px;
+min-height: 100vh;
+}
+
+.jobs-left {
+flex: 1;
+min-width: 0;
+max-height: calc(100vh - 160px);
+overflow-y: auto;
+padding-right: 10px;
+}
+
+.jobs-preview {
+flex: 1;
+background: #fff;
+border-radius: 12px;
+padding: 24px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+min-height: 420px;
+position: sticky;
+top: 20px;
+max-height: calc(100vh - 40px);
+overflow: visible;
+display: flex;
+flex-direction: column;
+}
+
+/* =============================== */
+/* SEARCH & FILTER */
+.search-filter-container {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+flex-wrap: wrap;
+}
+
+.search-filter-container input,
+.search-filter-container select,
+.search-filter-container button {
+padding: 12px 16px;
+border-radius: 8px;
+border: 1px solid #d1d5db;
+font-size: 15px;
+font-family: 'Poppins', sans-serif;
+transition: all 0.2s;
+}
+
+.search-filter-container input {
+flex: 1;
+min-width: 200px;
+}
+
+.search-filter-container input:focus,
+.search-filter-container select:focus {
+outline: none;
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-filter-container select {
+background: white;
+cursor: pointer;
+}
+
+.search-filter-container button {
+background: #2563eb;
+color: white;
+font-weight: 600;
+border: none;
+cursor: pointer;
+white-space: nowrap;
+}
+
+.search-filter-container button:hover {
+background: #1e40af;
+}
+
+/* =============================== */
+/* JOB CARDS LIST */
+.jobs-list {
+list-style: none;
+padding: 0;
+margin: 0;
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+.job-card {
+background: #fff;
+border-radius: 10px;
+padding: 16px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+cursor: pointer;
+transition: all 0.2s ease;
+position: relative;
+border-left: 3px solid transparent;
+}
+
+.job-card:hover {
+background: #f0f7ff;
+transform: translateX(4px);
+box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.job-card.selected {
+border-left-color: #facc15;
+background: #fffbeb;
+}
+
+.job-card h3 {
+font-size: 1.1rem;
+color: #1e3a8a;
+margin-bottom: 8px;
+padding-right: 80px;
+}
+
+.job-card p {
+margin: 4px 0;
+font-size: 0.9rem;
+color: #6b7280;
+}
+
+.job-card strong {
+color: #374151;
+font-weight: 600;
+}
+
+/* =============================== */
+/* JOB BADGE */
+.job-badge {
+position: absolute;
+top: 12px;
+right: 46px;
+z-index: 2;
+padding: 4px 10px;
+background: #facc15;
+color: #1e3a8a;
+font-size: 11px;
+font-weight: 700;
+border-radius: 6px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+/* =============================== */
+/* JOB PREVIEW */
+.preview-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 16px;
+flex-shrink: 0;
+}
+
+.close-preview-btn {
+background: transparent;
+border: none;
+cursor: pointer;
+padding: 4px;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: transform 0.2s;
+flex-shrink: 0;
+}
+
+.close-preview-btn:hover {
+transform: scale(1.1);
+}
+
+.close-preview-btn svg {
+width: 28px;
+height: 28px;
+stroke: #3b82f6;
+stroke-width: 2.5;
+}
+
+.jobs-preview h2 {
+color: #1e3a8a;
+font-size: 1.75rem;
+margin: 0;
+flex: 1;
+padding-right: 10px;
+}
+
+.jobs-preview .job-badge{
+position: relative;
+top: 0;
+right: 0;
+display: inline-block;
+margin-bottom: 12px;
+z-index: 1;
+margin-right: 12px;
+}
+
+.preview-content-wrapper {
+display: flex;
+flex-direction: column;
+flex: 1;
+min-height: 0;
+overflow: visible;
+}
+
+.preview-info {
+flex-shrink: 0;
+margin-bottom: 12px;
+}
+
+.jobs-preview p {
+margin: 8px 0;
+color: #4b5563;
+}
+
+.jobs-preview strong {
+color: #1f2937;
+}
+
+.jobs-preview .description-content {
+white-space: pre-line;
+padding: 16px;
+background: #f9fafb;
+border-radius: 8px;
+line-height: 1.7;
+color: #374151;
+flex: 1;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+margin-bottom: 10px;
+overscroll-behavior: contain;
+touch-action: pan-y;
+}
+
+/* =============================== */
+/* APPLY BUTTON */
+.apply-btn {
+display: block;
+background: #16a34a;
+color: white;
+padding: 14px;
+border-radius: 8px;
+font-weight: 600;
+text-decoration: none;
+transition: all 0.2s;
+font-size: 15px;
+text-align: center;
+flex-shrink: 0;
+box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
+}
+
+.apply-btn:hover {
+background: #15803d;
+transform: translateY(-1px);
+box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+/* =============================== */
+/* SKELETON LOADING */
+.skeleton {
+background: linear-gradient(
+90deg,
+#e5e7eb 0%,
+#f3f4f6 50%,
+#e5e7eb 100%
+);
+background-size: 200% 100%;
+animation: skeleton-shimmer 1.5s infinite;
+border-radius: 10px;
+position: relative;
+overflow: hidden;
+}
+
+@keyframes skeleton-shimmer {
+0% { background-position: 200% 0; }
+100% { background-position: -200% 0; }
+}
+
+.skeleton-job {
+height: 110px;
+margin-bottom: 12px;
+}
+
+.job-card.skeleton {
+cursor: default;
+border: none;
+}
+
+.job-card.skeleton:hover {
+background: #e5e7eb;
+transform: none;
+}
+
+/* =============================== */
+/* FADE ANIMATION */
+.fade-in {
+animation: fadeIn 0.3s ease;
+display: flex;
+flex-direction: column;
+height: 100%;
+}
+
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(10px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+/* =============================== */
+/* SWIPE ANIMATIONS */
+.preview-slide {
+animation-duration: 0.35s;
+animation-fill-mode: both;
+width: 100%;
+flex-shrink: 0;
+display: flex;
+flex-direction: column;
+height: 100%;
+}
+
+.slide-left {
+animation-name: slideLeft;
+}
+
+.slide-right {
+animation-name: slideRight;
+}
+
+@keyframes slideLeft {
+from {
+transform: translateX(40px);
+opacity: 0;
+}
+to {
+transform: translateX(0);
+opacity: 1;
+}
+}
+
+@keyframes slideRight {
+from {
+transform: translateX(-40px);
+opacity: 0;
+}
+to {
+transform: translateX(0);
+opacity: 1;
+}
+}
+
+/* =============================== */
+/* FOOTER */
+.main-footer {
+background: #1e3a8a;
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 60px;
+}
+
+.footer-links {
+margin-bottom: 12px;
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+gap: 12px;
+}
+
+.footer-links a {
+color: #facc15;
+font-weight: 600;
+text-decoration: none;
+}
+
+.footer-links a:hover {
+text-decoration: underline;
+}
+
+/* =============================== */
+/* SEO FALLBACK */
+.seo-content {
+position: absolute;
+left: -9999px;
+top: auto;
+width: 1px;
+height: 1px;
+overflow: hidden;
+}
+
+/* =============================== */
+/* EMPTY STATE */
+.empty-state {
+text-align: center;
+padding: 60px 20px;
+color: #6b7280;
+}
+
+.empty-state svg {
+width: 80px;
+height: 80px;
+margin-bottom: 16px;
+opacity: 0.3;
+}
+
+.empty-state h3 {
+color: #374151;
+margin-bottom: 8px;
+}
+
+/* =============================== */
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+header {
+padding: 50px 16px 40px;
+}
+
+header h1 {
+font-size: 2rem;
+}
+
+header p {
+font-size: 1rem;
+}
+
+.jobs-container {
+flex-direction: column;
+margin: 20px auto;
+padding: 0 16px;
+gap: 16px;
+}
+
+.jobs-left, .jobs-preview {
+width: 100%;
+max-height: none;
+}
+
+.jobs-left {
+overflow-y: visible;
+padding-right: 0;
+}
+
+.jobs-preview {
+position: static;
+padding: 20px;
+margin-top: 0;
+min-height: 500px;
+max-height: 70vh;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+
+.search-filter-container {
+flex-direction: column;
+gap: 12px;
+}
+
+.search-filter-container input,
+.search-filter-container select,
+.search-filter-container button {
+width: 100%;
+min-width: auto;
+padding: 14px 16px;
+font-size: 16px;
+}
+
+.smart-match-banner {
+font-size: 13px;
+padding: 10px 14px;
+}
+
+.job-card {
+padding: 14px;
+}
+
+.job-card h3 {
+font-size: 1rem;
+padding-right: 70px;
+}
+
+.job-card p {
+font-size: 0.85rem;
+}
+
+.jobs-preview h2 {
+font-size: 1.3rem;
+}
+
+.jobs-preview p {
+font-size: 0.9rem;
+}
+
+.jobs-preview .description-content {
+font-size: 0.9rem;
+padding: 14px;
+max-height: none;
+overflow-y: visible;
+}
+
+.apply-btn {
+width: 100%;
+text-align: center;
+padding: 14px;
+font-size: 16px;
+}
+
+.close-preview-btn svg {
+width: 24px;
+height: 24px;
+}
+
+.footer-links {
+flex-direction: column;
+gap: 8px;
+}
+
+.footer-links a {
+font-size: 14px;
+}
+}
+
+@media (max-width: 400px) {
+header h1 {
+font-size: 1.75rem;
+}
+
+.job-card h3 {
+font-size: 0.95rem;
+}
+
+.job-badge {
+font-size: 10px;
+padding: 3px 8px;
+}
+
+.jobs-preview h2 {
+font-size: 1.2rem;
+}
+}
+
+.heart-icon {
+width: 22px;
+height: 22px;
+fill: none;
+stroke: #60a5fa;
+stroke-width: 2;
+position: absolute;
+top: 14px;
+right: 14px;
+cursor: pointer;
+transition: all 0.25s ease;
+z-index: 10;
+}
+
+.heart-icon:hover {
+transform: scale(1.15);
+}
+
+.heart-icon.saved {
+fill: #60a5fa;
+stroke: #60a5fa;
+filter: drop-shadow(0 0 6px rgba(96,165,250,0.6));
+}
 </style>
 </head>
 
 <body>
-
-<div class="container">
-
-  <!-- LEFT -->
-  <div class="sidebar">
-
-    <div class="filters">
-      <input id="jobSearch" placeholder="Search jobs or companies">
-      <select id="categoryFilter">
-        <option value="all">All categories</option>
-        <option value="IT">IT</option>
-        <option value="Finance">Finance</option>
-        <option value="Marketing">Marketing</option>
-        <option value="Admin">Admin</option>
-      </select>
-    </div>
-
-    <ul id="jobList"></ul>
-
-  </div>
-
-  <!-- RIGHT -->
-  <div class="preview" id="jobPreview">
-    <h2>Click a job to view details</h2>
-  </div>
-
+<!-- NAVIGATION -->
+<nav class="main-nav">
+<!-- DESKTOP VIEW -->
+<a href="index.html" class="logo desktop-nav">Career Unified</a>
+<div class="nav-links desktop-nav">
+<a href="jobs.html">Jobs</a>
+<a href="bursaries.html">Bursaries</a>
+<a href="varsity.html">Varsity</a>
+<a href="cv-generator.html">Generate CV</a>
+<a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+<a href="recruiter-apply.html">Apply as Recruiter</a>
+<a href="saved-items.html">Saved Items</a>
+<a href="signup.html">Sign Up</a>
+<a href="login.html">Login</a>
+<a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+<svg viewBox="0 0 24 24">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+<circle cx="12" cy="7" r="4"/>
+</svg>
+</a>
 </div>
 
-<script type="module">
+<!-- MOBILE VIEW -->
+<div class="mobile-nav">
+<a href="index.html" class="mobile-logo">Career Unified</a>
+<div class="mobile-nav-right">
+<a href="account-page.html" class="icon-btn" aria-label="My Account">
+<svg viewBox="0 0 24 24">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+<circle cx="12" cy="7" r="4"/>
+</svg>
+</a>
+<button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+<svg viewBox="0 0 24 24">
+<line x1="3" y1="12" x2="21" y2="12"/>
+<line x1="3" y1="6" x2="21" y2="6"/>
+<line x1="3" y1="18" x2="21" y2="18"/>
+</svg>
+</button>
+</div>
+</div>
+</nav>
 
-import { sanityClient } from "./js/sanityClient.js";
+<!-- MOBILE SLIDE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+<a href="jobs.html">Jobs</a>
+<a href="bursaries.html">Bursaries</a>
+<a href="varsity.html">Varsity</a>
+<a href="cv-generator.html">Generate CV</a>
+<a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+<a href="recruiter-apply.html">Apply as Recruiter</a>
+<a href="saved-items.html">Saved Items</a>
+<a href="signup.html">Sign Up</a>
+<a href="login.html">Login</a>
+</div>
+
+<!-- HEADER -->
+<header>
+<h1>Available Jobs</h1>
+<p>Find your next opportunity in South Africa</p>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="jobs-container">
+<div class="jobs-left">
+<!-- Search & Filter -->
+<div class="search-filter-container">
+<input type="text" id="jobSearch" placeholder="Search jobs, companies, keywords...">
+<select id="categoryFilter">
+<option value="all">All Categories</option>
+<option value="internship">Internship / Graduate</option>
+<option value="temporary">Temporary</option>
+<option value="freelance">Freelance</option>
+</select>
+<button id="sortBtn">Sort by Deadline</button>
+</div>
+
+<!-- Job List -->
+<ul class="jobs-list" id="jobList"></ul>
+</div>
+
+<!-- Job Preview Panel -->
+<div class="jobs-preview" id="jobPreview">
+<div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+<svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+</svg>
+<p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+</div>
+</div>
+
+<!-- SEO FALLBACK CONTENT -->
+<section class="seo-content" aria-hidden="true">
+<h2>Latest Jobs in South Africa</h2>
+<p>
+Career Unified lists verified job opportunities across South Africa including IT, finance, retail, engineering, hospitality, government, and graduate roles.
+</p>
+<p>
+Our platform updates daily to help job seekers find full-time, part-time, remote, and internship positions from trusted employers.
+</p>
+<p>
+Use Career Unified to search, filter, and apply for jobs across all provinces in South Africa.
+</p>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+<div class="footer-links">
+<a href="about-us.html">About Us</a>
+<a href="privacy.html">Privacy Policy</a>
+<a href="terms.html">Terms & Conditions</a>
+<a href="contact-us.html">Contact Us</a>
+</div>
+<p>© 2026 Career Unified. All rights reserved.</p>
+</footer>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
+
+<!-- SANITY CLIENT -->
+<script src="js/sanityClient.js"></script>
+
+<script>
+/* ================================
+   MOBILE NAVIGATION
+   ================================ */
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+if (menuBtn) {
+  menuBtn.onclick = () => {
+    const isOpen = mobileMenu.style.display === "block";
+    mobileMenu.style.display = isOpen ? "none" : "block";
+  };
+}
+
+// Close menus when clicking outside
+document.addEventListener("click", e => {
+  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+    if (mobileMenu) mobileMenu.style.display = "none";
+  }
+});
+
+/* ================================
+   JOBS PAGE LOGIC
+   ================================ */
+const jobList = document.getElementById('jobList');
+const jobPreview = document.getElementById('jobPreview');
+
+// Global search from homepage
+let globalSearch = localStorage.getItem("homeSearchTerm");
+if (globalSearch) {
+  localStorage.removeItem("homeSearchTerm");
+}
+
+// Cache system
+const CACHE_KEY = "careerUnifiedJobsCache";
+const CACHE_TIME_KEY = "careerUnifiedJobsCacheTime";
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 let jobs = [];
-let views = JSON.parse(localStorage.getItem("jobViews")) || {};
+let filteredJobs = [];
 let selectedIndex = null;
 
-const jobList = document.getElementById("jobList");
-const jobPreview = document.getElementById("jobPreview");
-const searchInput = document.getElementById("jobSearch");
-const categoryFilter = document.getElementById("categoryFilter");
 
-// =============================
-// FETCH JOBS FROM SANITY
-// =============================
-async function fetchJobs() {
-  const query = `
-  *[_type=="job"] | order(posted desc){
-    _id,
-    title,
-    "slug": slug.current,
-    description,
-    location,
-    salary,
-    applyLink,
-    category,
-    posted,
-    deadline,
-    company->{
-      name
+/* ===============================
+   FIREBASE FIRESTORE BOOKMARK SYSTEM
+   =============================== */
+// Firebase Auth & Firestore state
+let userId = null;
+let savedJobs = new Set();
+
+// Listen for auth state changes
+if (typeof firebase !== 'undefined' && firebase.auth) {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      userId = user.uid;
+      console.log('✅ User logged in:', user.email, 'UID:', userId);
+      loadSavedJobs();
+    } else {
+      userId = null;
+      savedJobs.clear();
+      updateHearts();
+      console.log('❌ No user logged in');
     }
-  }`;
+  });
+} else {
+  console.error('❌ Firebase not loaded properly');
+}
 
-  jobs = await sanityClient.fetch(query);
+// LocalStorage helper functions for saved-items.html integration
+const BOOKMARK_KEY = "careerUnifiedBookmarks";
+
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+}
+
+function saveBookmarks(list) {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
+}
+
+function addToLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  if (!bookmarks.includes(key)) {
+    bookmarks.push(key);
+    saveBookmarks(bookmarks);
+  }
+}
+
+function removeFromLocalStorage(type, id) {
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => x !== key);
+  saveBookmarks(bookmarks);
+}
+
+// Load user's saved jobs from Firestore
+async function loadSavedJobs() {
+  if (!userId) return;
+  
+  try {
+    const snapshot = await firebase.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('saved')
+      .get();
+    
+    savedJobs.clear();
+    
+    // Clear localStorage bookmarks for jobs before syncing
+    let bookmarks = getBookmarks();
+    bookmarks = bookmarks.filter(x => !x.startsWith('job:'));
+    
+    snapshot.forEach(doc => {
+      savedJobs.add(doc.id);
+      
+      // Also sync to localStorage
+      const data = doc.data();
+      if (data.type === 'job') {
+        const jobId = doc.id.replace('job_', '');
+        bookmarks.push(`job:${jobId}`);
+      }
+    });
+    
+    saveBookmarks(bookmarks);
+    updateHearts();
+    console.log('✅ Loaded', savedJobs.size, 'saved jobs from Firestore and synced to localStorage');
+  } catch (error) {
+    console.error('Error loading saved jobs:', error);
+  }
+}
+
+// Toggle save for a job
+async function toggleSaveJob(job) {
+  if (!userId) {
+    alert('Please log in to save jobs');
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  const docId = 'job_' + job._id;
+  const ref = firebase.firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('saved')
+    .doc(docId);
+  
+  try {
+    if (savedJobs.has(docId)) {
+      // Remove from saved
+      await ref.delete();
+      savedJobs.delete(docId);
+      
+      // Also remove from localStorage
+      removeFromLocalStorage('job', job._id);
+      
+      console.log('❌ Removed from saved jobs');
+    } else {
+      // Add to saved
+      await ref.set({
+        type: 'job',
+        title: job.title,
+        company: job.company,
+        deadline: job.deadline,
+        location: job.location,
+        salary: job.salary || null,
+        applyLink: job.applyLink,
+        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      savedJobs.add(docId);
+      
+      // Also add to localStorage
+      addToLocalStorage('job', job._id);
+      
+      console.log('✅ Added to saved jobs');
+    }
+    
+    updateHearts();
+  } catch (error) {
+    console.error('Error toggling save:', error);
+    alert('Failed to save job. Please try again.');
+  }
+}
+
+// Update heart icon states
+function updateHearts() {
+  document.querySelectorAll('.heart-icon').forEach(heart => {
+    const jobCard = heart.closest('.job-card');
+    if (jobCard && jobCard.dataset.id) {
+      const docId = 'job_' + jobCard.dataset.id;
+      heart.classList.toggle('saved', savedJobs.has(docId));
+    }
+  });
+}
+
+// Heart click handler
+document.addEventListener('click', e => {
+  if (e.target.closest('.heart-icon')) {
+    e.stopPropagation(); // prevents job card from opening
+    
+    const heart = e.target.closest('.heart-icon');
+    const jobCard = heart.closest('.job-card');
+    
+    if (jobCard && jobCard.dataset.jobData) {
+      try {
+        const job = JSON.parse(jobCard.dataset.jobData);
+        toggleSaveJob(job);
+      } catch (error) {
+        console.error('Error parsing job data:', error);
+      }
+    }
+  }
+});
+
+/* ===============================
+   JOB LOADING & RENDERING
+   =============================== */
+// Show skeleton loaders
+function showSkeletons() {
+  jobList.innerHTML = "";
+  for (let i = 0; i < 6; i++) {
+    const li = document.createElement("li");
+    li.className = "job-card skeleton skeleton-job";
+    jobList.appendChild(li);
+  }
+}
+
+// Load cached jobs instantly
+loadCachedJobs();
+
+function loadCachedJobs() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (!cached) return;
+  
+  try {
+    jobs = JSON.parse(cached);
+    renderJobs();
+    console.log("⚡ Loaded jobs from cache");
+  } catch (e) {
+    console.warn("Cache invalid");
+  }
+}
+
+
+// Fetch fresh jobs from Sanity - WITH SLUG SUPPORT
+async function fetchJobs() {
+  let query = `*[_type == "job"]`;
+  
+  if (globalSearch && globalSearch.trim() !== "") {
+    query = `*[_type=="job" && (
+      title match "*${globalSearch}*" ||
+      company match "*${globalSearch}*" ||
+      category match "*${globalSearch}*" ||
+      location match "*${globalSearch}*" ||
+      description match "*${globalSearch}*"
+    )]`;
+  }
+  
+  try {
+    const fresh = await window.sanityClient.fetch(`${query}{
+      _id, title, company, description, location, salary, applyLink,
+      posted, deadline, category, jobType, listingTier, sponsoredUntil, badge,
+      "slug": slug.current
+    }`);
+    
+    jobs = fresh;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(fresh));
+    localStorage.setItem(CACHE_TIME_KEY, Date.now());
+    
+    if (globalSearch) {
+      document.getElementById("jobSearch").value = globalSearch;
+    }
+    
+    console.log("🔄 Jobs updated from Sanity");
+  } catch (err) {
+    console.error("Sanity failed — using cache", err);
+  }
+}
+   
+// 🔗 Open job from URL if present - FIXED VERSION WITH SLUG SUPPORT
+function checkAndOpenJobFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("job");
+  const jobSlug = params.get("slug");
+  
+  if (!jobId && !jobSlug) return;
+
+  // Find job by ID or slug
+  let job = null;
+  if (jobId) {
+    job = jobs.find(j => j._id === jobId);
+  } else if (jobSlug) {
+    job = jobs.find(j => j.slug === jobSlug);
+  }
+  
+  if (!job) return;
+
+  // Find its index inside filteredJobs
+  const index = filteredJobs.findIndex(j => j._id === job._id);
+  if (index === -1) return;
+
+  selectedIndex = index;
+  showPreview(job, "left");
   renderJobs();
 }
 
-// =============================
-// RENDER LIST
-// =============================
+
+// Schema injection for SEO
+function injectJobSchema(job) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": job.description,
+    "datePosted": job.posted,
+    "validThrough": job.deadline,
+    "employmentType": job.jobType || "FULL_TIME",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": job.company || "Confidential",
+      "sameAs": "https://careerunified.com"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA"
+      }
+    },
+    "baseSalary": job.salary ? {
+      "@type": "MonetaryAmount",
+      "currency": "ZAR",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": job.salary,
+        "unitText": "MONTH"
+      }
+    } : undefined,
+    "url": job.applyLink
+  };
+  
+  const old = document.getElementById("job-schema");
+  if (old) old.remove();
+  
+  const script = document.createElement("script");
+  script.id = "job-schema";
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
+// Priority sorting
+function getPriority(job) {
+  const today = new Date();
+  
+  if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
+    if (new Date(job.sponsoredUntil) < today) return 0;
+  }
+  
+  if (job.listingTier === 'premier') return 2;
+  if (job.listingTier === 'sponsored') return 1;
+  return 0;
+}
+
+// Show default preview
+function showDefaultPreview() {
+  jobPreview.innerHTML = `<div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+    <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+    <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+  </div>`;
+}
+
+// Render jobs list - FIXED VERSION WITH SELECTION PRESERVATION
 function renderJobs() {
-  const term = searchInput.value.toLowerCase();
-  const cat = categoryFilter.value;
-
-  const filtered = jobs.filter(j => {
-    const company = j.company?.name || "";
-    return (
-      (cat === "all" || j.category === cat) &&
-      (
-        j.title.toLowerCase().includes(term) ||
-        company.toLowerCase().includes(term) ||
-        j.description.toLowerCase().includes(term)
-      )
-    );
-  });
-
+  const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
+  const category = document.getElementById('categoryFilter').value;
+  
+  // FIX 2: Preserve the currently selected job ID
+  let selectedJobId = null;
+  if (selectedIndex !== null && filteredJobs[selectedIndex]) {
+    selectedJobId = filteredJobs[selectedIndex]._id;
+  }
+  
+  filteredJobs = jobs
+    .filter(j => {
+      return (category === 'all' || j.category === category) && 
+             (j.title.toLowerCase().includes(searchTerm) || 
+              j.company.toLowerCase().includes(searchTerm) || 
+              j.description.toLowerCase().includes(searchTerm));
+    })
+    .sort((a,b) => {
+      const pDiff = getPriority(b) - getPriority(a);
+      if (pDiff !== 0) return pDiff;
+      return new Date(a.deadline) - new Date(b.deadline);
+    });
+  
+  // FIX 2: Restore selection after filtering
+  if (selectedJobId) {
+    const newIndex = filteredJobs.findIndex(j => j._id === selectedJobId);
+    selectedIndex = newIndex !== -1 ? newIndex : null;
+  }
+  
   jobList.innerHTML = "";
-
-  filtered.forEach((job, i) => {
-    if (!views[job._id]) views[job._id] = 0;
-
+  
+  if (filteredJobs.length === 0) {
+    jobList.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <h3>No jobs found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>`;
+    return;
+  }
+  
+  filteredJobs.forEach((job, index) => {
     const li = document.createElement("li");
-    li.className = "job-card" + (i === selectedIndex ? " selected" : "");
-
-    li.innerHTML = `
+    li.className = "job-card";
+    li.dataset.id = job._id; // Store job ID for heart icon
+    li.dataset.jobData = JSON.stringify(job); // Store full job data for saving
+    
+    if (index === selectedIndex) li.classList.add("selected");
+    
+    let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '');
+    
+    li.innerHTML = `${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      <svg class="heart-icon" viewBox="0 0 24 24">
+        <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
+      </svg>
       <h3>${job.title}</h3>
-      <div class="company">${job.company?.name || "Unknown company"}</div>
-      <div class="meta">${job.location || "South Africa"}</div>
-      <div class="meta">${views[job._id]} views</div>
-      <a href="/jobs/${job.slug}" target="_blank">View job →</a>
+      <p><strong>Company:</strong> ${job.company}</p>
+      <p><strong>Location:</strong> ${job.location}</p>
+      <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
+      <p><strong>Closing:</strong> ${job.deadline}</p>
     `;
+    
+    li.onclick = (e) => {
+      // Don't open if clicking heart
+      if (e.target.closest('.heart-icon')) return;
+      
+      const previousIndex = selectedIndex;
+      selectedIndex = index;
+      const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
 
-    li.onclick = () => {
-      selectedIndex = i;
-      views[job._id]++;
-      localStorage.setItem("jobViews", JSON.stringify(views));
-      showPreview(job);
+      // 🔗 UPDATE URL WITH JOB SLUG (preferred) or ID
+      const url = new URL(window.location);
+      if (job.slug) {
+        url.searchParams.set("slug", job.slug);
+        url.searchParams.delete("job"); // Remove ID if slug exists
+      } else {
+        url.searchParams.set("job", job._id);
+      }
+      window.history.pushState({}, "", url);
+
+      showPreview(job, direction);
       renderJobs();
+      
+      // Scroll to preview on mobile
+      if (window.innerWidth <= 900) {
+        document.getElementById('jobPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     };
-
+    
     jobList.appendChild(li);
   });
+  
+  updateHearts();
 }
 
-// =============================
-// PREVIEW
-// =============================
-function showPreview(job) {
-  jobPreview.innerHTML = `
-    <h2>${job.title}</h2>
-    <div class="company">${job.company?.name || ""}</div>
-    <p><b>Location:</b> ${job.location}</p>
-    <p><b>Salary:</b> ${job.salary || "Market related"}</p>
-    <p><b>Closing:</b> ${job.deadline || "Open"}</p>
-    <hr>
-    <div style="white-space:pre-line">${job.description}</div>
-
-    <a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>
-
-    <a class="share-btn" target="_blank"
-      href="https://wa.me/?text=${encodeURIComponent("Apply here: https://careerunified.com/jobs/" + job.slug)}">
-      Share
-    </a>
-  `;
+// Show job preview
+function showPreview(job, direction = "left") {
+  let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '');
+  
+  jobPreview.innerHTML = `<div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
+    <div class="preview-header">
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      <h2>${job.title}</h2>
+      <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
+        <svg viewBox="0 0 24 24" fill="none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="preview-content-wrapper">
+      <div class="preview-info">
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
+        <p><strong>Posted:</strong> ${job.posted} | <strong>Closing:</strong> ${job.deadline}</p>
+      </div>
+      <div class="description-content">${job.description}</div>
+      <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+    </div>
+  </div>`;
+  
+  injectJobSchema(job);
 }
 
-searchInput.addEventListener("input", renderJobs);
-categoryFilter.addEventListener("change", renderJobs);
+// Close preview function
+function closePreview() {
+  selectedIndex = null;
 
-fetchJobs();
+  // 🔗 REMOVE job FROM URL
+  const url = new URL(window.location);
+  url.searchParams.delete("job");
+  url.searchParams.delete("slug");
+  window.history.pushState({}, "", url);
 
+  showDefaultPreview();
+  renderJobs();
+  
+  // Scroll back to list on mobile
+  if (window.innerWidth <= 900) {
+    document.getElementById('jobList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Event listeners
+document.getElementById("jobSearch").addEventListener("input", () => {
+  globalSearch = null;
+  renderJobs();
+});
+
+document.getElementById("categoryFilter").addEventListener("change", renderJobs);
+document.getElementById("sortBtn").addEventListener("click", renderJobs);
+
+
+// Startup - FIX 3: Force URL sync after render
+showSkeletons();
+
+const last = localStorage.getItem(CACHE_TIME_KEY);
+if (!last || Date.now() - last > CACHE_TTL) {
+  fetchJobs().then(() => {
+    renderJobs();
+    checkAndOpenJobFromURL();
+  });
+} else {
+  fetchJobs().then(() => {
+    renderJobs();
+    checkAndOpenJobFromURL();
+  });
+}
+
+setInterval(() => {
+  fetchJobs();
+}, 5 * 60 * 1000);
+
+/* ===============================
+   MOBILE SWIPE (SAFE VERSION)
+   =============================== */
+let startX = 0;
+let startY = 0;
+
+document.addEventListener("touchstart", e => {
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+  if (!preview || desc) return;
+  
+  const touch = e.changedTouches[0];
+  startX = touch.screenX;
+  startY = touch.screenY;
+}, { passive: true });
+
+document.addEventListener("touchend", e => {
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+  if (!preview || desc) return;
+  
+  const touch = e.changedTouches[0];
+  const dx = touch.screenX - startX;
+  const dy = touch.screenY - startY;
+  
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToNextJob();
+    else goToPreviousJob();
+  }
+}, { passive: true });
+
+function goToNextJob() {
+  if (selectedIndex === null || filteredJobs.length === 0) return;
+  if (selectedIndex < filteredJobs.length - 1) {
+    selectedIndex++;
+    const job = filteredJobs[selectedIndex];
+    
+    // Update URL with slug or ID
+    const url = new URL(window.location);
+    if (job.slug) {
+      url.searchParams.set("slug", job.slug);
+      url.searchParams.delete("job");
+    } else {
+      url.searchParams.set("job", job._id);
+    }
+    window.history.pushState({}, "", url);
+    
+    showPreview(job, "left");
+    renderJobs();
+  }
+}
+
+function goToPreviousJob() {
+  if (selectedIndex === null || filteredJobs.length === 0) return;
+  if (selectedIndex > 0) {
+    selectedIndex--;
+    const job = filteredJobs[selectedIndex];
+    
+    // Update URL with slug or ID
+    const url = new URL(window.location);
+    if (job.slug) {
+      url.searchParams.set("slug", job.slug);
+      url.searchParams.delete("job");
+    } else {
+      url.searchParams.set("job", job._id);
+    }
+    window.history.pushState({}, "", url);
+    
+    showPreview(job, "right");
+    renderJobs();
+  }
+}
 </script>
 
 </body>
 </html>
+
 
 
 
