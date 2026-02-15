@@ -812,6 +812,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let jobs = [];
 let filteredJobs = [];
 let selectedIndex = null;
+let openedFromURL = false;
 
 
 /* ===============================
@@ -1015,7 +1016,7 @@ function loadCachedJobs() {
 }
 
 
-// Fetch fresh jobs from Sanity - WITH SLUG SUPPORT
+// Fetch fresh jobs from Sanity
 async function fetchJobs() {
   let query = `*[_type == "job"]`;
   
@@ -1032,8 +1033,7 @@ async function fetchJobs() {
   try {
     const fresh = await window.sanityClient.fetch(`${query}{
       _id, title, company, description, location, salary, applyLink,
-      posted, deadline, category, jobType, listingTier, sponsoredUntil, badge,
-      "slug": slug.current
+      posted, deadline, category, jobType, listingTier, sponsoredUntil, badge
     }`);
     
     jobs = fresh;
@@ -1044,30 +1044,29 @@ async function fetchJobs() {
       document.getElementById("jobSearch").value = globalSearch;
     }
     
+    renderJobs();
     console.log("🔄 Jobs updated from Sanity");
   } catch (err) {
     console.error("Sanity failed — using cache", err);
   }
 }
    
-// 🔗 Open job from URL if present - SLUG ONLY VERSION
+// 🔗 Open job from URL if present
 function checkAndOpenJobFromURL() {
+  // only run ONCE (page load)
+  if (openedFromURL) return;
+  openedFromURL = true;
+
   const params = new URLSearchParams(window.location.search);
-  const jobSlug = params.get("slug");
-  
-  if (!jobSlug) return;
+  const jobId = params.get("job");
+  if (!jobId) return;
 
-  // Find job by slug
-  const job = jobs.find(j => j.slug === jobSlug);
-  if (!job) return;
-
-  // Find its index inside filteredJobs
-  const index = filteredJobs.findIndex(j => j._id === job._id);
-  if (index === -1) return;
-
-  selectedIndex = index;
-  showPreview(job, "left");
-  renderJobs();
+  const index = filteredJobs.findIndex(j => j._id === jobId);
+  if (index !== -1) {
+    selectedIndex = index;
+    showPreview(filteredJobs[index], "left");
+    renderJobs();
+  }
 }
 
 
@@ -1139,16 +1138,10 @@ function showDefaultPreview() {
   </div>`;
 }
 
-// Render jobs list - FIXED VERSION WITH SELECTION PRESERVATION
+// Render jobs list
 function renderJobs() {
   const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
   const category = document.getElementById('categoryFilter').value;
-  
-  // FIX 2: Preserve the currently selected job ID
-  let selectedJobId = null;
-  if (selectedIndex !== null && filteredJobs[selectedIndex]) {
-    selectedJobId = filteredJobs[selectedIndex]._id;
-  }
   
   filteredJobs = jobs
     .filter(j => {
@@ -1162,12 +1155,6 @@ function renderJobs() {
       if (pDiff !== 0) return pDiff;
       return new Date(a.deadline) - new Date(b.deadline);
     });
-  
-  // FIX 2: Restore selection after filtering
-  if (selectedJobId) {
-    const newIndex = filteredJobs.findIndex(j => j._id === selectedJobId);
-    selectedIndex = newIndex !== -1 ? newIndex : null;
-  }
   
   jobList.innerHTML = "";
   
@@ -1212,13 +1199,10 @@ function renderJobs() {
       selectedIndex = index;
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
 
-      // 🔗 UPDATE URL WITH JOB SLUG ONLY
+      // 🔗 UPDATE URL WITH JOB ID
       const url = new URL(window.location);
-      if (job.slug) {
-        url.searchParams.set("slug", job.slug);
-        url.searchParams.delete("job"); // Clean up any old ID params
-        window.history.pushState({}, "", url);
-      }
+      url.searchParams.set("job", job._id);
+      window.history.pushState({}, "", url);
 
       showPreview(job, direction);
       renderJobs();
@@ -1269,9 +1253,9 @@ function showPreview(job, direction = "left") {
 function closePreview() {
   selectedIndex = null;
 
-  // 🔗 REMOVE slug FROM URL
+  // 🔗 REMOVE job FROM URL
   const url = new URL(window.location);
-  url.searchParams.delete("slug");
+  url.searchParams.delete("job");
   window.history.pushState({}, "", url);
 
   showDefaultPreview();
@@ -1293,18 +1277,16 @@ document.getElementById("categoryFilter").addEventListener("change", renderJobs)
 document.getElementById("sortBtn").addEventListener("click", renderJobs);
 
 
-// Startup - FIX 3: Force URL sync after render
+// Startup
 showSkeletons();
 
 const last = localStorage.getItem(CACHE_TIME_KEY);
 if (!last || Date.now() - last > CACHE_TTL) {
   fetchJobs().then(() => {
-    renderJobs();
     checkAndOpenJobFromURL();
   });
 } else {
   fetchJobs().then(() => {
-    renderJobs();
     checkAndOpenJobFromURL();
   });
 }
@@ -1348,17 +1330,7 @@ function goToNextJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex < filteredJobs.length - 1) {
     selectedIndex++;
-    const job = filteredJobs[selectedIndex];
-    
-    // Update URL with slug only
-    if (job.slug) {
-      const url = new URL(window.location);
-      url.searchParams.set("slug", job.slug);
-      url.searchParams.delete("job"); // Clean up any old ID params
-      window.history.pushState({}, "", url);
-    }
-    
-    showPreview(job, "left");
+    showPreview(filteredJobs[selectedIndex], "left");
     renderJobs();
   }
 }
@@ -1367,17 +1339,7 @@ function goToPreviousJob() {
   if (selectedIndex === null || filteredJobs.length === 0) return;
   if (selectedIndex > 0) {
     selectedIndex--;
-    const job = filteredJobs[selectedIndex];
-    
-    // Update URL with slug only
-    if (job.slug) {
-      const url = new URL(window.location);
-      url.searchParams.set("slug", job.slug);
-      url.searchParams.delete("job"); // Clean up any old ID params
-      window.history.pushState({}, "", url);
-    }
-    
-    showPreview(job, "right");
+    showPreview(filteredJobs[selectedIndex], "right");
     renderJobs();
   }
 }
@@ -1385,6 +1347,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
