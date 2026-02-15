@@ -1050,22 +1050,15 @@ async function fetchJobs() {
   }
 }
    
-// 🔗 Open job from URL if present - FIXED VERSION WITH SLUG SUPPORT
+// 🔗 Open job from URL if present - SLUG ONLY VERSION
 function checkAndOpenJobFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const jobId = params.get("job");
   const jobSlug = params.get("slug");
   
-  if (!jobId && !jobSlug) return;
+  if (!jobSlug) return;
 
-  // Find job by ID or slug
-  let job = null;
-  if (jobId) {
-    job = jobs.find(j => j._id === jobId);
-  } else if (jobSlug) {
-    job = jobs.find(j => j.slug === jobSlug);
-  }
-  
+  // Find job by slug
+  const job = jobs.find(j => j.slug === jobSlug);
   if (!job) return;
 
   // Find its index inside filteredJobs
@@ -1219,15 +1212,13 @@ function renderJobs() {
       selectedIndex = index;
       const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
 
-      // 🔗 UPDATE URL WITH JOB SLUG (preferred) or ID
+      // 🔗 UPDATE URL WITH JOB SLUG ONLY
       const url = new URL(window.location);
       if (job.slug) {
         url.searchParams.set("slug", job.slug);
-        url.searchParams.delete("job"); // Remove ID if slug exists
-      } else {
-        url.searchParams.set("job", job._id);
+        url.searchParams.delete("job"); // Clean up any old ID params
+        window.history.pushState({}, "", url);
       }
-      window.history.pushState({}, "", url);
 
       showPreview(job, direction);
       renderJobs();
@@ -1278,9 +1269,8 @@ function showPreview(job, direction = "left") {
 function closePreview() {
   selectedIndex = null;
 
-  // 🔗 REMOVE job FROM URL
+  // 🔗 REMOVE slug FROM URL
   const url = new URL(window.location);
-  url.searchParams.delete("job");
   url.searchParams.delete("slug");
   window.history.pushState({}, "", url);
 
@@ -1360,15 +1350,13 @@ function goToNextJob() {
     selectedIndex++;
     const job = filteredJobs[selectedIndex];
     
-    // Update URL with slug or ID
-    const url = new URL(window.location);
+    // Update URL with slug only
     if (job.slug) {
+      const url = new URL(window.location);
       url.searchParams.set("slug", job.slug);
-      url.searchParams.delete("job");
-    } else {
-      url.searchParams.set("job", job._id);
+      url.searchParams.delete("job"); // Clean up any old ID params
+      window.history.pushState({}, "", url);
     }
-    window.history.pushState({}, "", url);
     
     showPreview(job, "left");
     renderJobs();
@@ -1381,15 +1369,13 @@ function goToPreviousJob() {
     selectedIndex--;
     const job = filteredJobs[selectedIndex];
     
-    // Update URL with slug or ID
-    const url = new URL(window.location);
+    // Update URL with slug only
     if (job.slug) {
+      const url = new URL(window.location);
       url.searchParams.set("slug", job.slug);
-      url.searchParams.delete("job");
-    } else {
-      url.searchParams.set("job", job._id);
+      url.searchParams.delete("job"); // Clean up any old ID params
+      window.history.pushState({}, "", url);
     }
-    window.history.pushState({}, "", url);
     
     showPreview(job, "right");
     renderJobs();
@@ -1399,6 +1385,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
