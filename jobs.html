@@ -1031,9 +1031,23 @@ async function fetchJobs() {
   
   try {
     const fresh = await window.sanityClient.fetch(`${query}{
-      _id, title, company, description, location, salary, applyLink,
-      posted, deadline, category, jobType, listingTier, sponsoredUntil, badge
-    }`);
+  _id,
+  title,
+  "slug": slug.current,
+  company,
+  description,
+  location,
+  salary,
+  applyLink,
+  posted,
+  deadline,
+  category,
+  jobType,
+  listingTier,
+  sponsoredUntil,
+  badge
+}`);
+
     
     jobs = fresh;
     localStorage.setItem(CACHE_KEY, JSON.stringify(fresh));
@@ -1360,6 +1374,7 @@ function goToPreviousJob() {
 
 </body>
 </html>
+
 
 
 
