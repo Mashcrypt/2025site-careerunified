@@ -4,13 +4,16 @@
 
 [[redirects]]
   from = "/jobs/:slug"
-  to = "/jobs/:slug.html"
+  to = "/jobs/[slug].html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/bursary/:slug"
-  to = "/bursary/:slug.html"
+  to = "/bursary/[slug].html"
   status = 200
+  force = true
+
 
 [build.environment]
   NODE_VERSION = "20"
