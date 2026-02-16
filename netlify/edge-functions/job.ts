@@ -1,56 +1,90 @@
-import { getJob } from "../lib/sanity.ts";
+import { getJobBySlug } from "../lib/sanity.ts";
+
+function escapeAttr(str: string) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function snippet(text: string, maxLen = 220) {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (cleaned.length <= maxLen) return cleaned;
+  return cleaned.slice(0, maxLen - 1).trim() + "…";
+}
 
 export default async (request: Request) => {
   try {
     const url = new URL(request.url);
-    const jobId = url.searchParams.get("job");
 
-    if (!jobId) {
-      return fetch(request);
-    }
+    // /jobs/<slug>
+    const parts = url.pathname.split("/").filter(Boolean);
+    const slug = parts.length >= 2 ? parts[1] : null;
 
-    const job = await getJob(jobId);
+    // If it's just /jobs (no slug), let the site handle normally
+    if (!slug || slug === "jobs") return fetch(request);
 
-    if (!job) {
-      return new Response("Job not found", { status: 404 });
-    }
+    const job = await getJobBySlug(slug);
 
-    const image = job.companyLogo || "https://careerunified.com/default-share.png";
+    // If slug doesn't exist, let SPA handle (keeps UX smooth)
+    if (!job) return fetch(request);
 
-    const html = `
-<!DOCTYPE html>
-<html>
+    const companyName = job.companyName || "Confidential";
+    const jobTitle = job.title || "Job Opportunity";
+    const shareUrl = `https://careerunified.com/jobs/${slug}`;
+
+    // OG image (company logo) fallback to site icon
+    const image =
+      job.companyLogo ||
+      "https://careerunified.com/android-chrome-512x512.png";
+
+    const salaryLine = job.salary ? `Salary: ${job.salary}. ` : "";
+    const locationLine = job.location ? `Location: ${job.location}. ` : "";
+    const desc = snippet(job.description || "", 220);
+
+    const ogTitle = `${jobTitle} – Career Unified`;
+    const ogDescription = `${companyName}. ${locationLine}${salaryLine}${desc}`.trim();
+
+    // Redirect humans to SPA jobs page, and let your JS open slug from URL
+    // (We keep the original slug in the path for your current openFromURL logic)
+    const redirectTo = `/jobs/${encodeURIComponent(slug)}`;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>${job.title} – ${job.companyName}</title>
+  <meta charset="UTF-8" />
+  <title>${escapeAttr(ogTitle)}</title>
+  <meta name="description" content="${escapeAttr(ogDescription)}" />
 
-<meta name="description" content="${job.title} at ${job.companyName} in ${job.location}. Salary: ${job.salary || "Not specified"}">
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Career Unified" />
+  <meta property="og:title" content="${escapeAttr(ogTitle)}" />
+  <meta property="og:description" content="${escapeAttr(ogDescription)}" />
+  <meta property="og:image" content="${escapeAttr(image)}" />
+  <meta property="og:url" content="${escapeAttr(shareUrl)}" />
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="${job.title}">
-<meta property="og:description" content="${job.companyName} • ${job.location} • ${job.salary || "Salary negotiable"}">
-<meta property="og:image" content="${image}">
-<meta property="og:url" content="https://careerunified.com/jobs?job=${job._id}">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeAttr(ogTitle)}" />
+  <meta name="twitter:description" content="${escapeAttr(ogDescription)}" />
+  <meta name="twitter:image" content="${escapeAttr(image)}" />
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${job.title}">
-<meta name="twitter:description" content="${job.companyName}">
-<meta name="twitter:image" content="${image}">
-
-<meta http-equiv="refresh" content="0; url=/jobs.html?job=${job._id}">
+  <meta http-equiv="refresh" content="0; url=${escapeAttr(redirectTo)}" />
 </head>
-
 <body>
-<h1>${job.title}</h1>
-<p>${job.companyName}</p>
+  <h1>${escapeAttr(jobTitle)}</h1>
+  <p>${escapeAttr(companyName)}</p>
 </body>
-</html>
-`;
+</html>`;
 
     return new Response(html, {
-      headers: { "content-type": "text/html" }
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store"
+      }
     });
-
-  } catch (err) {
+  } catch {
     return new Response("Edge function error", { status: 500 });
   }
 };
+
