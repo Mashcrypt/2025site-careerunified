@@ -1016,6 +1016,13 @@ async function openFromURL() {
   if (openedFromURL) return
   openedFromURL = true
 
+  const qpSlug = new URLSearchParams(window.location.search).get("slug");
+  if (qpSlug) {
+    const job = await window.sanityClient.fetchJobBySlug(qpSlug);
+    if (job) openJob(job);
+    return;
+  }
+
   const parts = window.location.pathname.split("/")
   const slug = parts[parts.length - 1]
   if (!slug || slug === "jobs") return
@@ -1244,6 +1251,7 @@ showDefaultPreview()
 
 </body>
 </html>
+
 
 
 
