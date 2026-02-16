@@ -1,8 +1,9 @@
 {
   "routes": [
     {
-      "path": "/jobs",
-      "function": "jobs"
+      "path": "/jobs/*",
+      "function": "job"
     }
   ]
 }
+
