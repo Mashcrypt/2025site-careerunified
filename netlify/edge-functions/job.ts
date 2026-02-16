@@ -48,7 +48,8 @@ export default async (request: Request) => {
 
     // Redirect humans to SPA jobs page, and let your JS open slug from URL
     // (We keep the original slug in the path for your current openFromURL logic)
-    const redirectTo = `/jobs/${encodeURIComponent(slug)}`;
+    const redirectTo = `/jobs.html?slug=${encodeURIComponent(slug)}`;
+
 
     const html = `<!DOCTYPE html>
 <html lang="en">
