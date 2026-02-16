@@ -1,1243 +1,822 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Jobs – Career Unified</title>
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="description" content="Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#1b60a9">
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
-    </script>
-
-    <style>
-        /* =============================== */
-        /* RESET & BASE */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f7f9fc;
-            color: #111827;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* =============================== */
-        /* HEADER */
-        header {
-            text-align: center;
-            padding: 60px 20px 50px;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            color: #fff;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        header p {
-            margin-top: 8px;
-            font-size: 1.1rem;
-            color: #e5e7eb;
-            font-weight: 500;
-        }
-
-        /* =============================== */
-        /* JOBS PAGE LAYOUT */
-        .jobs-container {
-            display: flex;
-            max-width: 1200px;
-            margin: 30px auto;
-            gap: 20px;
-            padding: 0 20px;
-            min-height: 100vh;
-        }
-
-        .jobs-left {
-            flex: 1;
-            min-width: 0;
-            max-height: calc(100vh - 160px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .jobs-preview {
-            flex: 1;
-            background: #fff;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            min-height: 420px;
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-            overflow: visible;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* =============================== */
-        /* SEARCH & FILTER */
-        .search-filter-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-filter-container input,
-        .search-filter-container select,
-        .search-filter-container button {
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            font-size: 15px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .search-filter-container input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .search-filter-container input:focus,
-        .search-filter-container select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-filter-container select {
-            background: white;
-            cursor: pointer;
-        }
-
-        .search-filter-container button {
-            background: #2563eb;
-            color: white;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .search-filter-container button:hover {
-            background: #1e40af;
-        }
-
-        /* =============================== */
-        /* JOB CARDS LIST */
-        .jobs-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .job-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            border-left: 3px solid transparent;
-        }
-
-        .job-card:hover {
-            background: #f0f7ff;
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .job-card.selected {
-            border-left-color: #facc15;
-            background: #fffbeb;
-        }
-
-        .job-card h3 {
-            font-size: 1.1rem;
-            color: #1e3a8a;
-            margin-bottom: 8px;
-            padding-right: 80px;
-        }
-
-        .job-card p {
-            margin: 4px 0;
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-
-        .job-card strong {
-            color: #374151;
-            font-weight: 600;
-        }
-
-        /* =============================== */
-        /* JOB BADGE */
-        .job-badge {
-            position: absolute;
-            top: 12px;
-            right: 46px;
-            z-index: 2;
-            padding: 4px 10px;
-            background: #facc15;
-            color: #1e3a8a;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* =============================== */
-        /* JOB PREVIEW */
-        .preview-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            flex-shrink: 0;
-        }
-
-        .close-preview-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-            flex-shrink: 0;
-        }
-
-        .close-preview-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .close-preview-btn svg {
-            width: 28px;
-            height: 28px;
-            stroke: #3b82f6;
-            stroke-width: 2.5;
-        }
-
-        .jobs-preview h2 {
-            color: #1e3a8a;
-            font-size: 1.75rem;
-            margin: 0;
-            flex: 1;
-            padding-right: 10px;
-        }
-
-        .jobs-preview .job-badge{
-            position: relative;
-            top: 0;
-            right: 0;
-            display: inline-block;
-            margin-bottom: 12px;
-            z-index: 1;
-            margin-right: 12px;
-        }
-
-        .preview-content-wrapper {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-            overflow: visible;
-        }
-
-        .preview-info {
-            flex-shrink: 0;
-            margin-bottom: 12px;
-        }
-
-        .jobs-preview p {
-            margin: 8px 0;
-            color: #4b5563;
-        }
-
-        .jobs-preview strong {
-            color: #1f2937;
-        }
-
-        .jobs-preview .description-content {
-            white-space: pre-line;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 8px;
-            line-height: 1.7;
-            color: #374151;
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 10px;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
-        }
-
-        /* =============================== */
-        /* APPLY BUTTON */
-        .apply-btn {
-            display: block;
-            background: #16a34a;
-            color: white;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-size: 15px;
-            text-align: center;
-            flex-shrink: 0;
-            box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
-        }
-
-        .apply-btn:hover {
-            background: #15803d;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-        }
-
-        /* =============================== */
-        /* SKELETON LOADING */
-        .skeleton {
-            background: linear-gradient(
-                90deg,
-                #e5e7eb 0%,
-                #f3f4f6 50%,
-                #e5e7eb 100%
-            );
-            background-size: 200% 100%;
-            animation: skeleton-shimmer 1.5s infinite;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes skeleton-shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        .skeleton-job {
-            height: 110px;
-            margin-bottom: 12px;
-        }
-
-        .job-card.skeleton {
-            cursor: default;
-            border: none;
-        }
-
-        .job-card.skeleton:hover {
-            background: #e5e7eb;
-            transform: none;
-        }
-
-        /* =============================== */
-        /* FADE ANIMATION */
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* =============================== */
-        /* SWIPE ANIMATIONS */
-        .preview-slide {
-            animation-duration: 0.35s;
-            animation-fill-mode: both;
-            width: 100%;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .slide-left {
-            animation-name: slideLeft;
-        }
-
-        .slide-right {
-            animation-name: slideRight;
-        }
-
-        @keyframes slideLeft {
-            from {
-                transform: translateX(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideRight {
-            from {
-                transform: translateX(-40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* =============================== */
-        /* FOOTER */
-        .main-footer {
-            background: #1e3a8a;
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-links {
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .footer-links a {
-            color: #facc15;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-
-        /* =============================== */
-        /* SEO FALLBACK */
-        .seo-content {
-            position: absolute;
-            left: -9999px;
-            top: auto;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-        }
-
-        /* =============================== */
-        /* EMPTY STATE */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-
-        .empty-state h3 {
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        /* =============================== */
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 900px) {
-            header {
-                padding: 50px 16px 40px;
-            }
-
-            header h1 {
-                font-size: 2rem;
-            }
-
-            header p {
-                font-size: 1rem;
-            }
-
-            .jobs-container {
-                flex-direction: column;
-                margin: 20px auto;
-                padding: 0 16px;
-                gap: 16px;
-            }
-
-            .jobs-left,
-            .jobs-preview {
-                width: 100%;
-                max-height: none;
-            }
-
-            .jobs-left {
-                overflow-y: visible;
-                padding-right: 0;
-            }
-
-            .jobs-preview {
-                position: static;
-                padding: 20px;
-                margin-top: 0;
-                min-height: 500px;
-                max-height: 70vh;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .search-filter-container {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .search-filter-container input,
-            .search-filter-container select,
-            .search-filter-container button {
-                width: 100%;
-                min-width: auto;
-                padding: 14px 16px;
-                font-size: 16px;
-            }
-
-            .smart-match-banner {
-                font-size: 13px;
-                padding: 10px 14px;
-            }
-
-            .job-card {
-                padding: 14px;
-            }
-
-            .job-card h3 {
-                font-size: 1rem;
-                padding-right: 70px;
-            }
-
-            .job-card p {
-                font-size: 0.85rem;
-            }
-
-            .jobs-preview h2 {
-                font-size: 1.3rem;
-            }
-
-            .jobs-preview p {
-                font-size: 0.9rem;
-            }
-
-            .jobs-preview .description-content {
-                font-size: 0.9rem;
-                padding: 14px;
-                max-height: none;
-                overflow-y: visible;
-            }
-
-            .apply-btn {
-                width: 100%;
-                text-align: center;
-                padding: 14px;
-                font-size: 16px;
-            }
-
-            .close-preview-btn svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .footer-links a {
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            header h1 {
-                font-size: 1.75rem;
-            }
-
-            .job-card h3 {
-                font-size: 0.95rem;
-            }
-
-            .job-badge {
-                font-size: 10px;
-                padding: 3px 8px;
-            }
-
-            .jobs-preview h2 {
-                font-size: 1.2rem;
-            }
-        }
-
-        .heart-icon {
-            width: 22px;
-            height: 22px;
-            fill: none;
-            stroke: #60a5fa;
-            stroke-width: 2;
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            z-index: 10;
-        }
-
-        .heart-icon:hover {
-            transform: scale(1.15);
-        }
-
-        .heart-icon.saved {
-            fill: #60a5fa;
-            stroke: #60a5fa;
-            filter: drop-shadow(0 0 6px rgba(96,165,250,0.6));
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Jobs – Career Unified</title>
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="description" content="Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#1b60a9" />
+
+  <!-- DEFAULT OG TAGS (for /jobs page). NOTE: WhatsApp WILL NOT read JS-injected tags. -->
+  <meta property="og:site_name" content="Career Unified" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Jobs – Career Unified" />
+  <meta property="og:description" content="Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified." />
+  <meta property="og:url" content="https://careerunified.com/jobs" />
+  <!-- Replace this with a real public image on your site (1200x630 recommended) -->
+  <meta property="og:image" content="https://careerunified.com/android-chrome-512x512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7f9fc;
+      color: #111827;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 50px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+    }
+    header h1 { font-size: 2.5rem; font-weight: 700; }
+    header p { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; }
+
+    .jobs-container {
+      display: flex;
+      max-width: 1200px;
+      margin: 30px auto;
+      gap: 20px;
+      padding: 0 20px;
+      min-height: 70vh;
+    }
+
+    .jobs-left {
+      flex: 1;
+      min-width: 0;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    /* ✅ CRITICAL FIX: keep preview content INSIDE the box (no spill under footer) */
+    .jobs-preview {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      min-height: 420px;
+
+      position: sticky;
+      top: 20px;
+
+      max-height: calc(100vh - 40px);
+      overflow: hidden; /* ✅ was visible before */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-filter-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-filter-container input,
+    .search-filter-container select,
+    .search-filter-container button {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+    }
+    .search-filter-container input { flex: 1; min-width: 200px; }
+    .search-filter-container input:focus,
+    .search-filter-container select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .search-filter-container select { background: white; cursor: pointer; }
+    .search-filter-container button {
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .search-filter-container button:hover { background: #1e40af; }
+
+    .jobs-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .job-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      border-left: 3px solid transparent;
+    }
+    .job-card:hover {
+      background: #f0f7ff;
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .job-card.selected { border-left-color: #facc15; background: #fffbeb; }
+
+    .job-card h3 { font-size: 1.1rem; color: #1e3a8a; margin-bottom: 6px; }
+    .job-card p { margin: 4px 0; font-size: 0.9rem; color: #6b7280; }
+    .job-card strong { color: #374151; font-weight: 600; }
+
+    .job-badge {
+      position: absolute;
+      top: 12px;
+      right: 46px;
+      z-index: 2;
+      padding: 4px 10px;
+      background: #facc15;
+      color: #1e3a8a;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+    .jobs-preview h2 {
+      color: #1e3a8a;
+      font-size: 1.75rem;
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .close-preview-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .close-preview-btn:hover { transform: scale(1.1); }
+    .close-preview-btn svg { width: 28px; height: 28px; stroke: #3b82f6; stroke-width: 2.5; }
+
+    .preview-content-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;  /* ✅ needed so inner scroller can shrink */
+      overflow: hidden;
+    }
+
+    .preview-info { flex-shrink: 0; margin-bottom: 12px; }
+    .jobs-preview p { margin: 8px 0; color: #4b5563; }
+    .jobs-preview strong { color: #1f2937; }
+
+    /* ✅ CRITICAL FIX: your markup uses .job-desc, so style it */
+    .job-desc {
+      white-space: pre-line;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 8px;
+      line-height: 1.7;
+      color: #374151;
+
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto; /* ✅ scroll inside preview */
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 10px;
+      overscroll-behavior: contain;
+    }
+
+    .apply-btn {
+      display: block;
+      background: #16a34a;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 15px;
+      text-align: center;
+      flex-shrink: 0;
+      box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
+    }
+    .apply-btn:hover {
+      background: #15803d;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+      background-size: 200% 100%;
+      animation: skeleton-shimmer 1.5s infinite;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-job { height: 110px; margin-bottom: 12px; }
+
+    .preview-slide { animation-duration: 0.35s; animation-fill-mode: both; width: 100%; flex-shrink: 0; display: flex; flex-direction: column; height: 100%; }
+    .slide-left { animation-name: slideLeft; }
+    .slide-right { animation-name: slideRight; }
+    @keyframes slideLeft { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideRight { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .main-footer {
+      background: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
+    }
+    .footer-links { margin-bottom: 12px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    .footer-links a { color: #facc15; font-weight: 600; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    .seo-content {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+    .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
+    .empty-state h3 { color: #374151; margin-bottom: 8px; }
+
+    /* simple logo UI for cards/preview */
+    .job-row { display: flex; gap: 12px; align-items: center; }
+    .company-logo { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eef2ff; }
+    .preview-logo { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; background: #eef2ff; margin-bottom: 10px; }
+
+    .heart-icon {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: #60a5fa;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .heart-icon:hover { transform: scale(1.15); }
+    .heart-icon.saved { fill: #60a5fa; stroke: #60a5fa; filter: drop-shadow(0 0 6px rgba(96,165,250,0.6)); }
+
+    @media (max-width: 900px) {
+      header { padding: 50px 16px 40px; }
+      header h1 { font-size: 2rem; }
+      header p { font-size: 1rem; }
+
+      .jobs-container { flex-direction: column; margin: 20px auto; padding: 0 16px; gap: 16px; }
+      .jobs-left, .jobs-preview { width: 100%; max-height: none; }
+      .jobs-left { overflow-y: visible; padding-right: 0; }
+      .jobs-preview {
+        position: static;
+        padding: 20px;
+        min-height: 500px;
+        max-height: 70vh;
+        overflow: hidden;
+      }
+      .search-filter-container { flex-direction: column; gap: 12px; }
+      .search-filter-container input,
+      .search-filter-container select,
+      .search-filter-container button { width: 100%; min-width: auto; padding: 14px 16px; font-size: 16px; }
+      .jobs-preview h2 { font-size: 1.3rem; }
+      .job-desc { overflow-y: auto; }
+      .footer-links { flex-direction: column; gap: 8px; }
+      .footer-links a { font-size: 14px; }
+    }
+  </style>
 </head>
-<body>
 
-<!-- NAVIGATION -->
-<nav class="main-nav">
+<body>
+  <!-- NAVIGATION -->
+  <nav class="main-nav">
     <!-- DESKTOP VIEW -->
-    <a href="index.html" class="logo desktop-nav">Career Unified</a>
+    <a href="/index.html" class="logo desktop-nav">Career Unified</a>
     <div class="nav-links desktop-nav">
-        <a href="jobs.html">Jobs</a>
-        <a href="bursaries.html">Bursaries</a>
-        <a href="varsity.html">Varsity</a>
-        <a href="cv-generator.html">Generate CV</a>
-        <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-        <a href="recruiter-apply.html">Apply as Recruiter</a>
-        <a href="saved-items.html">Saved Items</a>
-        <a href="signup.html">Sign Up</a>
-        <a href="login.html">Login</a>
-        <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-            <svg viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-        </a>
+      <a href="/jobs">Jobs</a>
+      <a href="/bursaries.html">Bursaries</a>
+      <a href="/varsity.html">Varsity</a>
+      <a href="/cv-generator.html">Generate CV</a>
+      <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+      <a href="/recruiter-apply.html">Apply as Recruiter</a>
+      <a href="/saved-items.html">Saved Items</a>
+      <a href="/signup.html">Sign Up</a>
+      <a href="/login.html">Login</a>
+      <a href="/account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
     </div>
 
     <!-- MOBILE VIEW -->
     <div class="mobile-nav">
-        <a href="index.html" class="mobile-logo">Career Unified</a>
-        <div class="mobile-nav-right">
-            <a href="account-page.html" class="icon-btn" aria-label="My Account">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
-            </a>
-            <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-                <svg viewBox="0 0 24 24">
-                    <line x1="3" y1="12" x2="21" y2="12"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-</nav>
-
-<!-- MOBILE SLIDE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-    <a href="jobs.html">Jobs</a>
-    <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsity</a>
-    <a href="cv-generator.html">Generate CV</a>
-    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-items.html">Saved Items</a>
-    <a href="signup.html">Sign Up</a>
-    <a href="login.html">Login</a>
-</div>
-
-<!-- HEADER -->
-<header>
-    <h1>Available Jobs</h1>
-    <p>Find your next opportunity in South Africa</p>
-</header>
-
-<!-- MAIN CONTENT -->
-<main class="jobs-container">
-    <div class="jobs-left">
-        <!-- Search & Filter -->
-        <div class="search-filter-container">
-            <input type="text" id="jobSearch" placeholder="Search jobs, companies, keywords...">
-            <select id="categoryFilter">
-                <option value="all">All Categories</option>
-                <option value="internship">Internship / Graduate</option>
-                <option value="temporary">Temporary</option>
-                <option value="freelance">Freelance</option>
-            </select>
-            <button id="sortBtn">Sort by Deadline</button>
-        </div>
-
-        <!-- Job List -->
-        <ul class="jobs-list" id="jobList"></ul>
-    </div>
-
-    <!-- Job Preview Panel -->
-    <div class="jobs-preview" id="jobPreview">
-        <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-            <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-            </svg>
-            <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
-        </div>
-    </div>
-
-    <!-- SEO FALLBACK CONTENT -->
-    <section class="seo-content" aria-hidden="true">
-        <h2>Latest Jobs in South Africa</h2>
-        <p>
-            Career Unified lists verified job opportunities across South Africa including IT, finance, retail, engineering, hospitality, government, and graduate roles.
-        </p>
-        <p>
-            Our platform updates daily to help job seekers find full-time, part-time, remote, and internship positions from trusted employers.
-        </p>
-        <p>
-            Use Career Unified to search, filter, and apply for jobs across all provinces in South Africa.
-        </p>
-    </section>
-</main>
-
-<!-- FOOTER -->
-<footer class="main-footer">
-    <div class="footer-links">
-        <a href="about-us.html">About Us</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms & Conditions</a>
-        <a href="contact-us.html">Contact Us</a>
-    </div>
-    <p>© 2026 Career Unified. All rights reserved.</p>
-</footer>
-
-<!-- FIREBASE SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-<script src="js/firebase.js"></script>
-
-<!-- SANITY CLIENT -->
-<script src="js/sanityClient.js"></script>
-<script>
-/* ===============================
-   SANITY DATA LOADER + SAVED JOBS + MOBILE UI
-   =============================== */
-
-const jobList = document.getElementById("jobList")
-const jobPreview = document.getElementById("jobPreview")
-
-let jobs = []
-let selectedSlug = null
-let selectedIndex = null
-let filteredJobs = []
-let openedFromURL = false
-
-// Firebase saved jobs
-let userId = null
-let savedJobs = new Set()
-const BOOKMARK_KEY = "careerUnifiedBookmarks"
-
-// ===============================
-// LOCALSTORAGE HELPERS
-// ===============================
-function getBookmarks() {
-  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]")
-}
-
-function saveBookmarks(list) {
-  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list))
-}
-
-function addToLocalStorage(type, id) {
-  const key = `${type}:${id}`
-  let bookmarks = getBookmarks()
-  if (!bookmarks.includes(key)) {
-    bookmarks.push(key)
-    saveBookmarks(bookmarks)
-  }
-}
-
-function removeFromLocalStorage(type, id) {
-  const key = `${type}:${id}`
-  let bookmarks = getBookmarks()
-  bookmarks = bookmarks.filter(x => x !== key)
-  saveBookmarks(bookmarks)
-}
-
-// ===============================
-// FIREBASE AUTH
-// ===============================
-if (typeof firebase !== 'undefined' && firebase.auth) {
-  firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-      userId = user.uid
-      loadSavedJobs()
-    } else {
-      userId = null
-      savedJobs.clear()
-      updateHearts()
-    }
-  })
-}
-
-async function loadSavedJobs() {
-  if (!userId) return
-  try {
-    const snapshot = await firebase.firestore()
-      .collection('users')
-      .doc(userId)
-      .collection('saved')
-      .get()
-
-    savedJobs.clear()
-    let bookmarks = getBookmarks().filter(x => !x.startsWith('job:'))
-
-    snapshot.forEach(doc => {
-      savedJobs.add(doc.id)
-      bookmarks.push(`job:${doc.id.replace('job_', '')}`)
-    })
-
-    saveBookmarks(bookmarks)
-    updateHearts()
-  } catch (err) {
-    console.error("Failed to load saved jobs:", err)
-  }
-}
-
-// Toggle save
-async function toggleSaveJob(job) {
-  if (!userId) {
-    alert('Please log in to save jobs')
-    window.location.href = 'login.html'
-    return
-  }
-
-  const docId = 'job_' + job._id
-  const ref = firebase.firestore()
-    .collection('users')
-    .doc(userId)
-    .collection('saved')
-    .doc(docId)
-
-  try {
-    if (savedJobs.has(docId)) {
-      await ref.delete()
-      savedJobs.delete(docId)
-      removeFromLocalStorage('job', job._id)
-    } else {
-      await ref.set({
-        type: 'job',
-        title: job.title,
-        company: job.company,
-        deadline: job.deadline,
-        location: job.location,
-        salary: job.salary || null,
-        applyLink: job.applyLink,
-        savedAt: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      savedJobs.add(docId)
-      addToLocalStorage('job', job._id)
-    }
-    updateHearts()
-  } catch (err) {
-    console.error("Error toggling save:", err)
-    alert('Failed to save job. Please try again.')
-  }
-}
-
-// Update heart icons
-function updateHearts() {
-  document.querySelectorAll('.heart-icon').forEach(heart => {
-    const jobCard = heart.closest('.job-card')
-    if (jobCard && jobCard.dataset.id) {
-      const docId = 'job_' + jobCard.dataset.id
-      heart.classList.toggle('saved', savedJobs.has(docId))
-    }
-  })
-}
-
-// Heart click handler
-document.addEventListener('click', e => {
-  if (e.target.closest('.heart-icon')) {
-    e.stopPropagation()
-    const heart = e.target.closest('.heart-icon')
-    const jobCard = heart.closest('.job-card')
-    if (jobCard && jobCard.dataset.jobData) {
-      try {
-        const job = JSON.parse(jobCard.dataset.jobData)
-        toggleSaveJob(job)
-      } catch (err) {
-        console.error('Error parsing job data:', err)
-      }
-    }
-  }
-})
-
-// ===============================
-// SANITY JOBS LOADER
-// ===============================
-
-async function loadJobs() {
-  jobs = await window.sanityClient.fetchJobs()
-  renderJobs()
-  openFromURL()
-}
-
-// Render jobs list
-function renderJobs() {
-  const searchTerm = document.getElementById('jobSearch')?.value?.toLowerCase() || ''
-  const category = document.getElementById('categoryFilter')?.value || 'all'
-
-  filteredJobs = jobs
-    .filter(j => (category === 'all' || j.category === category) &&
-                 (j.title.toLowerCase().includes(searchTerm) ||
-                  j.company?.name?.toLowerCase().includes(searchTerm) ||
-                  j.description.toLowerCase().includes(searchTerm)))
-    .sort((a, b) => getPriority(b) - getPriority(a))
-
-  jobList.innerHTML = ""
-
-  if (filteredJobs.length === 0) {
-    jobList.innerHTML = `<div class="empty-state">
-      <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="m21 21-4.35-4.35"/>
-      </svg>
-      <h3>No jobs found</h3>
-      <p>Try adjusting your search or filters</p>
-    </div>`
-    return
-  }
-
-  filteredJobs.forEach((job, index) => {
-    const li = document.createElement("li")
-    li.className = "job-card"
-    li.dataset.id = job._id
-    li.dataset.jobData = JSON.stringify(job)
-    if (index === selectedIndex) li.classList.add("selected")
-
-    const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(80).height(80).fit("crop").url()
-    let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
-
-    li.innerHTML = `
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
-      <div class="job-row">
-        <img src="${logoUrl || '/fallback-company.png'}" class="company-logo"/>
-        <div>
-          <h3>${job.title}</h3>
-          <p>${job.company?.name || "Confidential"}</p>
-          <p>${job.location}</p>
-        </div>
-        <svg class="heart-icon" viewBox="0 0 24 24">
-          <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
-        </svg>
-      </div>
-    `
-
-    li.onclick = (e) => {
-      if (e.target.closest('.heart-icon')) return
-      selectedIndex = index
-      const job = filteredJobs[selectedIndex]
-      history.pushState({}, "", `/jobs/${job.slug}`)
-      showPreview(job, "left")
-      renderJobs()
-      if (window.innerWidth <= 900) jobPreview.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-
-    jobList.appendChild(li)
-  })
-  updateHearts()
-}
-
-// Open job from URL
-async function openFromURL() {
-  if (openedFromURL) return
-  openedFromURL = true
-
-  const parts = window.location.pathname.split("/")
-  const slug = parts[parts.length - 1]
-  if (!slug || slug === "jobs") return
-
-  const job = await window.sanityClient.fetchJobBySlug(slug)
-  if (job) openJob(job)
-}
-
-// Open job
-function openJob(job) {
-  selectedSlug = job.slug
-  history.pushState({}, "", `/jobs/${job.slug}`)
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
-
-  selectedIndex = filteredJobs.findIndex(j => j._id === job._id)
-  jobPreview.innerHTML = `
-    <div class="job-preview">
-      <img src="${logoUrl || '/fallback-company.png'}" class="preview-logo"/>
-      <h1>${job.title}</h1>
-      <h3>${job.company?.name || "Confidential"}</h3>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p><strong>Salary:</strong> ${job.salary || "Not specified"}</p>
-      <div class="job-desc">${job.description}</div>
-      <a href="${job.applyLink}" target="_blank" class="apply-btn">Apply Now</a>
-    </div>
-  `
-  injectMeta(job, logoUrl)
-}
-
-// ===============================
-// SEO + SOCIAL
-// ===============================
-function injectMeta(job, logo) {
-  setMeta("og:title", job.title)
-  setMeta("og:description", job.description.substring(0, 150))
-  setMeta("og:image", logo)
-  setMeta("og:url", window.location.href)
-
-  setMeta("twitter:card", "summary_large_image")
-  setMeta("twitter:title", job.title)
-  setMeta("twitter:description", job.description.substring(0, 150))
-  setMeta("twitter:image", logo)
-}
-
-function setMeta(name, content) {
-  let tag = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`)
-  if (!tag) {
-    tag = document.createElement("meta")
-    if (name.startsWith("og:")) tag.setAttribute("property", name)
-    else tag.setAttribute("name", name)
-    document.head.appendChild(tag)
-  }
-  tag.setAttribute("content", content)
-}
-
-// ===============================
-// SKELETON LOADER & DEFAULT PREVIEW
-// ===============================
-function showSkeletons() {
-  jobList.innerHTML = ""
-  for (let i = 0; i < 6; i++) {
-    const li = document.createElement("li")
-    li.className = "job-card skeleton skeleton-job"
-    jobList.appendChild(li)
-  }
-}
-
-function showDefaultPreview() {
-  jobPreview.innerHTML = `<div style="text-align:center; color:#9ca3af; padding:40px 20px;">
-    <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px; stroke:currentColor; fill:none; stroke-width:2;">
-      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-    </svg>
-    <p style="font-size:1.1rem; color:#6b7280;">Select a job to view details</p>
-  </div>`
-}
-
-// ===============================
-// MOBILE SWIPE
-// ===============================
-let startX = 0
-let startY = 0
-document.addEventListener("touchstart", e => {
-  const preview = e.target.closest("#jobPreview")
-  const desc = e.target.closest(".job-desc")
-  if (!preview || desc) return
-  const touch = e.changedTouches[0]
-  startX = touch.screenX
-  startY = touch.screenY
-}, { passive: true })
-
-document.addEventListener("touchend", e => {
-  const preview = e.target.closest("#jobPreview")
-  const desc = e.target.closest(".job-desc")
-  if (!preview || desc) return
-  const touch = e.changedTouches[0]
-  const dx = touch.screenX - startX
-  const dy = touch.screenY - startY
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-    if (dx < 0) goToNextJob()
-    else goToPreviousJob()
-  }
-})
-
-function goToNextJob() {
-  if (selectedIndex === null || filteredJobs.length === 0) return
-  if (selectedIndex < filteredJobs.length - 1) {
-    selectedIndex++
-    showPreview(filteredJobs[selectedIndex], "left")
-    renderJobs()
-  }
-}
-
-function goToPreviousJob() {
-  if (selectedIndex === null || filteredJobs.length === 0) return
-  if (selectedIndex > 0) {
-    selectedIndex--
-    showPreview(filteredJobs[selectedIndex], "right")
-    renderJobs()
-  }
-}
-
-function showPreview(job, direction="left") {
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
-  let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
-  jobPreview.innerHTML = `
-    <div class="preview-slide ${direction === "left" ? "slide-left":"slide-right"}">
-      <div class="preview-header">
-        ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
-        <h2>${job.title}</h2>
-        <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+      <a href="/index.html" class="mobile-logo">Career Unified</a>
+      <div class="mobile-nav-right">
+        <a href="/account-page.html" class="icon-btn" aria-label="My Account">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+          <svg viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
       </div>
-      <div class="preview-content-wrapper">
-        <div class="preview-info">
-          <p><strong>Company:</strong> ${job.company?.name || "Confidential"}</p>
-          <p><strong>Location:</strong> ${job.location}</p>
-          <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
-          <p><strong>Closing:</strong> ${job.deadline}</p>
-        </div>
-        <div class="job-desc">${job.description}</div>
-        <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+    </div>
+  </nav>
+
+  <!-- MOBILE SLIDE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/jobs">Jobs</a>
+    <a href="/bursaries.html">Bursaries</a>
+    <a href="/varsity.html">Varsity</a>
+    <a href="/cv-generator.html">Generate CV</a>
+    <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="/recruiter-apply.html">Apply as Recruiter</a>
+    <a href="/saved-items.html">Saved Items</a>
+    <a href="/signup.html">Sign Up</a>
+    <a href="/login.html">Login</a>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <h1>Available Jobs</h1>
+    <p>Find your next opportunity in South Africa</p>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="jobs-container">
+    <div class="jobs-left">
+      <div class="search-filter-container">
+        <input type="text" id="jobSearch" placeholder="Search jobs, companies, keywords..." />
+        <select id="categoryFilter">
+          <option value="all">All Categories</option>
+          <option value="internship">Internship / Graduate</option>
+          <option value="temporary">Temporary</option>
+          <option value="freelance">Freelance</option>
+          <option value="permanent">Permanent</option>
+          <option value="learnership">Learnership</option>
+          <option value="part-time">Part-time</option>
+          <option value="graduate-program">Graduate Program</option>
+        </select>
+        <button id="sortBtn" type="button">Sort by Deadline</button>
+      </div>
+
+      <ul class="jobs-list" id="jobList"></ul>
+    </div>
+
+    <div class="jobs-preview" id="jobPreview">
+      <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+        <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
       </div>
     </div>
-  `
-  injectJobSchema(job)
-}
 
-function closePreview() {
-  selectedIndex = null
-  history.pushState({}, "", "/jobs")
-  showDefaultPreview()
-  renderJobs()
-  if (window.innerWidth <= 900) jobList.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
+    <section class="seo-content" aria-hidden="true">
+      <h2>Latest Jobs in South Africa</h2>
+      <p>Career Unified lists verified job opportunities across South Africa including IT, finance, retail, engineering, hospitality, government, and graduate roles.</p>
+      <p>Our platform updates daily to help job seekers find full-time, part-time, remote, and internship positions from trusted employers.</p>
+      <p>Use Career Unified to search, filter, and apply for jobs across all provinces in South Africa.</p>
+    </section>
+  </main>
 
-// ===============================
-// SEO SCHEMA
-// ===============================
-function injectJobSchema(job) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    "title": job.title,
-    "description": job.description,
-    "datePosted": job.posted,
-    "validThrough": job.deadline,
-    "employmentType": job.jobType || "FULL_TIME",
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": job.company?.name || "Confidential",
-      "sameAs": "https://careerunified.com"
-    },
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "ZA"
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="/about-us.html">About Us</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms & Conditions</a>
+      <a href="/contact-us.html">Contact Us</a>
+    </div>
+    <p>© 2026 Career Unified. All rights reserved.</p>
+  </footer>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="/js/firebase.js"></script>
+
+  <!-- SANITY CLIENT -->
+  <script src="/js/sanityClient.js"></script>
+
+  <script>
+    /* MOBILE NAV */
+    const menuBtn = document.getElementById("menuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    if (menuBtn) {
+      menuBtn.onclick = () => {
+        const isOpen = mobileMenu.style.display === "block";
+        mobileMenu.style.display = isOpen ? "none" : "block";
+      };
+    }
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+        if (mobileMenu) mobileMenu.style.display = "none";
       }
-    },
-    "baseSalary": job.salary ? {
-      "@type": "MonetaryAmount",
-      "currency": "ZAR",
-      "value": {
-        "@type": "QuantitativeValue",
-        "value": job.salary,
-        "unitText": "MONTH"
+    });
+
+    const jobList = document.getElementById("jobList");
+    const jobPreview = document.getElementById("jobPreview");
+
+    let jobs = [];
+    let filteredJobs = [];
+    let selectedIndex = null;
+    let openedFromURL = false;
+
+    // Firebase saved jobs (kept from your logic)
+    let userId = null;
+    let savedJobs = new Set();
+    const BOOKMARK_KEY = "careerUnifiedBookmarks";
+
+    function getBookmarks() {
+      return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+    }
+    function saveBookmarks(list) {
+      localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
+    }
+    function addToLocalStorage(type, id) {
+      const key = `${type}:${id}`;
+      let bookmarks = getBookmarks();
+      if (!bookmarks.includes(key)) {
+        bookmarks.push(key);
+        saveBookmarks(bookmarks);
       }
-    } : undefined,
-    "url": job.applyLink
-  }
+    }
+    function removeFromLocalStorage(type, id) {
+      const key = `${type}:${id}`;
+      let bookmarks = getBookmarks().filter(x => x !== key);
+      saveBookmarks(bookmarks);
+    }
 
-  const old = document.getElementById("job-schema")
-  if (old) old.remove()
-  const script = document.createElement("script")
-  script.id = "job-schema"
-  script.type = "application/ld+json"
-  script.textContent = JSON.stringify(schema)
-  document.head.appendChild(script)
-}
+    if (typeof firebase !== "undefined" && firebase.auth) {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          userId = user.uid;
+          loadSavedJobs();
+        } else {
+          userId = null;
+          savedJobs.clear();
+          updateHearts();
+        }
+      });
+    }
 
-// ===============================
-// PRIORITY SORT
-// ===============================
-function getPriority(job) {
-  const today = new Date()
-  if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
-    if (new Date(job.sponsoredUntil) < today) return 0
-  }
-  if (job.listingTier === 'premier') return 2
-  if (job.listingTier === 'sponsored') return 1
-  return 0
-}
+    async function loadSavedJobs() {
+      if (!userId) return;
+      try {
+        const snapshot = await firebase.firestore()
+          .collection("users").doc(userId)
+          .collection("saved").get();
 
-// ===============================
-// INITIAL LOAD
-// ===============================
-showSkeletons()
-loadJobs()
-showDefaultPreview()
-</script>
+        savedJobs.clear();
+        let bookmarks = getBookmarks().filter(x => !x.startsWith("job:"));
 
+        snapshot.forEach(doc => {
+          savedJobs.add(doc.id);
+          bookmarks.push(`job:${doc.id.replace("job_", "")}`);
+        });
 
+        saveBookmarks(bookmarks);
+        updateHearts();
+      } catch (err) {
+        console.error("Failed to load saved jobs:", err);
+      }
+    }
+
+    async function toggleSaveJob(job) {
+      if (!userId) {
+        alert("Please log in to save jobs");
+        window.location.href = "/login.html";
+        return;
+      }
+
+      const docId = "job_" + job._id;
+      const ref = firebase.firestore()
+        .collection("users").doc(userId)
+        .collection("saved").doc(docId);
+
+      try {
+        if (savedJobs.has(docId)) {
+          await ref.delete();
+          savedJobs.delete(docId);
+          removeFromLocalStorage("job", job._id);
+        } else {
+          await ref.set({
+            type: "job",
+            title: job.title,
+            company: job.company?.name || "Confidential",
+            deadline: job.deadline,
+            location: job.location,
+            salary: job.salary || null,
+            applyLink: job.applyLink,
+            savedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          savedJobs.add(docId);
+          addToLocalStorage("job", job._id);
+        }
+        updateHearts();
+      } catch (err) {
+        console.error("Error toggling save:", err);
+        alert("Failed to save job. Please try again.");
+      }
+    }
+
+    function updateHearts() {
+      document.querySelectorAll(".heart-icon").forEach(heart => {
+        const jobCard = heart.closest(".job-card");
+        if (jobCard && jobCard.dataset.id) {
+          const docId = "job_" + jobCard.dataset.id;
+          heart.classList.toggle("saved", savedJobs.has(docId));
+        }
+      });
+    }
+
+    document.addEventListener("click", e => {
+      const heart = e.target.closest(".heart-icon");
+      if (!heart) return;
+      e.stopPropagation();
+      const jobCard = heart.closest(".job-card");
+      if (jobCard && jobCard.dataset.jobData) {
+        try {
+          const job = JSON.parse(jobCard.dataset.jobData);
+          toggleSaveJob(job);
+        } catch (err) {
+          console.error("Error parsing job data:", err);
+        }
+      }
+    });
+
+    function showSkeletons() {
+      jobList.innerHTML = "";
+      for (let i = 0; i < 6; i++) {
+        const li = document.createElement("li");
+        li.className = "job-card skeleton skeleton-job";
+        jobList.appendChild(li);
+      }
+    }
+
+    function getPriority(job) {
+      const today = new Date();
+      if ((job.listingTier === "premier" || job.listingTier === "sponsored") && job.sponsoredUntil) {
+        if (new Date(job.sponsoredUntil) < today) return 0;
+      }
+      if (job.listingTier === "premier") return 2;
+      if (job.listingTier === "sponsored") return 1;
+      return 0;
+    }
+
+    function renderJobs() {
+      const searchTerm = (document.getElementById("jobSearch").value || "").toLowerCase();
+      const category = document.getElementById("categoryFilter").value || "all";
+
+      filteredJobs = jobs
+        .filter(j => {
+          const companyName = (j.company?.name || "").toLowerCase();
+          return (category === "all" || j.category === category) &&
+            (
+              (j.title || "").toLowerCase().includes(searchTerm) ||
+              companyName.includes(searchTerm) ||
+              (j.description || "").toLowerCase().includes(searchTerm)
+            );
+        })
+        .sort((a, b) => {
+          const pDiff = getPriority(b) - getPriority(a);
+          if (pDiff !== 0) return pDiff;
+          // deadline sort second
+          return new Date(a.deadline) - new Date(b.deadline);
+        });
+
+      jobList.innerHTML = "";
+
+      if (filteredJobs.length === 0) {
+        jobList.innerHTML = `<div class="empty-state">
+          <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h3>No jobs found</h3>
+          <p>Try adjusting your search or filters</p>
+        </div>`;
+        return;
+      }
+
+      filteredJobs.forEach((job, index) => {
+        const li = document.createElement("li");
+        li.className = "job-card";
+        li.dataset.id = job._id;
+        li.dataset.jobData = JSON.stringify(job);
+        if (index === selectedIndex) li.classList.add("selected");
+
+        const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(96).height(96).fit("crop").url();
+        const badgeText = job.badge || (job.listingTier === "premier" ? "Premier" : job.listingTier === "sponsored" ? "Sponsored" : "");
+
+        li.innerHTML = `
+          ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ""}
+          <div class="job-row">
+            <img class="company-logo" src="${logoUrl || "/android-chrome-192x192.png"}" alt="${(job.company?.name || "Company")} logo" />
+            <div style="min-width:0;">
+              <h3 style="margin:0 0 6px;">${job.title}</h3>
+              <p style="margin:0;">${job.company?.name || "Confidential"}</p>
+              <p style="margin:2px 0 0;">${job.location || "South Africa"}</p>
+            </div>
+            <svg class="heart-icon" viewBox="0 0 24 24" aria-label="Save job">
+              <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
+            </svg>
+          </div>
+        `;
+
+        li.onclick = (e) => {
+          if (e.target.closest(".heart-icon")) return;
+
+          selectedIndex = index;
+          const url = new URL(window.location.href);
+          // canonical path for your SPA route
+          url.pathname = `/jobs/${job.slug}`;
+          window.history.pushState({}, "", url);
+
+          showPreview(job, "left");
+          renderJobs();
+
+          if (window.innerWidth <= 900) {
+            jobPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        };
+
+        jobList.appendChild(li);
+      });
+
+      updateHearts();
+    }
+
+    function showDefaultPreview() {
+      jobPreview.innerHTML = `
+        <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+          <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+        </div>
+      `;
+    }
+
+    function closePreview() {
+      selectedIndex = null;
+      window.history.pushState({}, "", "/jobs");
+      showDefaultPreview();
+      renderJobs();
+      if (window.innerWidth <= 900) {
+        jobList.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function showPreview(job, direction = "left") {
+      const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url();
+      const badgeText = job.badge || (job.listingTier === "premier" ? "Premier" : job.listingTier === "sponsored" ? "Sponsored" : "");
+
+      jobPreview.innerHTML = `
+        <div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
+          <div class="preview-header">
+            ${badgeText ? `<span class="job-badge" style="position:relative; right:auto; top:auto;">${badgeText}</span>` : ""}
+            <div style="min-width:0; flex:1;">
+              <img class="preview-logo" src="${logoUrl || "/android-chrome-192x192.png"}" alt="${(job.company?.name || "Company")} logo"/>
+              <h2 style="margin:0;">${job.title}</h2>
+              <p style="margin-top:6px;"><strong>Company:</strong> ${job.company?.name || "Confidential"}</p>
+            </div>
+            <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
+              <svg viewBox="0 0 24 24" fill="none">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="preview-content-wrapper">
+            <div class="preview-info">
+              <p><strong>Location:</strong> ${job.location || "South Africa"}</p>
+              <p><strong>Salary:</strong> ${job.salary || "Not specified"}</p>
+              <p><strong>Closing:</strong> ${job.deadline || "Open until filled"}</p>
+            </div>
+
+            <div class="job-desc">${job.description || ""}</div>
+
+            <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+          </div>
+        </div>
+      `;
+    }
+
+    async function openFromURL() {
+      if (openedFromURL) return;
+      openedFromURL = true;
+
+      const parts = window.location.pathname.split("/");
+      const slug = parts[parts.length - 1];
+
+      if (!slug || slug === "jobs") return;
+
+      try {
+        const job = await window.sanityClient.fetchJobBySlug(slug);
+        if (!job) return;
+
+        // select in list if already loaded
+        const idx = filteredJobs.findIndex(j => j._id === job._id);
+        selectedIndex = idx !== -1 ? idx : null;
+
+        showPreview(job, "left");
+        renderJobs();
+      } catch (e) {
+        console.error("Failed to open job from URL:", e);
+      }
+    }
+
+    async function loadJobs() {
+      showSkeletons();
+      try {
+        jobs = await window.sanityClient.fetchJobs();
+      } catch (e) {
+        console.error("Failed to load jobs:", e);
+        jobs = [];
+      }
+      renderJobs();
+      openFromURL();
+    }
+
+    document.getElementById("jobSearch").addEventListener("input", renderJobs);
+    document.getElementById("categoryFilter").addEventListener("change", renderJobs);
+    document.getElementById("sortBtn").addEventListener("click", renderJobs);
+
+    // make closePreview callable
+    window.closePreview = closePreview;
+
+    showDefaultPreview();
+    loadJobs();
+  </script>
 </body>
 </html>
+
+
 
 
 
