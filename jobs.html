@@ -773,113 +773,166 @@ Use Career Unified to search, filter, and apply for jobs across all provinces in
 
 <!-- SANITY CLIENT -->
 <script src="js/sanityClient.js"></script>
+
 <script>
+/* ================================
+   MOBILE NAVIGATION
+   ================================ */
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+if (menuBtn) {
+  menuBtn.onclick = () => {
+    const isOpen = mobileMenu.style.display === "block";
+    mobileMenu.style.display = isOpen ? "none" : "block";
+  };
+}
+
+// Close menus when clicking outside
+document.addEventListener("click", e => {
+  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+    if (mobileMenu) mobileMenu.style.display = "none";
+  }
+});
+
+/* ================================
+   JOBS PAGE LOGIC
+   ================================ */
+const jobList = document.getElementById('jobList');
+const jobPreview = document.getElementById('jobPreview');
+
+// Global search from homepage
+let globalSearch = localStorage.getItem("homeSearchTerm");
+if (globalSearch) {
+  localStorage.removeItem("homeSearchTerm");
+}
+
+// Cache system
+const CACHE_KEY = "careerUnifiedJobsCache";
+const CACHE_TIME_KEY = "careerUnifiedJobsCacheTime";
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+let jobs = [];
+let filteredJobs = [];
+let selectedIndex = null;
+let openedFromURL = false;
+
+
 /* ===============================
-   SANITY DATA LOADER + SAVED JOBS + MOBILE UI
+   FIREBASE FIRESTORE BOOKMARK SYSTEM
    =============================== */
+// Firebase Auth & Firestore state
+let userId = null;
+let savedJobs = new Set();
 
-const jobList = document.getElementById("jobList")
-const jobPreview = document.getElementById("jobPreview")
+// Listen for auth state changes
+if (typeof firebase !== 'undefined' && firebase.auth) {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      userId = user.uid;
+      console.log('✅ User logged in:', user.email, 'UID:', userId);
+      loadSavedJobs();
+    } else {
+      userId = null;
+      savedJobs.clear();
+      updateHearts();
+      console.log('❌ No user logged in');
+    }
+  });
+} else {
+  console.error('❌ Firebase not loaded properly');
+}
 
-let jobs = []
-let selectedSlug = null
-let selectedIndex = null
-let filteredJobs = []
-let openedFromURL = false
+// LocalStorage helper functions for saved-items.html integration
+const BOOKMARK_KEY = "careerUnifiedBookmarks";
 
-// Firebase saved jobs
-let userId = null
-let savedJobs = new Set()
-const BOOKMARK_KEY = "careerUnifiedBookmarks"
-
-// ===============================
-// LOCALSTORAGE HELPERS
-// ===============================
 function getBookmarks() {
-  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]")
+  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
 }
 
 function saveBookmarks(list) {
-  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list))
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
 }
 
 function addToLocalStorage(type, id) {
-  const key = `${type}:${id}`
-  let bookmarks = getBookmarks()
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
   if (!bookmarks.includes(key)) {
-    bookmarks.push(key)
-    saveBookmarks(bookmarks)
+    bookmarks.push(key);
+    saveBookmarks(bookmarks);
   }
 }
 
 function removeFromLocalStorage(type, id) {
-  const key = `${type}:${id}`
-  let bookmarks = getBookmarks()
-  bookmarks = bookmarks.filter(x => x !== key)
-  saveBookmarks(bookmarks)
+  const key = `${type}:${id}`;
+  let bookmarks = getBookmarks();
+  bookmarks = bookmarks.filter(x => x !== key);
+  saveBookmarks(bookmarks);
 }
 
-// ===============================
-// FIREBASE AUTH
-// ===============================
-if (typeof firebase !== 'undefined' && firebase.auth) {
-  firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-      userId = user.uid
-      loadSavedJobs()
-    } else {
-      userId = null
-      savedJobs.clear()
-      updateHearts()
-    }
-  })
-}
-
+// Load user's saved jobs from Firestore
 async function loadSavedJobs() {
-  if (!userId) return
+  if (!userId) return;
+  
   try {
     const snapshot = await firebase.firestore()
       .collection('users')
       .doc(userId)
       .collection('saved')
-      .get()
-
-    savedJobs.clear()
-    let bookmarks = getBookmarks().filter(x => !x.startsWith('job:'))
-
+      .get();
+    
+    savedJobs.clear();
+    
+    // Clear localStorage bookmarks for jobs before syncing
+    let bookmarks = getBookmarks();
+    bookmarks = bookmarks.filter(x => !x.startsWith('job:'));
+    
     snapshot.forEach(doc => {
-      savedJobs.add(doc.id)
-      bookmarks.push(`job:${doc.id.replace('job_', '')}`)
-    })
-
-    saveBookmarks(bookmarks)
-    updateHearts()
-  } catch (err) {
-    console.error("Failed to load saved jobs:", err)
+      savedJobs.add(doc.id);
+      
+      // Also sync to localStorage
+      const data = doc.data();
+      if (data.type === 'job') {
+        const jobId = doc.id.replace('job_', '');
+        bookmarks.push(`job:${jobId}`);
+      }
+    });
+    
+    saveBookmarks(bookmarks);
+    updateHearts();
+    console.log('✅ Loaded', savedJobs.size, 'saved jobs from Firestore and synced to localStorage');
+  } catch (error) {
+    console.error('Error loading saved jobs:', error);
   }
 }
 
-// Toggle save
+// Toggle save for a job
 async function toggleSaveJob(job) {
   if (!userId) {
-    alert('Please log in to save jobs')
-    window.location.href = 'login.html'
-    return
+    alert('Please log in to save jobs');
+    window.location.href = 'login.html';
+    return;
   }
-
-  const docId = 'job_' + job._id
+  
+  const docId = 'job_' + job._id;
   const ref = firebase.firestore()
     .collection('users')
     .doc(userId)
     .collection('saved')
-    .doc(docId)
-
+    .doc(docId);
+  
   try {
     if (savedJobs.has(docId)) {
-      await ref.delete()
-      savedJobs.delete(docId)
-      removeFromLocalStorage('job', job._id)
+      // Remove from saved
+      await ref.delete();
+      savedJobs.delete(docId);
+      
+      // Also remove from localStorage
+      removeFromLocalStorage('job', job._id);
+      
+      console.log('❌ Removed from saved jobs');
     } else {
+      // Add to saved
       await ref.set({
         type: 'job',
         title: job.title,
@@ -889,69 +942,225 @@ async function toggleSaveJob(job) {
         salary: job.salary || null,
         applyLink: job.applyLink,
         savedAt: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      savedJobs.add(docId)
-      addToLocalStorage('job', job._id)
+      });
+      
+      savedJobs.add(docId);
+      
+      // Also add to localStorage
+      addToLocalStorage('job', job._id);
+      
+      console.log('✅ Added to saved jobs');
     }
-    updateHearts()
-  } catch (err) {
-    console.error("Error toggling save:", err)
-    alert('Failed to save job. Please try again.')
+    
+    updateHearts();
+  } catch (error) {
+    console.error('Error toggling save:', error);
+    alert('Failed to save job. Please try again.');
   }
 }
 
-// Update heart icons
+// Update heart icon states
 function updateHearts() {
   document.querySelectorAll('.heart-icon').forEach(heart => {
-    const jobCard = heart.closest('.job-card')
+    const jobCard = heart.closest('.job-card');
     if (jobCard && jobCard.dataset.id) {
-      const docId = 'job_' + jobCard.dataset.id
-      heart.classList.toggle('saved', savedJobs.has(docId))
+      const docId = 'job_' + jobCard.dataset.id;
+      heart.classList.toggle('saved', savedJobs.has(docId));
     }
-  })
+  });
 }
 
 // Heart click handler
 document.addEventListener('click', e => {
   if (e.target.closest('.heart-icon')) {
-    e.stopPropagation()
-    const heart = e.target.closest('.heart-icon')
-    const jobCard = heart.closest('.job-card')
+    e.stopPropagation(); // prevents job card from opening
+    
+    const heart = e.target.closest('.heart-icon');
+    const jobCard = heart.closest('.job-card');
+    
     if (jobCard && jobCard.dataset.jobData) {
       try {
-        const job = JSON.parse(jobCard.dataset.jobData)
-        toggleSaveJob(job)
-      } catch (err) {
-        console.error('Error parsing job data:', err)
+        const job = JSON.parse(jobCard.dataset.jobData);
+        toggleSaveJob(job);
+      } catch (error) {
+        console.error('Error parsing job data:', error);
       }
     }
   }
-})
+});
 
-// ===============================
-// SANITY JOBS LOADER
-// ===============================
+/* ===============================
+   JOB LOADING & RENDERING
+   =============================== */
+// Show skeleton loaders
+function showSkeletons() {
+  jobList.innerHTML = "";
+  for (let i = 0; i < 6; i++) {
+    const li = document.createElement("li");
+    li.className = "job-card skeleton skeleton-job";
+    jobList.appendChild(li);
+  }
+}
 
-async function loadJobs() {
-  jobs = await window.sanityClient.fetchJobs()
-  renderJobs()
-  openFromURL()
+// Load cached jobs instantly
+loadCachedJobs();
+
+function loadCachedJobs() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (!cached) return;
+  
+  try {
+    jobs = JSON.parse(cached);
+    renderJobs();
+    console.log("⚡ Loaded jobs from cache");
+  } catch (e) {
+    console.warn("Cache invalid");
+  }
+}
+
+
+// Fetch fresh jobs from Sanity
+async function fetchJobs() {
+  let query = `*[_type == "job"]`;
+  
+  if (globalSearch && globalSearch.trim() !== "") {
+    query = `*[_type=="job" && (
+      title match "*${globalSearch}*" ||
+      company match "*${globalSearch}*" ||
+      category match "*${globalSearch}*" ||
+      location match "*${globalSearch}*" ||
+      description match "*${globalSearch}*"
+    )]`;
+  }
+  
+  try {
+    const fresh = await window.sanityClient.fetch(`${query}{
+      _id, title, company, description, location, salary, applyLink,
+      posted, deadline, category, jobType, listingTier, sponsoredUntil, badge
+    }`);
+    
+    jobs = fresh;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(fresh));
+    localStorage.setItem(CACHE_TIME_KEY, Date.now());
+    
+    if (globalSearch) {
+      document.getElementById("jobSearch").value = globalSearch;
+    }
+    
+    renderJobs();
+    console.log("🔄 Jobs updated from Sanity");
+  } catch (err) {
+    console.error("Sanity failed — using cache", err);
+  }
+}
+   
+// 🔗 Open job from URL if present
+function checkAndOpenJobFromURL() {
+  // only run ONCE (page load)
+  if (openedFromURL) return;
+  openedFromURL = true;
+
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("job");
+  if (!jobId) return;
+
+  const index = filteredJobs.findIndex(j => j._id === jobId);
+  if (index !== -1) {
+    selectedIndex = index;
+    showPreview(filteredJobs[index], "left");
+    renderJobs();
+  }
+}
+
+
+// Schema injection for SEO
+function injectJobSchema(job) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": job.description,
+    "datePosted": job.posted,
+    "validThrough": job.deadline,
+    "employmentType": job.jobType || "FULL_TIME",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": job.company || "Confidential",
+      "sameAs": "https://careerunified.com"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA"
+      }
+    },
+    "baseSalary": job.salary ? {
+      "@type": "MonetaryAmount",
+      "currency": "ZAR",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": job.salary,
+        "unitText": "MONTH"
+      }
+    } : undefined,
+    "url": job.applyLink
+  };
+  
+  const old = document.getElementById("job-schema");
+  if (old) old.remove();
+  
+  const script = document.createElement("script");
+  script.id = "job-schema";
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
+// Priority sorting
+function getPriority(job) {
+  const today = new Date();
+  
+  if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
+    if (new Date(job.sponsoredUntil) < today) return 0;
+  }
+  
+  if (job.listingTier === 'premier') return 2;
+  if (job.listingTier === 'sponsored') return 1;
+  return 0;
+}
+
+// Show default preview
+function showDefaultPreview() {
+  jobPreview.innerHTML = `<div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
+    <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+    <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+  </div>`;
 }
 
 // Render jobs list
 function renderJobs() {
-  const searchTerm = document.getElementById('jobSearch')?.value?.toLowerCase() || ''
-  const category = document.getElementById('categoryFilter')?.value || 'all'
-
+  const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
+  const category = document.getElementById('categoryFilter').value;
+  
   filteredJobs = jobs
-    .filter(j => (category === 'all' || j.category === category) &&
-                 (j.title.toLowerCase().includes(searchTerm) ||
-                  j.company?.name?.toLowerCase().includes(searchTerm) ||
-                  j.description.toLowerCase().includes(searchTerm)))
-    .sort((a, b) => getPriority(b) - getPriority(a))
-
-  jobList.innerHTML = ""
-
+    .filter(j => {
+      return (category === 'all' || j.category === category) && 
+             (j.title.toLowerCase().includes(searchTerm) || 
+              j.company.toLowerCase().includes(searchTerm) || 
+              j.description.toLowerCase().includes(searchTerm));
+    })
+    .sort((a,b) => {
+      const pDiff = getPriority(b) - getPriority(a);
+      if (pDiff !== 0) return pDiff;
+      return new Date(a.deadline) - new Date(b.deadline);
+    });
+  
+  jobList.innerHTML = "";
+  
   if (filteredJobs.length === 0) {
     jobList.innerHTML = `<div class="empty-state">
       <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
@@ -960,22 +1169,216 @@ function renderJobs() {
       </svg>
       <h3>No jobs found</h3>
       <p>Try adjusting your search or filters</p>
-    </div>`
-    return
+    </div>`;
+    return;
   }
-
+  
   filteredJobs.forEach((job, index) => {
+    const li = document.createElement("li");
+    li.className = "job-card";
+    li.dataset.id = job._id; // Store job ID for heart icon
+    li.dataset.jobData = JSON.stringify(job); // Store full job data for saving
+    
+    if (index === selectedIndex) li.classList.add("selected");
+    
+    let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '');
+    
+    li.innerHTML = `${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      <svg class="heart-icon" viewBox="0 0 24 24">
+        <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
+      </svg>
+      <h3>${job.title}</h3>
+      <p><strong>Company:</strong> ${job.company}</p>
+      <p><strong>Location:</strong> ${job.location}</p>
+      <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
+      <p><strong>Closing:</strong> ${job.deadline}</p>
+    `;
+    
+    li.onclick = (e) => {
+      // Don't open if clicking heart
+      if (e.target.closest('.heart-icon')) return;
+      
+      const previousIndex = selectedIndex;
+      selectedIndex = index;
+      const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
+
+      // 🔗 UPDATE URL WITH JOB ID
+      const url = new URL(window.location);
+      url.searchParams.set("job", job._id);
+      window.history.pushState({}, "", url);
+
+      showPreview(job, direction);
+      renderJobs();
+      
+      // Scroll to preview on mobile
+      if (window.innerWidth <= 900) {
+        document.getElementById('jobPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    
+    jobList.appendChild(li);
+  });
+  
+  updateHearts();
+}
+
+// Show job preview
+function showPreview(job, direction = "left") {
+  let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '');
+  
+  jobPreview.innerHTML = `<div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
+    <div class="preview-header">
+      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
+      <h2>${job.title}</h2>
+      <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
+        <svg viewBox="0 0 24 24" fill="none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="preview-content-wrapper">
+      <div class="preview-info">
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
+        <p><strong>Posted:</strong> ${job.posted} | <strong>Closing:</strong> ${job.deadline}</p>
+      </div>
+      <div class="description-content">${job.description}</div>
+      <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+    </div>
+  </div>`;
+  
+  injectJobSchema(job);
+}
+
+// Close preview function
+function closePreview() {
+  selectedIndex = null;
+
+  // 🔗 REMOVE job FROM URL
+  const url = new URL(window.location);
+  url.searchParams.delete("job");
+  window.history.pushState({}, "", url);
+
+  showDefaultPreview();
+  renderJobs();
+  
+  // Scroll back to list on mobile
+  if (window.innerWidth <= 900) {
+    document.getElementById('jobList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Event listeners
+document.getElementById("jobSearch").addEventListener("input", () => {
+  globalSearch = null;
+  renderJobs();
+});
+
+document.getElementById("categoryFilter").addEventListener("change", renderJobs);
+document.getElementById("sortBtn").addEventListener("click", renderJobs);
+
+
+// Startup
+showSkeletons();
+
+const last = localStorage.getItem(CACHE_TIME_KEY);
+if (!last || Date.now() - last > CACHE_TTL) {
+  fetchJobs().then(() => {
+    checkAndOpenJobFromURL();
+  });
+} else {
+  fetchJobs().then(() => {
+    checkAndOpenJobFromURL();
+  });
+}
+
+setInterval(() => {
+  fetchJobs();
+}, 5 * 60 * 1000);
+
+/* ===============================
+   MOBILE SWIPE (SAFE VERSION)
+   =============================== */
+let startX = 0;
+let startY = 0;
+
+document.addEventListener("touchstart", e => {
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+  if (!preview || desc) return;
+  
+  const touch = e.changedTouches[0];
+  startX = touch.screenX;
+  startY = touch.screenY;
+}, { passive: true });
+
+document.addEventListener("touchend", e => {
+  const preview = e.target.closest("#jobPreview");
+  const desc = e.target.closest(".description-content");
+  if (!preview || desc) return;
+  
+  const touch = e.changedTouches[0];
+  const dx = touch.screenX - startX;
+  const dy = touch.screenY - startY;
+  
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToNextJob();
+    else goToPreviousJob();
+  }
+}, { passive: true });
+
+function goToNextJob() {
+  if (selectedIndex === null || filteredJobs.length === 0) return;
+  if (selectedIndex < filteredJobs.length - 1) {
+    selectedIndex++;
+    showPreview(filteredJobs[selectedIndex], "left");
+    renderJobs();
+  }
+}
+
+function goToPreviousJob() {
+  if (selectedIndex === null || filteredJobs.length === 0) return;
+  if (selectedIndex > 0) {
+    selectedIndex--;
+    showPreview(filteredJobs[selectedIndex], "right");
+    renderJobs();
+  }
+}
+/* ===============================
+   SANITY DATA LOADER (FIXED)
+   =============================== */
+
+const jobList = document.getElementById("jobList")
+const jobPreview = document.getElementById("jobPreview")
+
+let jobs = []
+let selectedSlug = null
+
+// Load jobs from Sanity
+async function loadJobs() {
+  jobs = await window.sanityClient.fetchJobs()
+  renderJobs()
+  openFromURL()
+}
+
+// Render job list
+function renderJobs() {
+  jobList.innerHTML = ""
+
+  jobs.forEach(job => {
+    const logoUrl = window.sanityClient
+      .imageUrl(job.company?.logo)
+      ?.width(80)
+      .height(80)
+      .fit("crop")
+      .url()
+
     const li = document.createElement("li")
     li.className = "job-card"
-    li.dataset.id = job._id
-    li.dataset.jobData = JSON.stringify(job)
-    if (index === selectedIndex) li.classList.add("selected")
-
-    const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(80).height(80).fit("crop").url()
-    let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
 
     li.innerHTML = `
-      ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
       <div class="job-row">
         <img src="${logoUrl || '/fallback-company.png'}" class="company-logo"/>
         <div>
@@ -983,64 +1386,60 @@ function renderJobs() {
           <p>${job.company?.name || "Confidential"}</p>
           <p>${job.location}</p>
         </div>
-        <svg class="heart-icon" viewBox="0 0 24 24">
-          <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
-        </svg>
       </div>
     `
 
-    li.onclick = (e) => {
-      if (e.target.closest('.heart-icon')) return
-      selectedIndex = index
-      const job = filteredJobs[selectedIndex]
-      history.pushState({}, "", `/jobs/${job.slug}`)
-      showPreview(job, "left")
-      renderJobs()
-      if (window.innerWidth <= 900) jobPreview.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-
+    li.onclick = () => openJob(job)
     jobList.appendChild(li)
   })
-  updateHearts()
 }
 
-// Open job from URL
-async function openFromURL() {
-  if (openedFromURL) return
-  openedFromURL = true
+// Open job
+function openJob(job) {
+  selectedSlug = job.slug
 
+  history.pushState({}, "", `/jobs/${job.slug}`)
+
+  const logoUrl = window.sanityClient
+    .imageUrl(job.company?.logo)
+    ?.width(200)
+    .height(200)
+    .fit("crop")
+    .url()
+
+  jobPreview.innerHTML = `
+    <div class="job-preview">
+      <img src="${logoUrl || '/fallback-company.png'}" class="preview-logo"/>
+
+      <h1>${job.title}</h1>
+      <h3>${job.company?.name || "Confidential"}</h3>
+
+      <p><strong>Location:</strong> ${job.location}</p>
+      <p><strong>Salary:</strong> ${job.salary || "Not specified"}</p>
+
+      <div class="job-desc">${job.description}</div>
+
+      <a href="${job.applyLink}" target="_blank" class="apply-btn">
+        Apply Now
+      </a>
+    </div>
+  `
+
+  injectMeta(job, logoUrl)
+}
+
+// Load job from URL
+async function openFromURL() {
   const parts = window.location.pathname.split("/")
   const slug = parts[parts.length - 1]
+
   if (!slug || slug === "jobs") return
 
   const job = await window.sanityClient.fetchJobBySlug(slug)
   if (job) openJob(job)
 }
 
-// Open job
-function openJob(job) {
-  selectedSlug = job.slug
-  history.pushState({}, "", `/jobs/${job.slug}`)
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
-
-  selectedIndex = filteredJobs.findIndex(j => j._id === job._id)
-  jobPreview.innerHTML = `
-    <div class="job-preview">
-      <img src="${logoUrl || '/fallback-company.png'}" class="preview-logo"/>
-      <h1>${job.title}</h1>
-      <h3>${job.company?.name || "Confidential"}</h3>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p><strong>Salary:</strong> ${job.salary || "Not specified"}</p>
-      <div class="job-desc">${job.description}</div>
-      <a href="${job.applyLink}" target="_blank" class="apply-btn">Apply Now</a>
-    </div>
-  `
-  injectMeta(job, logoUrl)
-}
-
-// ===============================
-// SEO + SOCIAL
-// ===============================
+// SEO + WhatsApp + Facebook preview
 function injectMeta(job, logo) {
   setMeta("og:title", job.title)
   setMeta("og:description", job.description.substring(0, 150))
@@ -1064,177 +1463,10 @@ function setMeta(name, content) {
   tag.setAttribute("content", content)
 }
 
-// ===============================
-// SKELETON LOADER & DEFAULT PREVIEW
-// ===============================
-function showSkeletons() {
-  jobList.innerHTML = ""
-  for (let i = 0; i < 6; i++) {
-    const li = document.createElement("li")
-    li.className = "job-card skeleton skeleton-job"
-    jobList.appendChild(li)
-  }
-}
-
-function showDefaultPreview() {
-  jobPreview.innerHTML = `<div style="text-align:center; color:#9ca3af; padding:40px 20px;">
-    <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px; stroke:currentColor; fill:none; stroke-width:2;">
-      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-    </svg>
-    <p style="font-size:1.1rem; color:#6b7280;">Select a job to view details</p>
-  </div>`
-}
-
-// ===============================
-// MOBILE SWIPE
-// ===============================
-let startX = 0
-let startY = 0
-document.addEventListener("touchstart", e => {
-  const preview = e.target.closest("#jobPreview")
-  const desc = e.target.closest(".job-desc")
-  if (!preview || desc) return
-  const touch = e.changedTouches[0]
-  startX = touch.screenX
-  startY = touch.screenY
-}, { passive: true })
-
-document.addEventListener("touchend", e => {
-  const preview = e.target.closest("#jobPreview")
-  const desc = e.target.closest(".job-desc")
-  if (!preview || desc) return
-  const touch = e.changedTouches[0]
-  const dx = touch.screenX - startX
-  const dy = touch.screenY - startY
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-    if (dx < 0) goToNextJob()
-    else goToPreviousJob()
-  }
-})
-
-function goToNextJob() {
-  if (selectedIndex === null || filteredJobs.length === 0) return
-  if (selectedIndex < filteredJobs.length - 1) {
-    selectedIndex++
-    showPreview(filteredJobs[selectedIndex], "left")
-    renderJobs()
-  }
-}
-
-function goToPreviousJob() {
-  if (selectedIndex === null || filteredJobs.length === 0) return
-  if (selectedIndex > 0) {
-    selectedIndex--
-    showPreview(filteredJobs[selectedIndex], "right")
-    renderJobs()
-  }
-}
-
-function showPreview(job, direction="left") {
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
-  let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
-  jobPreview.innerHTML = `
-    <div class="preview-slide ${direction === "left" ? "slide-left":"slide-right"}">
-      <div class="preview-header">
-        ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
-        <h2>${job.title}</h2>
-        <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="preview-content-wrapper">
-        <div class="preview-info">
-          <p><strong>Company:</strong> ${job.company?.name || "Confidential"}</p>
-          <p><strong>Location:</strong> ${job.location}</p>
-          <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
-          <p><strong>Closing:</strong> ${job.deadline}</p>
-        </div>
-        <div class="job-desc">${job.description}</div>
-        <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
-      </div>
-    </div>
-  `
-  injectJobSchema(job)
-}
-
-function closePreview() {
-  selectedIndex = null
-  history.pushState({}, "", "/jobs")
-  showDefaultPreview()
-  renderJobs()
-  if (window.innerWidth <= 900) jobList.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
-// ===============================
-// SEO SCHEMA
-// ===============================
-function injectJobSchema(job) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    "title": job.title,
-    "description": job.description,
-    "datePosted": job.posted,
-    "validThrough": job.deadline,
-    "employmentType": job.jobType || "FULL_TIME",
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": job.company?.name || "Confidential",
-      "sameAs": "https://careerunified.com"
-    },
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "ZA"
-      }
-    },
-    "baseSalary": job.salary ? {
-      "@type": "MonetaryAmount",
-      "currency": "ZAR",
-      "value": {
-        "@type": "QuantitativeValue",
-        "value": job.salary,
-        "unitText": "MONTH"
-      }
-    } : undefined,
-    "url": job.applyLink
-  }
-
-  const old = document.getElementById("job-schema")
-  if (old) old.remove()
-  const script = document.createElement("script")
-  script.id = "job-schema"
-  script.type = "application/ld+json"
-  script.textContent = JSON.stringify(schema)
-  document.head.appendChild(script)
-}
-
-// ===============================
-// PRIORITY SORT
-// ===============================
-function getPriority(job) {
-  const today = new Date()
-  if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
-    if (new Date(job.sponsoredUntil) < today) return 0
-  }
-  if (job.listingTier === 'premier') return 2
-  if (job.listingTier === 'sponsored') return 1
-  return 0
-}
-
-// ===============================
-// INITIAL LOAD
-// ===============================
-showSkeletons()
+// Start
 loadJobs()
-showDefaultPreview()
-</script>
 
+</script>
 
 </body>
 </html>
