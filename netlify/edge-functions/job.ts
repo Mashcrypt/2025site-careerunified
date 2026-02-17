@@ -51,6 +51,7 @@ export default async (request: Request) => {
     const redirectTo = `/jobs.html?slug=${encodeURIComponent(slug)}`;
 
 
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
