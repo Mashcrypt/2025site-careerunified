@@ -2,18 +2,24 @@
   publish = "."
   command = ""
 
+# Run the Edge Function for ALL job slugs (Open Graph)
+[[edge_functions]]
+  function = "job"
+  path = "/jobs/*"
+
+# Always serve your main SPA jobs page for any /jobs/<slug>
 [[redirects]]
-  from = "/jobs/:slug"
-  to = "/jobs/[slug].html"
+  from = "/jobs/*"
+  to = "/jobs.html"
   status = 200
   force = true
 
+# Keep bursary rule (only if those files exist)
 [[redirects]]
   from = "/bursary/:slug"
   to = "/bursary/[slug].html"
   status = 200
   force = true
-
 
 [build.environment]
   NODE_VERSION = "20"
