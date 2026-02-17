@@ -1377,7 +1377,57 @@ body {
     font-size: 24px;
   }
 } 
-     
+
+/* ======================================================
+   MOBILE FIX: header should be TOP (not left column)
+   AND form inputs should never overflow
+====================================================== */
+@media (max-width: 900px) {
+
+  /* Body must become a column, otherwise .mobile-header becomes a left-side strip */
+  body.authorized {
+    flex-direction: column !important;
+  }
+
+  /* Header spans full width at top */
+  .mobile-header {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  /* Main content should take full width under the header */
+  .main {
+    width: 100%;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+  }
+
+  /* Prevent any cards from causing horizontal overflow */
+  .cv-card,
+  .jobs-card,
+  .modal-content,
+  .filter-panel,
+  .comparison-container,
+  .pipeline-board {
+    max-width: 100%;
+  }
+
+  /* SUPER IMPORTANT: inputs/select/textarea must be full width */
+  #post-job input,
+  #post-job select,
+  #post-job textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Long text inside buttons/cards shouldn’t push layout wide */
+  .cv-card,
+  .jobs-row,
+  .stat {
+    min-width: 0;
+  }
+}
+
 </style>
 </head>
 
