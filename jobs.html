@@ -782,7 +782,7 @@
 <script src="js/sanityClient.js"></script>
 <script>
 /* ===============================
-   SANITY DATA LOADER + SAVED JOBS + MOBILE UI
+   SANITY + FIRESTORE (RECRUITER JOBS) LOADER
    =============================== */
 
 const jobList = document.getElementById("jobList")
@@ -827,7 +827,7 @@ function removeFromLocalStorage(type, id) {
 }
 
 // ===============================
-// FIREBASE AUTH
+// FIREBASE AUTH (saved jobs hearts)
 // ===============================
 if (typeof firebase !== 'undefined' && firebase.auth) {
   firebase.auth().onAuthStateChanged(user => {
@@ -874,7 +874,9 @@ async function toggleSaveJob(job) {
     return
   }
 
+  // Works for both sanity and firestore because we normalize _id for both
   const docId = 'job_' + job._id
+
   const ref = firebase.firestore()
     .collection('users')
     .doc(userId)
@@ -890,7 +892,7 @@ async function toggleSaveJob(job) {
       await ref.set({
         type: 'job',
         title: job.title,
-        company: job.company,
+        company: job.company?.name || job.company || null,
         deadline: job.deadline,
         location: job.location,
         salary: job.salary || null,
@@ -936,13 +938,224 @@ document.addEventListener('click', e => {
 })
 
 // ===============================
-// SANITY JOBS LOADER
+// HELPERS
 // ===============================
+function safeText(v, fallback="") {
+  return (typeof v === "string" && v.trim()) ? v.trim() : fallback
+}
 
+function slugify(str) {
+  return safeText(str, "job")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+}
+
+function toISODateString(d) {
+  try {
+    if (!d) return null
+    if (d.toDate) d = d.toDate()
+    const dt = (d instanceof Date) ? d : new Date(d)
+    if (isNaN(dt.getTime())) return null
+    return dt.toISOString()
+  } catch {
+    return null
+  }
+}
+
+function getJobLogo(job) {
+  // Firestore job has a normal URL string
+  if (job._source === "firestore") return job.company?.logoUrl || job.companyLogo || job.logo || ""
+
+  // Sanity job uses image asset
+  return window.sanityClient?.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url() || ""
+}
+
+function getJobCardLogo(job) {
+  if (job._source === "firestore") return job.company?.logoUrl || job.companyLogo || job.logo || ""
+  return window.sanityClient?.imageUrl(job.company?.logo)?.width(80).height(80).fit("crop").url() || ""
+}
+
+// ===============================
+// FIRESTORE: fetch recruiter-posted jobs
+// ===============================
+// Assumes recruiter jobs are stored in collection: "jobs"
+async function fetchRecruiterJobs() {
+  if (!firebase?.firestore) return []
+
+  try {
+    const db = firebase.firestore()
+
+    // Pull latest ~300 jobs and filter client-side (avoids OR query issues)
+    const snap = await db.collection("jobs")
+      .orderBy("createdAt", "desc")
+      .limit(300)
+      .get()
+
+    const list = []
+    snap.forEach(doc => {
+      const data = doc.data() || {}
+      const normalized = normalizeRecruiterJob(doc.id, data)
+      if (normalized) list.push(normalized)
+    })
+    return list
+  } catch (e) {
+    console.error("Failed to fetch Firestore jobs:", e)
+    return []
+  }
+}
+
+// Normalize Firestore job into the SAME shape your UI expects
+function normalizeRecruiterJob(id, data) {
+  // Common status fields people use
+  const status = (data.status || data.state || data.approvalStatus || "").toString().toLowerCase()
+
+  // Only show approved/published/active (but if you haven't added status yet, we still show it)
+  const hidden = ["rejected", "declined", "removed", "deleted", "blocked"]
+  if (hidden.includes(status)) return null
+
+  const isDraft = !!data.draft || status === "draft"
+  if (isDraft) return null
+
+  const approvedLike = ["approved", "active", "published", "live"]
+  const hasStatus = !!status
+  if (hasStatus && !approvedLike.includes(status)) {
+    // if status exists but is not approved-like, don't show publicly
+    return null
+  }
+
+  const title = safeText(data.title, safeText(data.jobTitle, "Untitled Job"))
+  const companyName =
+    safeText(data.company?.name) ||
+    safeText(data.companyName) ||
+    safeText(data.company) ||
+    "Confidential"
+
+  const logoUrl =
+    safeText(data.company?.logoUrl) ||
+    safeText(data.logoUrl) ||
+    safeText(data.logo) ||
+    ""
+
+  const city = safeText(data.city)
+  const country = safeText(data.country)
+  const location =
+    safeText(data.location) ||
+    (city && country ? `${city}, ${country}` : city || country || "South Africa")
+
+  const remote = !!data.remote
+  const locationFinal = remote ? `${location} (Remote)` : location
+
+  const description =
+    safeText(data.description) ||
+    safeText(data.jobDescription) ||
+    safeText(data.desc) ||
+    "Description not provided."
+
+  const salary = safeText(data.salary) || safeText(data.salaryRange) || ""
+
+  // deadline can be string/date/timestamp
+  const deadlineISO = toISODateString(data.deadline || data.applicationDeadline || data.closingDate)
+  const deadline =
+    safeText(data.deadline) ||
+    safeText(data.applicationDeadline) ||
+    safeText(data.closingDate) ||
+    (deadlineISO ? new Date(deadlineISO).toDateString() : "")
+
+  // Apply link: prefer applyLink, fallback to website, fallback to mailto email
+  const email = safeText(data.email || data.applyEmail || data.contactEmail)
+  const website = safeText(data.website)
+  const applyLink =
+    safeText(data.applyLink) ||
+    safeText(data.applyURL) ||
+    safeText(data.applyUrl) ||
+    website ||
+    (email ? `mailto:${email}?subject=${encodeURIComponent("Application: " + title)}` : "#")
+
+  // categories: map into your existing filter choices if you want
+  // You can keep your own categories in Firestore too.
+  const category = safeText(data.category, "all").toLowerCase()
+
+  // Optional: badge/tier
+  const listingTier = safeText(data.listingTier || data.tier, "")
+  const badge = safeText(data.badge, listingTier ? listingTier : "")
+
+  // slug: if stored use it, else generate stable slug from id
+  const storedSlug = safeText(data.slug)
+  const slug = storedSlug || `${slugify(title)}--${id.slice(0, 6)}`
+
+  const postedISO = toISODateString(data.posted || data.createdAt || data.created_at)
+
+  return {
+    _id: id,               // IMPORTANT for your saved jobs + selection logic
+    slug,                  // IMPORTANT for /jobs/<slug> openFromURL
+    title,
+    description,
+    location: locationFinal,
+    salary: salary || null,
+    deadline: deadline || "",
+    posted: postedISO || null,
+    jobType: safeText(data.type || data.jobType || data.employmentType, "FULL_TIME"),
+    category,
+    listingTier: listingTier || "",
+    badge: badge || "",
+    sponsoredUntil: toISODateString(data.sponsoredUntil) || null,
+    applyLink,
+    company: {
+      name: companyName,
+      logoUrl
+    },
+    _source: "firestore"
+  }
+}
+
+// Find a job by slug from the merged list
+function findJobInMemoryBySlug(slug) {
+  return jobs.find(j => j.slug === slug) || null
+}
+
+// Firestore: fetch single job by slug (if you stored slug field)
+async function fetchFirestoreJobBySlug(slug) {
+  try {
+    const db = firebase.firestore()
+    const snap = await db.collection("jobs").where("slug", "==", slug).limit(1).get()
+    if (snap.empty) return null
+    const doc = snap.docs[0]
+    return normalizeRecruiterJob(doc.id, doc.data() || {})
+  } catch (e) {
+    return null
+  }
+}
+
+// ===============================
+// LOAD JOBS (Sanity + Firestore)
+// ===============================
 async function loadJobs() {
-  jobs = await window.sanityClient.fetchJobs()
-  renderJobs()
-  openFromURL()
+  try {
+    const [sanityJobs, recruiterJobs] = await Promise.all([
+      window.sanityClient.fetchJobs(),
+      fetchRecruiterJobs()
+    ])
+
+    // Normalize sanity job: ensure company.name is a string (your code already expects it)
+    // (We keep sanity jobs untouched except tagging source)
+    const sanityNormalized = (sanityJobs || []).map(j => ({
+      ...j,
+      _source: "sanity",
+      company: j.company?.name ? { ...j.company, name: j.company.name } : j.company
+    }))
+
+    // Merge
+    jobs = [...sanityNormalized, ...(recruiterJobs || [])]
+
+    renderJobs()
+    openFromURL()
+  } catch (e) {
+    console.error("loadJobs failed:", e)
+    renderJobs() // will show empty state
+  }
 }
 
 // Render jobs list
@@ -951,11 +1164,29 @@ function renderJobs() {
   const category = document.getElementById('categoryFilter')?.value || 'all'
 
   filteredJobs = jobs
-    .filter(j => (category === 'all' || j.category === category) &&
-                 (j.title.toLowerCase().includes(searchTerm) ||
-                  j.company?.name?.toLowerCase().includes(searchTerm) ||
-                  j.description.toLowerCase().includes(searchTerm)))
-    .sort((a, b) => getPriority(b) - getPriority(a))
+    .filter(j => {
+      const title = safeText(j.title).toLowerCase()
+      const companyName = safeText(j.company?.name || j.company).toLowerCase()
+      const desc = safeText(j.description).toLowerCase()
+
+      const matchesCategory = (category === 'all') ? true : (safeText(j.category).toLowerCase() === category)
+      const matchesSearch =
+        title.includes(searchTerm) ||
+        companyName.includes(searchTerm) ||
+        desc.includes(searchTerm)
+
+      return matchesCategory && matchesSearch
+    })
+    .sort((a, b) => {
+      // Tier priority first (your existing logic)
+      const tier = getPriority(b) - getPriority(a)
+      if (tier !== 0) return tier
+
+      // Then newest posted/created
+      const da = new Date(a.posted || 0).getTime()
+      const db = new Date(b.posted || 0).getTime()
+      return db - da
+    })
 
   jobList.innerHTML = ""
 
@@ -978,8 +1209,11 @@ function renderJobs() {
     li.dataset.jobData = JSON.stringify(job)
     if (index === selectedIndex) li.classList.add("selected")
 
-    const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(80).height(80).fit("crop").url()
-    let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
+    const logoUrl = getJobCardLogo(job)
+    let badgeText =
+      job.badge ||
+      (job.listingTier === 'premier' ? 'Premier' :
+       job.listingTier === 'sponsored' ? 'Sponsored' : '')
 
     li.innerHTML = `
       ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
@@ -999,15 +1233,16 @@ function renderJobs() {
     li.onclick = (e) => {
       if (e.target.closest('.heart-icon')) return
       selectedIndex = index
-      const job = filteredJobs[selectedIndex]
-      history.pushState({}, "", `/jobs/${job.slug}`)
-      showPreview(job, "left")
+      const j = filteredJobs[selectedIndex]
+      history.pushState({}, "", `/jobs/${j.slug}`)
+      showPreview(j, "left")
       renderJobs()
       if (window.innerWidth <= 900) jobPreview.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
     jobList.appendChild(li)
   })
+
   updateHearts()
 }
 
@@ -1016,64 +1251,66 @@ async function openFromURL() {
   if (openedFromURL) return
   openedFromURL = true
 
-  // 1) Prefer slug from query param (used by Edge Function redirect)
-  const qpSlug = new URLSearchParams(window.location.search).get("slug");
+  const qpSlug = new URLSearchParams(window.location.search).get("slug")
   if (qpSlug) {
-    const job = await window.sanityClient.fetchJobBySlug(qpSlug);
-    if (job) openJob(job);
-    return;
+    // 1) try merged list
+    const inMem = findJobInMemoryBySlug(qpSlug)
+    if (inMem) return openJob(inMem)
+
+    // 2) try sanity fetch
+    const sanityJob = await window.sanityClient.fetchJobBySlug(qpSlug)
+    if (sanityJob) return openJob({ ...sanityJob, _source: "sanity" })
+
+    // 3) try firestore by slug (if you store slug field)
+    const fsJob = await fetchFirestoreJobBySlug(qpSlug)
+    if (fsJob) return openJob(fsJob)
+
+    return
   }
 
-  // 2) Fallback: slug from path (/jobs/<slug>)
-  const parts = window.location.pathname.split("/");
-  const slug = parts[parts.length - 1];
+  const parts = window.location.pathname.split("/")
+  const slug = parts[parts.length - 1]
+  if (!slug || slug === "jobs") return
 
-  if (!slug || slug === "jobs") return;
+  const inMem2 = findJobInMemoryBySlug(slug)
+  if (inMem2) return openJob(inMem2)
 
-  const job = await window.sanityClient.fetchJobBySlug(slug);
-  if (job) openJob(job);
+  const sanityJob2 = await window.sanityClient.fetchJobBySlug(slug)
+  if (sanityJob2) return openJob({ ...sanityJob2, _source: "sanity" })
+
+  const fsJob2 = await fetchFirestoreJobBySlug(slug)
+  if (fsJob2) return openJob(fsJob2)
 }
 
 // Open job
 function openJob(job) {
   selectedSlug = job.slug
-
-  // Keep URL clean and consistent
   history.pushState({}, "", `/jobs/${job.slug}`)
 
   // Ensure selected index is synced (for swipe + arrows)
   selectedIndex = filteredJobs.findIndex(j => j._id === job._id)
 
-  // Reuse the SAME preview renderer that already works on mobile
   showPreview(job, "left")
 
-  // Update meta tags for browser (NOT WhatsApp – Edge Function handles that)
-  const logoUrl = window.sanityClient
-    .imageUrl(job.company?.logo)
-    ?.width(200)
-    .height(200)
-    .fit("crop")
-    .url()
+  // Meta tags
+  const logoUrl = getJobLogo(job) || "https://careerunified.com/android-chrome-512x512.png"
+  injectMeta(job, logoUrl)
 
-  injectMeta(job, logoUrl || "https://careerunified.com/android-chrome-512x512.png")
-
-  // Re-render list to highlight selected job
   renderJobs()
 }
-
 
 // ===============================
 // SEO + SOCIAL
 // ===============================
 function injectMeta(job, logo) {
   setMeta("og:title", job.title)
-  setMeta("og:description", job.description.substring(0, 150))
+  setMeta("og:description", safeText(job.description).substring(0, 150))
   setMeta("og:image", logo)
   setMeta("og:url", window.location.href)
 
   setMeta("twitter:card", "summary_large_image")
   setMeta("twitter:title", job.title)
-  setMeta("twitter:description", job.description.substring(0, 150))
+  setMeta("twitter:description", safeText(job.description).substring(0, 150))
   setMeta("twitter:image", logo)
 }
 
@@ -1115,6 +1352,7 @@ function showDefaultPreview() {
 // ===============================
 let startX = 0
 let startY = 0
+
 document.addEventListener("touchstart", e => {
   const preview = e.target.closest("#jobPreview")
   const desc = e.target.closest(".job-desc")
@@ -1156,8 +1394,12 @@ function goToPreviousJob() {
 }
 
 function showPreview(job, direction="left") {
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
-  let badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : job.listingTier === 'sponsored' ? 'Sponsored' : '')
+  const logoUrl = getJobLogo(job)
+  let badgeText =
+    job.badge ||
+    (job.listingTier === 'premier' ? 'Premier' :
+     job.listingTier === 'sponsored' ? 'Sponsored' : '')
+
   jobPreview.innerHTML = `
     <div class="preview-slide ${direction === "left" ? "slide-left":"slide-right"}">
       <div class="preview-header">
@@ -1173,12 +1415,12 @@ function showPreview(job, direction="left") {
       <div class="preview-content-wrapper">
         <div class="preview-info">
           <p><strong>Company:</strong> ${job.company?.name || "Confidential"}</p>
-          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Location:</strong> ${job.location || "Not specified"}</p>
           <p><strong>Salary:</strong> ${job.salary || 'Not specified'}</p>
-          <p><strong>Closing:</strong> ${job.deadline}</p>
+          <p><strong>Closing:</strong> ${job.deadline || 'Not specified'}</p>
         </div>
-        <div class="job-desc">${job.description}</div>
-        <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener">Apply Now</a>
+        <div class="job-desc">${safeText(job.description, "Description not provided.")}</div>
+        <a class="apply-btn" href="${job.applyLink || '#'}" target="_blank" rel="noopener">Apply Now</a>
       </div>
     </div>
   `
@@ -1201,9 +1443,9 @@ function injectJobSchema(job) {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     "title": job.title,
-    "description": job.description,
-    "datePosted": job.posted,
-    "validThrough": job.deadline,
+    "description": safeText(job.description),
+    "datePosted": job.posted || undefined,
+    "validThrough": job.deadline || undefined,
     "employmentType": job.jobType || "FULL_TIME",
     "hiringOrganization": {
       "@type": "Organization",
@@ -1239,7 +1481,7 @@ function injectJobSchema(job) {
 }
 
 // ===============================
-// PRIORITY SORT
+// PRIORITY SORT (your existing tiers)
 // ===============================
 function getPriority(job) {
   const today = new Date()
@@ -1252,6 +1494,20 @@ function getPriority(job) {
 }
 
 // ===============================
+// HOOK UP SEARCH + FILTER UI
+// ===============================
+document.getElementById("jobSearch")?.addEventListener("input", () => renderJobs())
+document.getElementById("categoryFilter")?.addEventListener("change", () => renderJobs())
+
+// Optional: sort by deadline button (keeps your button working)
+document.getElementById("sortBtn")?.addEventListener("click", () => {
+  filteredJobs.sort((a, b) => new Date(a.deadline || 0) - new Date(b.deadline || 0))
+  // keep the global list in same order too (so swipe matches)
+  jobs = filteredJobs.slice()
+  renderJobs()
+})
+
+// ===============================
 // INITIAL LOAD
 // ===============================
 showSkeletons()
@@ -1259,8 +1515,10 @@ loadJobs()
 showDefaultPreview()
 </script>
 
+
 </body>
 </html>
+
 
 
 
