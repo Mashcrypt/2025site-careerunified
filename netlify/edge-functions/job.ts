@@ -1,17 +1,25 @@
+// netlify/edge-functions/job.ts
 import { getJobBySlug } from "../lib/sanity.ts";
 
 function escapeAttr(str: string) {
-  return String(str)
+  return String(str ?? "")
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
 
-function snippet(text: string, maxLen = 220) {
+function snippet(text: string, maxLen = 160) {
   const cleaned = String(text || "").replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLen) return cleaned;
   return cleaned.slice(0, maxLen - 1).trim() + "…";
+}
+
+function isBot(ua: string) {
+  const s = (ua || "").toLowerCase();
+  return /whatsapp|facebookexternalhit|facebot|twitterbot|telegrambot|slackbot|discordbot|linkedinbot|pinterest|embedly|quora link preview|googlebot|bingbot|duckduckbot|baiduspider|yandexbot|crawler|spider|bot/.test(
+    s
+  );
 }
 
 export default async (request: Request) => {
@@ -32,31 +40,39 @@ export default async (request: Request) => {
 
     const companyName = job.companyName || "Confidential";
     const jobTitle = job.title || "Job Opportunity";
-    const shareUrl = `https://careerunified.com/jobs/${slug}`;
+    const shareUrl = `https://careerunified.com/jobs/${encodeURIComponent(slug)}`;
 
-    // OG image (company logo) fallback to site icon
+    // Company logo for OG, fallback to your icon
     const image =
-      job.companyLogo ||
-      "https://careerunified.com/android-chrome-512x512.png";
+      job.companyLogo || "https://careerunified.com/android-chrome-512x512.png";
 
-    const salaryText = job.salary ? job.salary : "Not specified";
-const locationText = job.location ? job.location : "South Africa";
-const closingText = job.deadline ? job.deadline : "Open until filled";
+    // ✅ NO closing date in preview (as requested)
+    const salaryText = job.salary ? `Salary: ${job.salary}` : "Salary: Not specified";
+    const locationText = job.location ? job.location : "South Africa";
+    const desc = snippet(job.description || "", 160);
 
-// Make a tighter snippet because WhatsApp truncates description anyway
-const desc = snippet(job.description || "", 140);
+    const ogTitle = `${jobTitle} – Career Unified`;
+    const ogDescription = `${companyName} • ${locationText} • ${salaryText}. ${desc}`.trim();
 
-const ogTitle = `${jobTitle} – Career Unified`;
-const ogDescription =
-  `${companyName} • ${locationText} • Salary: ${salaryText} • Closing: ${closingText}\n${desc}`.trim();
-
-
-    // Redirect humans to SPA jobs page, and let your JS open slug from URL
-    // (We keep the original slug in the path for your current openFromURL logic)
+    // Humans should go straight to your main jobs page (no flashing slug page)
     const redirectTo = `/jobs.html?slug=${encodeURIComponent(slug)}`;
 
+    const ua = request.headers.get("user-agent") || "";
+    const bot = isBot(ua);
 
+    // Bots need the OG HTML (no redirect)
+    // Humans get a clean 302 redirect (no “slug page flash”)
+    if (!bot) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: redirectTo,
+          "cache-control": "no-store"
+        }
+      });
+    }
 
+    // Bot HTML with OG tags
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,8 +91,6 @@ const ogDescription =
   <meta name="twitter:title" content="${escapeAttr(ogTitle)}" />
   <meta name="twitter:description" content="${escapeAttr(ogDescription)}" />
   <meta name="twitter:image" content="${escapeAttr(image)}" />
-
-  <meta http-equiv="refresh" content="0; url=${escapeAttr(redirectTo)}" />
 </head>
 <body>
   <h1>${escapeAttr(jobTitle)}</h1>
@@ -94,4 +108,5 @@ const ogDescription =
     return new Response("Edge function error", { status: 500 });
   }
 };
+
 
