@@ -39,12 +39,17 @@ export default async (request: Request) => {
       job.companyLogo ||
       "https://careerunified.com/android-chrome-512x512.png";
 
-    const salaryLine = job.salary ? `Salary: ${job.salary}. ` : "";
-    const locationLine = job.location ? `Location: ${job.location}. ` : "";
-    const desc = snippet(job.description || "", 220);
+    const salaryText = job.salary ? job.salary : "Not specified";
+const locationText = job.location ? job.location : "South Africa";
+const closingText = job.deadline ? job.deadline : "Open until filled";
 
-    const ogTitle = `${jobTitle} – Career Unified`;
-    const ogDescription = `${companyName}. ${locationLine}${salaryLine}${desc}`.trim();
+// Make a tighter snippet because WhatsApp truncates description anyway
+const desc = snippet(job.description || "", 140);
+
+const ogTitle = `${jobTitle} – Career Unified`;
+const ogDescription =
+  `${companyName} • ${locationText} • Salary: ${salaryText} • Closing: ${closingText}\n${desc}`.trim();
+
 
     // Redirect humans to SPA jobs page, and let your JS open slug from URL
     // (We keep the original slug in the path for your current openFromURL logic)
