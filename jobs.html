@@ -1037,23 +1037,30 @@ async function openFromURL() {
 // Open job
 function openJob(job) {
   selectedSlug = job.slug
-  history.pushState({}, "", `/jobs/${job.slug}`)
-  const logoUrl = window.sanityClient.imageUrl(job.company?.logo)?.width(200).height(200).fit("crop").url()
 
+  // Keep URL clean and consistent
+  history.pushState({}, "", `/jobs/${job.slug}`)
+
+  // Ensure selected index is synced (for swipe + arrows)
   selectedIndex = filteredJobs.findIndex(j => j._id === job._id)
-  jobPreview.innerHTML = `
-    <div class="job-preview">
-      <img src="${logoUrl || '/fallback-company.png'}" class="preview-logo"/>
-      <h1>${job.title}</h1>
-      <h3>${job.company?.name || "Confidential"}</h3>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p><strong>Salary:</strong> ${job.salary || "Not specified"}</p>
-      <div class="job-desc">${job.description}</div>
-      <a href="${job.applyLink}" target="_blank" class="apply-btn">Apply Now</a>
-    </div>
-  `
-  injectMeta(job, logoUrl)
+
+  // Reuse the SAME preview renderer that already works on mobile
+  showPreview(job, "left")
+
+  // Update meta tags for browser (NOT WhatsApp – Edge Function handles that)
+  const logoUrl = window.sanityClient
+    .imageUrl(job.company?.logo)
+    ?.width(200)
+    .height(200)
+    .fit("crop")
+    .url()
+
+  injectMeta(job, logoUrl || "https://careerunified.com/android-chrome-512x512.png")
+
+  // Re-render list to highlight selected job
+  renderJobs()
 }
+
 
 // ===============================
 // SEO + SOCIAL
@@ -1254,6 +1261,7 @@ showDefaultPreview()
 
 </body>
 </html>
+
 
 
 
