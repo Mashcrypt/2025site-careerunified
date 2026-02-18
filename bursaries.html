@@ -7,6 +7,9 @@
 <meta name="description" content="Find bursaries, scholarships, and funding opportunities for South African students. Apply early and secure your financial aid for 2026.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Canonical -->
+<link rel="canonical" href="https://careerunified.com/bursaries.html">
+
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,19 +21,19 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#1b60a9">
 
-
-<!-- Open Graph / Facebook -->
+<!-- ✅ Default Open Graph for the bursaries listing page -->
+<meta property="og:site_name" content="Career Unified">
 <meta property="og:title" content="Bursaries & Scholarships South Africa – Career Unified">
 <meta property="og:description" content="Discover bursaries, scholarships, and funding opportunities for students in South Africa. Apply early and secure your financial aid.">
 <meta property="og:url" content="https://careerunified.com/bursaries.html">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://careerunified.com/images/social-share-bursaries.png">
+<meta property="og:image" content="https://careerunified.com/android-chrome-512x512.png">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bursaries & Scholarships South Africa – Career Unified">
 <meta name="twitter:description" content="Find bursaries and scholarships for South African students. Apply early to secure funding for 2026.">
-<meta name="twitter:image" content="https://careerunified.com/images/social-share-bursaries.png">
+<meta name="twitter:image" content="https://careerunified.com/android-chrome-512x512.png">
 
 <!-- Structured Data for Bursaries -->
 <script type="application/ld+json" id="bursary-schema">
@@ -51,22 +54,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
+  gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
 </script>
-
 
 <style>
 /* =============================== */
 /* RESET & BASE */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'Poppins', sans-serif;
   background: #f7f9fc;
@@ -83,19 +77,8 @@ header {
   background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: #fff;
 }
-
-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-header p {
-  margin-top: 8px;
-  font-size: 1.1rem;
-  color: #e5e7eb;
-  font-weight: 500;
-}
+header h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+header p { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; }
 
 /* =============================== */
 /* BURSARIES PAGE LAYOUT */
@@ -107,7 +90,6 @@ header p {
   padding: 0 20px;
   min-height: 100vh;
 }
-
 .bursaries-left {
   flex: 1;
   min-width: 0;
@@ -115,7 +97,6 @@ header p {
   overflow-y: auto;
   padding-right: 10px;
 }
-
 .bursaries-preview {
   flex: 1;
   background: #fff;
@@ -133,10 +114,7 @@ header p {
 
 /* =============================== */
 /* FILTER */
-.filter {
-  margin-bottom: 20px;
-}
-
+.filter { margin-bottom: 20px; }
 .filter label {
   display: block;
   margin-bottom: 8px;
@@ -144,7 +122,6 @@ header p {
   color: #374151;
   font-size: 0.95rem;
 }
-
 .filter select {
   width: 100%;
   padding: 12px 16px;
@@ -156,7 +133,6 @@ header p {
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .filter select:focus {
   outline: none;
   border-color: #2563eb;
@@ -173,7 +149,6 @@ header p {
   flex-direction: column;
   gap: 12px;
 }
-
 .bursary-card {
   background: #fff;
   border-radius: 10px;
@@ -184,18 +159,15 @@ header p {
   position: relative;
   border-left: 3px solid transparent;
 }
-
 .bursary-card:hover {
   background: #f0f7ff;
   transform: translateX(4px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
 .bursary-card.selected {
   border-left-color: #facc15;
   background: #fffbeb;
 }
-
 .bursary-card strong {
   font-size: 1.1rem;
   color: #1e3a8a;
@@ -203,7 +175,6 @@ header p {
   margin-bottom: 6px;
   padding-right: 40px;
 }
-
 .bursary-card p {
   margin: 4px 0;
   font-size: 0.9rem;
@@ -237,22 +208,46 @@ header p {
   margin-top: 6px;
   transition: color 0.2s;
 }
-
-.read-more:hover {
-  color: #1e40af;
-  text-decoration: underline;
-}
+.read-more:hover { color: #1e40af; text-decoration: underline; }
 
 /* =============================== */
-/* BURSARY PREVIEW */
+/* PREVIEW HEADER + ACTIONS */
 .preview-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
   flex-shrink: 0;
 }
-
+.preview-title-wrap { flex: 1; min-width: 0; }
+.bursaries-preview h2 {
+  color: #1e3a8a;
+  font-size: 1.65rem;
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+.preview-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.icon-btn-mini {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.icon-btn-mini:hover { background: #dbeafe; transform: translateY(-1px); }
 .close-preview-btn {
   background: transparent;
   border: none;
@@ -262,13 +257,8 @@ header p {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s;
-  flex-shrink: 0;
 }
-
-.close-preview-btn:hover {
-  transform: scale(1.1);
-}
-
+.close-preview-btn:hover { transform: scale(1.1); }
 .close-preview-btn svg {
   width: 28px;
   height: 28px;
@@ -276,14 +266,29 @@ header p {
   stroke-width: 2.5;
 }
 
-.bursaries-preview h2 {
-  color: #1e3a8a;
-  font-size: 1.75rem;
-  margin: 0;
-  flex: 1;
-  padding-right: 10px;
+/* Provider logo in preview */
+.provider-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 12px;
+}
+.provider-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+.provider-name {
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
 }
 
+/* =============================== */
+/* PREVIEW CONTENT */
 .preview-content-wrapper {
   display: flex;
   flex-direction: column;
@@ -291,21 +296,9 @@ header p {
   min-height: 0;
   overflow: visible;
 }
-
-.preview-info {
-  flex-shrink: 0;
-  margin-bottom: 12px;
-}
-
-.bursaries-preview p {
-  margin: 8px 0;
-  color: #4b5563;
-}
-
-.bursaries-preview strong {
-  color: #1f2937;
-}
-
+.preview-info { flex-shrink: 0; margin-bottom: 10px; }
+.bursaries-preview p { margin: 8px 0; color: #4b5563; }
+.bursaries-preview strong { color: #1f2937; }
 .bursaries-preview .description-content {
   white-space: pre-line;
   padding: 16px;
@@ -337,13 +330,11 @@ header p {
   flex-shrink: 0;
   box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
 }
-
 .apply-btn:hover {
   background: #15803d;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
-
 .no-link-msg {
   color: #dc2626;
   font-weight: 600;
@@ -357,56 +348,15 @@ header p {
 /* =============================== */
 /* SKELETON LOADING */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 0%,
-    #f3f4f6 50%,
-    #e5e7eb 100%
-  );
+  background: linear-gradient(90deg,#e5e7eb 0%,#f3f4f6 50%,#e5e7eb 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
   border-radius: 10px;
 }
-
-@keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.skeleton-bursary {
-  height: 120px;
-  margin-bottom: 12px;
-}
-
-.bursary-card.skeleton {
-  cursor: default;
-  border: none;
-}
-
-.bursary-card.skeleton:hover {
-  background: #e5e7eb;
-  transform: none;
-}
-
-/* =============================== */
-/* FADE ANIMATION */
-.fade-in {
-  animation: fadeIn 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+@keyframes skeleton-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-bursary { height: 120px; margin-bottom: 12px; }
+.bursary-card.skeleton { cursor: default; border: none; }
+.bursary-card.skeleton:hover { background: #e5e7eb; transform: none; }
 
 /* =============================== */
 /* SWIPE ANIMATIONS */
@@ -419,36 +369,10 @@ header p {
   flex-direction: column;
   height: 100%;
 }
-
-.slide-left {
-  animation-name: slideLeft;
-}
-
-.slide-right {
-  animation-name: slideRight;
-}
-
-@keyframes slideLeft {
-  from {
-    transform: translateX(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideRight {
-  from {
-    transform: translateX(-40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
+.slide-left { animation-name: slideLeft; }
+.slide-right { animation-name: slideRight; }
+@keyframes slideLeft { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideRight { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
 /* =============================== */
 /* FOOTER */
@@ -459,7 +383,6 @@ header p {
   padding: 30px 20px;
   margin-top: 60px;
 }
-
 .footer-links {
   margin-bottom: 12px;
   display: flex;
@@ -467,16 +390,12 @@ header p {
   flex-wrap: wrap;
   gap: 12px;
 }
-
 .footer-links a {
   color: #facc15;
   font-weight: 600;
   text-decoration: none;
 }
-
-.footer-links a:hover {
-  text-decoration: underline;
-}
+.footer-links a:hover { text-decoration: underline; }
 
 /* =============================== */
 /* SCROLL BUTTONS */
@@ -496,14 +415,9 @@ header p {
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transition: all 0.2s;
 }
-
 #scrollUp { bottom: 90px; }
 #scrollDown { bottom: 30px; }
-
-.scroll-btn:hover {
-  background: #1e3a8a;
-  transform: translateY(-2px);
-}
+.scroll-btn:hover { background: #1e3a8a; transform: translateY(-2px); }
 
 /* =============================== */
 /* EMPTY STATE */
@@ -512,153 +426,16 @@ header p {
   padding: 60px 20px;
   color: #6b7280;
 }
-
 .empty-state svg {
   width: 80px;
   height: 80px;
   margin-bottom: 16px;
   opacity: 0.3;
 }
-
-.empty-state h3 {
-  color: #374151;
-  margin-bottom: 8px;
-}
+.empty-state h3 { color: #374151; margin-bottom: 8px; }
 
 /* =============================== */
-/* MOBILE RESPONSIVE */
-@media (max-width: 900px) {
-  
-  header {
-    padding: 50px 16px 40px;
-  }
-
-  header h1 {
-    font-size: 2rem;
-  }
-
-  header p {
-    font-size: 1rem;
-  }
-
-  /* Stack layout on mobile */
-  .bursaries-container {
-    flex-direction: column;
-    margin: 20px auto;
-    padding: 0 16px;
-    gap: 16px;
-  }
-
-  .bursaries-left,
-  .bursaries-preview {
-    width: 100%;
-    max-height: none;
-  }
-
-  .bursaries-left {
-    overflow-y: visible;
-    padding-right: 0;
-  }
-
-  .bursaries-preview {
-    position: static;
-    padding: 20px;
-    margin-top: 0;
-    min-height: 500px;
-    max-height: 70vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Filter */
-  .filter {
-    margin-bottom: 16px;
-  }
-
-  .filter select {
-    padding: 14px 16px;
-    font-size: 16px; /* Prevents iOS zoom */
-  }
-
-  /* Bursary Cards */
-  .bursary-card {
-    padding: 14px;
-  }
-
-  .bursary-card strong {
-    font-size: 1rem;
-  }
-
-  .bursary-card p {
-    font-size: 0.85rem;
-  }
-
-  /* Bursary Preview */
-  .bursaries-preview h2 {
-    font-size: 1.3rem;
-  }
-
-  .bursaries-preview p {
-    font-size: 0.9rem;
-  }
-
-  .bursaries-preview .description-content {
-    font-size: 0.9rem;
-    padding: 14px;
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  .apply-btn {
-    width: 100%;
-    text-align: center;
-    padding: 14px;
-    font-size: 16px;
-  }
-
-  .close-preview-btn svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  /* Footer */
-  .footer-links {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .footer-links a {
-    font-size: 14px;
-  }
-
-  /* Scroll Buttons */
-  .scroll-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
-    right: 16px;
-  }
-
-  #scrollUp { bottom: 80px; }
-  #scrollDown { bottom: 24px; }
-}
-
-/* =============================== */
-/* EXTRA SMALL SCREENS */
-@media (max-width: 400px) {
-  header h1 {
-    font-size: 1.75rem;
-  }
-
-  .bursary-card strong {
-    font-size: 0.95rem;
-  }
-
-  .bursaries-preview h2 {
-    font-size: 1.2rem;
-  }
-}
-
+/* HEART ICON */
 .bursary-heart {
   position: absolute;
   top: 14px;
@@ -672,17 +449,89 @@ header p {
   transition: all 0.25s ease;
   z-index: 10;
 }
-
-.bursary-heart:hover {
-  transform: scale(1.15);
-}
-
+.bursary-heart:hover { transform: scale(1.15); }
 .bursary-heart.saved {
   fill: #3b82f6;
   stroke: #3b82f6;
   filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
 }
 
+/* =============================== */
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  header { padding: 50px 16px 40px; }
+  header h1 { font-size: 2rem; }
+  header p { font-size: 1rem; }
+
+  .bursaries-container {
+    flex-direction: column;
+    margin: 20px auto;
+    padding: 0 16px;
+    gap: 16px;
+  }
+  .bursaries-left, .bursaries-preview { width: 100%; max-height: none; }
+  .bursaries-left { overflow-y: visible; padding-right: 0; }
+
+  .bursaries-preview {
+    position: static;
+    padding: 20px;
+    margin-top: 0;
+    min-height: 520px;
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter { margin-bottom: 16px; }
+  .filter select { padding: 14px 16px; font-size: 16px; }
+
+  .bursary-card { padding: 14px; }
+  .bursary-card strong { font-size: 1rem; }
+  .bursary-card p { font-size: 0.85rem; }
+
+  .bursaries-preview h2 { font-size: 1.25rem; }
+  .bursaries-preview p { font-size: 0.9rem; }
+
+  .bursaries-preview .description-content {
+    font-size: 0.9rem;
+    padding: 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .apply-btn { width: 100%; padding: 14px; font-size: 16px; }
+  .close-preview-btn svg { width: 24px; height: 24px; }
+
+  .footer-links { flex-direction: column; gap: 8px; }
+  .footer-links a { font-size: 14px; }
+
+  .scroll-btn { width: 44px; height: 44px; font-size: 20px; right: 16px; }
+  #scrollUp { bottom: 80px; }
+  #scrollDown { bottom: 24px; }
+}
+
+@media (max-width: 400px) {
+  header h1 { font-size: 1.75rem; }
+  .bursary-card strong { font-size: 0.95rem; }
+  .bursaries-preview h2 { font-size: 1.15rem; }
+}
+
+/* Tiny toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: rgba(17,24,39,0.92);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 13px;
+  z-index: 2000;
+  display: none;
+}
 </style>
 </head>
 
@@ -690,7 +539,6 @@ header p {
 
 <!-- NAVIGATION -->
 <nav class="main-nav">
-
   <!-- DESKTOP VIEW -->
   <a href="index.html" class="logo desktop-nav">Career Unified</a>
 
@@ -704,8 +552,7 @@ header p {
     <a href="saved-items.html">Saved Items</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-    
-    <!-- My Account Icon (Desktop) -->
+
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -716,11 +563,9 @@ header p {
 
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <!-- Clickable Logo -->
     <a href="index.html" class="mobile-logo">Career Unified</a>
-    
+
     <div class="mobile-nav-right">
-      <!-- Account Icon - Direct Link -->
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
         <svg viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -728,7 +573,6 @@ header p {
         </svg>
       </a>
 
-      <!-- Menu Icon -->
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
         <svg viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -738,7 +582,6 @@ header p {
       </button>
     </div>
   </div>
-
 </nav>
 
 <!-- MOBILE SLIDE MENU -->
@@ -763,7 +606,6 @@ header p {
 <!-- MAIN CONTENT -->
 <main class="bursaries-container">
   <div class="bursaries-left">
-    <!-- Filter -->
     <div class="filter">
       <label for="facultyFilter">Filter by Faculty/Category:</label>
       <select id="facultyFilter">
@@ -771,11 +613,9 @@ header p {
       </select>
     </div>
 
-    <!-- Bursary List -->
     <ul id="bursaryList"></ul>
   </div>
 
-  <!-- Bursary Preview Panel -->
   <div class="bursaries-preview" id="bursaryPreview">
     <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
       <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
@@ -784,6 +624,9 @@ header p {
         <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
       </svg>
       <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
+      <p style="font-size: 0.9rem; color:#9ca3af; margin-top:8px;">
+        Tip: Open a bursary and tap <strong>Share</strong> to copy a link that shows title/logo/description on WhatsApp.
+      </p>
     </div>
   </div>
 </main>
@@ -798,6 +641,9 @@ header p {
   </div>
   <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
+
+<!-- Toast -->
+<div class="toast" id="toast">Copied!</div>
 
 <!-- SCROLL BUTTONS -->
 <button id="scrollUp" class="scroll-btn">↑</button>
@@ -814,6 +660,23 @@ header p {
 <script src="js/sanityClient.js"></script>
 
 <script>
+/* ==========================================================
+  ✅ IMPORTANT (Option B)
+  This page cannot generate WhatsApp OG previews by itself,
+  because WhatsApp reads OG tags from SERVER HTML (not JS).
+  So we copy a SHARE LINK that must point to your OG endpoint.
+
+  Set this to the URL you created for your bursary OG function.
+  Example ideas:
+    - https://careerunified.com/bursary?slug=...
+    - https://careerunified.com/.netlify/functions/bursary-og?slug=...
+    - https://careerunified.com/api/bursary-og?slug=...
+
+  If you already built jobs OG, use the same pattern for bursaries
+  and just change the route name here.
+========================================================== */
+const BURSARY_SHARE_BASE = "https://careerunified.com/bursary"; // <-- change if your endpoint differs
+
 /* ================================
    MOBILE NAVIGATION
 ================================ */
@@ -827,7 +690,6 @@ if (menuBtn) {
   };
 }
 
-// Close menus when clicking outside
 document.addEventListener("click", e => {
   if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
     if (mobileMenu) mobileMenu.style.display = "none";
@@ -840,69 +702,48 @@ document.addEventListener("click", e => {
 const bursaryList = document.getElementById('bursaryList');
 const facultyFilter = document.getElementById('facultyFilter');
 const bursaryPreview = document.getElementById('bursaryPreview');
+const toast = document.getElementById('toast');
 
 // Global search from homepage
 let globalSearch = localStorage.getItem("homeSearchTerm");
-if (globalSearch) {
-  localStorage.removeItem("homeSearchTerm");
-}
+if (globalSearch) localStorage.removeItem("homeSearchTerm");
 
 // Cache system
 const BURSARY_CACHE = "careerUnifiedBursaryCache";
 const BURSARY_CACHE_TIME = "careerUnifiedBursaryCacheTime";
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 
 let bursaries = [];
 let filteredBursaries = [];
 let selectedIndex = null;
 
 /* ===============================
-   FIREBASE FIRESTORE BOOKMARK SYSTEM
+   FIREBASE BOOKMARK SYSTEM
 =============================== */
-
-// Firebase Auth & Firestore state
 let userId = null;
 let savedBursaries = new Set();
 
-// Listen for auth state changes
 if (typeof firebase !== 'undefined' && firebase.auth) {
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       userId = user.uid;
-      console.log('✅ User logged in:', user.email, 'UID:', userId);
       loadSavedBursaries();
     } else {
       userId = null;
       savedBursaries.clear();
       updateHearts();
-      console.log('❌ No user logged in');
     }
   });
-} else {
-  console.error('❌ Firebase not loaded properly');
 }
 
-// LocalStorage helper functions for saved-items.html integration
 const BOOKMARK_KEY = "careerUnifiedBookmarks";
-
-function getBookmarks() {
-  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
-}
-
-function saveBookmarks(list) {
-  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
-}
-
+function getBookmarks() { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]"); }
+function saveBookmarks(list) { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list)); }
 function addToLocalStorage(type, id) {
   const key = `${type}:${id}`;
   let bookmarks = getBookmarks();
-  
-  if (!bookmarks.includes(key)) {
-    bookmarks.push(key);
-    saveBookmarks(bookmarks);
-  }
+  if (!bookmarks.includes(key)) { bookmarks.push(key); saveBookmarks(bookmarks); }
 }
-
 function removeFromLocalStorage(type, id) {
   const key = `${type}:${id}`;
   let bookmarks = getBookmarks();
@@ -910,43 +751,31 @@ function removeFromLocalStorage(type, id) {
   saveBookmarks(bookmarks);
 }
 
-// Load user's saved bursaries from Firestore
 async function loadSavedBursaries() {
   if (!userId) return;
-  
   try {
     const snapshot = await firebase.firestore()
-      .collection('users')
-      .doc(userId)
-      .collection('saved')
-      .get();
-    
+      .collection('users').doc(userId).collection('saved').get();
+
     savedBursaries.clear();
-    
-    // Clear localStorage bookmarks for bursaries before syncing
-    let bookmarks = getBookmarks();
-    bookmarks = bookmarks.filter(x => !x.startsWith('bursary:'));
-    
+    let bookmarks = getBookmarks().filter(x => !x.startsWith('bursary:'));
+
     snapshot.forEach(doc => {
       savedBursaries.add(doc.id);
-      
-      // Also sync to localStorage
       const data = doc.data();
       if (data.type === 'bursary') {
         const bursaryId = doc.id.replace('bursary_', '');
         bookmarks.push(`bursary:${bursaryId}`);
       }
     });
-    
+
     saveBookmarks(bookmarks);
     updateHearts();
-    console.log('✅ Loaded', savedBursaries.size, 'saved bursaries from Firestore and synced to localStorage');
   } catch (error) {
     console.error('Error loading saved bursaries:', error);
   }
 }
 
-// Toggle save for a bursary
 async function toggleBursarySave(bursary) {
   if (!userId) {
     alert('Please log in to save bursaries');
@@ -956,23 +785,14 @@ async function toggleBursarySave(bursary) {
 
   const docId = 'bursary_' + bursary._id;
   const ref = firebase.firestore()
-    .collection('users')
-    .doc(userId)
-    .collection('saved')
-    .doc(docId);
+    .collection('users').doc(userId).collection('saved').doc(docId);
 
   try {
     if (savedBursaries.has(docId)) {
-      // Remove from saved
       await ref.delete();
       savedBursaries.delete(docId);
-      
-      // Also remove from localStorage
       removeFromLocalStorage('bursary', bursary._id);
-      
-      console.log('❌ Removed from saved bursaries');
     } else {
-      // Add to saved
       await ref.set({
         type: 'bursary',
         name: bursary.name,
@@ -983,13 +803,8 @@ async function toggleBursarySave(bursary) {
         savedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       savedBursaries.add(docId);
-      
-      // Also add to localStorage
       addToLocalStorage('bursary', bursary._id);
-      
-      console.log('✅ Added to saved bursaries');
     }
-    
     updateHearts();
   } catch (error) {
     console.error('Error toggling save:', error);
@@ -997,7 +812,6 @@ async function toggleBursarySave(bursary) {
   }
 }
 
-// Update heart icon states
 function updateHearts() {
   document.querySelectorAll('.bursary-heart').forEach(heart => {
     const bursaryCard = heart.closest('.bursary-card');
@@ -1009,10 +823,88 @@ function updateHearts() {
 }
 
 /* ===============================
-   BURSARY LOADING & RENDERING
+   UI HELPERS
 =============================== */
+function showToast(msg) {
+  if (!toast) return;
+  toast.textContent = msg || "Copied!";
+  toast.style.display = "block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => toast.style.display = "none", 1800);
+}
 
-// Show skeleton loaders
+function safeText(v, fallback="") {
+  return (typeof v === "string" && v.trim()) ? v.trim() : fallback;
+}
+
+function extractLink(raw) {
+  if (!raw) return null;
+  if (typeof raw === "string") return raw.trim();
+  if (raw.current) return raw.current.trim();
+  if (raw.href) return raw.href.trim();
+  return null;
+}
+
+function getSlugValue(b) {
+  // supports Sanity slug object or string
+  if (b?.slug?.current) return b.slug.current;
+  if (typeof b?.slug === "string") return b.slug;
+  // fallback: still share something stable
+  return b?._id || "";
+}
+
+function getProviderLogoUrl(b) {
+  // needs sanityClient imageUrl helper
+  try {
+    if (!b?.providerLogo) return "";
+    return window.sanityClient?.imageUrl(b.providerLogo)
+      ?.width(120)
+      ?.height(120)
+      ?.fit("crop")
+      ?.url() || "";
+  } catch {
+    return "";
+  }
+}
+
+function getProviderLogoOgUrl(b) {
+  // bigger for OG previews (edge function can also generate its own)
+  try {
+    if (!b?.providerLogo) return "";
+    return window.sanityClient?.imageUrl(b.providerLogo)
+      ?.width(1200)
+      ?.height(630)
+      ?.fit("crop")
+      ?.url() || "";
+  } catch {
+    return "";
+  }
+}
+
+function makeShareUrl(b) {
+  const slug = getSlugValue(b);
+  return `${BURSARY_SHARE_BASE}?slug=${encodeURIComponent(slug)}`;
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Link copied ✅");
+  } catch {
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    showToast("Link copied ✅");
+  }
+}
+
+/* ===============================
+   LOADING & RENDERING
+=============================== */
 function showBursarySkeletons() {
   bursaryList.innerHTML = "";
   for (let i = 0; i < 6; i++) {
@@ -1022,20 +914,25 @@ function showBursarySkeletons() {
   }
 }
 
-// Schema injection
 function injectBursarySchema() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Bursaries in South Africa",
-    "itemListElement": bursaries.map((b, index) => ({
-      "@type": "Scholarship",
-      "position": index + 1,
-      "name": b.name,
-      "provider": { "@type": "CollegeOrUniversity", "name": b.provider },
-      "applicationDeadline": b.deadline,
-      "url": b.applicationLink || "https://careerunified.com/bursaries.html"
-    }))
+    "itemListElement": bursaries.map((b, index) => {
+      const shareUrl = makeShareUrl(b);
+      return {
+        "@type": "Scholarship",
+        "position": index + 1,
+        "name": safeText(b.name, "Bursary"),
+        "provider": {
+          "@type": "Organization",
+          "name": safeText(b.provider, "Provider")
+        },
+        "applicationDeadline": b.deadline || undefined,
+        "url": shareUrl
+      };
+    })
   };
 
   const old = document.getElementById("bursary-schema");
@@ -1050,26 +947,22 @@ function injectBursarySchema() {
 
 // Load cached bursaries instantly
 loadCachedBursaries();
-
 function loadCachedBursaries() {
   const cached = localStorage.getItem(BURSARY_CACHE);
   if (!cached) return;
-
   try {
     bursaries = JSON.parse(cached);
     injectBursarySchema();
     populateFacultyFilter();
     renderBursaries();
-    console.log("⚡ Loaded bursaries from cache");
   } catch (e) {
     console.warn("Cache invalid");
   }
 }
 
-// Populate faculty filter
 function populateFacultyFilter() {
   facultyFilter.innerHTML = `<option value="All">All Bursaries</option>`;
-  const faculties = Array.from(new Set(bursaries.map(b => b.faculty))).sort();
+  const faculties = Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort();
   faculties.forEach(f => {
     const opt = document.createElement('option');
     opt.value = f;
@@ -1078,10 +971,8 @@ function populateFacultyFilter() {
   });
 }
 
-// Fetch fresh bursaries from Sanity
 async function fetchBursaries() {
   let query = `*[_type=="bursary"]`;
-
   if (globalSearch) {
     query = `*[_type=="bursary" && (
       name match "*${globalSearch}*" ||
@@ -1092,31 +983,30 @@ async function fetchBursaries() {
   }
 
   try {
+    // ✅ UPDATED: include slug + providerLogo (needed for share links & logos)
     bursaries = await window.sanityClient.fetch(`${query} | order(deadline asc){
       _id,
       name,
+      slug,
       provider,
+      providerLogo,
       faculty,
       description,
       deadline,
       applicationLink
     }`);
 
-    // Save to cache
     localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
     localStorage.setItem(BURSARY_CACHE_TIME, Date.now());
 
     injectBursarySchema();
     populateFacultyFilter();
     renderBursaries();
-    console.log("🔄 Bursaries updated from Sanity");
-
   } catch (err) {
     console.error("Sanity failed — using cache", err);
   }
 }
 
-// Show default preview
 function showDefaultPreview() {
   bursaryPreview.innerHTML = `
     <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
@@ -1126,23 +1016,18 @@ function showDefaultPreview() {
         <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
       </svg>
       <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
+      <p style="font-size: 0.9rem; color:#9ca3af; margin-top:8px;">
+        Tip: Open a bursary and tap <strong>Share</strong> to copy a link that shows title/logo/description on WhatsApp.
+      </p>
     </div>
   `;
 }
 
-// Extract clean link
-function extractLink(raw) {
-  if (!raw) return null;
-  if (typeof raw === "string") return raw.trim();
-  if (raw.current) return raw.current.trim();
-  if (raw.href) return raw.href.trim();
-  return null;
-}
-
-// Render bursaries list
 function renderBursaries(filter = 'All') {
   bursaryList.innerHTML = '';
-  filteredBursaries = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
+  filteredBursaries = filter === 'All'
+    ? bursaries
+    : bursaries.filter(b => b.faculty === filter);
 
   if (!filteredBursaries.length) {
     bursaryList.innerHTML = `
@@ -1161,14 +1046,16 @@ function renderBursaries(filter = 'All') {
 
   const today = new Date();
   filteredBursaries.forEach((b, index) => {
-    const deadlineDate = new Date(b.deadline);
-    const isUrgent = (deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7;
-    const shortDesc = b.description.length > 150 ? b.description.substring(0, 150) + '...' : b.description;
-    const readMore = b.description.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
+    const deadlineDate = b.deadline ? new Date(b.deadline) : null;
+    const isUrgent = deadlineDate ? ((deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7) : false;
+
+    const desc = safeText(b.description, "");
+    const shortDesc = desc.length > 150 ? desc.substring(0, 150) + '...' : desc;
+    const readMore = desc.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
 
     const li = document.createElement('li');
     li.className = 'bursary-card';
-    li.dataset.id = b._id; // Store bursary ID for heart icon
+    li.dataset.id = b._id;
     if (index === selectedIndex) li.classList.add('selected');
 
     li.innerHTML = `
@@ -1176,37 +1063,31 @@ function renderBursaries(filter = 'All') {
         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
       </svg>
 
-      <strong>${b.name}</strong>
-      <p><strong>Faculty:</strong> ${b.faculty}</p>
-      <p><strong>Provider:</strong> ${b.provider}</p>
-      <p><strong>Deadline:</strong> ${b.deadline} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
-      <p id="desc-${index}">${shortDesc}</p>
+      <strong>${safeText(b.name, "Untitled bursary")}</strong>
+      <p><strong>Faculty:</strong> ${safeText(b.faculty, "Not specified")}</p>
+      <p><strong>Provider:</strong> ${safeText(b.provider, "Not specified")}</p>
+      <p><strong>Deadline:</strong> ${safeText(b.deadline, "Not specified")} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
+      <p id="desc-${index}">${shortDesc || "Description not provided."}</p>
       ${readMore}
     `;
 
     li.onclick = (e) => {
-      // Don't open if clicking heart
       if (e.target.closest('.bursary-heart')) return;
-      
-      // Don't trigger if clicking "Read more"
+
       if (e.target.classList.contains('read-more')) {
         e.stopPropagation();
-        toggleDesc(parseInt(e.target.dataset.index));
+        toggleDesc(parseInt(e.target.dataset.index, 10));
         return;
       }
 
-      const previousIndex = selectedIndex;
+      const prev = selectedIndex;
       selectedIndex = index;
-      const direction = previousIndex !== null && index > previousIndex ? "left" : "right";
+      const direction = prev !== null && index > prev ? "left" : "right";
       showPreview(b, direction);
       renderBursaries(filter);
-      
-      // Scroll to preview on mobile
+
       if (window.innerWidth <= 900) {
-        document.getElementById('bursaryPreview').scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
+        document.getElementById('bursaryPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
@@ -1216,50 +1097,61 @@ function renderBursaries(filter = 'All') {
   updateHearts();
 }
 
-// Heart click handler
 document.addEventListener('click', e => {
   if (e.target.closest('.bursary-heart')) {
-    e.stopPropagation(); // prevents bursary card from opening
+    e.stopPropagation();
     const heart = e.target.closest('.bursary-heart');
     const bursaryCard = heart.closest('.bursary-card');
-    
+
     if (bursaryCard && bursaryCard.dataset.id) {
       const bursaryId = bursaryCard.dataset.id;
       const bursary = filteredBursaries.find(b => b._id === bursaryId);
-      
-      if (bursary) {
-        toggleBursarySave(bursary);
-      }
+      if (bursary) toggleBursarySave(bursary);
     }
   }
 });
 
-// Show bursary preview
 function showPreview(b, direction = "left") {
   let safeUrl = extractLink(b.applicationLink);
+  if (safeUrl && !safeUrl.startsWith("http")) safeUrl = "https://" + safeUrl;
 
-  if (safeUrl && !safeUrl.startsWith("http")) {
-    safeUrl = "https://" + safeUrl;
-  }
+  const logoSmall = getProviderLogoUrl(b) || "/fallback-company.png";
+  const shareUrl = makeShareUrl(b);
 
   bursaryPreview.innerHTML = `
     <div class="preview-slide ${direction === "left" ? "slide-left" : "slide-right"}">
       <div class="preview-header">
-        <h2>${b.name}</h2>
-        <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <div class="preview-title-wrap">
+          <h2>${safeText(b.name, "Untitled bursary")}</h2>
+        </div>
+
+        <div class="preview-actions">
+          <button class="icon-btn-mini" id="shareBtn" type="button" title="Copy share link">Share</button>
+          <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
+            <svg viewBox="0 0 24 24" fill="none">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
       </div>
+
+      <div class="provider-row">
+        <img class="provider-logo" src="${logoSmall}" alt="Provider logo" onerror="this.src='/fallback-company.png'">
+        <div>
+          <div class="provider-name">${safeText(b.provider, "Provider not specified")}</div>
+          <div style="font-size:12px;color:#6b7280;">Share link shows title/logo/description in WhatsApp</div>
+        </div>
+      </div>
+
       <div class="preview-content-wrapper">
         <div class="preview-info">
-          <p><strong>Faculty:</strong> ${b.faculty}</p>
-          <p><strong>Provider:</strong> ${b.provider}</p>
-          <p><strong>Deadline:</strong> ${b.deadline}</p>
+          <p><strong>Faculty:</strong> ${safeText(b.faculty, "Not specified")}</p>
+          <p><strong>Deadline:</strong> ${safeText(b.deadline, "Not specified")}</p>
         </div>
-        <div class="description-content">${b.description}</div>
+
+        <div class="description-content">${safeText(b.description, "Description not provided.")}</div>
+
         ${
           safeUrl
             ? `<a href="${safeUrl}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Now</a>`
@@ -1268,43 +1160,67 @@ function showPreview(b, direction = "left") {
       </div>
     </div>
   `;
+
+  // Wire share button after render
+  const shareBtn = document.getElementById("shareBtn");
+  if (shareBtn) {
+    shareBtn.onclick = () => copyToClipboard(shareUrl);
+  }
+
+  // (Optional) Update meta tags for the *browser* (not WhatsApp bots)
+  // Keeps your page looking correct if someone opens bursaries.html and you want previews on some platforms that run JS.
+  const ogLogo = getProviderLogoOgUrl(b) || "https://careerunified.com/android-chrome-512x512.png";
+  setMeta("og:title", safeText(b.name, "Bursary – Career Unified"));
+  setMeta("og:description", safeText(b.description, "").substring(0, 150) || "Bursary opportunity on Career Unified.");
+  setMeta("og:image", ogLogo);
+  setMeta("og:url", shareUrl);
+  setMeta("twitter:title", safeText(b.name, "Bursary – Career Unified"));
+  setMeta("twitter:description", safeText(b.description, "").substring(0, 150) || "Bursary opportunity on Career Unified.");
+  setMeta("twitter:image", ogLogo);
+
+  injectBursarySchema();
 }
 
-// Close preview function
+function setMeta(name, content) {
+  if (!content) return;
+  let tag = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
+  if (!tag) {
+    tag = document.createElement("meta");
+    if (name.startsWith("og:")) tag.setAttribute("property", name);
+    else tag.setAttribute("name", name);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute("content", content);
+}
+
 function closePreview() {
   selectedIndex = null;
   showDefaultPreview();
   renderBursaries(facultyFilter.value);
-  
-  // Scroll back to list on mobile
+
   if (window.innerWidth <= 900) {
-    document.getElementById('bursaryList').scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
-    });
+    document.getElementById('bursaryList').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
-// Toggle description
 function toggleDesc(index) {
   const descEl = document.getElementById(`desc-${index}`);
   const b = filteredBursaries[index];
-  if (descEl.innerHTML.endsWith('...')) {
-    descEl.innerHTML = b.description;
-    const readMore = descEl.nextElementSibling;
-    if (readMore && readMore.classList.contains('read-more')) {
-      readMore.textContent = 'Read less';
-    }
+  const full = safeText(b?.description, "");
+  if (!descEl || !full) return;
+
+  const next = descEl.nextElementSibling;
+  const isCollapsed = descEl.textContent.trim().endsWith("...");
+
+  if (isCollapsed) {
+    descEl.textContent = full;
+    if (next && next.classList.contains('read-more')) next.textContent = 'Read less';
   } else {
-    descEl.innerHTML = b.description.substring(0, 150) + '...';
-    const readMore = descEl.nextElementSibling;
-    if (readMore && readMore.classList.contains('read-more')) {
-      readMore.textContent = 'Read more';
-    }
+    descEl.textContent = full.substring(0, 150) + '...';
+    if (next && next.classList.contains('read-more')) next.textContent = 'Read more';
   }
 }
 
-// Event listeners
 facultyFilter.addEventListener('change', e => {
   selectedIndex = null;
   renderBursaries(e.target.value);
@@ -1313,21 +1229,15 @@ facultyFilter.addEventListener('change', e => {
 
 // Startup
 showBursarySkeletons();
-
 const last = localStorage.getItem(BURSARY_CACHE_TIME);
-if (!last || Date.now() - last > CACHE_TTL) {
-  fetchBursaries();
-} else {
-  fetchBursaries(); // background refresh
-}
+if (!last || Date.now() - last > CACHE_TTL) fetchBursaries();
+else fetchBursaries(); // refresh anyway
 
 setInterval(fetchBursaries, 5 * 60 * 1000);
 
 /* ===============================
    MOBILE SWIPE BETWEEN BURSARIES
-   FIXED: Now allows vertical scrolling
 =============================== */
-
 let touchStartX = 0;
 let touchEndX = 0;
 let touchStartY = 0;
@@ -1335,9 +1245,8 @@ let touchEndY = 0;
 
 document.addEventListener("touchstart", e => {
   if (e.target.closest("#bursaryPreview")) {
-    const descriptionContent = e.target.closest(".description-content");
-    // Only initialize swipe if NOT in description AND movement is minimal
-    if (!descriptionContent) {
+    const desc = e.target.closest(".description-content");
+    if (!desc) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }
@@ -1346,31 +1255,24 @@ document.addEventListener("touchstart", e => {
 
 document.addEventListener("touchend", e => {
   if (e.target.closest("#bursaryPreview")) {
-    const descriptionContent = e.target.closest(".description-content");
-    if (!descriptionContent && touchStartX !== 0) {
+    const desc = e.target.closest(".description-content");
+    if (!desc && touchStartX !== 0) {
       touchEndX = e.changedTouches[0].screenX;
       touchEndY = e.changedTouches[0].screenY;
       handleSwipe();
-      touchStartX = 0;
-      touchStartY = 0;
+      touchStartX = 0; touchStartY = 0;
     }
   }
 }, { passive: true });
 
 function handleSwipe() {
   const threshold = 50;
-
   const horizontalDiff = Math.abs(touchStartX - touchEndX);
   const verticalDiff = Math.abs(touchStartY - touchEndY);
 
-  // Only trigger swipe if horizontal movement is dominant AND significant
-  if (horizontalDiff > 50 && horizontalDiff > verticalDiff) {
-    if (touchStartX - touchEndX > threshold) {
-      goToNextBursary();
-    }
-    if (touchEndX - touchStartX > threshold) {
-      goToPreviousBursary();
-    }
+  if (horizontalDiff > threshold && horizontalDiff > verticalDiff) {
+    if (touchStartX - touchEndX > threshold) goToNextBursary();
+    if (touchEndX - touchStartX > threshold) goToPreviousBursary();
   }
 }
 
@@ -1382,7 +1284,6 @@ function goToNextBursary() {
     renderBursaries(facultyFilter.value);
   }
 }
-
 function goToPreviousBursary() {
   if (selectedIndex === null || filteredBursaries.length === 0) return;
   if (selectedIndex > 0) {
@@ -1397,15 +1298,19 @@ const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
 
 window.addEventListener('scroll', () => {
-  up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
+  const show = window.scrollY > 300 ? 'block' : 'none';
+  up.style.display = show;
+  down.style.display = show;
 });
 
-up.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
-down.onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+up.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+down.onclick = () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 </script>
 
 </body>
 </html>
+
+
 
 
 
