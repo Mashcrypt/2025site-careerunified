@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = ""
+  command = "npm run build"
 
 # Run the Edge Function for ALL job slugs (Open Graph)
 [[edge_functions]]
@@ -21,6 +21,14 @@
   status = 200
   force = true
 
+# Redirect old CV generator page to new Vite app
+[[redirects]]
+  from = "/cv-generator.html"
+  to = "/cv-generator/"
+  status = 301
+  force = true
+
 [build.environment]
   NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
