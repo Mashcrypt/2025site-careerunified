@@ -1,15 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   FileText,
   Wand2,
   Eye,
   Download,
   Palette,
-  Settings,
   BarChart3,
   FolderOpen,
   Upload,
-  Sparkles,
   Menu,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
@@ -41,6 +39,18 @@ export default function App() {
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
   const [previewScale, setPreviewScale] = useState(0.75);
+
+  // Export target (the resume preview)
+  const previewRef = useRef<HTMLDivElement | null>(null);
+
+  // Safe filename for downloads
+  const fileSafeName = useMemo(() => {
+    const raw = (resumeData?.personalInfo?.fullName || 'CareerUnified-Resume').trim();
+    return raw
+      .replace(/[^a-z0-9\-\s_]/gi, '')
+      .replace(/\s+/g, '_')
+      .slice(0, 60);
+  }, [resumeData?.personalInfo?.fullName]);
 
   const templates: {
     id: TemplateType;
@@ -90,75 +100,107 @@ export default function App() {
     }
   };
 
-  const handleExport = () => {
-    alert(
-      'Export Options:\n\n' +
-        '• PDF - High quality (Recommended)\n' +
-        '• DOCX - Microsoft Word format\n' +
-        '• Plain Text - ATS-friendly\n\n' +
-        'Integrate with libraries like:\n' +
-        '- jsPDF + html2canvas\n' +
-        '- Puppeteer (server-side)\n' +
-        '- react-pdf\n' +
-        '- PDFShift API'
-    );
+  const handleExport = async () => {
+    const el = previewRef.current;
+    if (!el) {
+      alert('Preview not ready yet. Please try again.');
+      return;
+    }
+
+    // Lazy-load libraries so the app stays fast
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ]);
+
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(`${fileSafeName}.pdf`);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* Enhanced Header */}
-      <header className="border-b border-blue-100/50 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
+      {/* Career Unified Header */}
+      <header className="sticky top-0 z-50 bg-[#1e3a8a] text-white shadow">
+        <div className="mx-auto max-w-[1400px] px-5 py-4 flex items-center justify-between">
+          <a href="/index.html" className="text-2xl font-bold tracking-tight">
+            Career Unified
+          </a>
+
+          <nav className="hidden lg:flex items-center gap-8 text-[15px] font-semibold">
+            <a className="hover:opacity-90" href="/jobs.html">
+              Jobs
+            </a>
+            <a className="hover:opacity-90" href="/bursaries.html">
+              Bursaries
+            </a>
+            <a className="hover:opacity-90" href="/varsity.html">
+              Varsity
+            </a>
+            <a className="hover:opacity-90" href="/cv-generator/">
+              Generate CV
+            </a>
+            <a className="hover:opacity-90" href="/recruiter-dashboard.html">
+              Recruiter Dashboard
+            </a>
+            <a className="hover:opacity-90" href="/recruiter-apply.html">
+              Apply as Recruiter
+            </a>
+            <a className="hover:opacity-90" href="/saved-items.html">
+              Saved Items
+            </a>
+            <a className="hover:opacity-90" href="/signup.html">
+              Sign Up
+            </a>
+            <a className="hover:opacity-90" href="/login.html">
+              Login
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            {/* Desktop download */}
+            <button
+              onClick={handleExport}
+              className="hidden lg:inline-flex bg-white text-[#1e3a8a] font-semibold px-4 py-2 rounded-lg hover:opacity-90"
             >
-              <div className="bg-gradient-to-br from-blue-500 to-sky-600 p-2.5 rounded-xl shadow-lg">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl bg-gradient-to-r from-blue-600 to-sky-600 bg-clip-text text-transparent">
-                  ResumeAI Pro
-                </h1>
-                <p className="text-xs text-gray-600">AI-Powered Resume Builder</p>
-              </div>
-            </motion.div>
+              Download PDF
+            </button>
 
-            <div className="hidden lg:flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
-                onClick={() => setActiveTab('versions')}
-              >
-                <FolderOpen className="h-4 w-4" />
-                Versions
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
-                onClick={() => setActiveTab('analytics')}
-              >
-                <BarChart3 className="h-4 w-4" />
-                Analytics
-              </Button>
-              <Button
-                onClick={handleExport}
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 shadow-lg"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-
-            {/* Mobile Menu */}
+            {/* Mobile menu with export */}
             <Sheet>
               <SheetTrigger asChild className="lg:hidden">
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-transparent text-white border-white/40 hover:bg-white/10"
+                >
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
@@ -174,7 +216,7 @@ export default function App() {
                   </Button>
                   <Button onClick={handleExport}>
                     <Download className="h-4 w-4 mr-2" />
-                    Export
+                    Download PDF
                   </Button>
                 </div>
               </SheetContent>
@@ -201,6 +243,7 @@ export default function App() {
                   <FileText className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Build</span>
                 </TabsTrigger>
+
                 <TabsTrigger
                   value="templates"
                   className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
@@ -208,6 +251,7 @@ export default function App() {
                   <Palette className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Templates</span>
                 </TabsTrigger>
+
                 <TabsTrigger
                   value="ai"
                   className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
@@ -215,6 +259,7 @@ export default function App() {
                   <Wand2 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">AI Tailor</span>
                 </TabsTrigger>
+
                 <TabsTrigger
                   value="analytics"
                   className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
@@ -222,6 +267,7 @@ export default function App() {
                   <BarChart3 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Analytics</span>
                 </TabsTrigger>
+
                 <TabsTrigger
                   value="import"
                   className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
@@ -229,6 +275,7 @@ export default function App() {
                   <Upload className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Import</span>
                 </TabsTrigger>
+
                 <TabsTrigger
                   value="versions"
                   className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
@@ -255,6 +302,7 @@ export default function App() {
                         Choose from professionally designed templates optimized for ATS systems
                       </p>
                     </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {templates.map((template, index) => (
                         <motion.div
@@ -265,9 +313,7 @@ export default function App() {
                         >
                           <Card
                             className={`cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 ${
-                              selectedTemplate === template.id
-                                ? 'ring-2 ring-blue-500 shadow-xl'
-                                : ''
+                              selectedTemplate === template.id ? 'ring-2 ring-blue-500 shadow-xl' : ''
                             }`}
                             onClick={() => setSelectedTemplate(template.id)}
                           >
@@ -285,6 +331,7 @@ export default function App() {
                                     </div>
                                   </div>
                                 )}
+
                                 {template.id === 'professional' && (
                                   <div className="w-full h-full flex">
                                     <div className="w-1/3 bg-gray-800 p-2">
@@ -300,6 +347,7 @@ export default function App() {
                                     </div>
                                   </div>
                                 )}
+
                                 {template.id === 'creative' && (
                                   <div className="w-full h-full bg-gradient-to-br from-purple-200 via-pink-200 to-orange-200 p-4">
                                     <div className="h-3 bg-gradient-to-r from-purple-600 to-pink-600 w-3/4 rounded mb-2"></div>
@@ -309,6 +357,7 @@ export default function App() {
                                     </div>
                                   </div>
                                 )}
+
                                 {template.id === 'minimalist' && (
                                   <div className="w-full h-full p-4 bg-white">
                                     <div className="border-b border-gray-800 pb-2 mb-2 text-center">
@@ -321,21 +370,17 @@ export default function App() {
                                   </div>
                                 )}
                               </div>
+
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1">
                                   <h3 className="font-semibold mb-1">{template.name}</h3>
-                                  <p className="text-xs text-gray-600 mb-2">
-                                    {template.description}
-                                  </p>
+                                  <p className="text-xs text-gray-600 mb-2">{template.description}</p>
                                   <Badge variant="outline" className="text-xs">
                                     {template.category}
                                   </Badge>
                                 </div>
                                 {selectedTemplate === template.id && (
-                                  <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                  >
+                                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
                                     <Badge className="bg-blue-600">Selected</Badge>
                                   </motion.div>
                                 )}
@@ -348,10 +393,7 @@ export default function App() {
 
                     {/* Color Theme Section */}
                     <div className="mt-8">
-                      <ThemeCustomizer
-                        selectedColor={selectedColor}
-                        onColorChange={setSelectedColor}
-                      />
+                      <ThemeCustomizer selectedColor={selectedColor} onColorChange={setSelectedColor} />
                     </div>
                   </div>
                 </ScrollArea>
@@ -384,10 +426,7 @@ export default function App() {
               <TabsContent value="versions" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4">
-                    <ResumeVersions
-                      currentData={resumeData}
-                      onLoadVersion={setResumeData}
-                    />
+                    <ResumeVersions currentData={resumeData} onLoadVersion={setResumeData} />
                   </div>
                 </ScrollArea>
               </TabsContent>
@@ -420,11 +459,13 @@ export default function App() {
                       <span className="text-lg">+</span>
                     </button>
                   </div>
+
                   <Badge variant="outline" className="bg-white shadow-sm border-blue-200">
                     {templates.find((t) => t.id === selectedTemplate)?.name}
                   </Badge>
                 </div>
               </div>
+
               <Card className="shadow-2xl overflow-hidden border-2 border-blue-100">
                 <CardContent className="p-0">
                   <ScrollArea className="h-[calc(100vh-220px)]">
@@ -435,7 +476,8 @@ export default function App() {
                         transition={{ duration: 0.3 }}
                         className="origin-top"
                       >
-                        {renderTemplate()}
+                        {/* Export ref goes on wrapper so we export the resume HTML */}
+                        <div ref={previewRef}>{renderTemplate()}</div>
                       </motion.div>
                     </div>
                   </ScrollArea>
