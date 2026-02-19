@@ -3,22 +3,26 @@
   command = "npm run build"
 
 # ================================
-# FORCE CV GENERATOR ROUTING
+# CV GENERATOR (NO REDIRECT LOOPS)
 # ================================
 
-# Always force directory version (prevents cv-generator.html being served)
+# Old page -> new route
 [[redirects]]
-  from = "/cv-generator"
-  to = "/cv-generator/"
+  from = "/cv-generator.html"
+  to = "/cv-generator"
   status = 301
   force = true
 
-# Redirect old CV generator HTML to new Vite app
+# Serve the Vite app for BOTH /cv-generator and /cv-generator/
 [[redirects]]
-  from = "/cv-generator.html"
-  to = "/cv-generator/"
-  status = 301
-  force = true
+  from = "/cv-generator"
+  to = "/cv-generator/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/cv-generator/"
+  to = "/cv-generator/index.html"
+  status = 200
 
 # ================================
 # JOBS (Edge Function + SPA)
@@ -46,12 +50,9 @@
   status = 200
   force = true
 
-# ================================
-# ENVIRONMENT
-# ================================
-
 [build.environment]
   NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
 
 
