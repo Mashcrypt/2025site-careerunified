@@ -2,6 +2,28 @@
   publish = "."
   command = "npm run build"
 
+# ================================
+# FORCE CV GENERATOR ROUTING
+# ================================
+
+# Always force directory version (prevents cv-generator.html being served)
+[[redirects]]
+  from = "/cv-generator"
+  to = "/cv-generator/"
+  status = 301
+  force = true
+
+# Redirect old CV generator HTML to new Vite app
+[[redirects]]
+  from = "/cv-generator.html"
+  to = "/cv-generator/"
+  status = 301
+  force = true
+
+# ================================
+# JOBS (Edge Function + SPA)
+# ================================
+
 # Run the Edge Function for ALL job slugs (Open Graph)
 [[edge_functions]]
   function = "job"
@@ -14,21 +36,22 @@
   status = 200
   force = true
 
-# Keep bursary rule (only if those files exist)
+# ================================
+# BURSARIES
+# ================================
+
 [[redirects]]
   from = "/bursary/:slug"
   to = "/bursary/[slug].html"
   status = 200
   force = true
 
-# Redirect old CV generator page to new Vite app
-[[redirects]]
-  from = "/cv-generator.html"
-  to = "/cv-generator/"
-  status = 301
-  force = true
+# ================================
+# ENVIRONMENT
+# ================================
 
 [build.environment]
   NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
 
