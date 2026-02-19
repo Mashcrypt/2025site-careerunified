@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "sanity dev",
     "start": "sanity start",
-    "build": "sanity build",
+    "build:cv": "npm --prefix resume-builder install && npm --prefix resume-builder run build && rm -rf cv-generator && cp -r resume-builder/dist cv-generator",
+    "build": "sanity build && npm run build:cv",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
@@ -35,3 +36,4 @@
     "singleQuote": true
   }
 }
+
