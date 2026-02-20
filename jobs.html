@@ -35,12 +35,16 @@
     /* RESET & BASE */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body { height: 100%; }
+
     body {
       font-family: 'Poppins', sans-serif;
       background: #f7f9fc;
       color: #111827;
       overflow-x: hidden;
+      overflow-y: auto;
       line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
     }
 
     /* =============================== */
@@ -262,7 +266,7 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      overflow: hidden;
+      overflow: hidden; /* desktop: keep inner scrolling contained */
     }
 
     .preview-info {
@@ -273,7 +277,7 @@
     .jobs-preview p { margin: 8px 0; color: #4b5563; }
     .jobs-preview strong { color: #1f2937; }
 
-    /* The only scroll area (inside preview) */
+    /* Desktop: scroll description inside preview */
     .jobs-preview .job-desc,
     .jobs-preview .description-content {
       white-space: pre-line;
@@ -413,7 +417,7 @@
     .empty-state h3 { color: #374151; margin-bottom: 8px; }
 
     /* =============================== */
-    /* MOBILE RESPONSIVE */
+    /* MOBILE RESPONSIVE (FIXED SCROLL) */
     @media (max-width: 900px) {
       header { padding: 50px 16px 40px; }
       header h1 { font-size: 2rem; }
@@ -424,26 +428,43 @@
         margin: 20px auto;
         padding: 0 16px;
         gap: 16px;
-        padding-bottom: 80px;
+        padding-bottom: 120px; /* extra space so footer never overlaps */
         min-height: auto;
       }
 
       .jobs-left, .jobs-preview { width: 100%; max-height: none; }
       .jobs-left { overflow-y: visible; padding-right: 0; }
 
-      /* ✅ FIX #2: remove overflow hidden trap on mobile */
+      /* KEY FIX: let the preview expand naturally and let PAGE scroll */
       .jobs-preview {
         position: static;
         padding: 20px;
         margin-top: 0;
-        min-height: 500px;
-        max-height: 70vh;
-        overflow: visible; /* IMPORTANT mobile fix */
+        min-height: auto;
+        max-height: none;     /* REMOVE 70vh trap */
+        overflow: visible;    /* do not clip content */
       }
 
-      /* ✅ FIX #4: wrapper should not block scroll */
+      /* wrappers must not block scrolling */
       .preview-slide {
-        overflow: visible; /* IMPORTANT mobile fix */
+        height: auto;         /* allow content height */
+        overflow: visible;    /* no clipping */
+      }
+
+      .preview-content-wrapper {
+        overflow: visible;    /* IMPORTANT: allow full page scroll */
+        min-height: auto;
+      }
+
+      /* On mobile: make description part of normal document flow */
+      .jobs-preview .job-desc,
+      .jobs-preview .description-content {
+        font-size: 0.95rem;
+        padding: 14px;
+        overflow: visible;    /* do not force inner scroll */
+        max-height: none;
+        margin-bottom: 14px;
+        touch-action: auto;
       }
 
       .search-filter-container { flex-direction: column; gap: 12px; }
@@ -463,16 +484,6 @@
 
       .jobs-preview h2 { font-size: 1.3rem; }
       .jobs-preview p { font-size: 0.9rem; }
-
-      /* ✅ FIX #3: re-declare touch scrolling rules on mobile */
-      .jobs-preview .job-desc,
-      .jobs-preview .description-content {
-        font-size: 0.9rem;
-        padding: 14px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-      }
 
       .apply-btn {
         width: 100%;
@@ -838,8 +849,6 @@ function getJobCardLogo(job) {
 
 /* ===============================
    FIRESTORE JOBS (PUBLIC)
-   - expects recruiter dashboard saves to collection: "jobs"
-   - rules must allow public read
    =============================== */
 async function fetchRecruiterJobs() {
   if (!firebase?.firestore) return [];
@@ -865,16 +874,10 @@ async function fetchRecruiterJobs() {
 
 function normalizeRecruiterJob(id, data) {
   const status = (data.status || data.state || data.approvalStatus || "").toString().toLowerCase();
-
-  // Hide bad states
   const hidden = ["rejected", "declined", "removed", "deleted", "blocked"];
   if (hidden.includes(status)) return null;
-
-  // Hide drafts
   const isDraft = !!data.draft || status === "draft";
   if (isDraft) return null;
-
-  // If status exists, require approved-like
   const approvedLike = ["approved", "active", "published", "live"];
   if (status && !approvedLike.includes(status)) return null;
 
@@ -1281,12 +1284,11 @@ function showSkeletons() {
 }
 
 /* ===============================
-   MOBILE SWIPE (FIXED)
+   MOBILE SWIPE (SAFE: DOES NOT BLOCK SCROLL)
    =============================== */
 let startX = 0;
 let startY = 0;
 
-/* ✅ FIX #1: SAME desc guard on touchstart */
 document.addEventListener("touchstart", e => {
   const preview = e.target.closest("#jobPreview");
   const desc = e.target.closest(".job-desc");
@@ -1340,6 +1342,7 @@ showDefaultPreview();
 
 </body>
 </html>
+
 
 
 
