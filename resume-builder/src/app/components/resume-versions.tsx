@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, Copy, Trash2, FileText, Clock, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Badge } from './ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +15,16 @@ import {
 import type { ResumeData } from '../types/resume';
 import { motion } from 'motion/react';
 
-interface ResumeVersion {
+interface ResumeVersionStored {
+  id: string;
+  name: string;
+  data: ResumeData;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  isFavorite: boolean;
+}
+
+interface ResumeVersionUI {
   id: string;
   name: string;
   data: ResumeData;
@@ -30,72 +38,157 @@ interface ResumeVersionsProps {
   onLoadVersion: (data: ResumeData) => void;
 }
 
+const STORAGE_KEY = 'careerunified_resume_versions_v1';
+
+function toStored(v: ResumeVersionUI): ResumeVersionStored {
+  return {
+    id: v.id,
+    name: v.name,
+    data: v.data,
+    createdAt: v.createdAt.toISOString(),
+    updatedAt: v.updatedAt.toISOString(),
+    isFavorite: v.isFavorite,
+  };
+}
+
+function fromStored(v: ResumeVersionStored): ResumeVersionUI {
+  return {
+    id: v.id,
+    name: v.name,
+    data: v.data,
+    createdAt: new Date(v.createdAt),
+    updatedAt: new Date(v.updatedAt),
+    isFavorite: v.isFavorite,
+  };
+}
+
+function safeParseVersions(raw: string | null): ResumeVersionUI[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as ResumeVersionStored[];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(fromStored);
+  } catch {
+    return [];
+  }
+}
+
+function saveVersionsToStorage(versions: ResumeVersionUI[]) {
+  try {
+    const payload = versions.map(toStored);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore storage errors (quota/private mode)
+  }
+}
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
+
 export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsProps) {
-  const [versions, setVersions] = useState<ResumeVersion[]>([
-    {
-      id: '1',
-      name: 'Software Engineer - Tech Corp',
-      data: currentData,
-      createdAt: new Date('2026-02-15'),
-      updatedAt: new Date('2026-02-17'),
-      isFavorite: true,
-    },
-    {
-      id: '2',
-      name: 'Full Stack Developer - Startup',
-      data: currentData,
-      createdAt: new Date('2026-02-10'),
-      updatedAt: new Date('2026-02-16'),
-      isFavorite: false,
-    },
-  ]);
+  const [versions, setVersions] = useState<ResumeVersionUI[]>([]);
   const [newVersionName, setNewVersionName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const saveNewVersion = () => {
-    if (!newVersionName.trim()) return;
+  // Load from localStorage once
+  useEffect(() => {
+    const loaded = safeParseVersions(localStorage.getItem(STORAGE_KEY));
 
-    const newVersion: ResumeVersion = {
-      id: Date.now().toString(),
-      name: newVersionName,
-      data: { ...currentData },
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    // Seed only if nothing saved yet (first run)
+    if (loaded.length === 0) {
+      const seeded: ResumeVersionUI[] = [
+        {
+          id: 'seed-1',
+          name: 'Software Engineer - Tech Corp',
+          data: { ...currentData },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isFavorite: true,
+        },
+        {
+          id: 'seed-2',
+          name: 'Full Stack Developer - Startup',
+          data: { ...currentData },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isFavorite: false,
+        },
+      ];
+      setVersions(seeded);
+      saveVersionsToStorage(seeded);
+      return;
+    }
+
+    setVersions(loaded);
+  }, []);
+
+  // Persist whenever versions change
+  useEffect(() => {
+    if (versions.length >= 0) saveVersionsToStorage(versions);
+  }, [versions]);
+
+  const sortedVersions = useMemo(() => {
+    // Favorites first, then most recently updated
+    return [...versions].sort((a, b) => {
+      if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+      return b.updatedAt.getTime() - a.updatedAt.getTime();
+    });
+  }, [versions]);
+
+  const saveNewVersion = () => {
+    const name = newVersionName.trim();
+    if (!name) return;
+
+    const now = new Date();
+    const newVersion: ResumeVersionUI = {
+      id: `${Date.now()}`,
+      name,
+      data: structuredCloneSafe(currentData),
+      createdAt: now,
+      updatedAt: now,
       isFavorite: false,
     };
 
-    setVersions([newVersion, ...versions]);
+    setVersions((prev) => [newVersion, ...prev]);
     setNewVersionName('');
     setIsDialogOpen(false);
   };
 
   const deleteVersion = (id: string) => {
-    setVersions(versions.filter((v) => v.id !== id));
+    setVersions((prev) => prev.filter((v) => v.id !== id));
   };
 
   const toggleFavorite = (id: string) => {
-    setVersions(
-      versions.map((v) => (v.id === id ? { ...v, isFavorite: !v.isFavorite } : v))
+    setVersions((prev) =>
+      prev.map((v) => (v.id === id ? { ...v, isFavorite: !v.isFavorite } : v))
     );
   };
 
-  const duplicateVersion = (version: ResumeVersion) => {
-    const duplicated: ResumeVersion = {
+  const duplicateVersion = (version: ResumeVersionUI) => {
+    const now = new Date();
+    const duplicated: ResumeVersionUI = {
       ...version,
-      id: Date.now().toString(),
+      id: `${Date.now()}`,
       name: `${version.name} (Copy)`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      data: structuredCloneSafe(version.data),
+      createdAt: now,
+      updatedAt: now,
+      isFavorite: false,
     };
-    setVersions([duplicated, ...versions]);
+    setVersions((prev) => [duplicated, ...prev]);
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
+  const loadVersion = (version: ResumeVersionUI) => {
+    // Mark "updatedAt" on load (so it floats up)
+    setVersions((prev) =>
+      prev.map((v) => (v.id === version.id ? { ...v, updatedAt: new Date() } : v))
+    );
+    onLoadVersion(structuredCloneSafe(version.data));
   };
 
   return (
@@ -106,6 +199,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
             <FileText className="h-5 w-5 text-blue-600" />
             <CardTitle>Resume Versions</CardTitle>
           </div>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
@@ -120,6 +214,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                   Create a new version of your resume. Perfect for tailoring to different job applications.
                 </DialogDescription>
               </DialogHeader>
+
               <div className="py-4">
                 <Input
                   placeholder="e.g., Software Engineer - Google"
@@ -130,6 +225,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                   }}
                 />
               </div>
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
@@ -142,23 +238,24 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
           </Dialog>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="space-y-3">
-          {versions.length === 0 ? (
+          {sortedVersions.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No saved versions yet</p>
               <p className="text-xs mt-1">Save different versions for various job applications</p>
             </div>
           ) : (
-            versions.map((version, index) => (
+            sortedVersions.map((version, index) => (
               <motion.div
                 key={version.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:shadow-md transition-shadow cursor-pointer border-blue-100">
+                <Card className="hover:shadow-md transition-shadow border-blue-100">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -168,6 +265,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                           )}
                         </div>
+
                         <div className="flex items-center gap-3 text-xs text-gray-500">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
@@ -175,12 +273,14 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                           </div>
                         </div>
                       </div>
+
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleFavorite(version.id)}
                           className="h-8 w-8 p-0"
+                          title="Favorite"
                         >
                           <Star
                             className={`h-4 w-4 ${
@@ -190,27 +290,33 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                             }`}
                           />
                         </Button>
+
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onLoadVersion(version.data)}
+                          onClick={() => loadVersion(version)}
                           className="h-8 px-3"
+                          title="Load"
                         >
                           Load
                         </Button>
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => duplicateVersion(version)}
                           className="h-8 w-8 p-0"
+                          title="Duplicate"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteVersion(version.id)}
                           className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                          title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -223,14 +329,24 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
           )}
         </div>
 
-        {versions.length > 0 && (
+        {sortedVersions.length > 0 && (
           <div className="mt-4 pt-4 border-t">
             <p className="text-xs text-gray-500 text-center">
-              Manage multiple resume versions for different job applications
+              Versions are saved on this device (browser storage).
             </p>
           </div>
         )}
       </CardContent>
     </Card>
   );
+}
+
+/**
+ * Use structuredClone when available; fallback to JSON clone.
+ * (ResumeData should be plain objects/arrays/strings.)
+ */
+function structuredCloneSafe<T>(obj: T): T {
+  // @ts-expect-error - structuredClone may not be typed depending on TS target
+  if (typeof structuredClone === 'function') return structuredClone(obj);
+  return JSON.parse(JSON.stringify(obj)) as T;
 }
