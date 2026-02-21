@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { Badge } from './ui/badge';
 import type { ResumeData } from '../types/resume';
 
 interface AITailorProps {
@@ -12,11 +11,17 @@ interface AITailorProps {
   onApplySuggestions: (data: ResumeData) => void;
 }
 
+type TailorResponse = {
+  suggestions: string[];
+  tailoredData: ResumeData;
+};
+
 export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [tailoredData, setTailoredData] = useState<ResumeData | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   const analyzeAndTailor = async () => {
     if (!jobDescription.trim()) return;
@@ -24,45 +29,47 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     setIsAnalyzing(true);
     setSuggestions([]);
     setTailoredData(null);
+    setErrorMsg('');
 
-    // Simulate AI API call - Replace this with your actual API integration
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const res = await fetch('/.netlify/functions/ai-tailor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resumeData: data,
+          jobDescription,
+        }),
+      });
 
-    // Mock AI suggestions
-    const mockSuggestions = [
-      'Added relevant keywords from job description to summary',
-      'Reordered skills to prioritize job requirements',
-      'Enhanced experience descriptions with achievement metrics',
-      'Highlighted transferable skills matching the role',
-      'Optimized formatting for ATS compatibility',
-    ];
+      const payload = await res.json().catch(() => null);
 
-    // Mock tailored resume data with modified summary and experience
-    const mockTailoredData: ResumeData = {
-      ...data,
-      personalInfo: {
-        ...data.personalInfo,
-        summary: data.personalInfo.summary
-          ? `${data.personalInfo.summary} [AI-Enhanced: Tailored to emphasize skills and experience most relevant to the target position, incorporating key terminology from the job description.]`
-          : 'Professional with demonstrated expertise in areas directly aligned with this role. [AI-Generated Summary]',
-      },
-      experience: data.experience.map((exp) => ({
-        ...exp,
-        description: exp.description
-          ? `${exp.description}\n• [AI-Added] Quantified impact and achievements relevant to job requirements`
-          : '• [AI-Generated] Key responsibilities and achievements',
-      })),
-    };
+      if (!res.ok) {
+        const details =
+          payload?.error || payload?.details || 'AI request failed. Please try again.';
+        setErrorMsg(String(details));
+        setIsAnalyzing(false);
+        return;
+      }
 
-    setSuggestions(mockSuggestions);
-    setTailoredData(mockTailoredData);
-    setIsAnalyzing(false);
+      const typed = payload as TailorResponse;
+
+      if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
+        setErrorMsg('AI returned an unexpected response format.');
+        setIsAnalyzing(false);
+        return;
+      }
+
+      setSuggestions(typed.suggestions);
+      setTailoredData(typed.tailoredData);
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Network error. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const applyTailoredVersion = () => {
-    if (tailoredData) {
-      onApplySuggestions(tailoredData);
-    }
+    if (tailoredData) onApplySuggestions(tailoredData);
   };
 
   return (
@@ -73,9 +80,10 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           <CardTitle>AI Resume Tailor</CardTitle>
         </div>
         <CardDescription>
-          Paste the job description below and let AI optimize your resume to match the requirements
+          Paste the job description below and let AI optimize your resume to match the requirements.
         </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="jobDescription">Job Description</Label>
@@ -106,6 +114,22 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             </>
           )}
         </Button>
+
+        {errorMsg && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800">AI Tailor Error</p>
+                <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
+                <p className="text-xs text-red-600 mt-2">
+                  Tip: If this only happens on Netlify, make sure <b>GEMINI_API_KEY</b> is set in
+                  Netlify environment variables.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {suggestions.length > 0 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
@@ -141,6 +165,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   onClick={() => {
                     setSuggestions([]);
                     setTailoredData(null);
+                    setErrorMsg('');
                   }}
                 >
                   Discard
@@ -148,18 +173,15 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-sm text-amber-800">
-                <strong>Note:</strong> This is a prototype with mock AI responses. Connect your own
-                AI API (OpenAI, Claude, etc.) to enable real resume tailoring. The API integration
-                point is in the <code className="bg-amber-100 px-1 rounded">analyzeAndTailor</code>{' '}
-                function.
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <p className="text-sm text-emerald-800">
+                <strong>Powered by Gemini</strong> (server-side via Netlify Function). Your API key is safe.
               </p>
             </div>
           </div>
         )}
 
-        {!suggestions.length && !isAnalyzing && (
+        {!suggestions.length && !isAnalyzing && !errorMsg && (
           <div className="bg-white rounded-lg p-6 border border-dashed border-blue-200 text-center">
             <Sparkles className="h-12 w-12 text-blue-400 mx-auto mb-3" />
           </div>
