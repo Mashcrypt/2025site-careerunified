@@ -6,8 +6,12 @@ import {
   AlertTriangle,
   Mail,
   Copy,
-  Trash2
+  Trash2,
+  Lock,
+  CreditCard,
+  BadgePercent
 } from 'lucide-react';
+import { getAuth } from 'firebase/auth';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
@@ -37,6 +41,8 @@ type CoverLetterResponse = {
   talkingPoints: string[];
 };
 
+type PlanId = 'starter' | 'job_seeker' | 'career_pro';
+
 export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
@@ -53,6 +59,10 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [copied, setCopied] = useState(false);
+
+  // Billing / upgrade UI
+  const [needsUpgrade, setNeedsUpgrade] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const headerText = useMemo(() => {
     if (mode === 'cover_letter') return 'AI Cover Letter Generator';
@@ -73,6 +83,14 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     setTalkingPoints([]);
     setErrorMsg('');
     setCopied(false);
+    setNeedsUpgrade(false);
+  };
+
+  const getIdTokenOrThrow = async () => {
+    const auth = getAuth();
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new Error('You must be logged in to use AI features.');
+    return token;
   };
 
   const analyze = async () => {
@@ -82,9 +100,14 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     resetResults();
 
     try {
+      const token = await getIdTokenOrThrow();
+
       const res = await fetch('/.netlify/functions/ai-tailor', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           mode,
           resumeData: data,
@@ -93,6 +116,16 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       });
 
       const payload = await res.json().catch(() => null);
+
+      // 🔒 Subscription enforcement (server-side)
+      if (res.status === 402) {
+        setNeedsUpgrade(true);
+        const details =
+          payload?.error ||
+          'You’ve used your free taste or reached your monthly limit. Please upgrade to continue.';
+        setErrorMsg(String(details));
+        return;
+      }
 
       if (!res.ok) {
         const details =
@@ -140,8 +173,50 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // fallback: do nothing (browser permissions)
       setCopied(false);
+    }
+  };
+
+  const startSubscription = async (plan: PlanId) => {
+    setIsRedirecting(true);
+    setErrorMsg('');
+
+    try {
+      const token = await getIdTokenOrThrow();
+
+      const res = await fetch('/.netlify/functions/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ plan })
+      });
+
+      const payload = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const details =
+          payload?.error ||
+          payload?.details ||
+          'Could not start checkout. Please try again.';
+        setErrorMsg(String(details));
+        setIsRedirecting(false);
+        return;
+      }
+
+      const url = payload?.authorization_url as string | undefined;
+      if (!url) {
+        setErrorMsg('Checkout link missing from server response.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      // Redirect user to Paystack hosted checkout
+      window.location.href = url;
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Checkout error. Please try again.');
+      setIsRedirecting(false);
     }
   };
 
@@ -209,13 +284,15 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
         <Button
           onClick={analyze}
-          disabled={!jobDescription.trim() || isAnalyzing}
+          disabled={!jobDescription.trim() || isAnalyzing || isRedirecting}
           className="w-full bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
         >
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {mode === 'cover_letter' ? 'Generating Cover Letter...' : 'Analyzing & Tailoring...'}
+              {mode === 'cover_letter'
+                ? 'Generating Cover Letter...'
+                : 'Analyzing & Tailoring...'}
             </>
           ) : (
             <>
@@ -224,23 +301,168 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               ) : (
                 <Sparkles className="h-4 w-4 mr-2" />
               )}
-              {mode === 'cover_letter' ? 'Generate Cover Letter' : 'Tailor Resume with AI'}
+              {mode === 'cover_letter'
+                ? 'Generate Cover Letter'
+                : 'Tailor Resume with AI'}
             </>
           )}
         </Button>
 
+        {/* Errors */}
         {errorMsg && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-red-800">
-                  {mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
+                  {needsUpgrade ? 'Upgrade Required' : mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
                 <p className="text-xs text-red-600 mt-2">
-                  Tip: If this only happens on Netlify, make sure <b>GEMINI_API_KEY</b> is set in
-                  Netlify environment variables and you triggered a redeploy.
+                  Tip: If this only happens on Netlify, confirm env vars are set and you redeployed.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upgrade / Pricing UI (shown when 402 happens) */}
+        {needsUpgrade && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center">
+                  <Lock className="h-5 w-5 text-blue-700" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-gray-900">Unlock unlimited career momentum</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Free taste includes <b>1 Resume Tailor</b> + <b>1 Cover Letter</b>. Upgrade for monthly access.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-3 mt-4">
+                {/* Starter */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30">
+                  <p className="text-sm font-medium text-gray-900">Starter</p>
+                  <p className="text-xs text-gray-600 mt-1">Student friendly</p>
+                  <div className="mt-3">
+                    <p className="text-2xl font-bold text-gray-900">
+                      R35 <span className="text-sm font-medium text-gray-600">/ month</span>
+                    </p>
+                    <p className="text-sm text-gray-700 mt-2">
+                      <b>5</b> job applications / month
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Resume tailor + cover letter per job
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => startSubscription('starter')}
+                    disabled={isRedirecting}
+                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                  >
+                    {isRedirecting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Choose Starter
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Job Seeker (Best Value) */}
+                <div className="border border-blue-300 rounded-lg p-4 bg-gradient-to-b from-white to-sky-50 relative">
+                  <div className="absolute -top-2 right-3 bg-gradient-to-r from-blue-600 to-sky-600 text-white text-xs px-2 py-1 rounded-full">
+                    Best Value
+                  </div>
+
+                  <p className="text-sm font-medium text-gray-900">Job Seeker</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <BadgePercent className="h-4 w-4 text-emerald-600" />
+                    <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
+                  </div>
+
+                  <div className="mt-3">
+                    <p className="text-2xl font-bold text-gray-900">
+                      R79 <span className="text-sm font-medium text-gray-600">/ month</span>
+                    </p>
+                    <p className="text-sm text-gray-700 mt-2">
+                      <b>20</b> job applications / month
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Save tailored versions
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={() => startSubscription('job_seeker')}
+                    disabled={isRedirecting}
+                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                  >
+                    {isRedirecting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Choose Job Seeker
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Career Pro */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30">
+                  <p className="text-sm font-medium text-gray-900">Career Pro</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <BadgePercent className="h-4 w-4 text-emerald-600" />
+                    <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
+                  </div>
+
+                  <div className="mt-3">
+                    <p className="text-2xl font-bold text-gray-900">
+                      R119 <span className="text-sm font-medium text-gray-600">/ month</span>
+                    </p>
+                    <p className="text-sm text-gray-700 mt-2">
+                      <b>Unlimited</b> job applications
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Priority AI (coming soon)
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={() => startSubscription('career_pro')}
+                    disabled={isRedirecting}
+                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                  >
+                    {isRedirecting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Choose Career Pro
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
+                <p className="text-sm text-emerald-800">
+                  <strong>Secure checkout via Paystack</strong>. AI is powered by Gemini server-side — your keys stay safe.
                 </p>
               </div>
             </div>
@@ -347,14 +569,14 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         )}
 
         {/* Empty state */}
-        !suggestions.length && !coverLetter && !isAnalyzing && !errorMsg && (
+        {!suggestions.length && !coverLetter && !isAnalyzing && !errorMsg && !needsUpgrade && (
           <div className="bg-white rounded-lg p-6 border border-dashed border-blue-200 text-center">
             <Sparkles className="h-12 w-12 text-blue-400 mx-auto mb-3" />
             <p className="text-sm text-gray-600">
               Choose <b>Tailor Resume</b> or <b>Cover Letter</b>, paste a job description, then run AI.
             </p>
           </div>
-        )
+        )}
       </CardContent>
     </Card>
   );
