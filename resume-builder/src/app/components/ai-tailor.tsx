@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   Sparkles,
   Loader2,
@@ -43,6 +43,15 @@ type CoverLetterResponse = {
 
 type PlanId = 'starter' | 'job_seeker' | 'career_pro';
 
+type BillingStatus = {
+  plan: 'free' | 'starter' | 'job_seeker' | 'career_pro';
+  subscriptionStatus: 'active' | 'past_due' | 'cancelled' | string;
+  used: number;
+  limit: number | null; // null = unlimited
+  freeResumeUsed: boolean;
+  freeCoverUsed: boolean;
+};
+
 export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
@@ -63,6 +72,10 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   // Billing / upgrade UI
   const [needsUpgrade, setNeedsUpgrade] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Billing status (badge + usage counter)
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [isLoadingBilling, setIsLoadingBilling] = useState(false);
 
   const headerText = useMemo(() => {
     if (mode === 'cover_letter') return 'AI Cover Letter Generator';
@@ -93,6 +106,56 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     return token;
   };
 
+  const loadBillingStatus = async () => {
+    setIsLoadingBilling(true);
+    try {
+      const token = await getIdTokenOrThrow();
+
+      const res = await fetch('/.netlify/functions/get-billing-status', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) return;
+
+      setBilling(payload as BillingStatus);
+    } catch {
+      // ignore (not logged in / network)
+    } finally {
+      setIsLoadingBilling(false);
+    }
+  };
+
+  useEffect(() => {
+    // Load on mount + when returning from Paystack success page
+    loadBillingStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const planLabel = useMemo(() => {
+    if (!billing) return '—';
+    if (billing.plan === 'career_pro') return 'Career Pro';
+    if (billing.plan === 'job_seeker') return 'Job Seeker';
+    if (billing.plan === 'starter') return 'Starter';
+    return 'Free';
+  }, [billing]);
+
+  const usageText = useMemo(() => {
+    if (!billing) return '';
+    const isPaid = billing.plan !== 'free' && billing.subscriptionStatus === 'active';
+
+    if (!isPaid) {
+      const resumeLeft = billing.freeResumeUsed ? 0 : 1;
+      const coverLeft = billing.freeCoverUsed ? 0 : 1;
+      return `Free taste remaining: ${resumeLeft} tailor + ${coverLeft} cover letter`;
+    }
+
+    if (billing.limit === null) return `Unlimited applications • Used ${billing.used}`;
+    const left = Math.max(0, billing.limit - billing.used);
+    return `${left} of ${billing.limit} applications left this month`;
+  }, [billing]);
+
   const analyze = async () => {
     if (!jobDescription.trim()) return;
 
@@ -117,7 +180,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
       const payload = await res.json().catch(() => null);
 
-      // 🔒 Subscription enforcement (server-side)
       if (res.status === 402) {
         setNeedsUpgrade(true);
         const details =
@@ -144,18 +206,20 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
         setCoverLetter(typed.coverLetter);
         setTalkingPoints(typed.talkingPoints);
-        return;
+      } else {
+        const typed = payload as TailorResponse;
+
+        if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
+          setErrorMsg('AI returned an unexpected response format (tailor).');
+          return;
+        }
+
+        setSuggestions(typed.suggestions);
+        setTailoredData(typed.tailoredData);
       }
 
-      const typed = payload as TailorResponse;
-
-      if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
-        setErrorMsg('AI returned an unexpected response format (tailor).');
-        return;
-      }
-
-      setSuggestions(typed.suggestions);
-      setTailoredData(typed.tailoredData);
+      // refresh plan/usage after a successful run
+      await loadBillingStatus();
     } catch (err: any) {
       setErrorMsg(err?.message || 'Network error. Please try again.');
     } finally {
@@ -212,7 +276,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         return;
       }
 
-      // Redirect user to Paystack hosted checkout
       window.location.href = url;
     } catch (err: any) {
       setErrorMsg(err?.message || 'Checkout error. Please try again.');
@@ -233,36 +296,16 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             <CardTitle>{headerText}</CardTitle>
           </div>
 
-          {/* Mode Toggle */}
-          <div className="inline-flex rounded-lg border border-blue-200 bg-white p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('tailor');
-                resetResults();
-              }}
-              className={`px-3 py-1.5 text-sm rounded-md transition ${
-                mode === 'tailor'
-                  ? 'bg-gradient-to-r from-blue-600 to-sky-600 text-white'
-                  : 'text-blue-700 hover:bg-blue-50'
-              }`}
-            >
-              Tailor Resume
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('cover_letter');
-                resetResults();
-              }}
-              className={`px-3 py-1.5 text-sm rounded-md transition ${
-                mode === 'cover_letter'
-                  ? 'bg-gradient-to-r from-blue-600 to-sky-600 text-white'
-                  : 'text-blue-700 hover:bg-blue-50'
-              }`}
-            >
-              Cover Letter
-            </button>
+          {/* Plan badge + usage */}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <span className="inline-flex items-center rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold text-blue-700">
+              {isLoadingBilling ? 'Checking plan…' : `Plan: ${planLabel}`}
+            </span>
+            {!!usageText && (
+              <span className="inline-flex items-center rounded-full border border-blue-200 bg-white px-3 py-1 text-xs text-gray-700">
+                {usageText}
+              </span>
+            )}
           </div>
         </div>
 
@@ -290,25 +333,16 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {mode === 'cover_letter'
-                ? 'Generating Cover Letter...'
-                : 'Analyzing & Tailoring...'}
+              {mode === 'cover_letter' ? 'Generating Cover Letter...' : 'Analyzing & Tailoring...'}
             </>
           ) : (
             <>
-              {mode === 'cover_letter' ? (
-                <Mail className="h-4 w-4 mr-2" />
-              ) : (
-                <Sparkles className="h-4 w-4 mr-2" />
-              )}
-              {mode === 'cover_letter'
-                ? 'Generate Cover Letter'
-                : 'Tailor Resume with AI'}
+              {mode === 'cover_letter' ? <Mail className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              {mode === 'cover_letter' ? 'Generate Cover Letter' : 'Tailor Resume with AI'}
             </>
           )}
         </Button>
 
-        {/* Errors */}
         {errorMsg && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-start gap-2">
@@ -318,15 +352,12 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   {needsUpgrade ? 'Upgrade Required' : mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
-                <p className="text-xs text-red-600 mt-2">
-                  Tip: If this only happens on Netlify, confirm env vars are set and you redeployed.
-                </p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Upgrade / Pricing UI (shown when 402 happens) */}
+        {/* Upgrade UI (unchanged) */}
         {needsUpgrade && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <div className="bg-white rounded-lg p-4 border border-blue-200">
@@ -335,7 +366,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   <Lock className="h-5 w-5 text-blue-700" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">Unlock unlimited career momentum</h3>
+                  <h3 className="font-medium text-gray-900">Upgrade to continue</h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Free taste includes <b>1 Resume Tailor</b> + <b>1 Cover Letter</b>. Upgrade for monthly access.
                   </p>
@@ -343,7 +374,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               </div>
 
               <div className="grid md:grid-cols-3 gap-3 mt-4">
-                {/* Starter */}
                 <div className="border border-blue-200 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30">
                   <p className="text-sm font-medium text-gray-900">Starter</p>
                   <p className="text-xs text-gray-600 mt-1">Student friendly</p>
@@ -352,10 +382,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                       R35 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
-                      <b>5</b> job applications / month
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Resume tailor + cover letter per job
+                      <b>5</b> applications / month
                     </p>
                   </div>
                   <Button
@@ -363,107 +390,61 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                     disabled={isRedirecting}
                     className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                   >
-                    {isRedirecting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Redirecting...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Choose Starter
-                      </>
-                    )}
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Choose Starter
                   </Button>
                 </div>
 
-                {/* Job Seeker (Best Value) */}
                 <div className="border border-blue-300 rounded-lg p-4 bg-gradient-to-b from-white to-sky-50 relative">
                   <div className="absolute -top-2 right-3 bg-gradient-to-r from-blue-600 to-sky-600 text-white text-xs px-2 py-1 rounded-full">
                     Best Value
                   </div>
-
                   <p className="text-sm font-medium text-gray-900">Job Seeker</p>
                   <div className="flex items-center gap-2 mt-2">
                     <BadgePercent className="h-4 w-4 text-emerald-600" />
                     <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
                   </div>
-
                   <div className="mt-3">
                     <p className="text-2xl font-bold text-gray-900">
                       R79 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
-                      <b>20</b> job applications / month
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Save tailored versions
+                      <b>20</b> applications / month
                     </p>
                   </div>
-
                   <Button
                     onClick={() => startSubscription('job_seeker')}
                     disabled={isRedirecting}
                     className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                   >
-                    {isRedirecting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Redirecting...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Choose Job Seeker
-                      </>
-                    )}
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Choose Job Seeker
                   </Button>
                 </div>
 
-                {/* Career Pro */}
                 <div className="border border-blue-200 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30">
                   <p className="text-sm font-medium text-gray-900">Career Pro</p>
                   <div className="flex items-center gap-2 mt-2">
                     <BadgePercent className="h-4 w-4 text-emerald-600" />
                     <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
                   </div>
-
                   <div className="mt-3">
                     <p className="text-2xl font-bold text-gray-900">
                       R119 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
-                      <b>Unlimited</b> job applications
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Priority AI (coming soon)
+                      <b>Unlimited</b> applications
                     </p>
                   </div>
-
                   <Button
                     onClick={() => startSubscription('career_pro')}
                     disabled={isRedirecting}
                     className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                   >
-                    {isRedirecting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Redirecting...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Choose Career Pro
-                      </>
-                    )}
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Choose Career Pro
                   </Button>
                 </div>
-              </div>
-
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
-                <p className="text-sm text-emerald-800">
-                  <strong>Secure checkout via Paystack</strong>. AI is powered by Gemini server-side — your keys stay safe.
-                </p>
               </div>
             </div>
           </div>
@@ -488,13 +469,9 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             </div>
 
             <div className="bg-white rounded-lg p-4 border border-blue-200">
-              <h3 className="font-medium text-gray-900 mb-2">Preview Changes</h3>
-              <p className="text-sm text-gray-600 mb-3">
-                The AI has optimized your resume. Review the changes in the preview pane.
-              </p>
               <div className="flex gap-2">
                 <Button
-                  onClick={applyTailoredVersion}
+                  onClick={() => tailoredData && onApplySuggestions(tailoredData)}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                 >
                   Apply Tailored Version
@@ -503,12 +480,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   Discard
                 </Button>
               </div>
-            </div>
-
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-              <p className="text-sm text-emerald-800">
-                <strong>Powered by Gemini</strong> (server-side via Netlify Function). Your API key is safe.
-              </p>
             </div>
           </div>
         )}
@@ -536,39 +507,38 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                 </div>
               )}
 
-              <div>
-                <p className="text-sm font-medium text-gray-900 mb-2">Cover letter text</p>
-                <Textarea
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  rows={12}
-                  className="bg-white"
-                />
-                <div className="flex gap-2 mt-3">
-                  <Button
-                    onClick={copyCoverLetter}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    {copied ? 'Copied!' : 'Copy Cover Letter'}
-                  </Button>
-                  <Button variant="outline" onClick={resetResults}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Discard
-                  </Button>
-                </div>
-              </div>
-            </div>
+              <Textarea
+                value={coverLetter}
+                onChange={(e) => setCoverLetter(e.target.value)}
+                rows={12}
+                className="bg-white"
+              />
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-              <p className="text-sm text-emerald-800">
-                <strong>Powered by Gemini</strong> (server-side via Netlify Function). Your API key is safe.
-              </p>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(coverLetter || '');
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    } catch {
+                      setCopied(false);
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  {copied ? 'Copied!' : 'Copy Cover Letter'}
+                </Button>
+                <Button variant="outline" onClick={resetResults}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Discard
+                </Button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Empty state */}
         {!suggestions.length && !coverLetter && !isAnalyzing && !errorMsg && !needsUpgrade && (
           <div className="bg-white rounded-lg p-6 border border-dashed border-blue-200 text-center">
             <Sparkles className="h-12 w-12 text-blue-400 mx-auto mb-3" />
