@@ -1,5 +1,5 @@
-// netlify/functions/ai-tailor.ts
 import type { Handler } from "@netlify/functions";
+import { getAdmin } from "./_firebaseAdmin";
 
 type ResumeData = {
   personalInfo: {
@@ -48,15 +48,8 @@ type TailorRequestBody = {
   jobDescription: string;
 };
 
-type TailorResponse = {
-  suggestions: string[];
-  tailoredData: ResumeData;
-};
-
-type CoverLetterResponse = {
-  coverLetter: string; // plain text
-  talkingPoints: string[]; // 3-6 bullets
-};
+type TailorResponse = { suggestions: string[]; tailoredData: ResumeData };
+type CoverLetterResponse = { coverLetter: string; talkingPoints: string[] };
 
 function safeJsonParse<T = any>(text: string): T | null {
   try {
@@ -69,18 +62,14 @@ function safeJsonParse<T = any>(text: string): T | null {
 function extractJsonBlock(text: string): string | null {
   const fenced = text.match(/```json\s*([\s\S]*?)\s*```/i);
   if (fenced?.[1]) return fenced[1].trim();
-
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    return text.slice(firstBrace, lastBrace + 1).trim();
-  }
+  if (firstBrace >= 0 && lastBrace > firstBrace) return text.slice(firstBrace, lastBrace + 1).trim();
   return null;
 }
 
 function normalizeMode(mode?: string): TailorMode {
-  if (mode === "cover_letter") return "cover_letter";
-  return "tailor";
+  return mode === "cover_letter" ? "cover_letter" : "tailor";
 }
 
 function buildPrompts(mode: TailorMode, resumeData: ResumeData, jobDescription: string) {
@@ -103,7 +92,7 @@ Rules:
 - 250–450 words total.
 - Use simple paragraphs (no fancy formatting).
 - talkingPoints: 3–6 short bullet-style lines summarizing the strongest matches.
-    `.trim();
+`.trim();
 
     const userPrompt = `
 JOB DESCRIPTION:
@@ -113,17 +102,12 @@ RESUME JSON:
 ${JSON.stringify(resumeData)}
 
 TASK:
-Write a tailored cover letter for this job using only the resume facts. Include:
-- A strong opening
-- Why the candidate fits (skills/experience alignment)
-- A closing call-to-action
-Also return 3–6 talkingPoints the candidate can mention in an interview.
-    `.trim();
+Write a tailored cover letter for this job using only the resume facts. Also return 3–6 talkingPoints.
+`.trim();
 
     return { systemRules, userPrompt };
   }
 
-  // default: tailor resume
   const systemRules = `
 You are an expert resume writer and ATS optimization assistant.
 
@@ -139,10 +123,10 @@ Rules:
 - Keep the user's facts truthful. Do NOT invent companies, degrees, dates, or achievements.
 - You MAY rephrase sentences and reorder content for ATS.
 - Add keywords from the job description naturally where relevant.
-- Improve clarity, action verbs, and quantification ONLY if it can be inferred from existing text (otherwise do not fabricate numbers).
+- Improve clarity and action verbs ONLY if it can be inferred from existing text.
 - Keep ResumeData structure identical.
 - Maintain all IDs as-is.
-  `.trim();
+`.trim();
 
   const userPrompt = `
 JOB DESCRIPTION:
@@ -153,124 +137,139 @@ ${JSON.stringify(resumeData)}
 
 TASK:
 1) Generate 4-8 short suggestions describing what you changed.
-2) Output tailoredData: the updated ResumeData JSON optimized for this job description.
-  `.trim();
+2) Output tailoredData optimized for this job description.
+`.trim();
 
   return { systemRules, userPrompt };
 }
 
+function planLimit(plan: string) {
+  if (plan === "starter") return 5;
+  if (plan === "job_seeker") return 20;
+  if (plan === "career_pro") return Number.POSITIVE_INFINITY;
+  return 0; // free
+}
+
+function json(statusCode: number, body: any) {
+  return {
+    statusCode,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  };
+}
+
 export const handler: Handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+  if (event.httpMethod !== "POST") return json(405, { error: "Method Not Allowed" });
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error:
-          "Missing GEMINI_API_KEY. Add it in Netlify: Project configuration → Environment variables.",
-      }),
-    };
-  }
+  if (!apiKey) return json(500, { error: "Missing GEMINI_API_KEY" });
+
+  // Auth
+  const authHeader = event.headers.authorization || event.headers.Authorization;
+  const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!idToken) return json(401, { error: "Missing Authorization Bearer token" });
+
+  const admin = getAdmin();
+  const decoded = await admin.auth().verifyIdToken(idToken);
+  const uid = decoded.uid;
 
   const body = safeJsonParse<TailorRequestBody>(event.body || "");
   const mode = normalizeMode(body?.mode);
 
   if (!body?.resumeData || !body?.jobDescription?.trim()) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "resumeData and jobDescription are required." }),
-    };
+    return json(400, { error: "resumeData and jobDescription are required." });
   }
 
-  // Better free-tier capacity than gemini-1.5-flash
+  // Load user billing state
+  const userRef = admin.firestore().doc(`users/${uid}`);
+  const userSnap = await userRef.get();
+  const user = userSnap.data() || {};
+
+  const plan = (user.plan as string) || "free";
+  const status = (user.subscriptionStatus as string) || "active"; // free users considered "active" for usage
+  const used = Number(user.applicationsUsedThisMonth || 0);
+
+  const freeResumeUsed = Boolean(user.freeResumeUsed);
+  const freeCoverUsed = Boolean(user.freeCoverUsed);
+
+  // Determine if allowed
+  const isPaid = plan !== "free" && status === "active";
+  const limit = planLimit(plan);
+
+  if (!isPaid) {
+    // Free taste: 1 resume + 1 cover letter total
+    if (mode === "tailor" && freeResumeUsed) {
+      return json(402, { error: "Free resume tailor already used. Please upgrade." });
+    }
+    if (mode === "cover_letter" && freeCoverUsed) {
+      return json(402, { error: "Free cover letter already used. Please upgrade." });
+    }
+  } else {
+    if (used >= limit) {
+      return json(402, { error: "Monthly limit reached. Upgrade your plan to continue." });
+    }
+  }
+
+  // Gemini endpoint (higher free-tier capacity than deprecated 1.5 flash)
   const endpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const { systemRules, userPrompt } = buildPrompts(mode, body.resumeData, body.jobDescription);
 
-  try {
-    const geminiRes = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: systemRules + "\n\n" + userPrompt }],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 1400,
-        },
-      }),
-    });
+  const geminiRes = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: systemRules + "\n\n" + userPrompt }] }],
+      generationConfig: { temperature: 0.4, maxOutputTokens: 1400 },
+    }),
+  });
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: "Gemini request failed.",
-          details: errText,
-        }),
-      };
-    }
-
-    const data = (await geminiRes.json()) as any;
-    const text =
-      data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
-
-    const jsonText = extractJsonBlock(text) ?? text.trim();
-    const parsed = safeJsonParse<any>(jsonText);
-
-    if (mode === "cover_letter") {
-      const typed = parsed as CoverLetterResponse;
-      if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
-        return {
-          statusCode: 500,
-          body: JSON.stringify({
-            error: "Could not parse Gemini JSON response (cover_letter).",
-            raw: text.slice(0, 4000),
-          }),
-        };
-      }
-
-      return {
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(typed),
-      };
-    }
-
-    // mode === "tailor"
-    const typed = parsed as TailorResponse;
-    if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: "Could not parse Gemini JSON response (tailor).",
-          raw: text.slice(0, 4000),
-        }),
-      };
-    }
-
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(typed),
-    };
-  } catch (e: any) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "Server error calling Gemini.",
-        details: e?.message || String(e),
-      }),
-    };
+  if (!geminiRes.ok) {
+    const errText = await geminiRes.text();
+    return json(500, { error: "Gemini request failed.", details: errText });
   }
+
+  const data = (await geminiRes.json()) as any;
+  const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
+  const jsonText = extractJsonBlock(text) ?? text.trim();
+  const parsed = safeJsonParse<any>(jsonText);
+
+  // ✅ Update usage AFTER successful AI response
+  if (!isPaid) {
+    // mark free taste as used for the mode that ran
+    await userRef.set(
+      {
+        plan: "free",
+        subscriptionStatus: "active",
+        freeResumeUsed: mode === "tailor" ? true : freeResumeUsed,
+        freeCoverUsed: mode === "cover_letter" ? true : freeCoverUsed,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } else {
+    await userRef.set(
+      {
+        applicationsUsedThisMonth: used + 1,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+
+  if (mode === "cover_letter") {
+    const typed = parsed as CoverLetterResponse;
+    if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
+      return json(500, { error: "Could not parse Gemini JSON response (cover_letter).", raw: text.slice(0, 4000) });
+    }
+    return json(200, typed);
+  }
+
+  const typed = parsed as TailorResponse;
+  if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
+    return json(500, { error: "Could not parse Gemini JSON response (tailor).", raw: text.slice(0, 4000) });
+  }
+  return json(200, typed);
 };
