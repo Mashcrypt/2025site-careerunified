@@ -92,7 +92,7 @@ export const handler: Handler = async (event) => {
   // Gemini REST endpoint (no extra dependencies required)
   const endpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
-    `gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+    `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const systemRules = `
 You are an expert resume writer and ATS optimization assistant.
