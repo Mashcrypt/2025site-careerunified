@@ -1,199 +1,477 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Recruiter Application – Career Unified</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Apply to become a recruiter on Career Unified and start posting jobs for South African candidates.">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recruiter Application – Career Unified</title>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    doc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#1b60a9">
 
-  /* 🔐 YOUR REAL FIREBASE CONFIG */
-  const firebaseConfig = {
-    apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
-    authDomain: "career-unified.firebaseapp.com",
-    projectId: "career-unified",
-    storageBucket: "career-unified.firebasestorage.app",
-    messagingSenderId: "101656817742",
-    appId: "1:101656817742:web:22c9a58a822a714e54931f",
-    measurementId: "G-2Z934XRVXT"
-  };
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+  </script>
 
-  let currentUser = null;
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  /* 🔐 REQUIRE LOGIN */
-  onAuthStateChanged(auth, user => {
-    if (!user) {
-      alert("Please log in to apply as a recruiter.");
-      window.location.href = "login.html";
-      return;
-    }
-    currentUser = user;
-  });
+    const firebaseConfig = {
+      apiKey:            "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+      authDomain:        "career-unified.firebaseapp.com",
+      projectId:         "career-unified",
+      storageBucket:     "career-unified.firebasestorage.app",
+      messagingSenderId: "101656817742",
+      appId:             "1:101656817742:web:22c9a58a822a714e54931f",
+      measurementId:     "G-2Z934XRVXT"
+    };
 
-  /* 📩 SUBMIT APPLICATION */
-  window.submitRecruiterApplication = async () => {
-    if (!currentUser) {
-      alert("Authentication not ready. Please wait.");
-      return;
-    }
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
 
-    const companyName = document.getElementById("companyName").value.trim();
-    const companyWebsite = document.getElementById("companyWebsite").value.trim();
-    const reason = document.getElementById("reason").value.trim();
+    let currentUser = null;
 
-    if (!companyName || !companyWebsite || !reason) {
-      alert("All fields are required.");
-      return;
-    }
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        alert("Please log in to apply as a recruiter.");
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+    });
 
-    try {
-      /* Create recruiter application */
-      await addDoc(collection(db, "recruiterApplications"), {
-        userId: currentUser.uid,
-        email: currentUser.email, // save email for future reference
-        companyName,
-        companyWebsite,
-        reason,
-        status: "pending",
-        submittedAt: serverTimestamp()
-      });
+    window.submitRecruiterApplication = async () => {
+      if (!currentUser) {
+        alert("Authentication not ready. Please wait a moment and try again.");
+        return;
+      }
 
-      /* Update user profile */
-      await setDoc(
-        doc(db, "users", currentUser.uid),
-        {
-          role: "recruiter",
-          recruiterStatus: "pending",
+      const companyName    = document.getElementById("companyName").value.trim();
+      const companyWebsite = document.getElementById("companyWebsite").value.trim();
+      const reason         = document.getElementById("reason").value.trim();
+
+      if (!companyName || !companyWebsite || !reason) {
+        alert("All fields are required.");
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled     = true;
+      btn.textContent  = "Submitting...";
+
+      try {
+        await addDoc(collection(db, "recruiterApplications"), {
+          userId:          currentUser.uid,
+          email:           currentUser.email,
           companyName,
-          email: currentUser.email,
-          updatedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
+          companyWebsite,
+          reason,
+          status:          "pending",
+          submittedAt:     serverTimestamp()
+        });
 
-      /* 🎯 Friendly notice about approval timeline */
-      alert(
-        "Thank you for your recruiter application!\n\n" +
-        "Please note: approval can take up to 1 hour or 1 business day. " +
-        "If your application is not approved, consider it unsuccessful."
-      );
+        await setDoc(
+          doc(db, "users", currentUser.uid),
+          {
+            role:            "recruiter",
+            recruiterStatus: "pending",
+            companyName,
+            email:           currentUser.email,
+            updatedAt:       serverTimestamp()
+          },
+          { merge: true }
+        );
 
-      /* 🔄 Redirect back to home page */
-      window.location.href = "index.html";
+        alert(
+          "Thank you for your recruiter application!\n\n" +
+          "Approval can take up to 1 hour or 1 business day. " +
+          "If your application is not approved, consider it unsuccessful."
+        );
 
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      alert("Submission failed. Check console for details.");
+        window.location.href = "index.html";
+
+      } catch (error) {
+        console.error("Error submitting application:", error);
+        alert("Submission failed. Please try again.");
+        btn.disabled    = false;
+        btn.textContent = "Submit Application";
+      }
+    };
+  </script>
+
+  <style>
+    /* =============================== */
+    /* RESET & BASE                    */
+    /* =============================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-  };
-</script>
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7f9fc;
+      color: #111827;
+      overflow-x: hidden;
+    }
 
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
-</script>
+    /* =============================== */
+    /* HEADER                          */
+    /* =============================== */
+    header {
+      text-align: center;
+      padding: 60px 20px 50px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      width: 100%;
+    }
 
-  
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f7fa;
-    padding: 40px;
-  }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
 
-  .container {
-    max-width: 500px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  }
+    header p {
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #e5e7eb;
+      font-weight: 400;
+    }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+    /* =============================== */
+    /* MAIN / FORM CONTAINER           */
+    /* =============================== */
+    main {
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+    }
 
-  input, textarea, button {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
+    .form-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 36px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
 
-  textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
+    /* =============================== */
+    /* NOTICE BANNER                   */
+    /* =============================== */
+    .notice {
+      background: #e0f2fe;
+      border-left: 4px solid #2563eb;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      color: #1e3a8a;
+      font-weight: 600;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
 
-  button {
-    background: #2563eb;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-  }
+    /* =============================== */
+    /* FORM ELEMENTS                   */
+    /* =============================== */
+    .form-group {
+      margin-bottom: 18px;
+    }
 
-  button:hover {
-    background: #1e40af;
-  }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 0.95rem;
+    }
 
-  /* 🔹 Notice about approval timeline */
-  .notice {
-    background: #e0f2fe;
-    border-left: 4px solid #2563eb;
-    padding: 12px;
-    margin-bottom: 20px;
-    font-weight: 600;
-    color: #1e3a8a;
-    border-radius: 4px;
-  }
-</style>
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      color: #111827;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    /* =============================== */
+    /* SUBMIT BUTTON                   */
+    /* =============================== */
+    #submitBtn {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 6px;
+    }
+
+    #submitBtn:hover:not(:disabled) {
+      background: #1e40af;
+      transform: translateY(-1px);
+    }
+
+    #submitBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* =============================== */
+    /* FOOTER                          */
+    /* =============================== */
+    .main-footer {
+      text-align: center;
+      padding: 30px 20px;
+      background: #1e3a8a;
+      color: white;
+      width: 100%;
+    }
+
+    .footer-links {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #facc15;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* =============================== */
+    /* MOBILE — max-width: 900px       */
+    /* =============================== */
+    @media (max-width: 900px) {
+      header {
+        padding: 50px 16px 40px;
+      }
+
+      header h1 { font-size: 2rem; }
+      header p  { font-size: 1rem; }
+
+      main { margin: 24px auto; padding: 0 16px 60px; }
+
+      .form-card { padding: 24px 20px; }
+
+      .form-group input,
+      .form-group textarea {
+        font-size: 16px; /* prevents iOS zoom on focus */
+        padding: 14px;
+      }
+
+      #submitBtn { font-size: 16px; padding: 14px; }
+
+      .footer-links { flex-direction: column; gap: 12px; }
+    }
+
+    /* =============================== */
+    /* MOBILE — max-width: 400px       */
+    /* =============================== */
+    @media (max-width: 400px) {
+      header h1     { font-size: 1.75rem; }
+      .form-card    { padding: 20px 16px; }
+      .notice       { font-size: 0.9rem; }
+    }
+  </style>
 </head>
-
 <body>
 
-  <div class="container">
-    <h1>Recruiter Application</h1>
+  <!-- =============================== -->
+  <!-- NAVIGATION                      -->
+  <!-- =============================== -->
+  <nav class="main-nav">
 
-    <!-- 🔹 Notice for users before submitting -->
-    <div class="notice">
-      Please fill out this form to apply as a recruiter. Approval can take up to 1 hour or 1 business day.
-      If your application is not approved, consider it unsuccessful.
+    <!-- Desktop -->
+    <a href="index.html" class="logo desktop-nav">Career Unified</a>
+    <div class="nav-links desktop-nav">
+      <a href="jobs.html">Jobs</a>
+      <a href="bursaries.html">Bursaries</a>
+      <a href="varsity.html">Varsity</a>
+      <a href="cv-generator.html">Generate CV</a>
+      <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+      <a href="recruiter-apply.html">Apply as Recruiter</a>
+      <a href="saved-items.html">Saved Items</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+      <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
     </div>
 
-    <input id="companyName" placeholder="Company Name" />
-    <input id="companyWebsite" placeholder="Company Website" />
-    <textarea id="reason" placeholder="Why should we approve you?"></textarea>
+    <!-- Mobile -->
+    <div class="mobile-nav">
+      <a href="index.html" class="mobile-logo">Career Unified</a>
+      <div class="mobile-nav-right">
+        <a href="account-page.html" class="icon-btn" aria-label="My Account">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+          <svg viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
 
-    <button onclick="submitRecruiterApplication()">
-      Submit Application
-    </button>
+  </nav>
+
+  <!-- Mobile Slide Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="jobs.html">Jobs</a>
+    <a href="bursaries.html">Bursaries</a>
+    <a href="varsity.html">Varsity</a>
+    <a href="cv-generator.html">Generate CV</a>
+    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="recruiter-apply.html">Apply as Recruiter</a>
+    <a href="saved-items.html">Saved Items</a>
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
   </div>
+
+  <!-- =============================== -->
+  <!-- HEADER                          -->
+  <!-- =============================== -->
+  <header>
+    <h1>Recruiter Application</h1>
+    <p>Post jobs and connect with South African candidates</p>
+  </header>
+
+  <!-- =============================== -->
+  <!-- MAIN CONTENT                    -->
+  <!-- =============================== -->
+  <main>
+    <div class="form-card">
+
+      <div class="notice">
+        Fill out this form to apply as a recruiter. Approval can take up to 1 hour or 1 business day.
+        If your application is not approved within this time, consider it unsuccessful.
+      </div>
+
+      <div class="form-group">
+        <label for="companyName">Company Name</label>
+        <input id="companyName" type="text" placeholder="e.g. Acme Corporation">
+      </div>
+
+      <div class="form-group">
+        <label for="companyWebsite">Company Website</label>
+        <input id="companyWebsite" type="url" placeholder="e.g. https://acme.co.za">
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Why should we approve you?</label>
+        <textarea id="reason" placeholder="Tell us about your company and the types of roles you'll be hiring for..."></textarea>
+      </div>
+
+      <button id="submitBtn" onclick="submitRecruiterApplication()">Submit Application</button>
+
+    </div>
+  </main>
+
+  <!-- =============================== -->
+  <!-- FOOTER                          -->
+  <!-- =============================== -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="about-us.html">About Us</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="contact-us.html">Contact Us</a>
+    </div>
+    <p>&copy; 2026 Career Unified. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* =============================== */
+    /* MOBILE NAV                      */
+    /* =============================== */
+    const menuBtn    = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (menuBtn) {
+      menuBtn.onclick = () => {
+        const isOpen = mobileMenu.style.display === 'block';
+        mobileMenu.style.display = isOpen ? 'none' : 'block';
+      };
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
+        if (mobileMenu) mobileMenu.style.display = 'none';
+      }
+    });
+  </script>
+
 </body>
 </html>
-
 
