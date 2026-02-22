@@ -62,9 +62,12 @@ function safeJsonParse<T = any>(text: string): T | null {
 function extractJsonBlock(text: string): string | null {
   const fenced = text.match(/```json\s*([\s\S]*?)\s*```/i);
   if (fenced?.[1]) return fenced[1].trim();
+
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
-  if (firstBrace >= 0 && lastBrace > firstBrace) return text.slice(firstBrace, lastBrace + 1).trim();
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    return text.slice(firstBrace, lastBrace + 1).trim();
+  }
   return null;
 }
 
@@ -150,101 +153,208 @@ function planLimit(plan: string) {
   return 0; // free
 }
 
-function json(statusCode: number, body: any) {
+function corsHeaders(origin?: string) {
+  // If you want to lock to your domain, set ALLOWED_ORIGIN=https://careerunified.com in Netlify env
+  const allowed = process.env.ALLOWED_ORIGIN || "*";
+  return {
+    "Access-Control-Allow-Origin": allowed === "*" ? "*" : (origin && origin === allowed ? origin : allowed),
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
+function json(statusCode: number, body: any, extraHeaders?: Record<string, string>) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(extraHeaders || {}),
+    },
     body: JSON.stringify(body),
   };
 }
 
+function decodeBody(eventBody: string | null | undefined, isB64?: boolean) {
+  if (!eventBody) return "";
+  if (!isB64) return eventBody;
+  try {
+    return Buffer.from(eventBody, "base64").toString("utf8");
+  } catch {
+    return eventBody; // fallback
+  }
+}
+
 export const handler: Handler = async (event) => {
-  if (event.httpMethod !== "POST") return json(405, { error: "Method Not Allowed" });
+  const origin = event.headers.origin || event.headers.Origin;
+  const baseHeaders = corsHeaders(origin);
+
+  // Preflight
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: baseHeaders,
+      body: "",
+    };
+  }
+
+  if (event.httpMethod !== "POST") {
+    return json(405, { error: "Method Not Allowed" }, baseHeaders);
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return json(500, { error: "Missing GEMINI_API_KEY" });
+  if (!apiKey) return json(500, { error: "Missing GEMINI_API_KEY" }, baseHeaders);
 
-  // Auth
+  // Auth header
   const authHeader = event.headers.authorization || event.headers.Authorization;
   const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!idToken) return json(401, { error: "Missing Authorization Bearer token" });
+  if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
 
   const admin = getAdmin();
-  const decoded = await admin.auth().verifyIdToken(idToken);
-  const uid = decoded.uid;
 
-  const body = safeJsonParse<TailorRequestBody>(event.body || "");
+  let uid: string;
+  try {
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    uid = decoded.uid;
+  } catch {
+    return json(401, { error: "Invalid or expired token" }, baseHeaders);
+  }
+
+  const rawBody = decodeBody(event.body, event.isBase64Encoded);
+  const body = safeJsonParse<TailorRequestBody>(rawBody);
   const mode = normalizeMode(body?.mode);
 
   if (!body?.resumeData || !body?.jobDescription?.trim()) {
-    return json(400, { error: "resumeData and jobDescription are required." });
+    return json(400, { error: "resumeData and jobDescription are required." }, baseHeaders);
   }
 
-  // Load user billing state
   const userRef = admin.firestore().doc(`users/${uid}`);
   const userSnap = await userRef.get();
   const user = userSnap.data() || {};
 
   const plan = (user.plan as string) || "free";
-  const status = (user.subscriptionStatus as string) || "active"; // free users considered "active" for usage
+  const subscriptionStatus = (user.subscriptionStatus as string) || "inactive";
   const used = Number(user.applicationsUsedThisMonth || 0);
 
   const freeResumeUsed = Boolean(user.freeResumeUsed);
   const freeCoverUsed = Boolean(user.freeCoverUsed);
 
-  // Determine if allowed
-  const isPaid = plan !== "free" && status === "active";
+  const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
 
+  // If you store a checkout link on the user doc (or globally), we’ll return it.
+  const authorization_url =
+    (user.authorization_url as string) ||
+    (user.checkoutUrl as string) ||
+    (process.env.UPGRADE_URL as string) ||
+    null;
+
+  // Gate access
   if (!isPaid) {
-    // Free taste: 1 resume + 1 cover letter total
     if (mode === "tailor" && freeResumeUsed) {
-      return json(402, { error: "Free resume tailor already used. Please upgrade." });
+      return json(
+        402,
+        { error: "Free resume tailor already used. Please upgrade.", authorization_url },
+        baseHeaders
+      );
     }
     if (mode === "cover_letter" && freeCoverUsed) {
-      return json(402, { error: "Free cover letter already used. Please upgrade." });
+      return json(
+        402,
+        { error: "Free cover letter already used. Please upgrade.", authorization_url },
+        baseHeaders
+      );
     }
   } else {
     if (used >= limit) {
-      return json(402, { error: "Monthly limit reached. Upgrade your plan to continue." });
+      return json(
+        402,
+        { error: "Monthly limit reached. Upgrade your plan to continue.", authorization_url },
+        baseHeaders
+      );
     }
   }
 
-  // Gemini endpoint (higher free-tier capacity than deprecated 1.5 flash)
+  // Gemini endpoint
+  // Model code `gemini-2.5-flash-lite` is valid. :contentReference[oaicite:2]{index=2}
   const endpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const { systemRules, userPrompt } = buildPrompts(mode, body.resumeData, body.jobDescription);
 
-  const geminiRes = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: systemRules + "\n\n" + userPrompt }] }],
-      generationConfig: { temperature: 0.4, maxOutputTokens: 1400 },
-    }),
-  });
+  let text = "";
+  try {
+    const geminiRes = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: systemRules + "\n\n" + userPrompt }] }],
+        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 },
+      }),
+    });
 
-  if (!geminiRes.ok) {
-    const errText = await geminiRes.text();
-    return json(500, { error: "Gemini request failed.", details: errText });
+    if (!geminiRes.ok) {
+      const errText = await geminiRes.text();
+      return json(500, { error: "Gemini request failed.", details: errText }, baseHeaders);
+    }
+
+    const data = (await geminiRes.json()) as any;
+    text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
+  } catch (e: any) {
+    return json(500, { error: "Gemini fetch failed.", details: String(e?.message || e) }, baseHeaders);
   }
 
-  const data = (await geminiRes.json()) as any;
-  const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
   const jsonText = extractJsonBlock(text) ?? text.trim();
   const parsed = safeJsonParse<any>(jsonText);
 
-  // ✅ Update usage AFTER successful AI response
+  // Validate parse BEFORE charging usage
+  if (mode === "cover_letter") {
+    const typed = parsed as CoverLetterResponse;
+    if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
+      return json(
+        500,
+        { error: "Could not parse Gemini JSON response (cover_letter).", raw: text.slice(0, 4000) },
+        baseHeaders
+      );
+    }
+
+    // Usage update (atomic + safe)
+    if (!isPaid) {
+      await userRef.set(
+        {
+          freeCoverUsed: true,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } else {
+      await userRef.set(
+        {
+          applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    }
+
+    return json(200, typed, baseHeaders);
+  }
+
+  const typed = parsed as TailorResponse;
+  if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
+    return json(
+      500,
+      { error: "Could not parse Gemini JSON response (tailor).", raw: text.slice(0, 4000) },
+      baseHeaders
+    );
+  }
+
+  // Usage update (atomic + safe)
   if (!isPaid) {
-    // mark free taste as used for the mode that ran
     await userRef.set(
       {
-        plan: "free",
-        subscriptionStatus: "active",
-        freeResumeUsed: mode === "tailor" ? true : freeResumeUsed,
-        freeCoverUsed: mode === "cover_letter" ? true : freeCoverUsed,
+        freeResumeUsed: true,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
@@ -252,24 +362,12 @@ export const handler: Handler = async (event) => {
   } else {
     await userRef.set(
       {
-        applicationsUsedThisMonth: used + 1,
+        applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
   }
 
-  if (mode === "cover_letter") {
-    const typed = parsed as CoverLetterResponse;
-    if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
-      return json(500, { error: "Could not parse Gemini JSON response (cover_letter).", raw: text.slice(0, 4000) });
-    }
-    return json(200, typed);
-  }
-
-  const typed = parsed as TailorResponse;
-  if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
-    return json(500, { error: "Could not parse Gemini JSON response (tailor).", raw: text.slice(0, 4000) });
-  }
-  return json(200, typed);
+  return json(200, typed, baseHeaders);
 };
