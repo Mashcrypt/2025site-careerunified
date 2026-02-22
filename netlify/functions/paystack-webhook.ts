@@ -10,83 +10,129 @@ function bad(statusCode: number, msg: string) {
   return { statusCode, body: msg };
 }
 
+function decodeRawBody(event: any) {
+  const body = event.body || "";
+  if (!body) return "";
+  if (event.isBase64Encoded) {
+    return Buffer.from(body, "base64").toString("utf8");
+  }
+  return body;
+}
+
 function verifySignature(rawBody: string, signature: string | undefined, secret: string) {
   if (!signature) return false;
   const hash = crypto.createHmac("sha512", secret).update(rawBody).digest("hex");
   return hash === signature;
 }
 
-function limitForPlan(plan: string) {
-  if (plan === "starter") return 5;
-  if (plan === "job_seeker") return 20;
-  if (plan === "career_pro") return Infinity;
-  return 0;
+function isValidPlan(plan: any): plan is "starter" | "job_seeker" | "career_pro" {
+  return plan === "starter" || plan === "job_seeker" || plan === "career_pro";
 }
 
 export const handler: Handler = async (event) => {
   const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
   if (!paystackSecret) return bad(500, "Missing PAYSTACK_SECRET_KEY");
 
-  const rawBody = event.body || "";
   const signature =
     (event.headers["x-paystack-signature"] as string) ||
     (event.headers["X-Paystack-Signature"] as string);
 
-  // Verify origin :contentReference[oaicite:8]{index=8}
+  const rawBody = decodeRawBody(event);
+
+  // Verify webhook signature
   if (!verifySignature(rawBody, signature, paystackSecret)) {
     return bad(401, "Invalid signature");
   }
 
-  const payload = JSON.parse(rawBody || "{}");
+  let payload: any = null;
+  try {
+    payload = JSON.parse(rawBody || "{}");
+  } catch {
+    return bad(400, "Invalid JSON");
+  }
+
   const eventType = payload?.event as string;
   const data = payload?.data || {};
 
-  // We rely on metadata.uid from the initial transaction initialize
+  // We rely on metadata.uid set during initialize
   const uid = data?.metadata?.uid as string | undefined;
-
-  // Some events may not include metadata consistently; if uid missing, ignore safely.
-  if (!uid) return ok();
+  if (!uid) return ok(); // ignore safely
 
   const admin = getAdmin();
   const userRef = admin.firestore().doc(`users/${uid}`);
 
-  // Events list & billing flow guidance :contentReference[oaicite:9]{index=9}
-  if (eventType === "subscription.create") {
-    // Subscription was created (after first payment)
-    const selectedPlan = data?.metadata?.selectedPlan || "starter";
-    await userRef.set(
-      {
-        plan: selectedPlan,
-        subscriptionStatus: "active",
-        paystack: {
-          subscription_code: data?.subscription_code || null,
-          customer_code: data?.customer?.customer_code || null,
-        },
-        // reset monthly usage at subscription start
-        applicationsUsedThisMonth: 0,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
-    return ok();
-  }
-
-  if (eventType === "charge.success" || eventType === "invoice.update") {
-    // Payment succeeded (initial or renewal)
-    const selectedPlan = data?.metadata?.selectedPlan;
-
-    // If metadata isn’t present on renewals, keep existing plan.
-    const userSnap = await userRef.get();
-    const currentPlan = (userSnap.data()?.plan as string) || "starter";
-    const planToUse = (selectedPlan as string) || currentPlan;
-
+  // Helper: activate plan safely
+  const activatePlan = async (planToUse: string, extraPaystack?: Record<string, any>) => {
     await userRef.set(
       {
         plan: planToUse,
         subscriptionStatus: "active",
-        // Renewals: reset monthly usage counter
         applicationsUsedThisMonth: 0,
-        // free taste flags stay; we don’t touch them here
+        pendingPlan: admin.firestore.FieldValue.delete(),
+        pendingPaystackReference: admin.firestore.FieldValue.delete(),
+        pendingCreatedAt: admin.firestore.FieldValue.delete(),
+        paystack: {
+          ...(extraPaystack || {}),
+          lastEvent: eventType,
+          lastReference: data?.reference || null,
+        },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  };
+
+  // --- Recommended: treat charge.success as the primary "unlock" event ---
+  if (eventType === "charge.success") {
+    const selectedPlan = data?.metadata?.selectedPlan;
+    const refFromPaystack = data?.reference as string | undefined;
+
+    // If we stored a pending reference, enforce it to avoid accidental mismatches
+    const userSnap = await userRef.get();
+    const user = userSnap.data() || {};
+    const pendingRef = user.pendingPaystackReference as string | undefined;
+
+    if (pendingRef && refFromPaystack && pendingRef !== refFromPaystack) {
+      // Not the transaction we created for upgrade; ignore
+      return ok();
+    }
+
+    const planToUse = isValidPlan(selectedPlan) ? selectedPlan : (user.plan as string) || "starter";
+
+    await activatePlan(planToUse, {
+      customer_code: data?.customer?.customer_code || null,
+      authorization: data?.authorization || null,
+    });
+
+    return ok();
+  }
+
+  // --- Optional: subscription.create (not always present/reliable for first unlock) ---
+  if (eventType === "subscription.create") {
+    const selectedPlan = data?.metadata?.selectedPlan;
+    const planToUse = isValidPlan(selectedPlan) ? selectedPlan : "starter";
+
+    await activatePlan(planToUse, {
+      subscription_code: data?.subscription_code || null,
+      email_token: data?.email_token || null,
+      customer_code: data?.customer?.customer_code || null,
+    });
+
+    return ok();
+  }
+
+  // --- Renewal/invoice events (keep active + reset monthly usage) ---
+  if (eventType === "invoice.update") {
+    // Only keep active if Paystack indicates a successful state (varies by payload)
+    // If you want stricter logic, we can check data.status fields here.
+    const userSnap = await userRef.get();
+    const currentPlan = (userSnap.data()?.plan as string) || "starter";
+
+    await userRef.set(
+      {
+        subscriptionStatus: "active",
+        plan: currentPlan,
+        applicationsUsedThisMonth: 0,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
