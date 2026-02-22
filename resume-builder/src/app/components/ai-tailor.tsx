@@ -11,7 +11,7 @@ import {
   CreditCard,
   BadgePercent
 } from 'lucide-react';
-import { getAuth } from 'firebase/auth';
+
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
@@ -23,6 +23,9 @@ import {
   CardDescription
 } from './ui/card';
 import type { ResumeData } from '../types/resume';
+
+// ✅ IMPORTANT: use your initialized Firebase client (NOT getAuth() directly)
+import { getFirebaseAuth } from '../utils/firebaseClient';
 
 interface AITailorProps {
   data: ResumeData;
@@ -100,8 +103,10 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   };
 
   const getIdTokenOrThrow = async () => {
-    const auth = getAuth();
-    const token = await auth.currentUser?.getIdToken();
+    const auth = getFirebaseAuth();
+    const user = auth.currentUser;
+    if (!user) throw new Error('You must be logged in to use AI features.');
+    const token = await user.getIdToken();
     if (!token) throw new Error('You must be logged in to use AI features.');
     return token;
   };
@@ -128,8 +133,19 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   };
 
   useEffect(() => {
-    // Load on mount + when returning from Paystack success page
+    // Load on mount
     loadBillingStatus();
+
+    // Also refresh billing when auth state changes (helps when user logs in)
+    try {
+      const auth = getFirebaseAuth();
+      const unsub = auth.onAuthStateChanged(() => {
+        loadBillingStatus();
+      });
+      return () => unsub();
+    } catch {
+      return;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -227,10 +243,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
   };
 
-  const applyTailoredVersion = () => {
-    if (tailoredData) onApplySuggestions(tailoredData);
-  };
-
   const copyCoverLetter = async () => {
     try {
       await navigator.clipboard.writeText(coverLetter || '');
@@ -261,9 +273,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
       if (!res.ok) {
         const details =
-          payload?.error ||
-          payload?.details ||
-          'Could not start checkout. Please try again.';
+          payload?.error || payload?.details || 'Could not start checkout. Please try again.';
         setErrorMsg(String(details));
         setIsRedirecting(false);
         return;
@@ -294,6 +304,38 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               <Sparkles className="h-5 w-5 text-blue-600" />
             )}
             <CardTitle>{headerText}</CardTitle>
+          </div>
+
+          {/* ✅ Mode Toggle (restored) */}
+          <div className="inline-flex rounded-lg border border-blue-200 bg-white p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode('tailor');
+                resetResults();
+              }}
+              className={`px-3 py-1.5 text-sm rounded-md transition ${
+                mode === 'tailor'
+                  ? 'bg-gradient-to-r from-blue-600 to-sky-600 text-white'
+                  : 'text-blue-700 hover:bg-blue-50'
+              }`}
+            >
+              Tailor Resume
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode('cover_letter');
+                resetResults();
+              }}
+              className={`px-3 py-1.5 text-sm rounded-md transition ${
+                mode === 'cover_letter'
+                  ? 'bg-gradient-to-r from-blue-600 to-sky-600 text-white'
+                  : 'text-blue-700 hover:bg-blue-50'
+              }`}
+            >
+              Cover Letter
+            </button>
           </div>
 
           {/* Plan badge + usage */}
@@ -337,7 +379,11 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             </>
           ) : (
             <>
-              {mode === 'cover_letter' ? <Mail className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              {mode === 'cover_letter' ? (
+                <Mail className="h-4 w-4 mr-2" />
+              ) : (
+                <Sparkles className="h-4 w-4 mr-2" />
+              )}
               {mode === 'cover_letter' ? 'Generate Cover Letter' : 'Tailor Resume with AI'}
             </>
           )}
@@ -349,7 +395,11 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-red-800">
-                  {needsUpgrade ? 'Upgrade Required' : mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
+                  {needsUpgrade
+                    ? 'Upgrade Required'
+                    : mode === 'cover_letter'
+                    ? 'Cover Letter Error'
+                    : 'AI Tailor Error'}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
               </div>
@@ -357,7 +407,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           </div>
         )}
 
-        {/* Upgrade UI (unchanged) */}
+        {/* Upgrade UI */}
         {needsUpgrade && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <div className="bg-white rounded-lg p-4 border border-blue-200">
@@ -516,15 +566,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
               <div className="flex gap-2 mt-3">
                 <Button
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(coverLetter || '');
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 1500);
-                    } catch {
-                      setCopied(false);
-                    }
-                  }}
+                  onClick={copyCoverLetter}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                 >
                   <Copy className="h-4 w-4 mr-2" />
