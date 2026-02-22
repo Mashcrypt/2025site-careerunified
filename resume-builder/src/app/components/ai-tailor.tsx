@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   Sparkles,
   Loader2,
@@ -9,22 +9,16 @@ import {
   Trash2,
   Lock,
   CreditCard,
-  BadgePercent
+  BadgePercent,
 } from 'lucide-react';
 
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription
-} from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import type { ResumeData } from '../types/resume';
 
-// ✅ IMPORTANT: use your initialized Firebase client (NOT getAuth() directly)
+// ✅ Use your initialized Firebase client helper
 import { getFirebaseAuth } from '../utils/firebaseClient';
 
 interface AITailorProps {
@@ -55,6 +49,18 @@ type BillingStatus = {
   freeCoverUsed: boolean;
 };
 
+function isFirebaseConfigured() {
+  // Vite exposes env vars at build time. If these are missing on Netlify,
+  // Firebase auth will often throw invalid-api-key / config errors.
+  const required = [
+    import.meta.env.VITE_FIREBASE_API_KEY,
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    import.meta.env.VITE_FIREBASE_APP_ID,
+  ];
+  return required.every((v) => typeof v === 'string' && v.trim().length > 0);
+}
+
 export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
@@ -76,13 +82,12 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [needsUpgrade, setNeedsUpgrade] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Billing status (badge + usage counter)
+  // Billing status
   const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [isLoadingBilling, setIsLoadingBilling] = useState(false);
 
   const headerText = useMemo(() => {
-    if (mode === 'cover_letter') return 'AI Cover Letter Generator';
-    return 'AI Resume Tailor';
+    return mode === 'cover_letter' ? 'AI Cover Letter Generator' : 'AI Resume Tailor';
   }, [mode]);
 
   const descriptionText = useMemo(() => {
@@ -92,7 +97,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     return 'Paste the job description below and let AI optimize your resume to match the requirements.';
   }, [mode]);
 
-  const resetResults = () => {
+  const resetResults = useCallback(() => {
     setSuggestions([]);
     setTailoredData(null);
     setCoverLetter('');
@@ -100,43 +105,86 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     setErrorMsg('');
     setCopied(false);
     setNeedsUpgrade(false);
-  };
+  }, []);
 
-  const getIdTokenOrThrow = async () => {
+  const getIdTokenOrThrow = useCallback(async () => {
+    if (!isFirebaseConfigured()) {
+      throw new Error(
+        'Firebase is not configured on this deployment. Add VITE_FIREBASE_* env vars in Netlify, then redeploy.'
+      );
+    }
+
+    // This call also ensures initializeApp() ran inside firebaseClient
     const auth = getFirebaseAuth();
+
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to use AI features.');
+
     const token = await user.getIdToken();
     if (!token) throw new Error('You must be logged in to use AI features.');
     return token;
-  };
+  }, []);
 
-  const loadBillingStatus = async () => {
+  const loadBillingStatus = useCallback(async () => {
     setIsLoadingBilling(true);
+    setErrorMsg('');
+
     try {
-      const token = await getIdTokenOrThrow();
+      if (!isFirebaseConfigured()) {
+        // show “free” state gracefully if Firebase isn't configured yet
+        setBilling({
+          plan: 'free',
+          subscriptionStatus: 'inactive',
+          used: 0,
+          limit: 0,
+          freeResumeUsed: false,
+          freeCoverUsed: false,
+        });
+        return;
+      }
+
+      const auth = getFirebaseAuth();
+
+      // If not logged in, show Free UI but don’t error
+      if (!auth.currentUser) {
+        setBilling({
+          plan: 'free',
+          subscriptionStatus: 'inactive',
+          used: 0,
+          limit: 0,
+          freeResumeUsed: false,
+          freeCoverUsed: false,
+        });
+        return;
+      }
+
+      const token = await auth.currentUser.getIdToken();
 
       const res = await fetch('/.netlify/functions/get-billing-status', {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const payload = await res.json().catch(() => null);
-      if (!res.ok) return;
+
+      if (!res.ok) {
+        // Don’t block UI on billing errors
+        return;
+      }
 
       setBilling(payload as BillingStatus);
     } catch {
-      // ignore (not logged in / network)
+      // ignore
     } finally {
       setIsLoadingBilling(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // Load on mount
     loadBillingStatus();
 
-    // Also refresh billing when auth state changes (helps when user logs in)
+    if (!isFirebaseConfigured()) return;
+
     try {
       const auth = getFirebaseAuth();
       const unsub = auth.onAuthStateChanged(() => {
@@ -146,8 +194,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     } catch {
       return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadBillingStatus]);
 
   const planLabel = useMemo(() => {
     if (!billing) return '—';
@@ -159,6 +206,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
   const usageText = useMemo(() => {
     if (!billing) return '';
+
     const isPaid = billing.plan !== 'free' && billing.subscriptionStatus === 'active';
 
     if (!isPaid) {
@@ -185,13 +233,13 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           mode,
           resumeData: data,
-          jobDescription
-        })
+          jobDescription,
+        }),
       });
 
       const payload = await res.json().catch(() => null);
@@ -206,8 +254,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       }
 
       if (!res.ok) {
-        const details =
-          payload?.error || payload?.details || 'AI request failed. Please try again.';
+        const details = payload?.error || payload?.details || 'AI request failed. Please try again.';
         setErrorMsg(String(details));
         return;
       }
@@ -234,7 +281,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         setTailoredData(typed.tailoredData);
       }
 
-      // refresh plan/usage after a successful run
       await loadBillingStatus();
     } catch (err: any) {
       setErrorMsg(err?.message || 'Network error. Please try again.');
@@ -264,16 +310,15 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ plan })
+        body: JSON.stringify({ plan }),
       });
 
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const details =
-          payload?.error || payload?.details || 'Could not start checkout. Please try again.';
+        const details = payload?.error || payload?.details || 'Could not start checkout. Please try again.';
         setErrorMsg(String(details));
         setIsRedirecting(false);
         return;
@@ -306,7 +351,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             <CardTitle>{headerText}</CardTitle>
           </div>
 
-          {/* ✅ Mode Toggle (restored) */}
+          {/* ✅ Mode Toggle */}
           <div className="inline-flex rounded-lg border border-blue-200 bg-white p-1">
             <button
               type="button"
@@ -355,6 +400,24 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {!isFirebaseConfigured() && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-700 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-900">Firebase not configured</p>
+                <p className="text-sm text-amber-800 mt-1">
+                  Add these Netlify env vars for the <b>resume-builder</b> app and redeploy:
+                  <br />
+                  <span className="font-mono text-xs">
+                    VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div>
           <Label htmlFor="jobDescription">Job Description</Label>
           <Textarea
@@ -379,11 +442,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             </>
           ) : (
             <>
-              {mode === 'cover_letter' ? (
-                <Mail className="h-4 w-4 mr-2" />
-              ) : (
-                <Sparkles className="h-4 w-4 mr-2" />
-              )}
+              {mode === 'cover_letter' ? <Mail className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
               {mode === 'cover_letter' ? 'Generate Cover Letter' : 'Tailor Resume with AI'}
             </>
           )}
@@ -395,11 +454,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-red-800">
-                  {needsUpgrade
-                    ? 'Upgrade Required'
-                    : mode === 'cover_letter'
-                    ? 'Cover Letter Error'
-                    : 'AI Tailor Error'}
+                  {needsUpgrade ? 'Upgrade Required' : mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
               </div>
