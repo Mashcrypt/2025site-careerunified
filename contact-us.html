@@ -1,282 +1,485 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Contact Us – Career Unified</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="Contact Career Unified — reach our team for questions, feedback, or support. We respond within 1 business day.">
 
-<!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#1b60a9">
-  
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Contact Us – Career Unified</title>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#1b60a9">
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+  </script>
 
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  <style>
+    /* =============================== */
+    /* RESET & BASE                    */
+    /* =============================== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: 'Poppins', Arial, sans-serif;
-  background: #f7f9fc;
-  color: #1f2937;
-  line-height: 1.7;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7f9fc;
+      color: #1f2937;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
 
-/* NAV */
-nav {
-  background: #1e3a8a;
-  padding: 15px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    /* =============================== */
+    /* HEADER                          */
+    /* =============================== */
+    header {
+      text-align: center;
+      padding: 70px 20px 55px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      width: 100%;
+    }
 
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  margin-left: 20px;
-}
+    header h1 { margin: 0; font-size: 2.75rem; font-weight: 700; }
+    header p  { margin-top: 12px; font-size: 1.1rem; color: #e5e7eb; }
 
-nav .logo { font-size: 20px; font-weight: 700; }
+    /* =============================== */
+    /* MAIN CONTENT                    */
+    /* =============================== */
+    main {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 0 20px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
 
-nav a:hover { color: #facc15; }
+    /* =============================== */
+    /* CONTENT CARDS                   */
+    /* =============================== */
+    .content-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
 
-/* HEADER */
-header {
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
-  color: white;
-  padding: 60px 20px;
-  text-align: center;
-}
+    .content-card h2 {
+      font-size: 1.3rem;
+      color: #1e3a8a;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
 
-header h1 { font-size: 40px; }
-header p { font-size: 18px; opacity: 0.95; }
+    .content-card p {
+      font-size: 0.97rem;
+      color: #374151;
+      line-height: 1.8;
+      margin-bottom: 10px;
+    }
 
-/* MAIN */
-main {
-  max-width: 1000px;
-  margin: 50px auto;
-  padding: 0 20px;
-}
+    .content-card p:last-child { margin-bottom: 0; }
 
-.section {
-  background: white;
-  padding: 35px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  margin-bottom: 35px;
-}
+    /* =============================== */
+    /* CONTACT INFO LIST               */
+    /* =============================== */
+    .contact-info {
+      list-style: none;
+      padding: 0;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.section h2 {
-  color: #1e3a8a;
-  font-size: 22px;
-  margin-bottom: 12px;
-}
+    .contact-info li {
+      font-size: 0.97rem;
+      color: #374151;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
 
-/* INFO */
-.contact-info { list-style: none; margin-top: 15px; }
-.contact-info li { margin-bottom: 8px; }
+    .contact-info li strong {
+      color: #1f2937;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
 
-/* NOTICE */
-.notice {
-  background: #f1f5ff;
-  border-left: 5px solid #2563eb;
-  padding: 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
+    /* =============================== */
+    /* NOTICE BANNER                   */
+    /* =============================== */
+    .notice {
+      background: #f1f5ff;
+      border-left: 5px solid #2563eb;
+      padding: 16px 18px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.93rem;
+      color: #1e3a8a;
+      margin-bottom: 22px;
+      line-height: 1.7;
+    }
 
-/* FORM */
-.contact-form input,
-.contact-form select,
-.contact-form textarea {
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-}
+    /* =============================== */
+    /* CONTACT FORM                    */
+    /* =============================== */
+    .form-group {
+      margin-bottom: 16px;
+    }
 
-.contact-form button {
-  background: #2563eb;
-  color: white;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-}
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 0.93rem;
+    }
 
-.contact-form button:hover { background: #1d4ed8; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      color: #111827;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-#form-status {
-  margin-top: 12px;
-  font-size: 14px;
-  font-weight: 500;
-}
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
 
-/* FOOTER */
-footer {
-  background: #1e3a8a;
-  color: white;
-  text-align: center;
-  padding: 20px;
-  font-size: 14px;
-}
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #9ca3af; }
 
-footer a {
-  color: #facc15;
-  text-decoration: none;
-  margin: 0 8px;
-}
-</style>
+    .form-group textarea {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.6;
+    }
+
+    .form-group select { background: #fff; cursor: pointer; }
+
+    #submitBtn {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+
+    #submitBtn:hover:not(:disabled) { background: #1e40af; transform: translateY(-1px); }
+    #submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    #form-status {
+      margin-top: 14px;
+      font-size: 0.93rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* =============================== */
+    /* FOOTER                          */
+    /* =============================== */
+    .main-footer {
+      text-align: center;
+      padding: 30px 20px;
+      background: #1e3a8a;
+      color: white;
+      width: 100%;
+    }
+
+    .footer-links {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a { color: #facc15; text-decoration: none; font-weight: 600; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* =============================== */
+    /* MOBILE — max-width: 900px       */
+    /* =============================== */
+    @media (max-width: 900px) {
+      header { padding: 50px 16px 40px; }
+      header h1 { font-size: 2rem; }
+      header p  { font-size: 1rem; }
+
+      main { margin: 24px auto; padding: 0 16px 60px; gap: 20px; }
+
+      .content-card { padding: 24px 18px; }
+      .content-card h2 { font-size: 1.15rem; }
+      .content-card p  { font-size: 0.93rem; }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea { font-size: 16px; padding: 14px; }
+
+      .contact-info li strong { min-width: 90px; }
+
+      .footer-links { flex-direction: column; gap: 12px; }
+    }
+
+    @media (max-width: 400px) {
+      header h1     { font-size: 1.75rem; }
+      .content-card { padding: 18px 14px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<nav>
-  <a href="index.html" class="logo">Career Unified</a>
-  <div>
+  <!-- =============================== -->
+  <!-- NAVIGATION                      -->
+  <!-- =============================== -->
+  <nav class="main-nav">
+    <a href="index.html" class="logo desktop-nav">Career Unified</a>
+    <div class="nav-links desktop-nav">
+      <a href="jobs.html">Jobs</a>
+      <a href="bursaries.html">Bursaries</a>
+      <a href="varsity.html">Varsity</a>
+      <a href="cv-generator.html">Generate CV</a>
+      <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+      <a href="recruiter-apply.html">Apply as Recruiter</a>
+      <a href="saved-items.html">Saved Items</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+      <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+    </div>
+    <div class="mobile-nav">
+      <a href="index.html" class="mobile-logo">Career Unified</a>
+      <div class="mobile-nav-right">
+        <a href="account-page.html" class="icon-btn" aria-label="My Account">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+          <svg viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
     <a href="varsity.html">Varsity</a>
     <a href="cv-generator.html">Generate CV</a>
-  </div>
-</nav>
-
-<header>
-  <h1>Contact Us</h1>
-  <p>We’re here to support and guide your journey</p>
-</header>
-
-<main>
-
-<div class="section">
-  <h2>Get in Touch</h2>
-  <p>
-    If you have questions, feedback, or suggestions regarding Career Unified,
-    we welcome you to reach out. Our team responds during business hours.
-  </p>
-</div>
-
-<div class="section">
-  <h2>Contact Information</h2>
-  <ul class="contact-info">
-    <li><strong>Platform:</strong> Career Unified (South Africa)</li>
-    <li><strong>Email:</strong> contact@careerunified.com</li>
-    <li><strong>Availability:</strong> Monday – Friday (Business Days)</li>
-  </ul>
-</div>
-
-<div class="section">
-  <h2>Send Us a Message</h2>
-
-  <div class="notice">
-    Message submission is active.<br>
-    If you don’t hear back immediately, our team will respond within <strong>1 business day</strong>.<br>
-    Please <strong>do not reply</strong> directly to the automated confirmation email.
+    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="recruiter-apply.html">Apply as Recruiter</a>
+    <a href="saved-items.html">Saved Items</a>
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
   </div>
 
-  <form id="contactForm" class="contact-form">
-    <input type="text" name="from_name" placeholder="Your Full Name" required>
-    <input type="email" name="from_email" placeholder="Your Email Address" required>
+  <!-- =============================== -->
+  <!-- HEADER                          -->
+  <!-- =============================== -->
+  <header>
+    <h1>Contact Us</h1>
+    <p>We're here to support and guide your journey</p>
+  </header>
 
-    <select name="reason" required>
-      <option value="">Reason for Contact</option>
-      <option>General Enquiry</option>
-      <option>Feedback</option>
-      <option>Support</option>
-    </select>
+  <!-- =============================== -->
+  <!-- MAIN CONTENT                    -->
+  <!-- =============================== -->
+  <main>
 
-    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+    <!-- Get in Touch -->
+    <div class="content-card">
+      <h2>Get in Touch</h2>
+      <p>
+        If you have questions, feedback, or suggestions regarding Career Unified,
+        we welcome you to reach out. Our team responds during business hours.
+      </p>
+    </div>
 
-    <button type="submit">Send Message</button>
-    <div id="form-status"></div>
-  </form>
-</div>
+    <!-- Contact Info -->
+    <div class="content-card">
+      <h2>Contact Information</h2>
+      <ul class="contact-info">
+        <li><strong>Platform:</strong> Career Unified (South Africa)</li>
+        <li><strong>Email:</strong> contact@careerunified.com</li>
+        <li><strong>Availability:</strong> Monday – Friday (Business Days)</li>
+      </ul>
+    </div>
 
-<div class="section">
-  <h2>Important Notice</h2>
-  <p>
-    Career Unified is a third-party career assistance platform.
-    We do not recruit, shortlist, hire, or award funding.
-  </p>
-  <p>
-    All job, bursary, and study applications must be completed through the
-    official employer, institution, or provider websites.
-  </p>
-</div>
+    <!-- Contact Form -->
+    <div class="content-card">
+      <h2>Send Us a Message</h2>
 
-</main>
+      <div class="notice">
+        Message submission is active. If you don't hear back immediately, our team will respond within
+        <strong>1 business day</strong>. Please <strong>do not reply</strong> directly to the automated
+        confirmation email.
+      </div>
 
-<footer>
-  <p>
-    <a href="index.html">Home</a> |
-    <a href="about-us.html">About Us</a> |
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="terms.html">Terms & Conditions</a> |
-    <a href="contact-us.html">Contact Us</a>
-  </p>
-  <p>© 2026 Career Unified. All rights reserved.</p>
-</footer>
+      <form id="contactForm">
 
-<script>
-(function(){ emailjs.init("ZdXt4LrBaHzJDfotS"); })();
+        <div class="form-group">
+          <label for="from_name">Your Full Name</label>
+          <input id="from_name" type="text" name="from_name" placeholder="e.g. Thabo Nkosi" required>
+        </div>
 
-document.getElementById("contactForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+        <div class="form-group">
+          <label for="from_email">Your Email Address</label>
+          <input id="from_email" type="email" name="from_email" placeholder="e.g. thabo@email.com" required>
+        </div>
 
-  const status = document.getElementById("form-status");
-  status.style.color = "#2563eb";
-  status.textContent = "Sending message...";
+        <div class="form-group">
+          <label for="reason">Reason for Contact</label>
+          <select id="reason" name="reason" required>
+            <option value="">Select a reason...</option>
+            <option>General Enquiry</option>
+            <option>Feedback</option>
+            <option>Support</option>
+          </select>
+        </div>
 
-  const data = {
-    from_name: this.from_name.value,
-    from_email: this.from_email.value,
-    reason: this.reason.value,
-    message: this.message.value,
-    date: new Date().toLocaleString()
-  };
+        <div class="form-group">
+          <label for="message">Your Message</label>
+          <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
+        </div>
 
-  emailjs.send("service_1g83g1d", "template_vuptbkx", data)
-    .then(() => emailjs.send("service_1g83g1d", "template_4agu3xs", data))
-    .then(() => {
-      status.style.color = "green";
-      status.textContent = "Message sent successfully. Thank you for contacting Career Unified.";
-      this.reset();
-    })
-    .catch(() => {
-      status.style.color = "red";
-      status.textContent = "Oops! Something went wrong. Please try again later.";
+        <button type="submit" id="submitBtn">Send Message</button>
+        <div id="form-status"></div>
+
+      </form>
+    </div>
+
+    <!-- Important Notice -->
+    <div class="content-card">
+      <h2>Important Notice</h2>
+      <p>
+        Career Unified is a third-party career assistance platform.
+        We do not recruit, shortlist, hire, or award funding.
+      </p>
+      <p>
+        All job, bursary, and study applications must be completed through the
+        official employer, institution, or provider websites.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- =============================== -->
+  <!-- FOOTER                          -->
+  <!-- =============================== -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="about-us.html">About Us</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="contact-us.html">Contact Us</a>
+    </div>
+    <p>&copy; 2026 Career Unified. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* =============================== */
+    /* MOBILE NAV                      */
+    /* =============================== */
+    const menuBtn    = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (menuBtn) {
+      menuBtn.onclick = () => {
+        mobileMenu.style.display = mobileMenu.style.display === 'block' ? 'none' : 'block';
+      };
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
+        if (mobileMenu) mobileMenu.style.display = 'none';
+      }
     });
-});
-</script>
+
+    /* =============================== */
+    /* EMAILJS                         */
+    /* =============================== */
+    (function () { emailjs.init("ZdXt4LrBaHzJDfotS"); })();
+
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const btn    = document.getElementById('submitBtn');
+      const status = document.getElementById('form-status');
+
+      btn.disabled    = true;
+      btn.textContent = 'Sending...';
+      status.style.color = '#2563eb';
+      status.textContent = 'Sending message...';
+
+      const data = {
+        from_name:  this.from_name.value,
+        from_email: this.from_email.value,
+        reason:     this.reason.value,
+        message:    this.message.value,
+        date:       new Date().toLocaleString()
+      };
+
+      emailjs.send('service_1g83g1d', 'template_vuptbkx', data)
+        .then(() => emailjs.send('service_1g83g1d', 'template_4agu3xs', data))
+        .then(() => {
+          status.style.color = 'green';
+          status.textContent = 'Message sent successfully. Thank you for contacting Career Unified.';
+          this.reset();
+          btn.disabled    = false;
+          btn.textContent = 'Send Message';
+        })
+        .catch(() => {
+          status.style.color = 'red';
+          status.textContent = 'Oops! Something went wrong. Please try again later.';
+          btn.disabled    = false;
+          btn.textContent = 'Send Message';
+        });
+    });
+  </script>
 
 </body>
 </html>
+
 
 
 
