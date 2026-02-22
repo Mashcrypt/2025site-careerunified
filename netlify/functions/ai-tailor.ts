@@ -71,6 +71,27 @@ function extractJsonBlock(text: string): string | null {
   return null;
 }
 
+/**
+ * Best-effort repair when the model returns extra text.
+ * - Removes leading/trailing non-JSON
+ * - Removes trailing commas
+ */
+function repairJson(text: string): string | null {
+  const block = extractJsonBlock(text) ?? text.trim();
+  if (!block) return null;
+
+  // Remove common leading/trailing junk
+  let cleaned = block;
+
+  // Remove trailing commas before } or ]
+  cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
+
+  // If it still doesn't look like JSON object, give up
+  if (!cleaned.startsWith("{") || !cleaned.endsWith("}")) return null;
+
+  return cleaned;
+}
+
 function normalizeMode(mode?: string): TailorMode {
   return mode === "cover_letter" ? "cover_letter" : "tailor";
 }
@@ -139,7 +160,7 @@ CURRENT RESUME JSON:
 ${JSON.stringify(resumeData)}
 
 TASK:
-1) Generate 4-8 short suggestions describing what you changed.
+1) Generate 4–8 short suggestions describing what you changed.
 2) Output tailoredData optimized for this job description.
 `.trim();
 
@@ -154,10 +175,15 @@ function planLimit(plan: string) {
 }
 
 function corsHeaders(origin?: string) {
-  // If you want to lock to your domain, set ALLOWED_ORIGIN=https://careerunified.com in Netlify env
+  // Set ALLOWED_ORIGIN=https://careerunified.com (or https://www.careerunified.com) in Netlify env to lock it down
   const allowed = process.env.ALLOWED_ORIGIN || "*";
   return {
-    "Access-Control-Allow-Origin": allowed === "*" ? "*" : (origin && origin === allowed ? origin : allowed),
+    "Access-Control-Allow-Origin":
+      allowed === "*"
+        ? "*"
+        : origin && origin === allowed
+        ? origin
+        : allowed,
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
@@ -181,8 +207,59 @@ function decodeBody(eventBody: string | null | undefined, isB64?: boolean) {
   try {
     return Buffer.from(eventBody, "base64").toString("utf8");
   } catch {
-    return eventBody; // fallback
+    return eventBody;
   }
+}
+
+function validateResumeShape(data: any): data is ResumeData {
+  return (
+    data &&
+    typeof data === "object" &&
+    data.personalInfo &&
+    typeof data.personalInfo.fullName === "string" &&
+    Array.isArray(data.experience) &&
+    Array.isArray(data.education) &&
+    Array.isArray(data.skills)
+  );
+}
+
+async function callGemini(params: {
+  endpoint: string;
+  systemRules: string;
+  userPrompt: string;
+  temperature: number;
+  maxOutputTokens: number;
+}) {
+  const { endpoint, systemRules, userPrompt, temperature, maxOutputTokens } = params;
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      // ✅ IMPORTANT: separate system + user roles
+      contents: [
+        { role: "system", parts: [{ text: systemRules }] },
+        { role: "user", parts: [{ text: userPrompt }] },
+      ],
+      generationConfig: {
+        temperature,
+        maxOutputTokens,
+        // ✅ IMPORTANT: force JSON output
+        responseMimeType: "application/json",
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || `Gemini request failed with status ${res.status}`);
+  }
+
+  const data = (await res.json()) as any;
+  const text =
+    data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
+
+  return text;
 }
 
 export const handler: Handler = async (event) => {
@@ -191,11 +268,7 @@ export const handler: Handler = async (event) => {
 
   // Preflight
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 204,
-      headers: baseHeaders,
-      body: "",
-    };
+    return { statusCode: 204, headers: baseHeaders, body: "" };
   }
 
   if (event.httpMethod !== "POST") {
@@ -212,6 +285,7 @@ export const handler: Handler = async (event) => {
 
   const admin = getAdmin();
 
+  // Verify token
   let uid: string;
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
@@ -220,6 +294,7 @@ export const handler: Handler = async (event) => {
     return json(401, { error: "Invalid or expired token" }, baseHeaders);
   }
 
+  // Body
   const rawBody = decodeBody(event.body, event.isBase64Encoded);
   const body = safeJsonParse<TailorRequestBody>(rawBody);
   const mode = normalizeMode(body?.mode);
@@ -228,6 +303,11 @@ export const handler: Handler = async (event) => {
     return json(400, { error: "resumeData and jobDescription are required." }, baseHeaders);
   }
 
+  if (!validateResumeShape(body.resumeData)) {
+    return json(400, { error: "resumeData shape is invalid." }, baseHeaders);
+  }
+
+  // Billing state
   const userRef = admin.firestore().doc(`users/${uid}`);
   const userSnap = await userRef.get();
   const user = userSnap.data() || {};
@@ -242,7 +322,6 @@ export const handler: Handler = async (event) => {
   const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
 
-  // If you store a checkout link on the user doc (or globally), we’ll return it.
   const authorization_url =
     (user.authorization_url as string) ||
     (user.checkoutUrl as string) ||
@@ -252,65 +331,68 @@ export const handler: Handler = async (event) => {
   // Gate access
   if (!isPaid) {
     if (mode === "tailor" && freeResumeUsed) {
-      return json(
-        402,
-        { error: "Free resume tailor already used. Please upgrade.", authorization_url },
-        baseHeaders
-      );
+      return json(402, { error: "Free resume tailor already used. Please upgrade.", authorization_url }, baseHeaders);
     }
     if (mode === "cover_letter" && freeCoverUsed) {
-      return json(
-        402,
-        { error: "Free cover letter already used. Please upgrade.", authorization_url },
-        baseHeaders
-      );
+      return json(402, { error: "Free cover letter already used. Please upgrade.", authorization_url }, baseHeaders);
     }
   } else {
     if (used >= limit) {
-      return json(
-        402,
-        { error: "Monthly limit reached. Upgrade your plan to continue.", authorization_url },
-        baseHeaders
-      );
+      return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", authorization_url }, baseHeaders);
     }
   }
 
-  // Gemini endpoint
-  // Model code `gemini-2.5-flash-lite` is valid. :contentReference[oaicite:2]{index=2}
+  // Gemini endpoint (do NOT log this; it contains the key in the URL)
   const endpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const { systemRules, userPrompt } = buildPrompts(mode, body.resumeData, body.jobDescription);
 
+  // Call Gemini with retry/fallback
   let text = "";
   try {
-    const geminiRes = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: systemRules + "\n\n" + userPrompt }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 },
-      }),
+    // First attempt: strict JSON, low randomness
+    text = await callGemini({
+      endpoint,
+      systemRules,
+      userPrompt,
+      temperature: 0.2,
+      maxOutputTokens: 1700,
     });
-
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      return json(500, { error: "Gemini request failed.", details: errText }, baseHeaders);
+  } catch (e1: any) {
+    // Retry once (network hiccup / transient model issue)
+    try {
+      text = await callGemini({
+        endpoint,
+        systemRules,
+        userPrompt,
+        temperature: 0.1,
+        maxOutputTokens: 1700,
+      });
+    } catch (e2: any) {
+      return json(
+        500,
+        { error: "Gemini request failed.", details: String(e2?.message || e2) },
+        baseHeaders
+      );
     }
-
-    const data = (await geminiRes.json()) as any;
-    text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
-  } catch (e: any) {
-    return json(500, { error: "Gemini fetch failed.", details: String(e?.message || e) }, baseHeaders);
   }
 
-  const jsonText = extractJsonBlock(text) ?? text.trim();
-  const parsed = safeJsonParse<any>(jsonText);
+  // Parse
+  const jsonCandidate = extractJsonBlock(text) ?? text.trim();
+  let parsed = safeJsonParse<any>(jsonCandidate);
 
-  // Validate parse BEFORE charging usage
+  // Repair fallback if needed
+  if (!parsed) {
+    const repaired = repairJson(text);
+    if (repaired) parsed = safeJsonParse<any>(repaired);
+  }
+
+  // Validate + update usage ONLY after success
   if (mode === "cover_letter") {
     const typed = parsed as CoverLetterResponse;
+
     if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
       return json(
         500,
@@ -319,13 +401,10 @@ export const handler: Handler = async (event) => {
       );
     }
 
-    // Usage update (atomic + safe)
+    // Usage update
     if (!isPaid) {
       await userRef.set(
-        {
-          freeCoverUsed: true,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
+        { freeCoverUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
         { merge: true }
       );
     } else {
@@ -342,6 +421,7 @@ export const handler: Handler = async (event) => {
   }
 
   const typed = parsed as TailorResponse;
+
   if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
     return json(
       500,
@@ -350,13 +430,19 @@ export const handler: Handler = async (event) => {
     );
   }
 
-  // Usage update (atomic + safe)
+  // Extra safety: ensure we didn’t lose structure
+  if (!validateResumeShape(typed.tailoredData)) {
+    return json(
+      500,
+      { error: "Gemini returned invalid tailoredData shape.", raw: text.slice(0, 4000) },
+      baseHeaders
+    );
+  }
+
+  // Usage update
   if (!isPaid) {
     await userRef.set(
-      {
-        freeResumeUsed: true,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
+      { freeResumeUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
       { merge: true }
     );
   } else {
