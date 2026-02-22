@@ -118,6 +118,46 @@ export default function App() {
       scale: 2,
       useCORS: true,
       logging: false,
+
+      // ✅ Fix: html2canvas doesn't support oklch() / some gradients (Tailwind v4)
+      // We clone the DOM and strip gradient + OKLCH backgrounds before capture.
+      onclone: (clonedDoc) => {
+        try {
+          clonedDoc.documentElement.style.background = '#ffffff';
+          clonedDoc.body.style.background = '#ffffff';
+
+          const win = clonedDoc.defaultView;
+          if (!win) return;
+
+          clonedDoc.querySelectorAll('*').forEach((node) => {
+            const element = node as HTMLElement;
+            const style = win.getComputedStyle(element);
+
+            const bgImg = style.backgroundImage || '';
+            const bg = style.background || '';
+            const color = style.color || '';
+            const borderColor = style.borderColor || '';
+
+            // If any computed styles include oklch(), remove risky backgrounds.
+            const hasOklch =
+              bg.includes('oklch(') ||
+              bgImg.includes('oklch(') ||
+              color.includes('oklch(') ||
+              borderColor.includes('oklch(');
+
+            const hasGradient = bgImg.includes('gradient');
+
+            if (hasGradient || hasOklch) {
+              element.style.backgroundImage = 'none';
+              // Keep it readable: default to white background if it had gradients
+              element.style.backgroundColor = '#ffffff';
+            }
+          });
+        } catch {
+          // If anything goes wrong in clone, do nothing.
+          // Better to attempt export than block the user.
+        }
+      },
     });
 
     const imgData = canvas.toDataURL('image/png');
