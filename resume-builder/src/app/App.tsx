@@ -58,10 +58,30 @@ export default function App() {
     description: string;
     category: string;
   }[] = [
-    { id: 'modern', name: 'Modern', description: 'Clean and contemporary with bold accents', category: 'Popular' },
-    { id: 'professional', name: 'Professional', description: 'Classic two-column layout for corporate roles', category: 'Corporate' },
-    { id: 'creative', name: 'Creative', description: 'Bold gradient design for creative industries', category: 'Creative' },
-    { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant typography-focused', category: 'Clean' },
+    {
+      id: 'modern',
+      name: 'Modern',
+      description: 'Clean and contemporary with bold accents',
+      category: 'Popular',
+    },
+    {
+      id: 'professional',
+      name: 'Professional',
+      description: 'Classic two-column layout for corporate roles',
+      category: 'Corporate',
+    },
+    {
+      id: 'creative',
+      name: 'Creative',
+      description: 'Bold gradient design for creative industries',
+      category: 'Creative',
+    },
+    {
+      id: 'minimalist',
+      name: 'Minimalist',
+      description: 'Simple and elegant typography-focused',
+      category: 'Clean',
+    },
   ];
 
   const renderTemplate = () => {
@@ -80,69 +100,53 @@ export default function App() {
     }
   };
 
-  /**
-   * PRINT-TO-PDF EXPORT (Fixes html2canvas oklch() crash)
-   * User clicks "Download PDF" -> opens a clean print window -> user saves as PDF.
-   */
-  const handleExport = () => {
+  const handleExport = async () => {
     const el = previewRef.current;
     if (!el) {
       alert('Preview not ready yet. Please try again.');
       return;
     }
 
-    const html = el.innerHTML;
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ]);
 
-    const win = window.open('', '_blank', 'noopener,noreferrer');
-    if (!win) {
-      alert('Popup blocked. Please allow popups to download PDF.');
-      return;
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
     }
 
-    // Copy <style> and stylesheet <link> tags so the resume looks identical
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-      .map((node) => (node as HTMLElement).outerHTML)
-      .join('\n');
-
-    win.document.open();
-    win.document.write(`
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${fileSafeName}</title>
-  ${styles}
-  <style>
-    /* Print tuning */
-    @page { size: A4; margin: 12mm; }
-    body { background: white !important; }
-    /* Ensure full width and avoid clipping */
-    .print-wrap { width: 100%; }
-  </style>
-</head>
-<body>
-  <div class="print-wrap">
-    ${html}
-  </div>
-  <script>
-    // Give styles time to load then print
-    window.onload = () => {
-      window.focus();
-      window.print();
-      // close after print dialog (some browsers ignore)
-      setTimeout(() => window.close(), 300);
-    };
-  </script>
-</body>
-</html>
-    `);
-    win.document.close();
+    pdf.save(`${fileSafeName}.pdf`);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* Career Unified Header (keep your normal navbar — no Download button here) */}
+      {/* Career Unified Header */}
       <header className="sticky top-0 z-50 bg-[#1e3a8a] text-white shadow">
         <div className="mx-auto max-w-[1400px] px-5 py-4 flex items-center justify-between">
           <a href="/index.html" className="text-2xl font-bold tracking-tight">
@@ -150,18 +154,36 @@ export default function App() {
           </a>
 
           <nav className="hidden lg:flex items-center gap-8 text-[15px] font-semibold">
-            <a className="hover:opacity-90" href="/jobs.html">Jobs</a>
-            <a className="hover:opacity-90" href="/bursaries.html">Bursaries</a>
-            <a className="hover:opacity-90" href="/varsity.html">Varsity</a>
-            <a className="hover:opacity-90" href="/cv-generator/">Generate CV</a>
-            <a className="hover:opacity-90" href="/recruiter-dashboard.html">Recruiter Dashboard</a>
-            <a className="hover:opacity-90" href="/recruiter-apply.html">Apply as Recruiter</a>
-            <a className="hover:opacity-90" href="/saved-items.html">Saved Items</a>
-            <a className="hover:opacity-90" href="/signup.html">Sign Up</a>
-            <a className="hover:opacity-90" href="/login.html">Login</a>
+            <a className="hover:opacity-90" href="/jobs.html">
+              Jobs
+            </a>
+            <a className="hover:opacity-90" href="/bursaries.html">
+              Bursaries
+            </a>
+            <a className="hover:opacity-90" href="/varsity.html">
+              Varsity
+            </a>
+            <a className="hover:opacity-90" href="/cv-generator/">
+              Generate CV
+            </a>
+            <a className="hover:opacity-90" href="/recruiter-dashboard.html">
+              Recruiter Dashboard
+            </a>
+            <a className="hover:opacity-90" href="/recruiter-apply.html">
+              Apply as Recruiter
+            </a>
+            <a className="hover:opacity-90" href="/saved-items.html">
+              Saved Items
+            </a>
+            <a className="hover:opacity-90" href="/signup.html">
+              Sign Up
+            </a>
+            <a className="hover:opacity-90" href="/login.html">
+              Login
+            </a>
           </nav>
 
-          {/* Mobile menu only */}
+          {/* Mobile menu (NO Download button here) */}
           <div className="flex items-center gap-3">
             <Sheet>
               <SheetTrigger asChild className="lg:hidden">
@@ -183,10 +205,6 @@ export default function App() {
                     <BarChart3 className="h-4 w-4 mr-2" />
                     Analytics
                   </Button>
-                  <Button onClick={handleExport}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download PDF
-                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
@@ -205,32 +223,50 @@ export default function App() {
           <div className="lg:col-span-5">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 bg-white shadow-sm">
-                <TabsTrigger value="build" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="build"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <FileText className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Build</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="templates" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="templates"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Palette className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Templates</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="ai" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="ai"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Wand2 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">AI Tailor</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="analytics" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="analytics"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <BarChart3 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Analytics</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="import" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="import"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Upload className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Import</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="versions" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="versions"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <FolderOpen className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Versions</span>
                 </TabsTrigger>
@@ -247,6 +283,7 @@ export default function App() {
               <TabsContent value="templates" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4 space-y-6">
+                    {/* (unchanged templates UI) */}
                     <div>
                       <h2 className="text-2xl mb-2">Premium Templates</h2>
                       <p className="text-sm text-gray-600 mb-6">
@@ -269,6 +306,7 @@ export default function App() {
                             onClick={() => setSelectedTemplate(template.id)}
                           >
                             <CardContent className="p-6">
+                              {/* (unchanged preview blocks) */}
                               <div className="aspect-[8.5/11] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg mb-4 flex items-center justify-center shadow-inner overflow-hidden" />
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1">
@@ -329,15 +367,19 @@ export default function App() {
           {/* Right Panel - Preview */}
           <div className="lg:col-span-7">
             <div className="sticky top-24">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Eye className="h-5 w-5 text-blue-600" />
                   <h2 className="text-xl">Live Preview</h2>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {/* Download lives here now */}
-                  <Button onClick={handleExport} className="bg-white text-[#1e3a8a] hover:opacity-90">
+                {/* ✅ Export + zoom controls live HERE now */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Button
+                    onClick={handleExport}
+                    className="bg-white text-[#1e3a8a] border border-blue-200 hover:bg-blue-50"
+                    variant="outline"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF
                   </Button>
