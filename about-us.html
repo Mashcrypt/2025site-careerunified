@@ -1,318 +1,477 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>About Us – Career Unified</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="Learn about Career Unified — a digital opportunity discovery platform helping South Africans find jobs, bursaries, universities, and career resources in one place.">
 
-<!-- Favicon -->
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0d47ff">
+  <title>About Us – Career Unified</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#1b60a9">
 
-  
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
-</script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+  </script>
 
-<style>
-/* ===============================
-   GLOBAL
-================================ */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  <style>
+    /* =============================== */
+    /* RESET & BASE                    */
+    /* =============================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-  background: #f7f9fc;
-  color: #1f2937;
-  line-height: 1.75;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7f9fc;
+      color: #1f2937;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
 
-/* ===============================
-   NAV BAR (HOME STYLE)
-================================ */
-.main-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1e3a8a;
-  padding: 14px 28px;
-}
+    /* =============================== */
+    /* HEADER                          */
+    /* =============================== */
+    header {
+      text-align: center;
+      padding: 70px 20px 55px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      width: 100%;
+    }
 
-.main-nav .logo {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  text-decoration: none;
-}
+    header h1 {
+      margin: 0;
+      font-size: 2.75rem;
+      font-weight: 700;
+    }
 
-.nav-links a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 18px;
-  font-weight: 500;
-  padding-bottom: 4px;
-}
+    header p {
+      margin-top: 12px;
+      font-size: 1.15rem;
+      color: #e5e7eb;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-.nav-links a:hover {
-  opacity: 0.9;
-}
+    /* =============================== */
+    /* MAIN CONTENT                    */
+    /* =============================== */
+    main {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 0 20px 60px;
+    }
 
-/* ===============================
-   HERO HEADER
-================================ */
-header {
-  background: linear-gradient(90deg, #1e3a8a, #2563eb);
-  color: white;
-  padding: 80px 20px;
-  text-align: center;
-}
+    .content-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 50px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
 
-header h1 {
-  font-size: 46px;
-  margin-bottom: 12px;
-  font-weight: 700;
-}
+    /* =============================== */
+    /* SECTIONS                        */
+    /* =============================== */
+    section {
+      margin-bottom: 40px;
+    }
 
-header p {
-  font-size: 19px;
-  max-width: 720px;
-  margin: auto;
-  opacity: 0.95;
-}
+    section:last-child {
+      margin-bottom: 0;
+    }
 
-/* ===============================
-   MAIN WRAPPER
-================================ */
-main {
-  max-width: 950px;
-  margin: 50px auto;
-  background: white;
-  padding: 50px;
-  border-radius: 16px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-}
+    section h2 {
+      font-size: 1.4rem;
+      color: #1e3a8a;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
 
-section {
-  margin-bottom: 45px;
-}
+    section p {
+      font-size: 0.97rem;
+      color: #374151;
+      margin-bottom: 12px;
+      line-height: 1.8;
+    }
 
-section h2 {
-  font-size: 24px;
-  color: #1e3a8a;
-  margin-bottom: 12px;
-}
+    section p:last-child {
+      margin-bottom: 0;
+    }
 
-section p {
-  font-size: 15.5px;
-  margin-bottom: 14px;
-}
+    section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-/* ===============================
-   HIGHLIGHT BANNER
-================================ */
-.highlight {
-  background: #f1f5ff;
-  border-left: 5px solid #2563eb;
-  padding: 25px;
-  border-radius: 10px;
-  margin: 40px 0;
-}
+    section ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.97rem;
+      color: #374151;
+    }
 
-.highlight strong {
-  color: #1e3a8a;
-}
+    section ul li::before {
+      content: '✓';
+      color: #2563eb;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
 
-/* ===============================
-   VALUES GRID
-================================ */
-.values {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 22px;
-  margin-top: 25px;
-}
+    /* =============================== */
+    /* HIGHLIGHT BANNER                */
+    /* =============================== */
+    .highlight {
+      background: #f1f5ff;
+      border-left: 5px solid #2563eb;
+      padding: 20px 24px;
+      border-radius: 0 10px 10px 0;
+      margin: 10px 0 40px;
+    }
 
-.value-box {
-  background: #f9fbff;
-  padding: 22px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
+    .highlight p {
+      margin: 0;
+      font-size: 1rem;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
 
-.value-box h3 {
-  font-size: 16px;
-  color: #1e3a8a;
-  margin-bottom: 8px;
-}
+    /* =============================== */
+    /* VALUES GRID                     */
+    /* =============================== */
+    .values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
 
-/* ===============================
-   TRUST SECTION
-================================ */
-.trust {
-  background: #0f172a;
-  color: #e5e7eb;
-  padding: 35px;
-  border-radius: 14px;
-}
+    .value-box {
+      background: #f9fbff;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
 
-.trust h2 {
-  color: #facc15;
-}
+    .value-box h3 {
+      font-size: 1rem;
+      color: #1e3a8a;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
 
-/* ===============================
-   FOOTER
-================================ */
-footer {
-  background: #1e3a8a;
-  color: white;
-  text-align: center;
-  padding: 25px 20px;
-  margin-top: 60px;
-  font-size: 14px;
-}
+    .value-box p {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin: 0;
+    }
 
-footer a {
-  color: #facc15;
-  text-decoration: none;
-  margin: 0 10px;
-}
+    /* =============================== */
+    /* TRUST SECTION                   */
+    /* =============================== */
+    .trust {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 30px;
+      border-radius: 14px;
+    }
 
-footer a:hover {
-  text-decoration: underline;
-}
+    .trust h2 {
+      color: #facc15;
+      margin-bottom: 12px;
+    }
 
-/* ===============================
-   RESPONSIVE
-================================ */
-@media (max-width: 768px) {
-  .main-nav {
-    flex-direction: column;
-    gap: 10px;
-  }
+    .trust p {
+      color: #d1d5db;
+      margin-bottom: 0;
+    }
 
-  main {
-    padding: 30px;
-    margin: 20px;
-  }
+    /* =============================== */
+    /* DIVIDER                         */
+    /* =============================== */
+    .divider {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 40px 0;
+    }
 
-  header h1 {
-    font-size: 32px;
-  }
+    /* =============================== */
+    /* FOOTER                          */
+    /* =============================== */
+    .main-footer {
+      text-align: center;
+      padding: 30px 20px;
+      background: #1e3a8a;
+      color: white;
+      width: 100%;
+    }
 
-  header p {
-    font-size: 16px;
-  }
-}
-</style>
+    .footer-links {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #facc15;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* =============================== */
+    /* MOBILE — max-width: 900px       */
+    /* =============================== */
+    @media (max-width: 900px) {
+      header {
+        padding: 50px 16px 40px;
+      }
+
+      header h1 { font-size: 2rem; }
+      header p  { font-size: 1rem; }
+
+      main { margin: 24px auto; padding: 0 16px 60px; }
+
+      .content-card { padding: 28px 20px; }
+
+      section h2     { font-size: 1.25rem; }
+      section p,
+      section ul li  { font-size: 0.93rem; }
+
+      .values { grid-template-columns: 1fr; }
+
+      .trust { padding: 22px 18px; }
+
+      .footer-links { flex-direction: column; gap: 12px; }
+    }
+
+    /* =============================== */
+    /* MOBILE — max-width: 400px       */
+    /* =============================== */
+    @media (max-width: 400px) {
+      header h1      { font-size: 1.75rem; }
+      .content-card  { padding: 20px 14px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- NAV BAR -->
-<nav class="main-nav">
-  <a href="index.html" class="logo">Career Unified</a>
-  <div class="nav-links">
+  <!-- =============================== -->
+  <!-- NAVIGATION                      -->
+  <!-- =============================== -->
+  <nav class="main-nav">
+
+    <!-- Desktop -->
+    <a href="index.html" class="logo desktop-nav">Career Unified</a>
+    <div class="nav-links desktop-nav">
+      <a href="jobs.html">Jobs</a>
+      <a href="bursaries.html">Bursaries</a>
+      <a href="varsity.html">Varsity</a>
+      <a href="cv-generator.html">Generate CV</a>
+      <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+      <a href="recruiter-apply.html">Apply as Recruiter</a>
+      <a href="saved-items.html">Saved Items</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+      <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Mobile -->
+    <div class="mobile-nav">
+      <a href="index.html" class="mobile-logo">Career Unified</a>
+      <div class="mobile-nav-right">
+        <a href="account-page.html" class="icon-btn" aria-label="My Account">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+          <svg viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- Mobile Slide Menu -->
+  <div class="mobile-menu" id="mobileMenu">
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
     <a href="varsity.html">Varsity</a>
     <a href="cv-generator.html">Generate CV</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<header>
-  <h1>About Career Unified</h1>
-  <p>One click from your dream — simplifying access to opportunities</p>
-</header>
-
-<!-- CONTENT -->
-<main>
-
-  <section>
-    <h2>Who We Are</h2>
-    <p>
-      Career Unified is a digital opportunity discovery platform designed to help
-      individuals find jobs, bursaries, universities, and career resources in
-      one central, easy-to-use space.
-    </p>
-    <p>
-      We know that opportunity searches can be confusing, time-consuming,
-      and fragmented. Career Unified exists to bring clarity and simplicity.
-    </p>
-  </section>
-
-  <section>
-    <h2>Why Career Unified Exists</h2>
-    <p>
-      Many opportunities are missed not because people lack potential,
-      but because information is scattered, unclear, or hard to access.
-    </p>
-    <p>
-      Career Unified was created to bridge that gap — by organizing publicly
-      available opportunities and presenting them in a way that is
-      accessible, transparent, and practical.
-    </p>
-  </section>
-
-  <div class="highlight">
-    <p>
-      <strong>Our belief:</strong> Access to information should never be the
-      reason someone misses an opportunity.
-    </p>
+    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="recruiter-apply.html">Apply as Recruiter</a>
+    <a href="saved-items.html">Saved Items</a>
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
   </div>
 
-  <section>
-    <h2>What We Do</h2>
-    <ul>
-      <li>Job opportunities and graduate programmes</li>
-      <li>Bursaries, scholarships, and funding options</li>
-      <li>University and higher education information</li>
-      <li>Career tools such as CV tips and generators</li>
-    </ul>
-  </section>
+  <!-- =============================== -->
+  <!-- HEADER                          -->
+  <!-- =============================== -->
+  <header>
+    <h1>About Career Unified</h1>
+    <p>One click from your dream — simplifying access to opportunities</p>
+  </header>
 
-  <section class="trust">
-    <h2>Trust & Responsibility</h2>
-    <p>
-      Career Unified operates as a third-party platform. Users are encouraged
-      to verify details directly with official providers.
-    </p>
-  </section>
+  <!-- =============================== -->
+  <!-- MAIN CONTENT                    -->
+  <!-- =============================== -->
+  <main>
+    <div class="content-card">
 
-</main>
+      <section>
+        <h2>Who We Are</h2>
+        <p>
+          Career Unified is a digital opportunity discovery platform designed to help
+          individuals find jobs, bursaries, universities, and career resources in
+          one central, easy-to-use space.
+        </p>
+        <p>
+          We know that opportunity searches can be confusing, time-consuming,
+          and fragmented. Career Unified exists to bring clarity and simplicity.
+        </p>
+      </section>
 
-<!-- FOOTER -->
-<footer>
-  <p>© 2025 Career Unified. All rights reserved.</p>
-  <p>
-    <a href="index.html">Home</a> |
-    <a href="about-us.html">About Us</a> |
-    <a href="terms.html">Terms</a> |
-    <a href="privacy.html">Privacy</a> |
-    <a href="contact-us.html">Contact Us</a>
-  </p>
-</footer>
+      <hr class="divider">
+
+      <section>
+        <h2>Why Career Unified Exists</h2>
+        <p>
+          Many opportunities are missed not because people lack potential,
+          but because information is scattered, unclear, or hard to access.
+        </p>
+        <p>
+          Career Unified was created to bridge that gap — by organising publicly
+          available opportunities and presenting them in a way that is
+          accessible, transparent, and practical.
+        </p>
+      </section>
+
+      <div class="highlight">
+        <p>Our belief: Access to information should never be the reason someone misses an opportunity.</p>
+      </div>
+
+      <section>
+        <h2>What We Do</h2>
+        <ul>
+          <li>Job opportunities and graduate programmes</li>
+          <li>Bursaries, scholarships, and funding options</li>
+          <li>University and higher education information</li>
+          <li>Career tools such as CV tips and generators</li>
+        </ul>
+      </section>
+
+      <hr class="divider">
+
+      <section>
+        <h2>Our Values</h2>
+        <div class="values">
+          <div class="value-box">
+            <h3>Accessibility</h3>
+            <p>Making opportunities available to everyone, regardless of background.</p>
+          </div>
+          <div class="value-box">
+            <h3>Transparency</h3>
+            <p>Presenting information clearly and honestly without hidden agendas.</p>
+          </div>
+          <div class="value-box">
+            <h3>Empowerment</h3>
+            <p>Giving people the tools and knowledge to take their next step confidently.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <section class="trust">
+        <h2>Trust &amp; Responsibility</h2>
+        <p>
+          Career Unified operates as a third-party platform. Users are encouraged
+          to verify details directly with official providers before applying.
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- =============================== -->
+  <!-- FOOTER                          -->
+  <!-- =============================== -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="about-us.html">About Us</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="contact-us.html">Contact Us</a>
+    </div>
+    <p>&copy; 2026 Career Unified. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* =============================== */
+    /* MOBILE NAV                      */
+    /* =============================== */
+    const menuBtn    = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (menuBtn) {
+      menuBtn.onclick = () => {
+        const isOpen = mobileMenu.style.display === 'block';
+        mobileMenu.style.display = isOpen ? 'none' : 'block';
+      };
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
+        if (mobileMenu) mobileMenu.style.display = 'none';
+      }
+    });
+  </script>
 
 </body>
 </html>
+
 
 
 
