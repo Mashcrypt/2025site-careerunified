@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -7,6 +7,7 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
 import type { ResumeData, Experience, Education, Project } from '../types/resume';
+import { EMPTY_RESUME } from '../types/resume';
 
 interface ResumeBuilderProps {
   data: ResumeData;
@@ -14,6 +15,8 @@ interface ResumeBuilderProps {
 }
 
 export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
+  const [showClearModal, setShowClearModal] = useState(false);
+
   const updatePersonalInfo = (field: string, value: string) => {
     onChange({
       ...data,
@@ -110,13 +113,31 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
     onChange({ ...data, skills: value.split(',').map((s) => s.trim()).filter(Boolean) });
   };
 
+  const handleClearTemplate = () => {
+    onChange(EMPTY_RESUME);
+    setShowClearModal(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Personal Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle>Personal Information</CardTitle>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClearModal(true)}
+              title="Clear all pre-filled template content"
+            >
+              Clear template
+            </Button>
+          </div>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -199,7 +220,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Work Experience</CardTitle>
-          <Button onClick={addExperience} size="sm">
+          <Button onClick={addExperience} size="sm" type="button">
             <Plus className="h-4 w-4 mr-2" />
             Add Experience
           </Button>
@@ -214,7 +235,9 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                   <Button
                     variant="ghost"
                     size="sm"
+                    type="button"
                     onClick={() => deleteExperience(exp.id)}
+                    aria-label="Delete experience"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -272,7 +295,9 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                   <Textarea
                     value={exp.description}
                     onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
-                    placeholder="• Led development of key features&#10;• Collaborated with cross-functional teams&#10;• Improved performance by 30%"
+                    placeholder={
+                      "• Led development of key features\n• Collaborated with cross-functional teams\n• Improved performance by 30%"
+                    }
                     rows={4}
                   />
                 </div>
@@ -286,7 +311,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Education</CardTitle>
-          <Button onClick={addEducation} size="sm">
+          <Button onClick={addEducation} size="sm" type="button">
             <Plus className="h-4 w-4 mr-2" />
             Add Education
           </Button>
@@ -301,7 +326,9 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                   <Button
                     variant="ghost"
                     size="sm"
+                    type="button"
                     onClick={() => deleteEducation(edu.id)}
+                    aria-label="Delete education"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -378,7 +405,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Projects (Optional)</CardTitle>
-          <Button onClick={addProject} size="sm">
+          <Button onClick={addProject} size="sm" type="button">
             <Plus className="h-4 w-4 mr-2" />
             Add Project
           </Button>
@@ -393,7 +420,9 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                   <Button
                     variant="ghost"
                     size="sm"
+                    type="button"
                     onClick={() => deleteProject(proj.id)}
+                    aria-label="Delete project"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -447,6 +476,42 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
           ))}
         </CardContent>
       </Card>
+
+      {/* Clear Template Modal */}
+      {showClearModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold">Clear all template content?</h2>
+
+            <p className="mt-2 text-sm text-gray-600">
+              This will remove all pre-filled personal info, summary, experience, education,
+              skills, projects, and certifications.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowClearModal(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleClearTemplate}
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
