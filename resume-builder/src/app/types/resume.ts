@@ -1,3 +1,7 @@
+// ================================
+// Resume Types
+// ================================
+
 export interface ResumeData {
   personalInfo: {
     fullName: string;
@@ -43,4 +47,29 @@ export interface Project {
   link?: string;
 }
 
-export type TemplateType = 'modern' | 'professional' | 'creative' | 'minimalist';
+export type TemplateType =
+  | 'modern'
+  | 'professional'
+  | 'creative'
+  | 'minimalist';
+
+// ================================
+// Empty Resume (Clear Template)
+// ================================
+
+export const EMPTY_RESUME: ResumeData = {
+  personalInfo: {
+    fullName: '',
+    email: '',
+    phone: '',
+    location: '',
+    linkedin: '',
+    website: '',
+    summary: '',
+  },
+  experience: [],
+  education: [],
+  skills: [],
+  projects: [],
+  certifications: [],
+};
