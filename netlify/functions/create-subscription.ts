@@ -45,21 +45,48 @@ function getPlanCode(plan: PlanId) {
   return process.env.PAYSTACK_PLAN_CAREERPRO;
 }
 
+/**
+ * Paystack transaction/initialize still expects an `amount`
+ * (smallest currency unit: cents for ZAR).
+ *
+ * Add these env vars in Netlify:
+ * - PAYSTACK_AMOUNT_STARTER
+ * - PAYSTACK_AMOUNT_JOBSEEKER
+ * - PAYSTACK_AMOUNT_CAREERPRO
+ *
+ * Example values (ZAR):
+ * - 9900  = R99.00
+ * - 14900 = R149.00
+ * - 24900 = R249.00
+ */
+function getPlanAmount(plan: PlanId) {
+  const raw =
+    plan === "starter"
+      ? process.env.PAYSTACK_AMOUNT_STARTER
+      : plan === "job_seeker"
+      ? process.env.PAYSTACK_AMOUNT_JOBSEEKER
+      : process.env.PAYSTACK_AMOUNT_CAREERPRO;
+
+  if (!raw) return null;
+
+  const amount = Number(raw);
+  if (!Number.isFinite(amount)) return null;
+  if (amount <= 0) return null;
+
+  // Paystack expects integer amount (smallest unit)
+  return Math.round(amount);
+}
+
 function getSiteUrl(event: any) {
-  // Netlify provides these env vars in production
   const envUrl =
     process.env.URL ||
     process.env.DEPLOY_PRIME_URL ||
     process.env.SITE_URL ||
     "";
 
-  // As fallback, try request origin
   const origin = event.headers?.origin || event.headers?.Origin || "";
-
-  // Prefer env URL because origin can be missing
   const base = (envUrl || origin || "").replace(/\/$/, "");
 
-  // Final fallback (avoid placeholders)
   return base || "https://careerunified.com";
 }
 
@@ -77,14 +104,19 @@ export const handler: Handler = async (event) => {
   }
 
   const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
-  if (!paystackSecret) return json(500, { error: "Missing PAYSTACK_SECRET_KEY" }, baseHeaders);
+  if (!paystackSecret) {
+    return json(500, { error: "Missing PAYSTACK_SECRET_KEY" }, baseHeaders);
+  }
 
   const authHeader = event.headers.authorization || event.headers.Authorization;
   const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
+  if (!idToken) {
+    return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
+  }
 
   // Parse body safely (Netlify can base64 encode)
   const rawBody = decodeBody(event.body, event.isBase64Encoded);
+
   let plan: PlanId | undefined;
   try {
     const parsed = JSON.parse(rawBody || "{}");
@@ -98,7 +130,24 @@ export const handler: Handler = async (event) => {
   }
 
   const planCode = getPlanCode(plan);
-  if (!planCode) return json(500, { error: `Missing plan code env var for ${plan}` }, baseHeaders);
+  if (!planCode) {
+    return json(500, { error: `Missing plan code env var for ${plan}` }, baseHeaders);
+  }
+
+  const amount = getPlanAmount(plan);
+  if (!amount) {
+    return json(
+      500,
+      {
+        error: `Missing/invalid amount env var for ${plan}.`,
+        hint:
+          "Set PAYSTACK_AMOUNT_STARTER / PAYSTACK_AMOUNT_JOBSEEKER / PAYSTACK_AMOUNT_CAREERPRO to an integer in cents (e.g. 9900 = R99.00).",
+      },
+      baseHeaders
+    );
+  }
+
+  const currency = (process.env.PAYSTACK_CURRENCY || "ZAR").toUpperCase();
 
   const admin = getAdmin();
 
@@ -122,18 +171,24 @@ export const handler: Handler = async (event) => {
   if (!email) {
     return json(
       400,
-      { error: "User email not found. Ensure Firebase Auth provides email or save it in users/{uid}." },
+      {
+        error:
+          "User email not found. Ensure Firebase Auth provides email or save it in users/{uid}.",
+      },
       baseHeaders
     );
   }
 
-  // Use a reliable site URL for callback
   const siteUrl = getSiteUrl(event);
   const callbackUrl = `${siteUrl}/billing/success`;
 
+  // ✅ Paystack initialize payload
+  // NOTE: `amount` is REQUIRED here (smallest currency unit)
   const payload = {
     email,
-    plan: planCode, // Paystack expects plan_code here for subscriptions
+    amount,
+    currency,
+    plan: planCode,
     callback_url: callbackUrl,
     metadata: {
       uid,
@@ -153,12 +208,20 @@ export const handler: Handler = async (event) => {
 
   const data = await res.json().catch(() => null);
 
-  // Paystack returns status: true/false + message
   if (!res.ok || !data?.status || !data?.data?.authorization_url) {
     return json(
       500,
       {
         error: "Paystack initialize failed",
+        request_payload: {
+          // don’t echo secrets; safe fields only
+          email,
+          amount,
+          currency,
+          plan: planCode,
+          callback_url: callbackUrl,
+          metadata: payload.metadata,
+        },
         paystack_status: data?.status ?? null,
         paystack_message: data?.message ?? null,
         details: data,
