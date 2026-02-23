@@ -40,10 +40,11 @@ import { southAfricanSampleData } from './utils/sample-data';
 const initialData: ResumeData = southAfricanSampleData;
 
 // ✅ Add new premium template ids without touching your shared TemplateType union.
-// We'll keep selectedTemplate as TemplateType for the existing 4.
-// Premium templates will show in the list but be locked (or can be wired later).
 type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
 type AnyTemplateId = TemplateType | PremiumTemplateId;
+
+// Your templates render at A4-ish pixel size (many resume templates use ~816px width)
+const TEMPLATE_CANVAS_WIDTH = 816;
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
@@ -51,21 +52,29 @@ export default function App() {
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
 
-  // ✅ Default scale is lower on mobile so the resume fits the screen centered
-  const [previewScale, setPreviewScale] = useState(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) return 0.38;
-    return 0.75;
-  });
+  // User zoom control (we’ll combine it with fitScale on mobile)
+  const [previewScale, setPreviewScale] = useState(0.75);
 
-  // ✅ Monetization flag (wire this to your real billing/subscription later)
+  // ✅ Auto-fit scale (so preview fills available width on mobile)
+  const [fitScale, setFitScale] = useState(1);
+
+  // ✅ Track mobile safely (no window checks in render)
+  const [isMobile, setIsMobile] = useState(false);
+
+  // ✅ Monetization flag (wire this later)
   const [hasAIPlan, setHasAIPlan] = useState(false);
-
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  // ✅ Navbar mobile menu state (matches varsity.html behavior)
+  // ✅ Navbar mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close menu when clicking outside (matches varsity.html script)
+  // Export target (the resume preview)
+  const previewRef = useRef<HTMLDivElement | null>(null);
+
+  // Wrap container ref (we measure this width to compute fitScale)
+  const previewWrapRef = useRef<HTMLDivElement | null>(null);
+
+  // Close mobile menu when clicking outside
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -77,8 +86,58 @@ export default function App() {
     return () => document.removeEventListener('click', onDocClick);
   }, []);
 
-  // Export target (the resume preview)
-  const previewRef = useRef<HTMLDivElement | null>(null);
+  // ✅ Detect mobile once (and on resize)
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1024px)');
+    const apply = () => setIsMobile(mql.matches);
+
+    apply();
+    // Safari compatibility
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', apply);
+      return () => mql.removeEventListener('change', apply);
+    } else {
+      // @ts-expect-error old safari
+      mql.addListener(apply);
+      // @ts-expect-error old safari
+      return () => mql.removeListener(apply);
+    }
+  }, []);
+
+  // ✅ Mobile default zoom: on phones, start at 1 so fitScale does the heavy lifting
+  useEffect(() => {
+    if (isMobile) setPreviewScale(1);
+  }, [isMobile]);
+
+  // ✅ Auto-fit preview width using ResizeObserver (safe + fallback)
+  useEffect(() => {
+    const el = previewWrapRef.current;
+    if (!el) return;
+
+    const compute = () => {
+      const width = el.clientWidth || 0;
+
+      // Give breathing room so it doesn’t touch edges
+      const paddingAllowance = isMobile ? 18 : 24;
+      const usable = Math.max(0, width - paddingAllowance);
+
+      const nextFit = Math.min(1, usable / TEMPLATE_CANVAS_WIDTH);
+      setFitScale(Number.isFinite(nextFit) && nextFit > 0 ? nextFit : 1);
+    };
+
+    compute();
+
+    // Prefer ResizeObserver when available
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => compute());
+      ro.observe(el);
+      return () => ro.disconnect();
+    }
+
+    // Fallback: window resize
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, [isMobile]);
 
   // Safe filename for downloads
   const fileSafeName = useMemo(() => {
@@ -96,54 +155,14 @@ export default function App() {
     category: string;
     premium?: boolean;
   }[] = [
-    // Free templates (existing)
-    {
-      id: 'modern',
-      name: 'Modern',
-      description: 'Clean and contemporary with bold accents',
-      category: 'Popular',
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      description: 'Classic two-column layout for corporate roles',
-      category: 'Corporate',
-    },
-    {
-      id: 'creative',
-      name: 'Creative',
-      description: 'Bold gradient design for creative industries',
-      category: 'Creative',
-    },
-    {
-      id: 'minimalist',
-      name: 'Minimalist',
-      description: 'Simple and elegant typography-focused',
-      category: 'Clean',
-    },
+    { id: 'modern', name: 'Modern', description: 'Clean and contemporary with bold accents', category: 'Popular' },
+    { id: 'professional', name: 'Professional', description: 'Classic two-column layout for corporate roles', category: 'Corporate' },
+    { id: 'creative', name: 'Creative', description: 'Bold gradient design for creative industries', category: 'Creative' },
+    { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant typography-focused', category: 'Clean' },
 
-    // Premium AI templates (locked unless hasAIPlan)
-    {
-      id: 'ats-pro',
-      name: 'ATS Pro+ (AI)',
-      description: 'AI-optimized, ATS-safe layout with strong hierarchy',
-      category: 'AI Premium',
-      premium: true,
-    },
-    {
-      id: 'executive',
-      name: 'Executive (AI)',
-      description: 'Leadership-focused layout for managers and seniors',
-      category: 'AI Premium',
-      premium: true,
-    },
-    {
-      id: 'tech-stack',
-      name: 'Tech Stack (AI)',
-      description: 'Project + skills layout optimized for tech roles',
-      category: 'AI Premium',
-      premium: true,
-    },
+    { id: 'ats-pro', name: 'ATS Pro+ (AI)', description: 'AI-optimized, ATS-safe layout with strong hierarchy', category: 'AI Premium', premium: true },
+    { id: 'executive', name: 'Executive (AI)', description: 'Leadership-focused layout for managers and seniors', category: 'AI Premium', premium: true },
+    { id: 'tech-stack', name: 'Tech Stack (AI)', description: 'Project + skills layout optimized for tech roles', category: 'AI Premium', premium: true },
   ];
 
   const renderTemplate = () => {
@@ -162,10 +181,7 @@ export default function App() {
     }
   };
 
-  // ✅ Tiny thumbnail renderer (uses the same real templates)
-  // IMPORTANT: This does NOT change your live preview. It only fills the card thumbnail area.
   const renderTemplateThumbnail = (id: AnyTemplateId) => {
-    // Premium are locked right now (we display a nice placeholder thumbnail)
     if (id === 'ats-pro' || id === 'executive' || id === 'tech-stack') {
       return (
         <div className="h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -180,7 +196,6 @@ export default function App() {
       );
     }
 
-    // Free thumbnails: render the real template scaled down
     const thumb = (() => {
       const props = { data: resumeData, colorTheme: selectedColor };
       switch (id) {
@@ -199,11 +214,7 @@ export default function App() {
 
     return (
       <div className="h-full w-full overflow-hidden bg-white">
-        {/* Scale down an A4 preview into the thumbnail box */}
-        <div
-          className="origin-top-left pointer-events-none select-none"
-          style={{ transform: 'scale(0.18)' }}
-        >
+        <div className="origin-top-left pointer-events-none select-none" style={{ transform: 'scale(0.18)' }}>
           {thumb}
         </div>
       </div>
@@ -219,7 +230,6 @@ export default function App() {
       return;
     }
 
-    // Only free templates can be selected right now because selectedTemplate is TemplateType.
     if (id === 'modern' || id === 'professional' || id === 'creative' || id === 'minimalist') {
       setSelectedTemplate(id);
     }
@@ -269,9 +279,17 @@ export default function App() {
     pdf.save(`${fileSafeName}.pdf`);
   };
 
+  // ✅ Final scale: desktop uses previewScale; mobile uses fitScale * previewScale
+  const finalScale = isMobile ? fitScale * previewScale : previewScale;
+
+  // Zoom ranges
+  const ZOOM_MIN = isMobile ? 0.7 : 0.5;
+  const ZOOM_MAX = isMobile ? 1.6 : 1.0;
+  const ZOOM_STEP = 0.1;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* ✅ NAVIGATION (matches varsity.html exactly) */}
+      {/* ✅ NAVIGATION (matches varsity.html) */}
       <nav className="main-nav">
         {/* DESKTOP VIEW */}
         <a href="/index.html" className="logo desktop-nav">
@@ -305,13 +323,11 @@ export default function App() {
 
         {/* MOBILE VIEW */}
         <div className="mobile-nav">
-          {/* Clickable Logo */}
           <a href="/index.html" className="mobile-logo">
             Career Unified
           </a>
 
           <div className="mobile-nav-right">
-            {/* Account Icon - Direct Link */}
             <a href="/account-page.html" className="icon-btn" aria-label="My Account">
               <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -319,7 +335,6 @@ export default function App() {
               </svg>
             </a>
 
-            {/* Menu Icon */}
             <button
               className="icon-btn"
               id="menuBtn"
@@ -338,11 +353,7 @@ export default function App() {
       </nav>
 
       {/* MOBILE SLIDE MENU */}
-      <div
-        className="mobile-menu"
-        id="mobileMenu"
-        style={{ display: mobileMenuOpen ? 'block' : 'none' }}
-      >
+      <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
         <a href="/jobs.html">Jobs</a>
         <a href="/bursaries.html">Bursaries</a>
         <a href="/varsity.html">Varsity</a>
@@ -361,54 +372,36 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* Left Panel - Editor */}
+          {/* Left Panel */}
           <div className="lg:col-span-5">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 bg-white shadow-sm">
-                <TabsTrigger
-                  value="build"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="build" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <FileText className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Build</span>
                 </TabsTrigger>
 
-                <TabsTrigger
-                  value="templates"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="templates" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <Palette className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Templates</span>
                 </TabsTrigger>
 
-                <TabsTrigger
-                  value="ai"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="ai" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <Wand2 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">AI Tailor</span>
                 </TabsTrigger>
 
-                <TabsTrigger
-                  value="analytics"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="analytics" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <BarChart3 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Analytics</span>
                 </TabsTrigger>
 
-                <TabsTrigger
-                  value="import"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="import" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <Upload className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Import</span>
                 </TabsTrigger>
 
-                <TabsTrigger
-                  value="versions"
-                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
-                >
+                <TabsTrigger value="versions" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
                   <FolderOpen className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Versions</span>
                 </TabsTrigger>
@@ -451,7 +444,6 @@ export default function App() {
                               onClick={() => handleTemplateClick(template.id)}
                             >
                               <CardContent className="p-6">
-                                {/* ✅ REAL THUMBNAIL PREVIEW (fixes blank cards) */}
                                 <div className="aspect-[8.5/11] bg-white rounded-lg mb-4 shadow-inner overflow-hidden border">
                                   {renderTemplateThumbnail(template.id)}
                                 </div>
@@ -482,7 +474,6 @@ export default function App() {
                                 </div>
                               </CardContent>
 
-                              {/* ✅ Locked overlay (only on premium + no plan) */}
                               {isLocked && (
                                 <div className="absolute inset-0 rounded-xl bg-black/30 flex items-center justify-center">
                                   <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-slate-800 flex items-center gap-2 shadow">
@@ -540,8 +531,8 @@ export default function App() {
 
           {/* Right Panel - Preview */}
           <div className="lg:col-span-7">
-            <div className="sticky top-24">
-              <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+            <div className="lg:sticky lg:top-24">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Eye className="h-5 w-5 text-blue-600" />
                   <h2 className="text-xl">Live Preview</h2>
@@ -559,19 +550,23 @@ export default function App() {
 
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-blue-100">
                     <button
-                      onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
                       type="button"
+                      onClick={() => setPreviewScale((v) => Math.max(ZOOM_MIN, Number((v - ZOOM_STEP).toFixed(2))))}
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      aria-label="Zoom out"
                     >
                       <span className="text-lg">-</span>
                     </button>
-                    <span className="text-sm font-medium min-w-[3rem] text-center">
-                      {Math.round(previewScale * 100)}%
+
+                    <span className="text-sm font-medium min-w-[3.25rem] text-center">
+                      {Math.round(finalScale * 100)}%
                     </span>
+
                     <button
-                      onClick={() => setPreviewScale(Math.min(1, previewScale + 0.1))}
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
                       type="button"
+                      onClick={() => setPreviewScale((v) => Math.min(ZOOM_MAX, Number((v + ZOOM_STEP).toFixed(2))))}
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      aria-label="Zoom in"
                     >
                       <span className="text-lg">+</span>
                     </button>
@@ -585,25 +580,19 @@ export default function App() {
 
               <Card className="shadow-2xl overflow-hidden border-2 border-blue-100">
                 <CardContent className="p-0">
-                  {/* ✅ MOBILE FIX: overflow-x-hidden prevents horizontal bleed */}
-                  <ScrollArea className="h-[calc(100vh-220px)]">
-                    <div className="flex justify-center items-start p-4 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100 overflow-x-hidden w-full min-h-full">
-                      {/*
-                        ✅ MOBILE FIX: Replaced motion.div animate scale with a plain div
-                        using inline transform style. motion animate={{ scale }} does not
-                        affect layout — the element still occupies full A4 width and gets
-                        clipped/pushed off-screen on mobile. Using transformOrigin: 'top center'
-                        with a regular style transform keeps the resume visually centered.
-                      */}
-                      <div
-                        className="transition-transform duration-300 origin-top"
-                        style={{
-                          transform: `scale(${previewScale})`,
-                          transformOrigin: 'top center',
-                        }}
+                  <ScrollArea className="h-[calc(100vh-260px)] lg:h-[calc(100vh-220px)]">
+                    <div
+                      ref={previewWrapRef}
+                      className="flex justify-center p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100"
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: finalScale }}
+                        transition={{ duration: 0.25 }}
+                        className="origin-top"
                       >
                         <div ref={previewRef}>{renderTemplate()}</div>
-                      </div>
+                      </motion.div>
                     </div>
                   </ScrollArea>
                 </CardContent>
@@ -613,7 +602,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Upgrade Modal (only for locked templates) */}
+      {/* Upgrade Modal */}
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
         <DialogContent>
           <DialogHeader>
@@ -630,7 +619,6 @@ export default function App() {
               <li>Faster editing with smarter formatting</li>
             </ul>
 
-            {/* Replace this button with your real billing route */}
             <Button
               className="w-full"
               onClick={() => {
@@ -641,7 +629,6 @@ export default function App() {
               Upgrade to AI Plan
             </Button>
 
-            {/* Optional: dev unlock */}
             <Button
               variant="outline"
               className="w-full"
