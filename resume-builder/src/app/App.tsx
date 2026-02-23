@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FileText,
   Wand2,
@@ -8,7 +8,6 @@ import {
   BarChart3,
   FolderOpen,
   Upload,
-  Menu,
   Lock,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
@@ -16,8 +15,13 @@ import { Card, CardContent } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { ScrollArea } from './components/ui/scroll-area';
 import { Badge } from './components/ui/badge';
-import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from './components/ui/dialog';
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
 import { ATSScore } from './components/ats-score';
@@ -49,10 +53,24 @@ export default function App() {
   const [previewScale, setPreviewScale] = useState(0.75);
 
   // ✅ Monetization flag (wire this to your real billing/subscription later)
-  // For now it’s false by default so locks show correctly.
   const [hasAIPlan, setHasAIPlan] = useState(false);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // ✅ Navbar mobile menu state (matches varsity.html behavior)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close menu when clicking outside (matches varsity.html script)
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.mobile-nav') && !target.closest('.mobile-menu')) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
 
   // Export target (the resume preview)
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -151,9 +169,7 @@ export default function App() {
               <Lock className="h-3.5 w-3.5" />
               AI Template
             </div>
-            <p className="text-xs text-slate-600">
-              Preview available after upgrade
-            </p>
+            <p className="text-xs text-slate-600">Preview available after upgrade</p>
           </div>
         </div>
       );
@@ -179,7 +195,10 @@ export default function App() {
     return (
       <div className="h-full w-full overflow-hidden bg-white">
         {/* Scale down an A4 preview into the thumbnail box */}
-        <div className="origin-top-left pointer-events-none select-none" style={{ transform: 'scale(0.18)' }}>
+        <div
+          className="origin-top-left pointer-events-none select-none"
+          style={{ transform: 'scale(0.18)' }}
+        >
           {thumb}
         </div>
       </div>
@@ -196,7 +215,6 @@ export default function App() {
     }
 
     // Only free templates can be selected right now because selectedTemplate is TemplateType.
-    // (Premium templates will be wired later once you add them to TemplateType + renderTemplate switch.)
     if (id === 'modern' || id === 'professional' || id === 'creative' || id === 'minimalist') {
       setSelectedTemplate(id);
     }
@@ -248,81 +266,88 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* Career Unified Header */}
-      <header className="sticky top-0 z-50 bg-[#1e3a8a] text-white shadow">
-        <div className="mx-auto max-w-[1400px] px-5 py-4 flex items-center justify-between">
-          <a href="/index.html" className="text-2xl font-bold tracking-tight">
+      {/* ✅ NAVIGATION (matches varsity.html exactly) */}
+      <nav className="main-nav">
+        {/* DESKTOP VIEW */}
+        <a href="/index.html" className="logo desktop-nav">
+          Career Unified
+        </a>
+
+        <div className="nav-links desktop-nav">
+          <a href="/jobs.html">Jobs</a>
+          <a href="/bursaries.html">Bursaries</a>
+          <a href="/varsity.html">Varsity</a>
+          <a href="/cv-generator/">Generate CV</a>
+          <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+          <a href="/recruiter-apply.html">Apply as Recruiter</a>
+          <a href="/saved-items.html"> Saved Items</a>
+          <a href="/signup.html">Sign Up</a>
+          <a href="/login.html">Login</a>
+
+          {/* My Account Icon (Desktop) */}
+          <a
+            href="/account-page.html"
+            className="icon-btn desktop-account-btn"
+            aria-label="My Account"
+            title="My Account"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </a>
+        </div>
+
+        {/* MOBILE VIEW */}
+        <div className="mobile-nav">
+          {/* Clickable Logo */}
+          <a href="/index.html" className="mobile-logo">
             Career Unified
           </a>
 
-          <nav className="hidden lg:flex items-center gap-8 text-[15px] font-semibold">
-            <a className="hover:opacity-90" href="/jobs.html">
-              Jobs
+          <div className="mobile-nav-right">
+            {/* Account Icon - Direct Link */}
+            <a href="/account-page.html" className="icon-btn" aria-label="My Account">
+              <svg viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             </a>
-            <a className="hover:opacity-90" href="/bursaries.html">
-              Bursaries
-            </a>
-            <a className="hover:opacity-90" href="/varsity.html">
-              Varsity
-            </a>
-            <a className="hover:opacity-90" href="/cv-generator/">
-              Generate CV
-            </a>
-            <a className="hover:opacity-90" href="/recruiter-dashboard.html">
-              Recruiter Dashboard
-            </a>
-            <a className="hover:opacity-90" href="/recruiter-apply.html">
-              Apply as Recruiter
-            </a>
-            <a className="hover:opacity-90" href="/saved-items.html">
-              Saved Items
-            </a>
-            <a className="hover:opacity-90" href="/signup.html">
-              Sign Up
-            </a>
-            <a className="hover:opacity-90" href="/login.html">
-              Login
-            </a>
-          </nav>
 
-          {/* Mobile menu (NO Download button here) */}
-          <div className="flex items-center gap-3">
-            <Sheet>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-transparent text-white border-white/40 hover:bg-white/10"
-                >
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <div className="flex flex-col gap-4 mt-8">
-                  <Button variant="outline" onClick={() => setActiveTab('versions')}>
-                    <FolderOpen className="h-4 w-4 mr-2" />
-                    Versions
-                  </Button>
-                  <Button variant="outline" onClick={() => setActiveTab('analytics')}>
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Analytics
-                  </Button>
-
-                  {/* Optional dev toggle to test premium locks.
-                      Remove this later when you wire real billing. */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setHasAIPlan((v) => !v)}
-                    className="mt-2"
-                  >
-                    Toggle AI Plan (dev): {hasAIPlan ? 'ON' : 'OFF'}
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
+            {/* Menu Icon */}
+            <button
+              className="icon-btn"
+              id="menuBtn"
+              aria-label="Main Menu"
+              type="button"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              <svg viewBox="0 0 24 24">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
           </div>
         </div>
-      </header>
+      </nav>
+
+      {/* MOBILE SLIDE MENU */}
+      <div
+        className="mobile-menu"
+        id="mobileMenu"
+        style={{ display: mobileMenuOpen ? 'block' : 'none' }}
+      >
+        <a href="/jobs.html">Jobs</a>
+        <a href="/bursaries.html">Bursaries</a>
+        <a href="/varsity.html">Varsity</a>
+        <a href="/cv-generator/">Generate CV</a>
+        <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+        <a href="/recruiter-apply.html">Apply as Recruiter</a>
+        <a href="/saved-items.html"> Saved Items</a>
+        <a href="/signup.html">Sign Up</a>
+        <a href="/login.html">Login</a>
+      </div>
 
       <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
         {/* Smart Tips */}
@@ -437,9 +462,7 @@ export default function App() {
                                       )}
                                     </div>
 
-                                    <p className="text-xs text-gray-600 mb-2">
-                                      {template.description}
-                                    </p>
+                                    <p className="text-xs text-gray-600 mb-2">{template.description}</p>
 
                                     <Badge variant="outline" className="text-xs">
                                       {template.category}
@@ -533,6 +556,7 @@ export default function App() {
                     <button
                       onClick={() => setPreviewScale(Math.max(0.5, previewScale - 0.1))}
                       className="text-gray-600 hover:text-blue-600 transition-colors"
+                      type="button"
                     >
                       <span className="text-lg">-</span>
                     </button>
@@ -542,6 +566,7 @@ export default function App() {
                     <button
                       onClick={() => setPreviewScale(Math.min(1, previewScale + 0.1))}
                       className="text-gray-600 hover:text-blue-600 transition-colors"
+                      type="button"
                     >
                       <span className="text-lg">+</span>
                     </button>
@@ -595,7 +620,6 @@ export default function App() {
             <Button
               className="w-full"
               onClick={() => {
-                // Example: window.location.href = "/billing";
                 setShowUpgradeModal(false);
                 alert('Hook this button to your billing page.');
               }}
