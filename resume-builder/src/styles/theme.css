@@ -204,17 +204,21 @@
   }
 }
 
-/* ===== Career Unified Navbar (match varsity.html) ===== */
+/* ===== Career Unified Navbar (DESKTOP like screenshot + MOBILE dropdown like screenshot) ===== */
 .main-nav {
   width: 100%;
   background: #1e3a8a;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 16px 24px;
+  padding: 16px 22px;
   gap: 18px;
   box-sizing: border-box;
   color: #fff;
+
+  /* keep it on top */
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 }
 
 .main-nav a {
@@ -223,28 +227,33 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* Logo left */
 .logo.desktop-nav {
   font-size: 26px;
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 4px;
-  margin-right: 20px;
   white-space: nowrap;
 }
 
+/* Center links, account icon on far right (matches your desktop screenshot) */
 .nav-links.desktop-nav {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;   /* ✅ centers the links */
   gap: 22px;
   font-weight: 600;
   font-size: 16px;
   flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .nav-links.desktop-nav a:hover {
   opacity: 0.9;
 }
 
+/* Account icon button */
 .icon-btn {
   width: 40px;
   height: 40px;
@@ -275,6 +284,7 @@
   stroke: #fff;
 }
 
+/* Mobile header row */
 .mobile-nav {
   display: none;
   width: 100%;
@@ -287,6 +297,7 @@
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 4px;
+  color: #fff;
 }
 
 .mobile-nav-right {
@@ -295,38 +306,49 @@
   align-items: center;
 }
 
+/* ✅ MOBILE MENU: white dropdown card (like screenshot you sent) */
 .mobile-menu {
   display: none;
-  position: absolute;
-  top: 64px;
-  left: 0;
-  width: 100%;
-  background: #1e3a8a;
-  padding: 14px 18px;
+  position: fixed;
+  top: 72px;                 /* sits under navbar */
+  right: 16px;
+  left: auto;
+
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 10px;
   box-sizing: border-box;
-  z-index: 999;
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  z-index: 10000;
 }
 
 .mobile-menu a {
   display: block;
-  padding: 12px 6px;
-  font-weight: 600;
-  font-size: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1e3a8a;            /* ✅ blue text like screenshot */
+  border: 0;
+  border-radius: 12px;
 }
 
-.mobile-menu a:last-child {
-  border-bottom: none;
+.mobile-menu a:hover,
+.mobile-menu a:active {
+  background: #f3f4f6;
 }
 
+/* Desktop vs Mobile visibility */
 @media (max-width: 1024px) {
   .desktop-nav {
     display: none !important;
   }
   .mobile-nav {
     display: flex;
-  }
-  .main-nav {
-    justify-content: space-between;
   }
 }
