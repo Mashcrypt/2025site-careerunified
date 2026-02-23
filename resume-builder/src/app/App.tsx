@@ -9,6 +9,7 @@ import {
   FolderOpen,
   Upload,
   Menu,
+  Lock,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Card, CardContent } from './components/ui/card';
@@ -16,6 +17,7 @@ import { Button } from './components/ui/button';
 import { ScrollArea } from './components/ui/scroll-area';
 import { Badge } from './components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './components/ui/dialog';
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
 import { ATSScore } from './components/ats-score';
@@ -33,12 +35,24 @@ import { southAfricanSampleData } from './utils/sample-data';
 
 const initialData: ResumeData = southAfricanSampleData;
 
+// ✅ Add new premium template ids without touching your shared TemplateType union.
+// We’ll keep selectedTemplate as TemplateType for the existing 4.
+// Premium templates will show in the list but be locked (or can be wired later).
+type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
+type AnyTemplateId = TemplateType | PremiumTemplateId;
+
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
   const [previewScale, setPreviewScale] = useState(0.75);
+
+  // ✅ Monetization flag (wire this to your real billing/subscription later)
+  // For now it’s false by default so locks show correctly.
+  const [hasAIPlan, setHasAIPlan] = useState(false);
+
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Export target (the resume preview)
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -53,11 +67,13 @@ export default function App() {
   }, [resumeData?.personalInfo?.fullName]);
 
   const templates: {
-    id: TemplateType;
+    id: AnyTemplateId;
     name: string;
     description: string;
     category: string;
+    premium?: boolean;
   }[] = [
+    // Free templates (existing)
     {
       id: 'modern',
       name: 'Modern',
@@ -82,6 +98,29 @@ export default function App() {
       description: 'Simple and elegant typography-focused',
       category: 'Clean',
     },
+
+    // Premium AI templates (locked unless hasAIPlan)
+    {
+      id: 'ats-pro',
+      name: 'ATS Pro+ (AI)',
+      description: 'AI-optimized, ATS-safe layout with strong hierarchy',
+      category: 'AI Premium',
+      premium: true,
+    },
+    {
+      id: 'executive',
+      name: 'Executive (AI)',
+      description: 'Leadership-focused layout for managers and seniors',
+      category: 'AI Premium',
+      premium: true,
+    },
+    {
+      id: 'tech-stack',
+      name: 'Tech Stack (AI)',
+      description: 'Project + skills layout optimized for tech roles',
+      category: 'AI Premium',
+      premium: true,
+    },
   ];
 
   const renderTemplate = () => {
@@ -97,6 +136,69 @@ export default function App() {
         return <MinimalistTemplate data={resumeData} />;
       default:
         return <ModernTemplate {...props} />;
+    }
+  };
+
+  // ✅ Tiny thumbnail renderer (uses the same real templates)
+  // IMPORTANT: This does NOT change your live preview. It only fills the card thumbnail area.
+  const renderTemplateThumbnail = (id: AnyTemplateId) => {
+    // Premium are locked right now (we display a nice placeholder thumbnail)
+    if (id === 'ats-pro' || id === 'executive' || id === 'tech-stack') {
+      return (
+        <div className="h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+          <div className="text-center px-4">
+            <div className="mx-auto mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 border px-3 py-1 text-xs font-semibold text-slate-700">
+              <Lock className="h-3.5 w-3.5" />
+              AI Template
+            </div>
+            <p className="text-xs text-slate-600">
+              Preview available after upgrade
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // Free thumbnails: render the real template scaled down
+    const thumb = (() => {
+      const props = { data: resumeData, colorTheme: selectedColor };
+      switch (id) {
+        case 'modern':
+          return <ModernTemplate {...props} />;
+        case 'professional':
+          return <ProfessionalTemplate data={resumeData} />;
+        case 'creative':
+          return <CreativeTemplate data={resumeData} />;
+        case 'minimalist':
+          return <MinimalistTemplate data={resumeData} />;
+        default:
+          return <ModernTemplate {...props} />;
+      }
+    })();
+
+    return (
+      <div className="h-full w-full overflow-hidden bg-white">
+        {/* Scale down an A4 preview into the thumbnail box */}
+        <div className="origin-top-left pointer-events-none select-none" style={{ transform: 'scale(0.18)' }}>
+          {thumb}
+        </div>
+      </div>
+    );
+  };
+
+  const handleTemplateClick = (id: AnyTemplateId) => {
+    const tpl = templates.find((t) => t.id === id);
+    const isLocked = !!tpl?.premium && !hasAIPlan;
+
+    if (isLocked) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    // Only free templates can be selected right now because selectedTemplate is TemplateType.
+    // (Premium templates will be wired later once you add them to TemplateType + renderTemplate switch.)
+    if (id === 'modern' || id === 'professional' || id === 'creative' || id === 'minimalist') {
+      setSelectedTemplate(id);
     }
   };
 
@@ -205,6 +307,16 @@ export default function App() {
                     <BarChart3 className="h-4 w-4 mr-2" />
                     Analytics
                   </Button>
+
+                  {/* Optional dev toggle to test premium locks.
+                      Remove this later when you wire real billing. */}
+                  <Button
+                    variant="outline"
+                    onClick={() => setHasAIPlan((v) => !v)}
+                    className="mt-2"
+                  >
+                    Toggle AI Plan (dev): {hasAIPlan ? 'ON' : 'OFF'}
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
@@ -283,7 +395,6 @@ export default function App() {
               <TabsContent value="templates" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4 space-y-6">
-                    {/* (unchanged templates UI) */}
                     <div>
                       <h2 className="text-2xl mb-2">Premium Templates</h2>
                       <p className="text-sm text-gray-600 mb-6">
@@ -292,35 +403,70 @@ export default function App() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {templates.map((template, index) => (
-                        <motion.div
-                          key={template.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <Card
-                            className={`cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 ${
-                              selectedTemplate === template.id ? 'ring-2 ring-blue-500 shadow-xl' : ''
-                            }`}
-                            onClick={() => setSelectedTemplate(template.id)}
+                      {templates.map((template, index) => {
+                        const isSelected = selectedTemplate === template.id;
+                        const isLocked = !!template.premium && !hasAIPlan;
+
+                        return (
+                          <motion.div
+                            key={template.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.06 }}
                           >
-                            <CardContent className="p-6">
-                              {/* (unchanged preview blocks) */}
-                              <div className="aspect-[8.5/11] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg mb-4 flex items-center justify-center shadow-inner overflow-hidden" />
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="flex-1">
-                                  <h3 className="font-semibold mb-1">{template.name}</h3>
-                                  <p className="text-xs text-gray-600 mb-2">{template.description}</p>
-                                  <Badge variant="outline" className="text-xs">
-                                    {template.category}
-                                  </Badge>
+                            <Card
+                              className={`cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 relative ${
+                                isSelected ? 'ring-2 ring-blue-500 shadow-xl' : ''
+                              } ${isLocked ? 'opacity-95' : ''}`}
+                              onClick={() => handleTemplateClick(template.id)}
+                            >
+                              <CardContent className="p-6">
+                                {/* ✅ REAL THUMBNAIL PREVIEW (fixes blank cards) */}
+                                <div className="aspect-[8.5/11] bg-white rounded-lg mb-4 shadow-inner overflow-hidden border">
+                                  {renderTemplateThumbnail(template.id)}
                                 </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      ))}
+
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold mb-1">{template.name}</h3>
+                                      {template.premium && (
+                                        <Badge className="text-[10px] px-2 py-0.5" variant="secondary">
+                                          AI
+                                        </Badge>
+                                      )}
+                                    </div>
+
+                                    <p className="text-xs text-gray-600 mb-2">
+                                      {template.description}
+                                    </p>
+
+                                    <Badge variant="outline" className="text-xs">
+                                      {template.category}
+                                    </Badge>
+                                  </div>
+
+                                  {isLocked && (
+                                    <div className="flex items-center gap-1 text-xs font-semibold text-slate-700">
+                                      <Lock className="h-4 w-4" />
+                                    </div>
+                                  )}
+                                </div>
+                              </CardContent>
+
+                              {/* ✅ Locked overlay (only on premium + no plan) */}
+                              {isLocked && (
+                                <div className="absolute inset-0 rounded-xl bg-black/30 flex items-center justify-center">
+                                  <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-slate-800 flex items-center gap-2 shadow">
+                                    <Lock className="h-4 w-4" />
+                                    Requires AI Plan
+                                  </div>
+                                </div>
+                              )}
+                            </Card>
+                          </motion.div>
+                        );
+                      })}
                     </div>
 
                     <div className="mt-8">
@@ -373,7 +519,6 @@ export default function App() {
                   <h2 className="text-xl">Live Preview</h2>
                 </div>
 
-                {/* ✅ Export + zoom controls live HERE now */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <Button
                     onClick={handleExport}
@@ -428,6 +573,50 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {/* Upgrade Modal (only for locked templates) */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unlock AI Templates</DialogTitle>
+            <DialogDescription>
+              These templates are available with the AI plan. Upgrade to unlock AI templates and AI Tailor.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 text-sm text-slate-700">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Access premium AI-optimized resume templates</li>
+              <li>AI Tailor suggestions matched to job descriptions</li>
+              <li>Faster editing with smarter formatting</li>
+            </ul>
+
+            {/* Replace this button with your real billing route */}
+            <Button
+              className="w-full"
+              onClick={() => {
+                // Example: window.location.href = "/billing";
+                setShowUpgradeModal(false);
+                alert('Hook this button to your billing page.');
+              }}
+            >
+              Upgrade to AI Plan
+            </Button>
+
+            {/* Optional: dev unlock */}
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setHasAIPlan(true);
+                setShowUpgradeModal(false);
+              }}
+            >
+              (Dev) Unlock AI Plan
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
