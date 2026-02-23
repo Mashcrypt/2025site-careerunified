@@ -42,11 +42,13 @@ type PlanId = 'starter' | 'job_seeker' | 'career_pro';
 
 type BillingStatus = {
   plan: 'free' | 'starter' | 'job_seeker' | 'career_pro';
-  subscriptionStatus: 'active' | 'past_due' | 'cancelled' | string;
+  subscriptionStatus: 'active' | 'past_due' | 'cancelled' | 'inactive' | string;
   used: number;
   limit: number | null; // null = unlimited
   freeResumeUsed: boolean;
   freeCoverUsed: boolean;
+  pendingPlan?: string | null;
+  pendingPaystackReference?: string | null;
 };
 
 function isFirebaseConfigured() {
@@ -116,7 +118,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
     // This call also ensures initializeApp() ran inside firebaseClient
     const auth = getFirebaseAuth();
-
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to use AI features.');
 
@@ -131,7 +132,6 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
     try {
       if (!isFirebaseConfigured()) {
-        // show “free” state gracefully if Firebase isn't configured yet
         setBilling({
           plan: 'free',
           subscriptionStatus: 'inactive',
@@ -139,13 +139,14 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          pendingPlan: null,
+          pendingPaystackReference: null,
         });
         return;
       }
 
       const auth = getFirebaseAuth();
 
-      // If not logged in, show Free UI but don’t error
       if (!auth.currentUser) {
         setBilling({
           plan: 'free',
@@ -154,6 +155,8 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          pendingPlan: null,
+          pendingPaystackReference: null,
         });
         return;
       }
@@ -166,11 +169,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       });
 
       const payload = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        // Don’t block UI on billing errors
-        return;
-      }
+      if (!res.ok) return;
 
       setBilling(payload as BillingStatus);
     } catch {
@@ -196,6 +195,15 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
   }, [loadBillingStatus]);
 
+  // ✅ Refresh billing if user landed on /billing/success (Paystack callback)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = window.location.pathname || '';
+    if (path.includes('/billing/success')) {
+      loadBillingStatus();
+    }
+  }, [loadBillingStatus]);
+
   const planLabel = useMemo(() => {
     if (!billing) return '—';
     if (billing.plan === 'career_pro') return 'Career Pro';
@@ -216,7 +224,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
 
     if (billing.limit === null) return `Unlimited applications • Used ${billing.used}`;
-    const left = Math.max(0, billing.limit - billing.used);
+    const left = Math.max(0, (billing.limit ?? 0) - billing.used);
     return `${left} of ${billing.limit} applications left this month`;
   }, [billing]);
 
@@ -255,7 +263,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
       if (!res.ok) {
         const details = payload?.error || payload?.details || 'AI request failed. Please try again.';
-        setErrorMsg(String(details));
+        setErrorMsg(typeof details === 'string' ? details : JSON.stringify(details));
         return;
       }
 
@@ -318,8 +326,18 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const details = payload?.error || payload?.details || 'Could not start checkout. Please try again.';
-        setErrorMsg(String(details));
+        const paystackMsg =
+          payload?.paystack_message ||
+          payload?.details?.message ||
+          payload?.details?.data?.message;
+
+        const details =
+          paystackMsg ||
+          payload?.error ||
+          payload?.details ||
+          'Could not start checkout. Please try again.';
+
+        setErrorMsg(typeof details === 'string' ? details : JSON.stringify(details));
         setIsRedirecting(false);
         return;
       }
@@ -331,7 +349,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         return;
       }
 
-      window.location.href = url;
+      window.location.assign(url);
     } catch (err: any) {
       setErrorMsg(err?.message || 'Checkout error. Please try again.');
       setIsRedirecting(false);
@@ -410,7 +428,8 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   Add these Netlify env vars for the <b>resume-builder</b> app and redeploy:
                   <br />
                   <span className="font-mono text-xs">
-                    VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID
+                    VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID,
+                    VITE_FIREBASE_APP_ID
                   </span>
                 </p>
               </div>
