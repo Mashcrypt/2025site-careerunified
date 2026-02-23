@@ -125,6 +125,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
     }
 
     setVersions(loaded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Persist whenever versions change
@@ -194,7 +195,8 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        {/* ✅ MOBILE FIX: header wraps + button stays visible */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-blue-600" />
             <CardTitle>Resume Versions</CardTitle>
@@ -202,11 +204,16 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                type="button"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Save Version
               </Button>
             </DialogTrigger>
+
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Save Current Resume</DialogTitle>
@@ -226,11 +233,11 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                 />
               </div>
 
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)} type="button">
                   Cancel
                 </Button>
-                <Button onClick={saveNewVersion} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={saveNewVersion} className="bg-blue-600 hover:bg-blue-700" type="button">
                   Save Version
                 </Button>
               </DialogFooter>
@@ -257,7 +264,8 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
               >
                 <Card className="hover:shadow-md transition-shadow border-blue-100">
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-3">
+                    {/* ✅ MOBILE FIX: stack layout on small screens */}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium text-sm truncate">{version.name}</h4>
@@ -274,21 +282,22 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1">
+                      {/* ✅ MOBILE FIX: actions WRAP instead of overflowing off screen */}
+                      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleFavorite(version.id)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 px-2"
                           title="Favorite"
+                          type="button"
                         >
                           <Star
                             className={`h-4 w-4 ${
-                              version.isFavorite
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-400'
+                              version.isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'
                             }`}
                           />
+                          <span className="ml-2 sm:hidden">Favorite</span>
                         </Button>
 
                         <Button
@@ -297,6 +306,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                           onClick={() => loadVersion(version)}
                           className="h-8 px-3"
                           title="Load"
+                          type="button"
                         >
                           Load
                         </Button>
@@ -305,20 +315,24 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
                           variant="ghost"
                           size="sm"
                           onClick={() => duplicateVersion(version)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 px-2"
                           title="Duplicate"
+                          type="button"
                         >
                           <Copy className="h-4 w-4" />
+                          <span className="ml-2 sm:hidden">Copy</span>
                         </Button>
 
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteVersion(version.id)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                          className="h-8 px-2 text-red-600 hover:text-red-700"
                           title="Delete"
+                          type="button"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="ml-2 sm:hidden">Delete</span>
                         </Button>
                       </div>
                     </div>
