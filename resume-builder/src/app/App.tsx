@@ -40,7 +40,7 @@ import { southAfricanSampleData } from './utils/sample-data';
 const initialData: ResumeData = southAfricanSampleData;
 
 // ✅ Add new premium template ids without touching your shared TemplateType union.
-// We’ll keep selectedTemplate as TemplateType for the existing 4.
+// We'll keep selectedTemplate as TemplateType for the existing 4.
 // Premium templates will show in the list but be locked (or can be wired later).
 type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
 type AnyTemplateId = TemplateType | PremiumTemplateId;
@@ -50,7 +50,12 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
-  const [previewScale, setPreviewScale] = useState(0.75);
+
+  // ✅ Default scale is lower on mobile so the resume fits the screen centered
+  const [previewScale, setPreviewScale] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return 0.38;
+    return 0.75;
+  });
 
   // ✅ Monetization flag (wire this to your real billing/subscription later)
   const [hasAIPlan, setHasAIPlan] = useState(false);
@@ -554,7 +559,7 @@ export default function App() {
 
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-blue-100">
                     <button
-                      onClick={() => setPreviewScale(Math.max(0.5, previewScale - 0.1))}
+                      onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
                       className="text-gray-600 hover:text-blue-600 transition-colors"
                       type="button"
                     >
@@ -580,16 +585,25 @@ export default function App() {
 
               <Card className="shadow-2xl overflow-hidden border-2 border-blue-100">
                 <CardContent className="p-0">
+                  {/* ✅ MOBILE FIX: overflow-x-hidden prevents horizontal bleed */}
                   <ScrollArea className="h-[calc(100vh-220px)]">
-                    <div className="flex justify-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: previewScale }}
-                        transition={{ duration: 0.3 }}
-                        className="origin-top"
+                    <div className="flex justify-center items-start p-4 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100 overflow-x-hidden w-full min-h-full">
+                      {/*
+                        ✅ MOBILE FIX: Replaced motion.div animate scale with a plain div
+                        using inline transform style. motion animate={{ scale }} does not
+                        affect layout — the element still occupies full A4 width and gets
+                        clipped/pushed off-screen on mobile. Using transformOrigin: 'top center'
+                        with a regular style transform keeps the resume visually centered.
+                      */}
+                      <div
+                        className="transition-transform duration-300 origin-top"
+                        style={{
+                          transform: `scale(${previewScale})`,
+                          transformOrigin: 'top center',
+                        }}
                       >
                         <div ref={previewRef}>{renderTemplate()}</div>
-                      </motion.div>
+                      </div>
                     </div>
                   </ScrollArea>
                 </CardContent>
