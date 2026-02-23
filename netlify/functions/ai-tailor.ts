@@ -80,13 +80,11 @@ function repairJson(text: string): string | null {
   const block = extractJsonBlock(text) ?? text.trim();
   if (!block) return null;
 
-  // Remove common leading/trailing junk
   let cleaned = block;
 
   // Remove trailing commas before } or ]
   cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
 
-  // If it still doesn't look like JSON object, give up
   if (!cleaned.startsWith("{") || !cleaned.endsWith("}")) return null;
 
   return cleaned;
@@ -223,6 +221,12 @@ function validateResumeShape(data: any): data is ResumeData {
   );
 }
 
+/**
+ * ✅ FIXED Gemini call:
+ * - Uses systemInstruction instead of role:"system" in contents
+ * - Avoids responseMimeType (breaks some models)
+ * - Reads raw error body so your 500 includes the real Gemini error
+ */
 async function callGemini(params: {
   endpoint: string;
   systemRules: string;
@@ -232,30 +236,32 @@ async function callGemini(params: {
 }) {
   const { endpoint, systemRules, userPrompt, temperature, maxOutputTokens } = params;
 
+  const payload = {
+    systemInstruction: {
+      role: "system",
+      parts: [{ text: systemRules }],
+    },
+    contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+    generationConfig: {
+      temperature,
+      maxOutputTokens,
+      // responseMimeType: "application/json", // ❗disable for compatibility
+    },
+  };
+
   const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      // ✅ IMPORTANT: separate system + user roles
-      contents: [
-        { role: "system", parts: [{ text: systemRules }] },
-        { role: "user", parts: [{ text: userPrompt }] },
-      ],
-      generationConfig: {
-        temperature,
-        maxOutputTokens,
-        // ✅ IMPORTANT: force JSON output
-        responseMimeType: "application/json",
-      },
-    }),
+    body: JSON.stringify(payload),
   });
 
+  const raw = await res.text();
+
   if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(errText || `Gemini request failed with status ${res.status}`);
+    throw new Error(raw || `Gemini request failed with status ${res.status}`);
   }
 
-  const data = (await res.json()) as any;
+  const data = safeJsonParse<any>(raw);
   const text =
     data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).join("") || "";
 
@@ -342,7 +348,8 @@ export const handler: Handler = async (event) => {
     }
   }
 
-  // Gemini endpoint (do NOT log this; it contains the key in the URL)
+  // Gemini endpoint
+  // If this model ever fails due to availability, switch to gemini-1.5-flash
   const endpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -352,7 +359,6 @@ export const handler: Handler = async (event) => {
   // Call Gemini with retry/fallback
   let text = "";
   try {
-    // First attempt: strict JSON, low randomness
     text = await callGemini({
       endpoint,
       systemRules,
@@ -361,7 +367,6 @@ export const handler: Handler = async (event) => {
       maxOutputTokens: 1700,
     });
   } catch (e1: any) {
-    // Retry once (network hiccup / transient model issue)
     try {
       text = await callGemini({
         endpoint,
