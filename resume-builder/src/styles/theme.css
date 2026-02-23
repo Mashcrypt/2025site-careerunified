@@ -179,3 +179,130 @@
     line-height: 1.5;
   }
 }
+
+/* ===== Career Unified Navbar (match varsity.html) ===== */
+.main-nav {
+  width: 100%;
+  background: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  gap: 18px;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.logo.desktop-nav {
+  font-size: 26px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-right: 20px;
+  white-space: nowrap;
+}
+
+.nav-links.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-weight: 600;
+  font-size: 16px;
+  flex-wrap: nowrap;
+}
+
+.nav-links.desktop-nav a:hover {
+  opacity: 0.9;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn svg circle {
+  stroke: #fff;
+}
+
+.mobile-nav {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-logo {
+  font-size: 22px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.mobile-nav-right {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 64px;
+  left: 0;
+  width: 100%;
+  background: #1e3a8a;
+  padding: 14px 18px;
+  box-sizing: border-box;
+  z-index: 999;
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 12px 6px;
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.mobile-menu a:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-nav {
+    display: flex;
+  }
+  .main-nav {
+    justify-content: space-between;
+  }
+}
