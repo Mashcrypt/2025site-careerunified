@@ -37,7 +37,6 @@ import { ProfessionalTemplate } from './components/templates/professional-templa
 import { CreativeTemplate } from './components/templates/creative-template';
 import { MinimalistTemplate } from './components/templates/minimalist-template';
 
-// ✅ Premium templates you added
 import { ATSProTemplate } from './components/templates/ats-pro-template';
 import { ExecutiveTemplate } from './components/templates/executive-template';
 import { TechStackTemplate } from './components/templates/tech-stack-template';
@@ -46,12 +45,10 @@ import type { ResumeData, TemplateType } from './types/resume';
 import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
 
-// ✅ Firebase helper (same as ai-tailor.tsx)
 import { getFirebaseAuth } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
 
-// ✅ Add premium template ids without touching your shared TemplateType union.
 type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
 type AnyTemplateId = TemplateType | PremiumTemplateId;
 
@@ -68,7 +65,6 @@ type BillingStatus = {
   pendingPaystackReference?: string | null;
 };
 
-// Your templates render at A4-ish pixel size (many resume templates use ~816px width)
 const TEMPLATE_CANVAS_WIDTH = 816;
 
 function isFirebaseConfigured() {
@@ -83,45 +79,28 @@ function isFirebaseConfigured() {
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
-
-  // ✅ IMPORTANT: allow premium IDs
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
-
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
-
-  // User zoom control (we’ll combine it with fitScale on mobile)
   const [previewScale, setPreviewScale] = useState(0.75);
-
-  // ✅ Auto-fit scale (so preview fills available width on mobile)
   const [fitScale, setFitScale] = useState(1);
-
-  // ✅ Track mobile safely
   const [isMobile, setIsMobile] = useState(false);
-
-  // ✅ Billing + access
   const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [isLoadingBilling, setIsLoadingBilling] = useState(false);
   const [billingError, setBillingError] = useState<string>('');
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
-  // ✅ Derived: AI plan access
   const hasAIPlan = useMemo(() => {
     return billing?.plan !== 'free' && billing?.subscriptionStatus === 'active';
   }, [billing]);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-
-  // ✅ Navbar mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Export target (the resume preview)
   const previewRef = useRef<HTMLDivElement | null>(null);
-
-  // Wrap container ref (we measure this width to compute fitScale)
   const previewWrapRef = useRef<HTMLDivElement | null>(null);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -133,11 +112,9 @@ export default function App() {
     return () => document.removeEventListener('click', onDocClick);
   }, []);
 
-  // ✅ Detect mobile once (and on resize)
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 1024px)');
     const apply = () => setIsMobile(mql.matches);
-
     apply();
     if (typeof mql.addEventListener === 'function') {
       mql.addEventListener('change', apply);
@@ -150,12 +127,10 @@ export default function App() {
     }
   }, []);
 
-  // ✅ Mobile default zoom: on phones, start at 1 so fitScale does the heavy lifting
   useEffect(() => {
     if (isMobile) setPreviewScale(1);
   }, [isMobile]);
 
-  // ✅ Auto-fit preview width using ResizeObserver (safe + fallback)
   useEffect(() => {
     const el = previewWrapRef.current;
     if (!el) return;
@@ -164,7 +139,6 @@ export default function App() {
       const width = el.clientWidth || 0;
       const paddingAllowance = isMobile ? 18 : 24;
       const usable = Math.max(0, width - paddingAllowance);
-
       const nextFit = Math.min(1, usable / TEMPLATE_CANVAS_WIDTH);
       setFitScale(Number.isFinite(nextFit) && nextFit > 0 ? nextFit : 1);
     };
@@ -181,7 +155,6 @@ export default function App() {
     return () => window.removeEventListener('resize', compute);
   }, [isMobile]);
 
-  // ✅ Load billing status
   const loadBillingStatus = useCallback(async () => {
     setIsLoadingBilling(true);
     setBillingError('');
@@ -217,7 +190,6 @@ export default function App() {
       }
 
       const token = await auth.currentUser.getIdToken();
-
       const res = await fetch('/.netlify/functions/get-billing-status', {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
@@ -237,7 +209,6 @@ export default function App() {
     }
   }, []);
 
-  // Initial load + refresh on auth changes
   useEffect(() => {
     loadBillingStatus();
 
@@ -254,7 +225,6 @@ export default function App() {
     }
   }, [loadBillingStatus]);
 
-  // ✅ Refresh billing if user landed on /billing/success (Paystack callback)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname || '';
@@ -263,7 +233,6 @@ export default function App() {
     }
   }, [loadBillingStatus]);
 
-  // Safe filename for downloads
   const fileSafeName = useMemo(() => {
     const raw = (resumeData?.personalInfo?.fullName || 'CareerUnified-Resume').trim();
     return raw
@@ -283,7 +252,6 @@ export default function App() {
     { id: 'professional', name: 'Professional', description: 'Classic two-column layout for corporate roles', category: 'Corporate' },
     { id: 'creative', name: 'Creative', description: 'Bold gradient design for creative industries', category: 'Creative' },
     { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant typography-focused', category: 'Clean' },
-
     { id: 'ats-pro', name: 'ATS Pro+ (AI)', description: 'AI-optimized, ATS-safe layout with strong hierarchy', category: 'AI Premium', premium: true },
     { id: 'executive', name: 'Executive (AI)', description: 'Leadership-focused layout for managers and seniors', category: 'AI Premium', premium: true },
     { id: 'tech-stack', name: 'Tech Stack (AI)', description: 'Project + skills layout optimized for tech roles', category: 'AI Premium', premium: true },
@@ -291,34 +259,21 @@ export default function App() {
 
   const renderTemplate = () => {
     const props = { data: resumeData, colorTheme: selectedColor };
-
     switch (selectedTemplate) {
-      case 'modern':
-        return <ModernTemplate {...props} />;
-      case 'professional':
-        return <ProfessionalTemplate data={resumeData} />;
-      case 'creative':
-        return <CreativeTemplate data={resumeData} />;
-      case 'minimalist':
-        return <MinimalistTemplate data={resumeData} />;
-
-      // ✅ Premium templates (now real components)
-      case 'ats-pro':
-        return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
-      case 'executive':
-        return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
-      case 'tech-stack':
-        return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
-
-      default:
-        return <ModernTemplate {...props} />;
+      case 'modern': return <ModernTemplate {...props} />;
+      case 'professional': return <ProfessionalTemplate data={resumeData} />;
+      case 'creative': return <CreativeTemplate data={resumeData} />;
+      case 'minimalist': return <MinimalistTemplate data={resumeData} />;
+      case 'ats-pro': return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+      default: return <ModernTemplate {...props} />;
     }
   };
 
   const renderTemplateThumbnail = (id: AnyTemplateId) => {
     const isPremium = id === 'ats-pro' || id === 'executive' || id === 'tech-stack';
 
-    // ✅ If premium AND user does NOT have access, show lock preview
     if (isPremium && !hasAIPlan) {
       return (
         <div className="h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -333,29 +288,17 @@ export default function App() {
       );
     }
 
-    // ✅ Thumbnail content (use real premium templates when unlocked)
     const thumb = (() => {
       const props = { data: resumeData, colorTheme: selectedColor };
-
       switch (id) {
-        case 'modern':
-          return <ModernTemplate {...props} />;
-        case 'professional':
-          return <ProfessionalTemplate data={resumeData} />;
-        case 'creative':
-          return <CreativeTemplate data={resumeData} />;
-        case 'minimalist':
-          return <MinimalistTemplate data={resumeData} />;
-
-        case 'ats-pro':
-          return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
-        case 'executive':
-          return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
-        case 'tech-stack':
-          return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
-
-        default:
-          return <ModernTemplate {...props} />;
+        case 'modern': return <ModernTemplate {...props} />;
+        case 'professional': return <ProfessionalTemplate data={resumeData} />;
+        case 'creative': return <CreativeTemplate data={resumeData} />;
+        case 'minimalist': return <MinimalistTemplate data={resumeData} />;
+        case 'ats-pro': return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+        default: return <ModernTemplate {...props} />;
       }
     })();
 
@@ -371,61 +314,97 @@ export default function App() {
   const handleTemplateClick = (id: AnyTemplateId) => {
     const tpl = templates.find((t) => t.id === id);
     const isLocked = !!tpl?.premium && !hasAIPlan;
-
     if (isLocked) {
       setShowUpgradeModal(true);
       return;
     }
-
-    // ✅ Allow selecting BOTH normal and premium templates
     setSelectedTemplate(id);
   };
 
-  const handleExport = async () => {
+  // ✅ Print-based PDF export — fully supports oklch() and all modern CSS.
+  // html2canvas was removed because it cannot parse oklch() colors used by Tailwind v4.
+  // This approach opens the resume in a new window with all page styles copied in,
+  // then triggers the browser's native print dialog (Save as PDF).
+  const handleExport = useCallback(() => {
     const el = previewRef.current;
     if (!el) {
       alert('Preview not ready yet. Please try again.');
       return;
     }
 
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import('html2canvas'),
-      import('jspdf'),
-    ]);
+    setIsPrinting(true);
 
-    const canvas = await html2canvas(el, {
-      backgroundColor: '#ffffff',
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    });
+    // Grab all CSS rules from every stylesheet on the page
+    const styles = Array.from(document.styleSheets)
+      .map((sheet) => {
+        try {
+          return Array.from(sheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join('\n');
+        } catch {
+          // Cross-origin sheet — import by URL instead
+          return sheet.href ? `@import url("${sheet.href}");` : '';
+        }
+      })
+      .join('\n');
 
-    const imgData = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      position -= pageHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) {
+      alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
+      setIsPrinting(false);
+      return;
     }
 
-    pdf.save(`${fileSafeName}.pdf`);
-  };
+    printWindow.document.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${fileSafeName}</title>
+  <style>
+    ${styles}
 
-  // ✅ Paystack checkout from modal
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    /* Remove screen-only decorations */
+    body > div {
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+  </style>
+</head>
+<body>
+  ${el.outerHTML}
+  <script>
+    window.onload = function () {
+      setTimeout(function () {
+        window.print();
+        window.close();
+      }, 400);
+    };
+  </script>
+</body>
+</html>
+    `);
+
+    printWindow.document.close();
+    setIsPrinting(false);
+  }, [fileSafeName]);
+
   const startSubscription = async (plan: PlanId) => {
     setIsRedirecting(true);
     setBillingError('');
@@ -489,19 +468,14 @@ export default function App() {
     }
   };
 
-  // ✅ Final scale: desktop uses previewScale; mobile uses fitScale * previewScale
   const finalScale = isMobile ? fitScale * previewScale : previewScale;
-
-  // Zoom ranges
   const ZOOM_MIN = isMobile ? 0.7 : 0.5;
   const ZOOM_MAX = isMobile ? 1.6 : 1.0;
   const ZOOM_STEP = 0.1;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* ✅ NAVIGATION (matches your site nav style) */}
       <nav className="main-nav">
-        {/* DESKTOP VIEW */}
         <a href="/index.html" className="logo desktop-nav">
           Career Unified
         </a>
@@ -513,7 +487,7 @@ export default function App() {
           <a href="/cv-generator/">Generate CV</a>
           <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
           <a href="/recruiter-apply.html">Apply as Recruiter</a>
-          <a href="/saved-items.html"> Saved Items</a>
+          <a href="/saved-items.html">Saved Items</a>
           <a href="/signup.html">Sign Up</a>
           <a href="/login.html">Login</a>
 
@@ -530,7 +504,6 @@ export default function App() {
           </a>
         </div>
 
-        {/* MOBILE VIEW */}
         <div className="mobile-nav">
           <a href="/index.html" className="mobile-logo">
             Career Unified
@@ -561,7 +534,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* MOBILE SLIDE MENU */}
       <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
         <a href="/jobs.html">Jobs</a>
         <a href="/bursaries.html">Bursaries</a>
@@ -569,13 +541,12 @@ export default function App() {
         <a href="/cv-generator/">Generate CV</a>
         <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
         <a href="/recruiter-apply.html">Apply as Recruiter</a>
-        <a href="/saved-items.html"> Saved Items</a>
+        <a href="/saved-items.html">Saved Items</a>
         <a href="/signup.html">Sign Up</a>
         <a href="/login.html">Login</a>
       </div>
 
       <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        {/* Smart Tips */}
         <div className="mb-6">
           <SmartTips data={resumeData} />
         </div>
@@ -650,8 +621,6 @@ export default function App() {
                       <p className="text-sm text-gray-600 mb-6">
                         Choose from professionally designed templates optimized for ATS systems
                       </p>
-
-                      {/* ✅ Small status line */}
                       <div className="text-xs text-slate-600">
                         {isLoadingBilling ? (
                           'Checking your plan…'
@@ -697,9 +666,7 @@ export default function App() {
                                         </Badge>
                                       )}
                                     </div>
-
                                     <p className="text-xs text-gray-600 mb-2">{template.description}</p>
-
                                     <Badge variant="outline" className="text-xs">
                                       {template.category}
                                     </Badge>
@@ -780,11 +747,12 @@ export default function App() {
                 <div className="flex items-center gap-3 flex-wrap">
                   <Button
                     onClick={handleExport}
+                    disabled={isPrinting}
                     className="bg-white text-[#1e3a8a] border border-blue-200 hover:bg-blue-50"
                     variant="outline"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Download PDF
+                    {isPrinting ? 'Preparing…' : 'Download PDF'}
                   </Button>
 
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-blue-100">
@@ -824,14 +792,26 @@ export default function App() {
                       ref={previewWrapRef}
                       className="flex justify-center p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100"
                     >
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: finalScale }}
-                        transition={{ duration: 0.25 }}
-                        className="origin-top"
+                      {/* Outer box physically takes only the post-scale width — enables correct centering on mobile */}
+                      <div
+                        style={{
+                          width: TEMPLATE_CANVAS_WIDTH * finalScale,
+                          overflow: 'hidden',
+                        }}
                       >
-                        <div ref={previewRef}>{renderTemplate()}</div>
-                      </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.25 }}
+                          style={{
+                            transform: `scale(${finalScale})`,
+                            transformOrigin: 'top left',
+                            width: TEMPLATE_CANVAS_WIDTH,
+                          }}
+                        >
+                          <div ref={previewRef}>{renderTemplate()}</div>
+                        </motion.div>
+                      </div>
                     </div>
                   </ScrollArea>
                 </CardContent>
@@ -880,7 +860,6 @@ export default function App() {
               Not now
             </Button>
 
-            {/* ✅ Optional: Dev-only unlock (remove in production) */}
             {import.meta.env.DEV ? (
               <Button
                 variant="outline"
