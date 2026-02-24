@@ -1473,9 +1473,9 @@
     /* ================= HELP CENTER (NEW, DOES NOT CHANGE YOUR LOGIC) ================= */
 
     // These are safe defaults; you can change them later
-    const SUPPORT_EMAIL = "contact@careerunified.com";
-    const CONTACT_PAGE = "contact-us.html"; 
-    
+    const SUPPORT_EMAIL = "support@careerunified.com";
+    const CONTACT_PAGE = "contact-us.html";  // if you don’t have it yet, create later or change to your real page
+    const BILLING_PAGE = "pricing.html";     // if you don’t have it yet, change to your real plans page
     const SITE_NAME = "Career Unified";
 
     function getCUContext() {
@@ -1567,15 +1567,15 @@
 
                     <h4>AI Tools </h4>
                     <ul>
-                        <li><b>You must be logged in</b> to subscribe and unlock premium AI features.</li>
-                        <li><b>Locked templates</b> are for users who paid for AI Tailor premium plans.</li>
+                        <li>You must be logged in to subscribe and unlock premium AI features.</li>
+                        <li>Locked templates are for users who paid for AI Tailor premium plans.</li>
                         <li>If templates are locked and you already paid, try the quick fix: <b>refresh the page</b>.</li>
                     </ul>
 
                     <div class="help-actions">
                         <a class="btn btn-primary" href="login.html">Login</a>
-                        
-                        
+                        <a class="btn btn-secondary" href="${BILLING_PAGE}">View Plans</a>
+                        <button class="btn btn-secondary" onclick="switchTab('resume')">Upload CV</button>
                     </div>
                 </div>
                 `
@@ -1592,8 +1592,8 @@
 
                     <h4>Why templates are locked</h4>
                     <ul>
-                        <li>Some templates are premium and require a paid plan.</li>
-                        <li>To unlock them, you must be logged in and have an active subscription .</li>
+                        <li>Some templates are <b>premium</b> and require a paid plan.</li>
+                        <li>To unlock them, you must be <b>logged in</b> and have an <b>active subscription</b>.</li>
                     </ul>
 
                     <h4>Your current access</h4>
@@ -1621,11 +1621,11 @@
 
                     <h4>Quick fixes (do in order)</h4>
                     <ul>
-                        <li>Refresh the page (Ctrl + R on desktop).</li>
-                        <li>Log out and log back in.</li>
-                        <li>Confirm you're logged in with the same email used to subscribe.</li>
+                        <li><b>Refresh the page</b> (Ctrl + R on desktop).</li>
+                        <li><b>Log out</b> and log back in.</li>
+                        <li>Confirm you're logged in with the <b>same email used to subscribe</b>.</li>
                         <li>Try another browser or open Incognito.</li>
-                        <li>Disable ad blockers or extensions (they sometimes block requests).</li>
+                        <li>Disable ad blockers/extensions (they sometimes block requests).</li>
                     </ul>
 
                     <h4>If it still fails</h4>
@@ -1649,7 +1649,7 @@
                     <p><b>Yes.</b> You must be logged in to subscribe, unlock premium templates, and use paid AI tools.</p>
 
                     <h4>Why is my template locked?</h4>
-                    <p>Locked templates are for users with an active paid plan AI Tailor. If you already paid, try to refresh first.</p>
+                    <p>Locked templates are for users with an active paid plan (AI Tailor / premium). If you already paid, try <b>refresh</b> first.</p>
 
                     <h4>My AI Tailor results are empty</h4>
                     <ul>
@@ -1661,7 +1661,7 @@
                     <h4>Why can’t I upload my CV?</h4>
                     <ul>
                         <li>Only PDF/DOC/DOCX allowed.</li>
-                        <li>Max size 5MB </li>
+                        <li>Max size 5MB.</li>
                         <li>You must be logged in.</li>
                     </ul>
 
@@ -1677,7 +1677,7 @@
                 title: "Contact Support",
                 body: `
                 <div class="help-modal-section">
-                    <p>For fast support, include your account email, what feature is failing, and whether you already tried refresh or logout.</p>
+                    <p>For fast support, include your account email, what feature is failing, and what you already tried (refresh/logout).</p>
 
                     <div class="help-actions">
                         <a class="btn btn-primary" href="${mailto(`${SITE_NAME} Support Request`, `Hi ${SITE_NAME} Support,\\n\\nI need help with:\\n\\n(Explain your problem here)\\n\\n---\\n${deviceInfo()}\\n`)}">Email Support</a>
@@ -1692,7 +1692,7 @@
                 title: "Report an Issue",
                 body: `
                 <div class="help-modal-section">
-                    <p>Before submitting, please try refreshing the page once — many AI sync issues fix instantly.</p>
+                    <p>Before submitting, please try <b>refreshing the page</b> once — many AI sync issues fix instantly.</p>
 
                     <div class="info-box" style="margin: 12px 0;">
                         <b>Quick fix:</b> Refresh → try again → if still broken, submit below.
