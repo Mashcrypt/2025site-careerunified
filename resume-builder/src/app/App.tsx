@@ -16,7 +16,13 @@ import { Card, CardContent } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { ScrollArea } from './components/ui/scroll-area';
 import { Badge } from './components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from './components/ui/dialog';
 
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
@@ -31,6 +37,11 @@ import { ProfessionalTemplate } from './components/templates/professional-templa
 import { CreativeTemplate } from './components/templates/creative-template';
 import { MinimalistTemplate } from './components/templates/minimalist-template';
 
+// ✅ Premium templates you added
+import { ATSProTemplate } from './components/templates/ats-pro-template';
+import { ExecutiveTemplate } from './components/templates/executive-template';
+import { TechStackTemplate } from './components/templates/tech-stack-template';
+
 import type { ResumeData, TemplateType } from './types/resume';
 import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
@@ -40,7 +51,7 @@ import { getFirebaseAuth } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
 
-// ✅ Add new premium template ids without touching your shared TemplateType union.
+// ✅ Add premium template ids without touching your shared TemplateType union.
 type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
 type AnyTemplateId = TemplateType | PremiumTemplateId;
 
@@ -72,7 +83,10 @@ function isFirebaseConfigured() {
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
+
+  // ✅ IMPORTANT: allow premium IDs
+  const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
+
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
 
@@ -82,7 +96,7 @@ export default function App() {
   // ✅ Auto-fit scale (so preview fills available width on mobile)
   const [fitScale, setFitScale] = useState(1);
 
-  // ✅ Track mobile safely (no window checks in render)
+  // ✅ Track mobile safely
   const [isMobile, setIsMobile] = useState(false);
 
   // ✅ Billing + access
@@ -91,7 +105,7 @@ export default function App() {
   const [billingError, setBillingError] = useState<string>('');
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // ✅ Derived: AI plan access (templates should unlock automatically)
+  // ✅ Derived: AI plan access
   const hasAIPlan = useMemo(() => {
     return billing?.plan !== 'free' && billing?.subscriptionStatus === 'active';
   }, [billing]);
@@ -167,7 +181,7 @@ export default function App() {
     return () => window.removeEventListener('resize', compute);
   }, [isMobile]);
 
-  // ✅ Load billing status (same behavior as ai-tailor.tsx)
+  // ✅ Load billing status
   const loadBillingStatus = useCallback(async () => {
     setIsLoadingBilling(true);
     setBillingError('');
@@ -211,7 +225,6 @@ export default function App() {
 
       const payload = await res.json().catch(() => null);
       if (!res.ok) {
-        // Don’t block the app if billing fails, but store message
         setBillingError(payload?.error || 'Could not verify billing status.');
         return;
       }
@@ -278,6 +291,7 @@ export default function App() {
 
   const renderTemplate = () => {
     const props = { data: resumeData, colorTheme: selectedColor };
+
     switch (selectedTemplate) {
       case 'modern':
         return <ModernTemplate {...props} />;
@@ -287,6 +301,15 @@ export default function App() {
         return <CreativeTemplate data={resumeData} />;
       case 'minimalist':
         return <MinimalistTemplate data={resumeData} />;
+
+      // ✅ Premium templates (now real components)
+      case 'ats-pro':
+        return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'executive':
+        return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'tech-stack':
+        return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+
       default:
         return <ModernTemplate {...props} />;
     }
@@ -310,10 +333,10 @@ export default function App() {
       );
     }
 
-    // ✅ If premium AND user HAS access, show normal thumbnail (for now we reuse modern)
-    // (You can replace these with real Premium templates when you add them later.)
+    // ✅ Thumbnail content (use real premium templates when unlocked)
     const thumb = (() => {
       const props = { data: resumeData, colorTheme: selectedColor };
+
       switch (id) {
         case 'modern':
           return <ModernTemplate {...props} />;
@@ -323,8 +346,15 @@ export default function App() {
           return <CreativeTemplate data={resumeData} />;
         case 'minimalist':
           return <MinimalistTemplate data={resumeData} />;
+
+        case 'ats-pro':
+          return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'executive':
+          return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'tech-stack':
+          return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+
         default:
-          // Premium templates not implemented yet → show modern thumbnail
           return <ModernTemplate {...props} />;
       }
     })();
@@ -347,15 +377,8 @@ export default function App() {
       return;
     }
 
-    // ✅ Only your real templates are selectable today
-    if (id === 'modern' || id === 'professional' || id === 'creative' || id === 'minimalist') {
-      setSelectedTemplate(id);
-      return;
-    }
-
-    // ✅ Premium template IDs are allowed only when paid — for now, show message.
-    // When you add the premium templates, replace this with: setSelectedTemplate(...)
-    alert('This AI template is unlocked, but its component is not added yet. (Next step: wire the premium template components.)');
+    // ✅ Allow selecting BOTH normal and premium templates
+    setSelectedTemplate(id);
   };
 
   const handleExport = async () => {
@@ -476,7 +499,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
-      {/* ✅ NAVIGATION (matches varsity.html) */}
+      {/* ✅ NAVIGATION (matches your site nav style) */}
       <nav className="main-nav">
         {/* DESKTOP VIEW */}
         <a href="/index.html" className="logo desktop-nav">
@@ -562,32 +585,50 @@ export default function App() {
           <div className="lg:col-span-5">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 bg-white shadow-sm">
-                <TabsTrigger value="build" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="build"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <FileText className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Build</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="templates" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="templates"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Palette className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Templates</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="ai" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="ai"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Wand2 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">AI Tailor</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="analytics" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="analytics"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <BarChart3 className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Analytics</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="import" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="import"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <Upload className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Import</span>
                 </TabsTrigger>
 
-                <TabsTrigger value="versions" className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white">
+                <TabsTrigger
+                  value="versions"
+                  className="flex flex-col lg:flex-row items-center gap-1.5 py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-600 data-[state=active]:text-white"
+                >
                   <FolderOpen className="h-4 w-4" />
                   <span className="text-xs lg:text-sm">Versions</span>
                 </TabsTrigger>
@@ -771,7 +812,7 @@ export default function App() {
                   </div>
 
                   <Badge variant="outline" className="bg-white shadow-sm border-blue-200">
-                    {templates.find((t) => t.id === selectedTemplate)?.name}
+                    {templates.find((t) => t.id === selectedTemplate)?.name || 'Template'}
                   </Badge>
                 </div>
               </div>
@@ -824,36 +865,18 @@ export default function App() {
             ) : null}
 
             <div className="grid md:grid-cols-3 gap-3">
-              <Button
-                className="w-full"
-                disabled={isRedirecting}
-                onClick={() => startSubscription('starter')}
-              >
+              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('starter')}>
                 Starter
               </Button>
-              <Button
-                className="w-full"
-                disabled={isRedirecting}
-                onClick={() => startSubscription('job_seeker')}
-              >
+              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('job_seeker')}>
                 Job Seeker
               </Button>
-              <Button
-                className="w-full"
-                disabled={isRedirecting}
-                onClick={() => startSubscription('career_pro')}
-              >
+              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('career_pro')}>
                 Career Pro
               </Button>
             </div>
 
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                setShowUpgradeModal(false);
-              }}
-            >
+            <Button variant="outline" className="w-full" onClick={() => setShowUpgradeModal(false)}>
               Not now
             </Button>
 
@@ -863,7 +886,6 @@ export default function App() {
                 variant="outline"
                 className="w-full"
                 onClick={() => {
-                  // For local testing ONLY
                   setBilling({
                     plan: 'starter',
                     subscriptionStatus: 'active',
