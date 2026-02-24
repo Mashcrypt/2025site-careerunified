@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import {
   FileText,
   Wand2,
@@ -10,18 +10,14 @@ import {
   Upload,
   Lock,
 } from 'lucide-react';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Card, CardContent } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { ScrollArea } from './components/ui/scroll-area';
 import { Badge } from './components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './components/ui/dialog';
+
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
 import { ATSScore } from './components/ats-score';
@@ -29,13 +25,18 @@ import { ResumeVersions } from './components/resume-versions';
 import { ThemeCustomizer } from './components/theme-customizer';
 import { SmartTips } from './components/smart-tips';
 import { ImportData } from './components/import-data';
+
 import { ModernTemplate } from './components/templates/modern-template';
 import { ProfessionalTemplate } from './components/templates/professional-template';
 import { CreativeTemplate } from './components/templates/creative-template';
 import { MinimalistTemplate } from './components/templates/minimalist-template';
+
 import type { ResumeData, TemplateType } from './types/resume';
 import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
+
+// ✅ Firebase helper (same as ai-tailor.tsx)
+import { getFirebaseAuth } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
 
@@ -43,8 +44,31 @@ const initialData: ResumeData = southAfricanSampleData;
 type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
 type AnyTemplateId = TemplateType | PremiumTemplateId;
 
+type PlanId = 'starter' | 'job_seeker' | 'career_pro';
+
+type BillingStatus = {
+  plan: 'free' | 'starter' | 'job_seeker' | 'career_pro';
+  subscriptionStatus: 'active' | 'past_due' | 'cancelled' | 'inactive' | string;
+  used: number;
+  limit: number | null;
+  freeResumeUsed: boolean;
+  freeCoverUsed: boolean;
+  pendingPlan?: string | null;
+  pendingPaystackReference?: string | null;
+};
+
 // Your templates render at A4-ish pixel size (many resume templates use ~816px width)
 const TEMPLATE_CANVAS_WIDTH = 816;
+
+function isFirebaseConfigured() {
+  const required = [
+    import.meta.env.VITE_FIREBASE_API_KEY,
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    import.meta.env.VITE_FIREBASE_APP_ID,
+  ];
+  return required.every((v) => typeof v === 'string' && v.trim().length > 0);
+}
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
@@ -61,8 +85,17 @@ export default function App() {
   // ✅ Track mobile safely (no window checks in render)
   const [isMobile, setIsMobile] = useState(false);
 
-  // ✅ Monetization flag (wire this later)
-  const [hasAIPlan, setHasAIPlan] = useState(false);
+  // ✅ Billing + access
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [isLoadingBilling, setIsLoadingBilling] = useState(false);
+  const [billingError, setBillingError] = useState<string>('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // ✅ Derived: AI plan access (templates should unlock automatically)
+  const hasAIPlan = useMemo(() => {
+    return billing?.plan !== 'free' && billing?.subscriptionStatus === 'active';
+  }, [billing]);
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // ✅ Navbar mobile menu state
@@ -92,7 +125,6 @@ export default function App() {
     const apply = () => setIsMobile(mql.matches);
 
     apply();
-    // Safari compatibility
     if (typeof mql.addEventListener === 'function') {
       mql.addEventListener('change', apply);
       return () => mql.removeEventListener('change', apply);
@@ -116,8 +148,6 @@ export default function App() {
 
     const compute = () => {
       const width = el.clientWidth || 0;
-
-      // Give breathing room so it doesn’t touch edges
       const paddingAllowance = isMobile ? 18 : 24;
       const usable = Math.max(0, width - paddingAllowance);
 
@@ -127,17 +157,98 @@ export default function App() {
 
     compute();
 
-    // Prefer ResizeObserver when available
     if (typeof ResizeObserver !== 'undefined') {
       const ro = new ResizeObserver(() => compute());
       ro.observe(el);
       return () => ro.disconnect();
     }
 
-    // Fallback: window resize
     window.addEventListener('resize', compute);
     return () => window.removeEventListener('resize', compute);
   }, [isMobile]);
+
+  // ✅ Load billing status (same behavior as ai-tailor.tsx)
+  const loadBillingStatus = useCallback(async () => {
+    setIsLoadingBilling(true);
+    setBillingError('');
+
+    try {
+      if (!isFirebaseConfigured()) {
+        setBilling({
+          plan: 'free',
+          subscriptionStatus: 'inactive',
+          used: 0,
+          limit: 0,
+          freeResumeUsed: false,
+          freeCoverUsed: false,
+          pendingPlan: null,
+          pendingPaystackReference: null,
+        });
+        return;
+      }
+
+      const auth = getFirebaseAuth();
+      if (!auth.currentUser) {
+        setBilling({
+          plan: 'free',
+          subscriptionStatus: 'inactive',
+          used: 0,
+          limit: 0,
+          freeResumeUsed: false,
+          freeCoverUsed: false,
+          pendingPlan: null,
+          pendingPaystackReference: null,
+        });
+        return;
+      }
+
+      const token = await auth.currentUser.getIdToken();
+
+      const res = await fetch('/.netlify/functions/get-billing-status', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        // Don’t block the app if billing fails, but store message
+        setBillingError(payload?.error || 'Could not verify billing status.');
+        return;
+      }
+
+      setBilling(payload as BillingStatus);
+    } catch (e: any) {
+      setBillingError(e?.message || 'Could not verify billing status.');
+    } finally {
+      setIsLoadingBilling(false);
+    }
+  }, []);
+
+  // Initial load + refresh on auth changes
+  useEffect(() => {
+    loadBillingStatus();
+
+    if (!isFirebaseConfigured()) return;
+
+    try {
+      const auth = getFirebaseAuth();
+      const unsub = auth.onAuthStateChanged(() => {
+        loadBillingStatus();
+      });
+      return () => unsub();
+    } catch {
+      return;
+    }
+  }, [loadBillingStatus]);
+
+  // ✅ Refresh billing if user landed on /billing/success (Paystack callback)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = window.location.pathname || '';
+    if (path.includes('/billing/success')) {
+      loadBillingStatus();
+    }
+  }, [loadBillingStatus]);
 
   // Safe filename for downloads
   const fileSafeName = useMemo(() => {
@@ -182,7 +293,10 @@ export default function App() {
   };
 
   const renderTemplateThumbnail = (id: AnyTemplateId) => {
-    if (id === 'ats-pro' || id === 'executive' || id === 'tech-stack') {
+    const isPremium = id === 'ats-pro' || id === 'executive' || id === 'tech-stack';
+
+    // ✅ If premium AND user does NOT have access, show lock preview
+    if (isPremium && !hasAIPlan) {
       return (
         <div className="h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
           <div className="text-center px-4">
@@ -196,6 +310,8 @@ export default function App() {
       );
     }
 
+    // ✅ If premium AND user HAS access, show normal thumbnail (for now we reuse modern)
+    // (You can replace these with real Premium templates when you add them later.)
     const thumb = (() => {
       const props = { data: resumeData, colorTheme: selectedColor };
       switch (id) {
@@ -208,6 +324,7 @@ export default function App() {
         case 'minimalist':
           return <MinimalistTemplate data={resumeData} />;
         default:
+          // Premium templates not implemented yet → show modern thumbnail
           return <ModernTemplate {...props} />;
       }
     })();
@@ -230,9 +347,15 @@ export default function App() {
       return;
     }
 
+    // ✅ Only your real templates are selectable today
     if (id === 'modern' || id === 'professional' || id === 'creative' || id === 'minimalist') {
       setSelectedTemplate(id);
+      return;
     }
+
+    // ✅ Premium template IDs are allowed only when paid — for now, show message.
+    // When you add the premium templates, replace this with: setSelectedTemplate(...)
+    alert('This AI template is unlocked, but its component is not added yet. (Next step: wire the premium template components.)');
   };
 
   const handleExport = async () => {
@@ -279,6 +402,70 @@ export default function App() {
     pdf.save(`${fileSafeName}.pdf`);
   };
 
+  // ✅ Paystack checkout from modal
+  const startSubscription = async (plan: PlanId) => {
+    setIsRedirecting(true);
+    setBillingError('');
+
+    try {
+      if (!isFirebaseConfigured()) {
+        setBillingError('Firebase is not configured on this deployment.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      const auth = getFirebaseAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        setBillingError('Please login to upgrade.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      const token = await user.getIdToken();
+
+      const res = await fetch('/.netlify/functions/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ plan }),
+      });
+
+      const payload = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const paystackMsg =
+          payload?.paystack_message ||
+          payload?.details?.message ||
+          payload?.details?.data?.message;
+
+        const details =
+          paystackMsg ||
+          payload?.error ||
+          payload?.details ||
+          'Could not start checkout. Please try again.';
+
+        setBillingError(typeof details === 'string' ? details : JSON.stringify(details));
+        setIsRedirecting(false);
+        return;
+      }
+
+      const url = payload?.authorization_url as string | undefined;
+      if (!url) {
+        setBillingError('Checkout link missing from server response.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      window.location.assign(url);
+    } catch (e: any) {
+      setBillingError(e?.message || 'Checkout error. Please try again.');
+      setIsRedirecting(false);
+    }
+  };
+
   // ✅ Final scale: desktop uses previewScale; mobile uses fitScale * previewScale
   const finalScale = isMobile ? fitScale * previewScale : previewScale;
 
@@ -307,7 +494,6 @@ export default function App() {
           <a href="/signup.html">Sign Up</a>
           <a href="/login.html">Login</a>
 
-          {/* My Account Icon (Desktop) */}
           <a
             href="/account-page.html"
             className="icon-btn desktop-account-btn"
@@ -423,6 +609,18 @@ export default function App() {
                       <p className="text-sm text-gray-600 mb-6">
                         Choose from professionally designed templates optimized for ATS systems
                       </p>
+
+                      {/* ✅ Small status line */}
+                      <div className="text-xs text-slate-600">
+                        {isLoadingBilling ? (
+                          'Checking your plan…'
+                        ) : hasAIPlan ? (
+                          'AI Plan active — premium templates unlocked ✅'
+                        ) : (
+                          'Premium templates require an AI plan.'
+                        )}
+                        {billingError ? <span className="text-red-600"> ({billingError})</span> : null}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -612,33 +810,76 @@ export default function App() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 text-sm text-slate-700">
+          <div className="space-y-4 text-sm text-slate-700">
             <ul className="list-disc pl-5 space-y-1">
               <li>Access premium AI-optimized resume templates</li>
               <li>AI Tailor suggestions matched to job descriptions</li>
               <li>Faster editing with smarter formatting</li>
             </ul>
 
-            <Button
-              className="w-full"
-              onClick={() => {
-                setShowUpgradeModal(false);
-                alert('Hook this button to your billing page.');
-              }}
-            >
-              Upgrade to AI Plan
-            </Button>
+            {billingError ? (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-700 text-xs">
+                {billingError}
+              </div>
+            ) : null}
+
+            <div className="grid md:grid-cols-3 gap-3">
+              <Button
+                className="w-full"
+                disabled={isRedirecting}
+                onClick={() => startSubscription('starter')}
+              >
+                Starter
+              </Button>
+              <Button
+                className="w-full"
+                disabled={isRedirecting}
+                onClick={() => startSubscription('job_seeker')}
+              >
+                Job Seeker
+              </Button>
+              <Button
+                className="w-full"
+                disabled={isRedirecting}
+                onClick={() => startSubscription('career_pro')}
+              >
+                Career Pro
+              </Button>
+            </div>
 
             <Button
               variant="outline"
               className="w-full"
               onClick={() => {
-                setHasAIPlan(true);
                 setShowUpgradeModal(false);
               }}
             >
-              (Dev) Unlock AI Plan
+              Not now
             </Button>
+
+            {/* ✅ Optional: Dev-only unlock (remove in production) */}
+            {import.meta.env.DEV ? (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  // For local testing ONLY
+                  setBilling({
+                    plan: 'starter',
+                    subscriptionStatus: 'active',
+                    used: 0,
+                    limit: 5,
+                    freeResumeUsed: false,
+                    freeCoverUsed: false,
+                    pendingPlan: null,
+                    pendingPaystackReference: null,
+                  });
+                  setShowUpgradeModal(false);
+                }}
+              >
+                (Dev) Unlock AI Plan
+              </Button>
+            ) : null}
           </div>
         </DialogContent>
       </Dialog>
