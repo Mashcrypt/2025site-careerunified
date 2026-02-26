@@ -19,11 +19,16 @@
     "react": "^19.1",
     "react-dom": "^19.1",
     "sanity": "^5.1.0",
-    "styled-components": "^6.1.18"
+    "styled-components": "^6.1.18",
+
+    "busboy": "^1.6.0",
+    "mammoth": "^1.6.0",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/react": "^19.1",
+    "@types/busboy": "^1.5.4",
     "eslint": "^9.28",
     "prettier": "^3.5",
     "typescript": "^5.8"
@@ -35,4 +40,3 @@
     "singleQuote": true
   }
 }
-
