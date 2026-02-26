@@ -3,12 +3,30 @@ import Busboy from "busboy";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
 
-type ParsedFile = { filename: string; mimeType: string; buffer: Buffer };
+type ParsedFile = {
+  filename: string;
+  mimeType: string;
+  buffer: Buffer;
+};
+
+function corsHeaders(origin?: string) {
+  const allowed = process.env.ALLOWED_ORIGIN || "*";
+  return {
+    "Access-Control-Allow-Origin":
+      allowed === "*"
+        ? "*"
+        : origin && origin === allowed
+        ? origin
+        : allowed,
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+  };
+}
 
 function parseMultipart(event: any): Promise<ParsedFile> {
   return new Promise((resolve, reject) => {
-    const contentType =
-      event.headers["content-type"] || event.headers["Content-Type"];
+    const contentType = event.headers["content-type"] || event.headers["Content-Type"];
     if (!contentType || !contentType.includes("multipart/form-data")) {
       return reject(new Error("Expected multipart/form-data"));
     }
@@ -17,11 +35,12 @@ function parseMultipart(event: any): Promise<ParsedFile> {
 
     let file: ParsedFile | null = null;
 
-    bb.on("file", (_field, stream, info) => {
+    bb.on("file", (_fieldname, stream, info) => {
       const { filename, mimeType } = info;
       const chunks: Buffer[] = [];
 
       stream.on("data", (d: Buffer) => chunks.push(d));
+      stream.on("limit", () => reject(new Error("File too large")));
       stream.on("end", () => {
         file = { filename, mimeType, buffer: Buffer.concat(chunks) };
       });
@@ -43,38 +62,32 @@ function parseMultipart(event: any): Promise<ParsedFile> {
 }
 
 export const handler: Handler = async (event) => {
+  const origin = event.headers.origin || event.headers.Origin;
+
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-      body: "",
-    };
+    return { statusCode: 200, headers: corsHeaders(origin), body: "" };
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return { statusCode: 405, headers: corsHeaders(origin), body: "Method Not Allowed" };
   }
 
   try {
     const uploaded = await parseMultipart(event);
 
-    const name = uploaded.filename.toLowerCase();
-    const isPdf = uploaded.mimeType === "application/pdf" || name.endsWith(".pdf");
+    const name = (uploaded.filename || "").toLowerCase();
+    const isPdf =
+      uploaded.mimeType === "application/pdf" || name.endsWith(".pdf");
     const isDocx =
-      uploaded.mimeType ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      uploaded.mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       name.endsWith(".docx");
 
     if (!isPdf && !isDocx) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         body: JSON.stringify({
-          error: "Only PDF or DOCX is supported for text extraction right now.",
+          error: "Only PDF or DOCX is supported. Please upload a .pdf or .docx file.",
         }),
       };
     }
@@ -89,21 +102,29 @@ export const handler: Handler = async (event) => {
       text = result.value || "";
     }
 
-    // small cleanup
+    // Light cleanup
     text = text.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").trim();
+
+    if (!text || text.length < 30) {
+      return {
+        statusCode: 422,
+        headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
+        body: JSON.stringify({
+          error:
+            "We couldn’t extract enough readable text from that file. Try a different PDF/DOCX (non-scanned).",
+        }),
+      };
+    }
 
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
-      },
+      headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     };
   } catch (err: any) {
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
       body: JSON.stringify({ error: err?.message || "Extraction failed" }),
     };
   }
