@@ -43,27 +43,41 @@ export const handler: Handler = async (event) => {
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
 
+    // ✅ NETLIFY FIX:
+    // In some Netlify builds, Sparticuz Chromium looks for /var/task/netlify/bin which may not exist.
+    // Force it to use the package's own bundled path.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (chromium as any).setHeadlessMode?.(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (chromium as any).setGraphicsMode?.(false);
+
+    // Ensure chromium knows where its packaged files are.
+    // This points to the installed node_modules location at runtime.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (chromium as any).sourcePath = "/var/task/node_modules/@sparticuz/chromium/bin";
+
+    // Get executable path, with a fallback that works on many Netlify setups
+    let executablePath: string | null = null;
+    try {
+      executablePath = await chromium.executablePath();
+    } catch {
+      // fallback for environments where chromium.executablePath() tries a non-existent directory
+      executablePath =
+        "/var/task/node_modules/@sparticuz/chromium/bin/chromium";
+    }
+
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: executablePath || undefined,
       headless: chromium.headless,
     });
 
     try {
       const page = await browser.newPage();
 
-      // Let images/fonts/css load normally
-      await page.setRequestInterception(true);
-      page.on("request", (req) => req.continue());
-
       await page.setContent(payload.html, { waitUntil: "networkidle0" });
-
-      // Render using screen styles (Tailwind etc. behave as expected)
       await page.emulateMediaType("screen");
-
-      // Wait for fonts to finish loading (prevents missing text/spacing issues)
-      // Safe even if no custom fonts are used.
       await page.evaluateHandle("document.fonts.ready");
 
       const pdfBuffer = await page.pdf({
