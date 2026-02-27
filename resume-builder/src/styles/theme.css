@@ -16,7 +16,7 @@
   --primary: #030213;
   --primary-foreground: #ffffff;
 
-  --secondary: #f3f4f6;            /* was oklch(0.95...) */
+  --secondary: #f3f4f6; /* was oklch(0.95...) */
   --secondary-foreground: #030213;
 
   --muted: #ececf0;
@@ -50,13 +50,13 @@
   --radius: 0.625rem;
 
   /* Sidebar */
-  --sidebar: #f9fafb;              /* was oklch(0.985...) */
-  --sidebar-foreground: #111827;   /* was oklch(0.145...) */
+  --sidebar: #f9fafb; /* was oklch(0.985...) */
+  --sidebar-foreground: #111827; /* was oklch(0.145...) */
   --sidebar-primary: #030213;
   --sidebar-primary-foreground: #f9fafb;
-  --sidebar-accent: #f3f4f6;       /* was oklch(0.97...) */
+  --sidebar-accent: #f3f4f6; /* was oklch(0.97...) */
   --sidebar-accent-foreground: #374151; /* was oklch(0.205...) */
-  --sidebar-border: #e5e7eb;       /* was oklch(0.922...) */
+  --sidebar-border: #e5e7eb; /* was oklch(0.922...) */
   --sidebar-ring: rgba(107, 114, 128, 0.55);
 }
 
@@ -204,30 +204,34 @@
   }
 }
 
-/* ===== Career Unified Navbar (DESKTOP like screenshot + MOBILE dropdown like screenshot) ===== */
+/* =========================================================
+   ✅ NAVBAR — MATCHES varsity.html STRUCTURE + LOOK
+   Uses the SAME classes: .main-nav, .logo, .nav-links, etc.
+   ========================================================= */
+
+/* NAV BAR */
 .main-nav {
   width: 100%;
   background: #1e3a8a;
   display: flex;
   align-items: center;
-  padding: 16px 22px;
   gap: 18px;
+  padding: 16px 22px;
   box-sizing: border-box;
-  color: #fff;
+  color: #ffffff;
 
-  /* keep it on top */
   position: sticky;
   top: 0;
   z-index: 9999;
 }
 
 .main-nav a {
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Logo left */
+/* Desktop logo */
 .logo.desktop-nav {
   font-size: 26px;
   font-weight: 800;
@@ -236,13 +240,11 @@
   white-space: nowrap;
 }
 
-/* Center links, account icon on far right (matches your desktop screenshot) */
+/* Desktop links (NOT centered — matches varsity.html) */
 .nav-links.desktop-nav {
-  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;   /* ✅ centers the links */
-  gap: 22px;
+  gap: 18px;
   font-weight: 600;
   font-size: 16px;
   flex-wrap: nowrap;
@@ -253,7 +255,7 @@
   opacity: 0.9;
 }
 
-/* Account icon button */
+/* Account icon button (same style as varsity) */
 .icon-btn {
   width: 40px;
   height: 40px;
@@ -273,18 +275,14 @@
 .icon-btn svg {
   width: 22px;
   height: 22px;
-  stroke: #fff;
+  stroke: #ffffff;
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.icon-btn svg circle {
-  stroke: #fff;
-}
-
-/* Mobile header row */
+/* MOBILE HEADER ROW */
 .mobile-nav {
   display: none;
   width: 100%;
@@ -297,7 +295,7 @@
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 4px;
-  color: #fff;
+  color: #ffffff;
 }
 
 .mobile-nav-right {
@@ -306,36 +304,27 @@
   align-items: center;
 }
 
-/* ✅ MOBILE MENU: white dropdown card (like screenshot you sent) */
+/* MOBILE MENU (dropdown under nav like your pages) */
 .mobile-menu {
   display: none;
-  position: fixed;
-  top: 72px;                 /* sits under navbar */
-  right: 16px;
-  left: auto;
-
-  width: min(340px, calc(100vw - 32px));
-  max-height: calc(100vh - 96px);
-  overflow-y: auto;
-
+  width: 100%;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 10px;
-  box-sizing: border-box;
-
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
   z-index: 10000;
+
+  /* on your HTML pages this sits right under the nav */
+  position: sticky;
+  top: 72px;
 }
 
 .mobile-menu a {
   display: block;
-  padding: 12px 12px;
+  padding: 14px 18px;
   font-weight: 700;
   font-size: 14px;
-  color: #1e3a8a;            /* ✅ blue text like screenshot */
-  border: 0;
-  border-radius: 12px;
+  color: #1e3a8a;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .mobile-menu a:hover,
