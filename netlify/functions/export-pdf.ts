@@ -53,21 +53,25 @@ export const handler: Handler = async (event) => {
     try {
       const page = await browser.newPage();
 
-      // Important for correct asset loading (fonts/images) in some cases:
+      // Let images/fonts/css load normally
       await page.setRequestInterception(true);
       page.on("request", (req) => req.continue());
 
       await page.setContent(payload.html, { waitUntil: "networkidle0" });
 
-      // Ensure background colors/gradients are included
+      // Render using screen styles (Tailwind etc. behave as expected)
+      await page.emulateMediaType("screen");
+
+      // Wait for fonts to finish loading (prevents missing text/spacing issues)
+      // Safe even if no custom fonts are used.
+      await page.evaluateHandle("document.fonts.ready");
+
       const pdfBuffer = await page.pdf({
         format: "A4",
         printBackground: true,
         preferCSSPageSize: true,
         margin: { top: "0", right: "0", bottom: "0", left: "0" },
       });
-
-      const pdfBase64 = pdfBuffer.toString("base64");
 
       return {
         statusCode: 200,
@@ -78,7 +82,7 @@ export const handler: Handler = async (event) => {
           "Cache-Control": "no-store",
           "Access-Control-Allow-Origin": "*",
         },
-        body: pdfBase64,
+        body: pdfBuffer.toString("base64"),
       };
     } finally {
       await browser.close();
