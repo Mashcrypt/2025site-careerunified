@@ -204,140 +204,241 @@
   }
 }
 
-/* =========================================================
-   ✅ NAVBAR — MATCHES varsity.html STRUCTURE + LOOK
-   Uses the SAME classes: .main-nav, .logo, .nav-links, etc.
-   ========================================================= */
-
-/* NAV BAR */
-.main-nav {
-  width: 100%;
-  background: #1e3a8a;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 16px 22px;
+/* ===============================
+   MOBILE FIRST RESET
+=============================== */
+* {
   box-sizing: border-box;
-  color: #ffffff;
-
-  position: sticky;
-  top: 0;
-  z-index: 9999;
 }
 
-.main-nav a {
-  color: #ffffff;
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  max-width: 100vw;
+}
+
+/* ====================================
+   RESET & BASE
+==================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f7f9fc;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+a {
+  color: #1e3a8a;
   text-decoration: none;
-  font-family: "Poppins", sans-serif;
+  font-weight: 600;
 }
 
-/* Desktop logo */
-.logo.desktop-nav {
-  font-size: 26px;
-  font-weight: 800;
+a:hover {
   text-decoration: underline;
-  text-underline-offset: 4px;
-  white-space: nowrap;
 }
 
-/* Desktop links (NOT centered — matches varsity.html) */
-.nav-links.desktop-nav {
+/* ====================================
+   NAVIGATION - DESKTOP (MATCHES YOUR SITE)
+==================================== */
+.main-nav {
+  background: #1e3a8a;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.logo {
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.nav-links {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  margin-left: 0;
   font-weight: 600;
-  font-size: 16px;
-  flex-wrap: nowrap;
-  min-width: 0;
+  transition: color 0.2s;
 }
 
-.nav-links.desktop-nav a:hover {
-  opacity: 0.9;
+.nav-links a:hover {
+  color: #facc15;
+  text-decoration: none;
 }
 
-/* Account icon button (same style as varsity) */
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  display: inline-flex;
+/* Desktop Account Icon */
+.desktop-account-btn {
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  border-radius: 50%;
+  transition: background 0.2s;
+  margin-left: 8px;
 }
 
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.10);
+.desktop-account-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white !important;
+  text-decoration: none !important;
 }
 
-.icon-btn svg {
-  width: 22px;
-  height: 22px;
-  stroke: #ffffff;
+.desktop-account-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* MOBILE HEADER ROW */
-.mobile-nav {
-  display: none;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-}
+/* ===============================
+   MOBILE NAV SYSTEM - IMPROVED
+================================ */
 
-.mobile-logo {
-  font-size: 22px;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  color: #ffffff;
-}
-
-.mobile-nav-right {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* MOBILE MENU (dropdown under nav like your pages) */
+.mobile-nav,
 .mobile-menu {
   display: none;
-  width: 100%;
-  background: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
-  z-index: 10000;
-
-  /* on your HTML pages this sits right under the nav */
-  position: sticky;
-  top: 72px;
 }
 
-.mobile-menu a {
-  display: block;
-  padding: 14px 18px;
-  font-weight: 700;
-  font-size: 14px;
-  color: #1e3a8a;
-  border-bottom: 1px solid #f1f5f9;
+/* Desktop */
+.desktop-nav {
+  display: flex;
 }
 
-.mobile-menu a:hover,
-.mobile-menu a:active {
-  background: #f3f4f6;
+/* Professional Icon Buttons */
+.icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  position: relative;
+  text-decoration: none;
 }
 
-/* Desktop vs Mobile visibility */
-@media (max-width: 1024px) {
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.icon-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ===============================
+   MOBILE RESPONSIVE DESIGN (MATCHES YOUR SITE)
+================================ */
+@media (max-width: 900px) {
+  /* Hide desktop nav */
   .desktop-nav {
-    display: none !important;
+    display: none;
   }
+
+  /* Mobile Navigation Bar */
+  .main-nav {
+    padding: 12px 16px;
+    justify-content: space-between;
+  }
+
   .mobile-nav {
     display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mobile-logo {
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .mobile-logo:hover {
+    opacity: 0.9;
+    text-decoration: none;
+  }
+
+  .mobile-nav-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    position: fixed;
+    top: 64px;
+    right: 0;
+    background: white;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    z-index: 9999;
+    margin: 16px;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-menu a {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: #1e3a8a;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+
+  .mobile-menu a:hover {
+    background: #f0f7ff;
   }
 }
