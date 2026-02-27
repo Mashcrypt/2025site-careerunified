@@ -3,7 +3,7 @@
 :root {
   --font-size: 16px;
 
-  /* ✅ html2canvas-safe colors (NO oklch) */
+  /* ✅ safe colors (NO oklch) */
   --background: #ffffff;
   --foreground: #111827;
 
@@ -152,55 +152,19 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
+  /* ✅ Keep this minimal so it doesn't break your app layout */
   html {
     font-size: var(--font-size);
   }
 
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  body {
+    @apply bg-background text-foreground;
   }
 
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
-  }
+  /* ✅ IMPORTANT:
+     Do NOT set h1/h2/h3 sizes here.
+     Tailwind + your components already handle typography.
+     Those overrides are what caused the "everything is big" issue. */
 }
 
 /* ====================================
@@ -208,37 +172,29 @@
    Matches your index/varsity navbar
 ==================================== */
 
-/* Desktop container */
 .main-nav {
   background: #1e3a8a;
   padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky; /* keep on top like site */
+  position: sticky;
   top: 0;
   z-index: 9999;
 }
 
-/* Only navbar links */
 .main-nav a {
   color: #ffffff;
   text-decoration: none;
   font-weight: 600;
 }
 
-.main-nav a:hover {
-  text-decoration: none;
-}
-
-/* Logo */
 .main-nav .logo {
   color: #ffffff;
   font-size: 22px;
   font-weight: 700;
 }
 
-/* Link row */
 .main-nav .nav-links {
   display: flex;
   align-items: center;
@@ -255,7 +211,6 @@
   color: #facc15;
 }
 
-/* Desktop account icon */
 .main-nav .desktop-account-btn {
   display: flex !important;
   align-items: center;
@@ -282,7 +237,6 @@
   stroke-linejoin: round;
 }
 
-/* Icon buttons used by navbar */
 .main-nav .icon-btn {
   background: none;
   border: none;
@@ -312,19 +266,17 @@
   stroke-linejoin: round;
 }
 
-/* Mobile elements are hidden on desktop */
 .mobile-nav,
 .mobile-menu {
   display: none;
 }
 
-/* Desktop visibility helper */
 .desktop-nav {
   display: flex;
 }
 
-/* Mobile breakpoint matches your site CSS */
-@media (max-width: 900px) {
+/* ✅ IMPORTANT: match React breakpoint (1024px) */
+@media (max-width: 1024px) {
   .desktop-nav {
     display: none;
   }
@@ -355,7 +307,7 @@
   }
 
   .mobile-menu {
-    display: block; /* your React inline style still controls show/hide */
+    /* React controls visibility via inline style */
     position: fixed;
     top: 64px;
     right: 0;
@@ -367,18 +319,6 @@
     padding: 8px 0;
     z-index: 9999;
     margin: 16px;
-    animation: slideIn 0.2s ease;
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   .mobile-menu a {
