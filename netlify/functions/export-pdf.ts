@@ -43,33 +43,14 @@ export const handler: Handler = async (event) => {
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
 
-    // ✅ NETLIFY FIX:
-    // In some Netlify builds, Sparticuz Chromium looks for /var/task/netlify/bin which may not exist.
-    // Force it to use the package's own bundled path.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (chromium as any).setHeadlessMode?.(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (chromium as any).setGraphicsMode?.(false);
-
-    // Ensure chromium knows where its packaged files are.
-    // This points to the installed node_modules location at runtime.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (chromium as any).sourcePath = "/var/task/node_modules/@sparticuz/chromium/bin";
-
-    // Get executable path, with a fallback that works on many Netlify setups
-    let executablePath: string | null = null;
-    try {
-      executablePath = await chromium.executablePath();
-    } catch {
-      // fallback for environments where chromium.executablePath() tries a non-existent directory
-      executablePath =
-        "/var/task/node_modules/@sparticuz/chromium/bin/chromium";
-    }
+    // ✅ Netlify/Lambda-friendly: use sparticuz chromium
+    // (This avoids looking for /var/task/netlify/bin)
+    const executablePath = await chromium.executablePath();
 
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath || undefined,
+      executablePath,
       headless: chromium.headless,
     });
 
@@ -102,6 +83,8 @@ export const handler: Handler = async (event) => {
       await browser.close();
     }
   } catch (err: any) {
+    // Helpful log for Netlify function logs
+    console.error("export-pdf error:", err);
     return json(500, { error: err?.message || "PDF generation failed." });
   }
 };
