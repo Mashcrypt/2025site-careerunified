@@ -1569,12 +1569,12 @@
                     <ul>
                         <li>You must be logged in to subscribe and unlock premium AI features.</li>
                         <li>Locked templates are for users who paid for AI Tailor premium plans.</li>
-                        <li>If templates are locked and you already paid, try the quick fix: <b>refresh the page</b>.</li>
+                        <li>If templates are locked and you already paid, try the quick fix: refresh the page.</li>
                     </ul>
 
                     <div class="help-actions">
                         <a class="btn btn-primary" href="login.html">Login</a>
-                        <a class="btn btn-secondary" href="${BILLING_PAGE}">View Plans</a>
+                    
                         <button class="btn btn-secondary" onclick="switchTab('resume')">Upload CV</button>
                     </div>
                 </div>
@@ -1592,8 +1592,8 @@
 
                     <h4>Why templates are locked</h4>
                     <ul>
-                        <li>Some templates are <b>premium</b> and require a paid plan.</li>
-                        <li>To unlock them, you must be <b>logged in</b> and have an <b>active subscription</b>.</li>
+                        <li>Some templates are premium and require a paid plan.</li>
+                        <li>To unlock them, you must be logged in and have an active subscription.</li>
                     </ul>
 
                     <h4>Your current access</h4>
@@ -1604,7 +1604,7 @@
                     </ul>
 
                     <div class="help-actions">
-                        <a class="btn btn-primary" href="${BILLING_PAGE}">${isPaidActive ? "Manage Plan" : "Unlock Premium"}</a>
+    
                         <button class="btn btn-secondary" onclick="openHelp('paid-not-working')">Paid but not working?</button>
                     </div>
                 </div>
@@ -1621,11 +1621,11 @@
 
                     <h4>Quick fixes (do in order)</h4>
                     <ul>
-                        <li><b>Refresh the page</b> (Ctrl + R on desktop).</li>
-                        <li><b>Log out</b> and log back in.</li>
-                        <li>Confirm you're logged in with the <b>same email used to subscribe</b>.</li>
+                        <li>Refresh the page (Ctrl + R on desktop).</li>
+                        <li>Log out and log back in.</li>
+                        <li>Confirm you're logged in with the same email used to subscribe.</li>
                         <li>Try another browser or open Incognito.</li>
-                        <li>Disable ad blockers/extensions (they sometimes block requests).</li>
+                        <li>Disable ad blockers or extensions (they sometimes block requests).</li>
                     </ul>
 
                     <h4>If it still fails</h4>
@@ -1635,7 +1635,7 @@
                         <button class="btn btn-secondary" onclick="handleSignOut()">Sign out</button>
                         <a class="btn btn-primary" href="login.html">Sign in again</a>
                         <a class="btn btn-secondary" href="${CONTACT_PAGE}">Contact Us</a>
-                        <a class="btn btn-primary" href="${mailto(`[PAID] ${SITE_NAME} - AI Not Working`, `Hi ${SITE_NAME} Support,\\n\\nI have an active subscription but AI tools aren’t working.\\n\\nFeature failing: (AI Tailor / Templates / Checkout)\\nWhat I tried: (Refresh, Logout/Login, Incognito, etc.)\\n\\n---\\n${deviceInfo()}\\n`)}">Email Priority Support</a>
+                        <a class="btn btn-primary" href="${mailto(`[PAID] ${SITE_NAME} - AI Not Working`, `Hi ${SITE_NAME} Support,I have an active subscription but AI tools aren’t working.Feature failing: (AI Tailor / Templates / Checkout) What I tried: (Refresh, Logout/Login, Incognito, etc.) ${deviceInfo()}\\n`)}">Email Priority Support</a>
                     </div>
                 </div>
                 `
@@ -1649,7 +1649,7 @@
                     <p><b>Yes.</b> You must be logged in to subscribe, unlock premium templates, and use paid AI tools.</p>
 
                     <h4>Why is my template locked?</h4>
-                    <p>Locked templates are for users with an active paid plan (AI Tailor / premium). If you already paid, try <b>refresh</b> first.</p>
+                    <p>Locked templates are for users with an active paid plan AI Tailor premium plan. If you already paid, try refresh first.</p>
 
                     <h4>My AI Tailor results are empty</h4>
                     <ul>
