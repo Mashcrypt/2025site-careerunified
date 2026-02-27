@@ -235,10 +235,7 @@ export default function App() {
 
   const fileSafeName = useMemo(() => {
     const raw = (resumeData?.personalInfo?.fullName || 'CareerUnified-Resume').trim();
-    return raw
-      .replace(/[^a-z0-9\-\s_]/gi, '')
-      .replace(/\s+/g, '_')
-      .slice(0, 60);
+    return raw.replace(/[^a-z0-9\-\s_]/gi, '').replace(/\s+/g, '_').slice(0, 60);
   }, [resumeData?.personalInfo?.fullName]);
 
   const templates: {
@@ -321,10 +318,6 @@ export default function App() {
     setSelectedTemplate(id);
   };
 
-  // ✅ Print-based PDF export — fully supports oklch() and all modern CSS.
-  // html2canvas was removed because it cannot parse oklch() colors used by Tailwind v4.
-  // This approach opens the resume in a new window with all page styles copied in,
-  // then triggers the browser's native print dialog (Save as PDF).
   const handleExport = useCallback(() => {
     const el = previewRef.current;
     if (!el) {
@@ -334,15 +327,11 @@ export default function App() {
 
     setIsPrinting(true);
 
-    // Grab all CSS rules from every stylesheet on the page
     const styles = Array.from(document.styleSheets)
       .map((sheet) => {
         try {
-          return Array.from(sheet.cssRules)
-            .map((rule) => rule.cssText)
-            .join('\n');
+          return Array.from(sheet.cssRules).map((rule) => rule.cssText).join('\n');
         } catch {
-          // Cross-origin sheet — import by URL instead
           return sheet.href ? `@import url("${sheet.href}");` : '';
         }
       })
@@ -363,28 +352,10 @@ export default function App() {
   <title>${fileSafeName}</title>
   <style>
     ${styles}
-
-    @page {
-      size: A4;
-      margin: 0;
-    }
-
-    * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: white;
-    }
-
-    /* Remove screen-only decorations */
-    body > div {
-      box-shadow: none !important;
-      border-radius: 0 !important;
-    }
+    @page { size: A4; margin: 0; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { margin: 0; padding: 0; background: white; }
+    body > div { box-shadow: none !important; border-radius: 0 !important; }
   </style>
 </head>
 <body>
@@ -475,7 +446,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
+      {/* NAVIGATION (matched to varsity page structure/classes) */}
       <nav className="main-nav">
+        {/* DESKTOP VIEW */}
         <a href="/index.html" className="logo desktop-nav">
           Career Unified
         </a>
@@ -491,6 +464,7 @@ export default function App() {
           <a href="/signup.html">Sign Up</a>
           <a href="/login.html">Login</a>
 
+          {/* My Account Icon (Desktop) */}
           <a
             href="/account-page.html"
             className="icon-btn desktop-account-btn"
@@ -504,12 +478,15 @@ export default function App() {
           </a>
         </div>
 
+        {/* MOBILE VIEW */}
         <div className="mobile-nav">
+          {/* Clickable Logo */}
           <a href="/index.html" className="mobile-logo">
             Career Unified
           </a>
 
           <div className="mobile-nav-right">
+            {/* Account Icon - Direct Link */}
             <a href="/account-page.html" className="icon-btn" aria-label="My Account">
               <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -517,6 +494,7 @@ export default function App() {
               </svg>
             </a>
 
+            {/* Menu Icon */}
             <button
               className="icon-btn"
               id="menuBtn"
@@ -534,7 +512,12 @@ export default function App() {
         </div>
       </nav>
 
-      <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
+      {/* MOBILE SLIDE MENU */}
+      <div
+        className="mobile-menu"
+        id="mobileMenu"
+        style={{ display: mobileMenuOpen ? 'block' : 'none' }}
+      >
         <a href="/jobs.html">Jobs</a>
         <a href="/bursaries.html">Bursaries</a>
         <a href="/varsity.html">Varsity</a>
@@ -792,7 +775,6 @@ export default function App() {
                       ref={previewWrapRef}
                       className="flex justify-center p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100"
                     >
-                      {/* Outer box physically takes only the post-scale width — enables correct centering on mobile */}
                       <div
                         style={{
                           width: TEMPLATE_CANVAS_WIDTH * finalScale,
