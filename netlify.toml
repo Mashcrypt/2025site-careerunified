@@ -54,5 +54,14 @@
   NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
+# ================================
+# Pdf export
+# ================================
+[functions]
+  node_bundler = "esbuild"
+
+[functions."export-pdf"]
+  memory = 1024
+  timeout = 26
 
 
