@@ -318,7 +318,9 @@ export default function App() {
     setSelectedTemplate(id);
   };
 
-  const handleExport = useCallback(() => {
+  // ✅ Instant PDF download via Netlify Function (no print dialog)
+  // Requires Netlify function at: /.netlify/functions/export-pdf
+  const handleExport = useCallback(async () => {
     const el = previewRef.current;
     if (!el) {
       alert('Preview not ready yet. Please try again.');
@@ -327,53 +329,82 @@ export default function App() {
 
     setIsPrinting(true);
 
-    const styles = Array.from(document.styleSheets)
-      .map((sheet) => {
-        try {
-          return Array.from(sheet.cssRules).map((rule) => rule.cssText).join('\n');
-        } catch {
-          return sheet.href ? `@import url("${sheet.href}");` : '';
-        }
-      })
-      .join('\n');
+    try {
+      // Collect CSS (same method you used before)
+      const styles = Array.from(document.styleSheets)
+        .map((sheet) => {
+          try {
+            return Array.from(sheet.cssRules).map((rule) => rule.cssText).join('\n');
+          } catch {
+            // cross-origin styles
+            return sheet.href ? `@import url("${sheet.href}");` : '';
+          }
+        })
+        .join('\n');
 
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) {
-      alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
-      setIsPrinting(false);
-      return;
-    }
-
-    printWindow.document.write(`
-<!DOCTYPE html>
+      // Build full HTML document (Puppeteer will render this)
+      const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${fileSafeName}</title>
   <style>
     ${styles}
+
     @page { size: A4; margin: 0; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    html, body { margin: 0; padding: 0; background: white; }
-    body > div { box-shadow: none !important; border-radius: 0 !important; }
+
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    /* Remove app-shell decorations */
+    body > div {
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
   </style>
 </head>
 <body>
   ${el.outerHTML}
-  <script>
-    window.onload = function () {
-      setTimeout(function () {
-        window.print();
-        window.close();
-      }, 400);
-    };
-  </script>
 </body>
-</html>
-    `);
+</html>`;
 
-    printWindow.document.close();
-    setIsPrinting(false);
+      const res = await fetch('/.netlify/functions/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html, fileName: fileSafeName }),
+      });
+
+      if (!res.ok) {
+        const msg = await res.json().catch(() => null);
+        throw new Error(msg?.error || 'Could not export PDF.');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      // Trigger instant download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileSafeName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      alert(e?.message || 'PDF export failed.');
+    } finally {
+      setIsPrinting(false);
+    }
   }, [fileSafeName]);
 
   const startSubscription = async (plan: PlanId) => {
@@ -513,11 +544,7 @@ export default function App() {
       </nav>
 
       {/* MOBILE SLIDE MENU */}
-      <div
-        className="mobile-menu"
-        id="mobileMenu"
-        style={{ display: mobileMenuOpen ? 'block' : 'none' }}
-      >
+      <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
         <a href="/jobs.html">Jobs</a>
         <a href="/bursaries.html">Bursaries</a>
         <a href="/varsity.html">Varsity</a>
