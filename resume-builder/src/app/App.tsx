@@ -41,6 +41,11 @@ import { ATSProTemplate } from './components/templates/ats-pro-template';
 import { ExecutiveTemplate } from './components/templates/executive-template';
 import { TechStackTemplate } from './components/templates/tech-stack-template';
 
+// ✅ NEW AI templates
+import { LawBriefTemplate } from './components/templates/law-brief-template';
+import { CommerceAnalystTemplate } from './components/templates/commerce-analyst-template';
+import { EngineeringBlueprintTemplate } from './components/templates/engineering-blueprint-template';
+
 import type { ResumeData, TemplateType } from './types/resume';
 import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
@@ -49,7 +54,14 @@ import { getFirebaseAuth } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
 
-type PremiumTemplateId = 'ats-pro' | 'executive' | 'tech-stack';
+type PremiumTemplateId =
+  | 'ats-pro'
+  | 'executive'
+  | 'tech-stack'
+  | 'law-brief'
+  | 'commerce-analyst'
+  | 'engineering-blueprint';
+
 type AnyTemplateId = TemplateType | PremiumTemplateId;
 
 type PlanId = 'starter' | 'job_seeker' | 'career_pro';
@@ -249,9 +261,15 @@ export default function App() {
     { id: 'professional', name: 'Professional', description: 'Classic two-column layout for corporate roles', category: 'Corporate' },
     { id: 'creative', name: 'Creative', description: 'Bold gradient design for creative industries', category: 'Creative' },
     { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant typography-focused', category: 'Clean' },
+
     { id: 'ats-pro', name: 'ATS Pro+ (AI)', description: 'AI-optimized, ATS-safe layout with strong hierarchy', category: 'AI Premium', premium: true },
     { id: 'executive', name: 'Executive (AI)', description: 'Leadership-focused layout for managers and seniors', category: 'AI Premium', premium: true },
     { id: 'tech-stack', name: 'Tech Stack (AI)', description: 'Project + skills layout optimized for tech roles', category: 'AI Premium', premium: true },
+
+    // ✅ NEW AI templates (locked the same way)
+    { id: 'law-brief', name: 'Law Brief (AI)', description: 'Court-ready clarity: matters, achievements, admissions', category: 'AI Premium', premium: true },
+    { id: 'commerce-analyst', name: 'Commerce Analyst (AI)', description: 'Metrics-first layout for finance, accounting, consulting', category: 'AI Premium', premium: true },
+    { id: 'engineering-blueprint', name: 'Engineering Blueprint (AI)', description: 'Projects + tools + impact, built for engineering roles', category: 'AI Premium', premium: true },
   ];
 
   const renderTemplate = () => {
@@ -261,15 +279,28 @@ export default function App() {
       case 'professional': return <ProfessionalTemplate data={resumeData} />;
       case 'creative': return <CreativeTemplate data={resumeData} />;
       case 'minimalist': return <MinimalistTemplate data={resumeData} />;
+
       case 'ats-pro': return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+
+      // ✅ NEW
+      case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
+      case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
+
       default: return <ModernTemplate {...props} />;
     }
   };
 
   const renderTemplateThumbnail = (id: AnyTemplateId) => {
-    const isPremium = id === 'ats-pro' || id === 'executive' || id === 'tech-stack';
+    const isPremium =
+      id === 'ats-pro' ||
+      id === 'executive' ||
+      id === 'tech-stack' ||
+      id === 'law-brief' ||
+      id === 'commerce-analyst' ||
+      id === 'engineering-blueprint';
 
     if (isPremium && !hasAIPlan) {
       return (
@@ -292,9 +323,16 @@ export default function App() {
         case 'professional': return <ProfessionalTemplate data={resumeData} />;
         case 'creative': return <CreativeTemplate data={resumeData} />;
         case 'minimalist': return <MinimalistTemplate data={resumeData} />;
+
         case 'ats-pro': return <ATSProTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
+
+        // ✅ NEW
+        case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
+        case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
+
         default: return <ModernTemplate {...props} />;
       }
     })();
@@ -330,19 +368,16 @@ export default function App() {
     setIsPrinting(true);
 
     try {
-      // Collect CSS (same method you used before)
       const styles = Array.from(document.styleSheets)
         .map((sheet) => {
           try {
             return Array.from(sheet.cssRules).map((rule) => rule.cssText).join('\n');
           } catch {
-            // cross-origin styles
             return sheet.href ? `@import url("${sheet.href}");` : '';
           }
         })
         .join('\n');
 
-      // Build full HTML document (Puppeteer will render this)
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -365,7 +400,6 @@ export default function App() {
       background: white;
     }
 
-    /* Remove app-shell decorations */
     body > div {
       box-shadow: none !important;
       border-radius: 0 !important;
@@ -391,7 +425,6 @@ export default function App() {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
-      // Trigger instant download
       const a = document.createElement('a');
       a.href = url;
       a.download = `${fileSafeName}.pdf`;
@@ -511,13 +544,11 @@ export default function App() {
 
         {/* MOBILE VIEW */}
         <div className="mobile-nav">
-          {/* Clickable Logo */}
           <a href="/index.html" className="mobile-logo">
             Career Unified
           </a>
 
           <div className="mobile-nav-right">
-            {/* Account Icon - Direct Link */}
             <a href="/account-page.html" className="icon-btn" aria-label="My Account">
               <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -525,7 +556,6 @@ export default function App() {
               </svg>
             </a>
 
-            {/* Menu Icon */}
             <button
               className="icon-btn"
               id="menuBtn"
