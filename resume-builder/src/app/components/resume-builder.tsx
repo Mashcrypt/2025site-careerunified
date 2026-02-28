@@ -146,7 +146,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 id="fullName"
                 value={data.personalInfo.fullName}
                 onChange={(e) => updatePersonalInfo('fullName', e.target.value)}
-                placeholder="John Doe"
+                placeholder="John Smith"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 type="email"
                 value={data.personalInfo.email}
                 onChange={(e) => updatePersonalInfo('email', e.target.value)}
-                placeholder="john@example.com"
+                placeholder="johnSmith@example.com"
               />
             </div>
           </div>
@@ -168,7 +168,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 id="phone"
                 value={data.personalInfo.phone}
                 onChange={(e) => updatePersonalInfo('phone', e.target.value)}
-                placeholder="+1 (555) 123-4567"
+                placeholder="+27 68 103 2512"
               />
             </div>
             <div>
@@ -177,7 +177,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 id="location"
                 value={data.personalInfo.location}
                 onChange={(e) => updatePersonalInfo('location', e.target.value)}
-                placeholder="San Francisco, CA"
+                placeholder="Pretoria, PTA"
               />
             </div>
           </div>
@@ -189,7 +189,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 id="linkedin"
                 value={data.personalInfo.linkedin || ''}
                 onChange={(e) => updatePersonalInfo('linkedin', e.target.value)}
-                placeholder="linkedin.com/in/johndoe"
+                placeholder="linkedin.com/in/johnSmith"
               />
             </div>
             <div>
@@ -198,7 +198,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                 id="website"
                 value={data.personalInfo.website || ''}
                 onChange={(e) => updatePersonalInfo('website', e.target.value)}
-                placeholder="johndoe.com"
+                placeholder="johnSmith.com"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                     <Input
                       value={exp.location}
                       onChange={(e) => updateExperience(exp.id, 'location', e.target.value)}
-                      placeholder="New York, NY"
+                      placeholder="Pretoria, PTA"
                     />
                   </div>
                   <div>
@@ -348,7 +348,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                     <Input
                       value={edu.institution}
                       onChange={(e) => updateEducation(edu.id, 'institution', e.target.value)}
-                      placeholder="Stanford University"
+                      placeholder="University of Pretoria"
                     />
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                     <Input
                       value={edu.location}
                       onChange={(e) => updateEducation(edu.id, 'location', e.target.value)}
-                      placeholder="Stanford, CA"
+                      placeholder="Pretoria, PTA"
                     />
                   </div>
                   <div>
