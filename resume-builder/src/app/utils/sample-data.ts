@@ -2,12 +2,12 @@ import type { ResumeData } from '../types/resume';
 
 export const southAfricanSampleData: ResumeData = {
   personalInfo: {
-    fullName: 'Thabo Mabena',
-    email: 'thabo.mabena@gmail.com',
-    phone: '+27 82 456 7890',
+    fullName: 'John Smith',
+    email: 'john.smith@gmail.com',
+    phone: '+27 68 103 2512',
     location: 'Cape Town, Western Cape',
-    linkedin: 'linkedin.com/in/thabo-mabena',
-    website: 'thabo-portfolio.co.za',
+    linkedin: 'linkedin.com/in/john-smith',
+    website: 'john-portfolio.co.za',
     summary:
       'Results-driven Software Engineer with 6+ years of experience developing innovative fintech solutions for South African markets. Proven track record of building scalable applications that have served over 500,000 users. Passionate about leveraging technology to solve African business challenges and mentor emerging developers.',
   },
