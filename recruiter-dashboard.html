@@ -1194,7 +1194,7 @@
           <li> Job Posting</li>
           <li> One job featured badge</li>
         </ul>
-        <button class="primary-btn" id="starterPlanBtn" onclick="selectPlan('starter', 50)">Upgrade</button>
+      <button class="primary-btn" id="starterPlanBtn" onclick="startPaystackUpgrade('starter')">Upgrade</button>
       </div>
 
       <div class="cv-card">
@@ -1207,7 +1207,7 @@
           <li> Advanced Filters</li>
           <li> Four job featured badge</li>
         </ul>
-        <button class="primary-btn" id="proPlanBtn" onclick="selectPlan('pro', 200)">Upgrade</button>
+        <button class="primary-btn" id="proPlanBtn" onclick="startPaystackUpgrade('pro')">Upgrade</button>
       </div>
 
       <div class="cv-card">
@@ -1220,7 +1220,7 @@
           <li> API Access</li>
           <li> Unlimited job featured badge</li>
         </ul>
-        <button class="primary-btn" id="enterprisePlanBtn" onclick="selectPlan('enterprise', -1)">Upgrade</button>
+        <button class="primary-btn" id="enterprisePlanBtn" onclick="startPaystackUpgrade('enterprise')">Upgrade</button>
       </div>
     </div>
   </div>
@@ -1435,6 +1435,165 @@ let recruiterData = null;
 let allCVsCount = 0;
 
 /* ======================================================
+   PAYSTACK: Plan upgrade (Redirect flow)
+   - Init on Netlify Function (secret key server-side)
+   - Redirect to Paystack Checkout
+   - On return: verify reference via Netlify Function
+   - Then update Firestore recruiter plan after successful verify
+====================================================== */
+
+const PLAN_CONFIG = {
+  starter: { label: "STARTER", amountZAR: 299, unlocks: 50 },
+  pro: { label: "PRO", amountZAR: 699, unlocks: 200 },
+  enterprise: { label: "ENTERPRISE", amountZAR: 1499, unlocks: -1 }
+};
+
+function moneyToSubunitZAR(amountZAR) {
+  return Math.round(Number(amountZAR) * 100); // cents
+}
+
+window.startPaystackUpgrade = async function (plan) {
+  const cfg = PLAN_CONFIG[plan];
+  if (!cfg) return alert("Unknown plan.");
+
+  if (!currentRecruiter) return alert("Please login again.");
+
+  // already on this plan
+  if ((recruiterData?.plan || "free") === plan) {
+    alert(`You are already on the ${cfg.label} plan.`);
+    return;
+  }
+
+  const unlocksText = cfg.unlocks === -1 ? "Unlimited" : cfg.unlocks;
+
+  const confirmed = confirm(
+    `Upgrade to ${cfg.label}?\n\n` +
+      `Price: R${cfg.amountZAR}/month\n` +
+      `CV Unlocks: ${unlocksText}\n\n` +
+      `You will be redirected to Paystack to complete payment.`
+  );
+  if (!confirmed) return;
+
+  try {
+    const btn = document.getElementById(`${plan}PlanBtn`);
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Redirecting...";
+    }
+
+    const callbackUrl = window.location.origin + window.location.pathname; // return here
+
+    const res = await fetch("/.netlify/functions/paystack-init", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        plan,
+        recruiterId: currentRecruiter.uid,
+        email: currentRecruiter.email,
+        callbackUrl
+      })
+    });
+
+    const out = await res.json();
+
+    if (!res.ok || !out?.status || !out?.data?.authorization_url) {
+      console.error("paystack-init failed:", out);
+      alert(out?.message || "Failed to start payment. Please try again.");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Upgrade";
+      }
+      return;
+    }
+
+    // store pending reference (optional but useful)
+    sessionStorage.setItem(
+      "pendingPaystackUpgrade",
+      JSON.stringify({
+        reference: out.data.reference,
+        plan,
+        ts: Date.now()
+      })
+    );
+
+    // redirect to Paystack checkout
+    window.location.href = out.data.authorization_url;
+  } catch (e) {
+    console.error("startPaystackUpgrade error:", e);
+    alert("Network error starting payment. Please try again.");
+    const btn = document.getElementById(`${plan}PlanBtn`);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Upgrade";
+    }
+  }
+};
+
+async function handlePaystackReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const reference = params.get("reference");
+  if (!reference) return;
+
+  try {
+    // clean URL immediately (no ?reference=...)
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    // prevent double processing
+    if (recruiterData?.lastPaymentRef === reference) return;
+
+    // show verifying modal
+    if (typeof window.openModal === "function") {
+      window.openModal("Verifying your payment... please wait.");
+    }
+
+    const verifyRes = await fetch(
+      `/.netlify/functions/paystack-verify?reference=${encodeURIComponent(reference)}`
+    );
+    const verifyOut = await verifyRes.json();
+
+    if (!verifyRes.ok || !verifyOut?.status) {
+      console.error("paystack-verify failed:", verifyOut);
+      if (typeof window.closeModal === "function") window.closeModal();
+      alert(
+        verifyOut?.message ||
+          "Payment verification failed. If you were charged, contact support."
+      );
+      return;
+    }
+
+    const { plan, unlocks } = verifyOut.data || {};
+    if (!PLAN_CONFIG[plan]) {
+      if (typeof window.closeModal === "function") window.closeModal();
+      alert("Payment verified but plan is invalid. Contact support.");
+      return;
+    }
+
+    // update recruiter doc (fulfillment)
+    const recruiterRef = doc(db, "recruiters", currentRecruiter.uid);
+
+    await updateDoc(recruiterRef, {
+      plan,
+      unlocksRemaining: unlocks,
+      totalUnlocks: unlocks,
+      upgradedAt: new Date().toISOString(),
+      lastPaymentRef: reference
+    });
+
+    // reload + refresh UI
+    await loadRecruiterData();
+    updatePlanBadges();
+    loadCVs();
+
+    if (typeof window.closeModal === "function") window.closeModal();
+    alert(`✅ Payment verified! You are now on the ${PLAN_CONFIG[plan].label} plan.`);
+  } catch (e) {
+    console.error("handlePaystackReturn error:", e);
+    if (typeof window.closeModal === "function") window.closeModal();
+    alert("Could not finalize upgrade. If you were charged, contact support with your reference.");
+  }
+}
+
+/* ======================================================
    COMPANY PROFILE (NEW)
 ====================================================== */
 let companyProfile = null; // loaded from recruiters/{uid}.companyProfile
@@ -1477,11 +1636,14 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  currentRecruiter = user;
+    currentRecruiter = user;
 
   await loadRecruiterData();
   await loadCompanyProfile();          // ✅ NEW
   wireCompanyProfileUI();              // ✅ NEW
+
+  // ✅ Paystack return (verify & apply plan if redirected back)
+  await handlePaystackReturn();
 
   document.body.classList.add('authorized');
 
