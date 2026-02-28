@@ -41,7 +41,7 @@ import { ATSProTemplate } from './components/templates/ats-pro-template';
 import { ExecutiveTemplate } from './components/templates/executive-template';
 import { TechStackTemplate } from './components/templates/tech-stack-template';
 
-// ✅ NEW AI templates
+// NEW AI templates
 import { LawBriefTemplate } from './components/templates/law-brief-template';
 import { CommerceAnalystTemplate } from './components/templates/commerce-analyst-template';
 import { EngineeringBlueprintTemplate } from './components/templates/engineering-blueprint-template';
@@ -266,7 +266,7 @@ export default function App() {
     { id: 'executive', name: 'Executive (AI)', description: 'Leadership-focused layout for managers and seniors', category: 'AI Premium', premium: true },
     { id: 'tech-stack', name: 'Tech Stack (AI)', description: 'Project + skills layout optimized for tech roles', category: 'AI Premium', premium: true },
 
-    // ✅ NEW AI templates (locked the same way)
+    // NEW AI templates (locked the same way)
     { id: 'law-brief', name: 'Law Brief (AI)', description: 'Court-ready clarity: matters, achievements, admissions', category: 'AI Premium', premium: true },
     { id: 'commerce-analyst', name: 'Commerce Analyst (AI)', description: 'Metrics-first layout for finance, accounting, consulting', category: 'AI Premium', premium: true },
     { id: 'engineering-blueprint', name: 'Engineering Blueprint (AI)', description: 'Projects + tools + impact, built for engineering roles', category: 'AI Premium', premium: true },
@@ -284,7 +284,7 @@ export default function App() {
       case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
 
-      // ✅ NEW
+      // NEW
       case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
@@ -328,7 +328,7 @@ export default function App() {
         case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
 
-        // ✅ NEW
+        // NEW
         case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
@@ -356,7 +356,7 @@ export default function App() {
     setSelectedTemplate(id);
   };
 
-  // ✅ Instant PDF download via Netlify Function (no print dialog)
+  // Instant PDF download via Netlify Function (no print dialog)
   // Requires Netlify function at: /.netlify/functions/export-pdf
   const handleExport = useCallback(async () => {
     const el = previewRef.current;
@@ -665,7 +665,7 @@ export default function App() {
                         {isLoadingBilling ? (
                           'Checking your plan…'
                         ) : hasAIPlan ? (
-                          'AI Plan active — premium templates unlocked ✅'
+                          'AI Plan active — premium templates unlocked '
                         ) : (
                           'Premium templates require an AI plan.'
                         )}
