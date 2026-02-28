@@ -94,7 +94,13 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState('build');
-  const [previewScale, setPreviewScale] = useState(0.75);
+
+  // ✅ EDIT #1: On mobile, start at 100% immediately (prevents ugly uncentered first render flash)
+  const [previewScale, setPreviewScale] = useState(() => {
+    if (typeof window === 'undefined') return 0.75;
+    return window.matchMedia('(max-width: 1024px)').matches ? 1 : 0.75;
+  });
+
   const [fitScale, setFitScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [billing, setBilling] = useState<BillingStatus | null>(null);
@@ -266,7 +272,6 @@ export default function App() {
     { id: 'executive', name: 'Executive (AI)', description: 'Leadership-focused layout for managers and seniors', category: 'AI Premium', premium: true },
     { id: 'tech-stack', name: 'Tech Stack (AI)', description: 'Project + skills layout optimized for tech roles', category: 'AI Premium', premium: true },
 
-    // NEW AI templates (locked the same way)
     { id: 'law-brief', name: 'Law Brief (AI)', description: 'Court-ready clarity: matters, achievements, admissions', category: 'AI Premium', premium: true },
     { id: 'commerce-analyst', name: 'Commerce Analyst (AI)', description: 'Metrics-first layout for finance, accounting, consulting', category: 'AI Premium', premium: true },
     { id: 'engineering-blueprint', name: 'Engineering Blueprint (AI)', description: 'Projects + tools + impact, built for engineering roles', category: 'AI Premium', premium: true },
@@ -284,7 +289,6 @@ export default function App() {
       case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
 
-      // NEW
       case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
       case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
@@ -328,7 +332,6 @@ export default function App() {
         case 'executive': return <ExecutiveTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'tech-stack': return <TechStackTemplate data={resumeData} colorTheme={selectedColor} />;
 
-        // NEW
         case 'law-brief': return <LawBriefTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'commerce-analyst': return <CommerceAnalystTemplate data={resumeData} colorTheme={selectedColor} />;
         case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
@@ -504,9 +507,13 @@ export default function App() {
   };
 
   const finalScale = isMobile ? fitScale * previewScale : previewScale;
+
+  //  EDIT #2: Mobile max zoom = 100% (same as desktop)
   const ZOOM_MIN = isMobile ? 0.7 : 0.5;
-  const ZOOM_MAX = isMobile ? 1.6 : 1.0;
-  const ZOOM_STEP = 0.1;
+  const ZOOM_MAX = 1.0;
+
+  //  EDIT #3: Zoom step = 5%
+  const ZOOM_STEP = 0.05;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
