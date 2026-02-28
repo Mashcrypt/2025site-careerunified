@@ -16,465 +16,582 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
+<!-- Charts (Analytics) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <style>
   /* ======================================================
-   SECURITY: HIDE PAGE UNTIL AUTH CHECK
-====================================================== */
-body { display: none !important; }
-body.authorized { display: flex !important; }
+     SECURITY: HIDE PAGE UNTIL AUTH CHECK
+  ====================================================== */
+  body { display: none !important; }
+  body.authorized { display: flex !important; }
 
-/* ======================================================
-   GLOBAL RESET
-====================================================== */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ======================================================
+     GLOBAL RESET
+  ====================================================== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #f5f7fb;
-  color: #111827;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* ======================================================
-   SIDEBAR
-====================================================== */
-.sidebar {
-  width: 260px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 24px 18px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.brand img { width: 44px; height: 44px; border-radius: 50%; }
-
-.brand h2 { font-size: 16px; font-weight: 700; }
-
-.location { font-size: 12px; color: #6b7280; }
-
-/* ======================================================
-   NAVIGATION
-====================================================== */
-.nav { margin-top: 30px; }
-
-.nav a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #374151;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.nav a i { font-size: 18px; }
-
-.nav a.active,
-.nav a:hover {
-  background: #eef2ff;
-  color: #1e3a8a;
-}
-
-/* ======================================================
-   MAIN CONTENT
-====================================================== */
-.main { flex: 1; padding: 26px; overflow-y: auto; }
-
-/* ======================================================
-   TOP STATS
-====================================================== */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  margin-bottom: 30px;
-}
-
-.stat {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
-
-.stat i { font-size: 32px; color: #2563eb; }
-.stat h3 { font-size: 24px; font-weight: 700; }
-.stat span { font-size: 13px; color: #6b7280; }
-
-/* ======================================================
-   SECTIONS
-====================================================== */
-.section { display: none; }
-.section.active { display: block; }
-.section h2 { font-size: 18px; margin-bottom: 18px; }
-
-/* ======================================================
-   CV GRID
-====================================================== */
-.cv-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-}
-
-.cv-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  position: relative;
-}
-
-.cv-card h3 { margin-bottom: 6px; }
-
-.cv-card ul {
-  margin: 12px 0;
-  padding-left: 18px;
-  font-size: 13px;
-  color: #374151;
-}
-
-.cv-card p { font-size: 14px; margin-bottom: 6px; }
-
-/* ======================================================
-   CV SNAPSHOT
-====================================================== */
-.cv-snapshot {
-  height: 160px;
-  background: linear-gradient(135deg, #c7d2fe, #e0e7ff);
-  filter: blur(6px);
-  border-radius: 10px;
-}
-
-/* ======================================================
-   LOCK OVERLAY
-====================================================== */
-.lock {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  border-radius: 14px;
-}
-
-.lock i { font-size: 34px; color: #ef4444; margin-bottom: 6px; }
-
-/* ======================================================
-   BUTTONS
-====================================================== */
-.primary-btn {
-  margin-top: 10px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  background: #1e3a8a;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.primary-btn:hover { background: #162c6f; }
-.primary-btn:disabled { background: #9ca3af; cursor: not-allowed; }
-
-/* ======================================================
-   MODAL
-====================================================== */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 26px;
-  border-radius: 14px;
-  width: 90%;
-  max-width: 480px;
-}
-
-.modal-content h3 { margin-bottom: 10px; }
-
-.close {
-  margin-top: 16px;
-  padding: 10px 14px;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* ======================================================
-   POST A JOB FORM STYLING
-====================================================== */
-#post-job h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-#post-job p { font-size: 13px; color: #6b7280; }
-#post-job .cv-card { padding: 28px; }
-#post-job h3 { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 14px; }
-#post-job .row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-#post-job .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
-#post-job label { font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
-
-#post-job input,
-#post-job select,
-#post-job textarea {
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
-  font-family: inherit;
-  background: #ffffff;
-  transition: all 0.2s ease;
-}
-
-#post-job textarea { resize: vertical; min-height: 120px; }
-
-#post-job input:focus,
-#post-job select:focus,
-#post-job textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-#post-job input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.1); }
-
-#post-job .primary-btn {
-  background: #1e3a8a;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-#post-job .primary-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
-#post-job .primary-btn.secondary { background: #6b7280; }
-#post-job .primary-btn.secondary:hover { background: #4b5563; }
-
-#post-job .btn-group,
-#post-job .btn-container {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 600px) {
-  #post-job .cv-card { padding: 20px; }
-}
-
-/* ======================================================
-   MANAGE JOBS
-====================================================== */
-.jobs-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-}
-
-.jobs-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.jobs-header h3 { font-size: 16px; font-weight: 600; }
-
-.filter {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.jobs-table { width: 100%; }
-
-.jobs-row {
-  display: grid;
-  grid-template-columns: 2.5fr 1fr 1.5fr 1fr 1fr;
-  align-items: center;
-  padding: 18px 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 14px;
-}
-
-.jobs-row:last-child { border-bottom: none; }
-
-.jobs-head {
-  font-weight: 600;
-  color: #2563eb;
-  background: #f8fafc;
-  padding: 14px 10px;
-  border-radius: 10px;
-}
-
-.job-location { font-size: 12px; color: #6b7280; margin-top: 4px; }
-
-.applied { color: #2563eb; font-weight: 500; cursor: pointer; }
-
-.dates span { display: block; }
-.dates small { color: #6b7280; font-size: 12px; }
-
-.status { font-weight: 600; }
-.status.active { color: #16a34a; }
-.status.draft { color: #f59e0b; }
-
-.actions { display: flex; gap: 8px; }
-
-.actions button {
-  border: none;
-  background: #eef2ff;
-  color: #1e3a8a;
-  padding: 6px 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.actions button:hover { background: #e0e7ff; }
-
-@media (max-width: 768px) {
-  .chart-grid { grid-template-columns: 1fr; }
-  .analytics-grid { grid-template-columns: 1fr; }
-  .insights-grid { grid-template-columns: 1fr; }
-}
-
-/* ======================================================
-   MOBILE RESPONSIVE DESIGN
-====================================================== */
-@media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: -100%;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    z-index: 1000;
-    transition: left 0.3s ease;
-    overflow-y: auto;
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fb;
+    color: #111827;
+    display: flex;
+    min-height: 100vh;
   }
 
-  .sidebar.mobile-open { left: 0; box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15); }
+  /* ======================================================
+     SIDEBAR
+  ====================================================== */
+  .sidebar {
+    width: 260px;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    padding: 24px 18px;
+  }
 
-  .mobile-overlay {
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+
+  .brand img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; background:#eef2ff; }
+  .brand h2 { font-size: 16px; font-weight: 700; }
+  .location { font-size: 12px; color: #6b7280; }
+
+  /* ======================================================
+     NAVIGATION
+  ====================================================== */
+  .nav { margin-top: 30px; }
+
+  .nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #374151;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+  }
+
+  .nav a i { font-size: 18px; }
+
+  .nav a.active,
+  .nav a:hover {
+    background: #eef2ff;
+    color: #1e3a8a;
+  }
+
+  /* ======================================================
+     MAIN CONTENT
+  ====================================================== */
+  .main { flex: 1; padding: 26px; overflow-y: auto; }
+
+  /* ======================================================
+     TOP STATS
+  ====================================================== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .stat {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+
+  .stat i { font-size: 32px; color: #2563eb; }
+  .stat h3 { font-size: 24px; font-weight: 700; }
+  .stat span { font-size: 13px; color: #6b7280; }
+
+  /* ======================================================
+     SECTIONS
+  ====================================================== */
+  .section { display: none; }
+  .section.active { display: block; }
+  .section h2 { font-size: 18px; margin-bottom: 18px; }
+
+  /* ======================================================
+     CV GRID
+  ====================================================== */
+  .cv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .cv-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cv-card h3 { margin-bottom: 6px; }
+  .cv-card ul { margin: 12px 0; padding-left: 18px; font-size: 13px; color: #374151; }
+  .cv-card p { font-size: 14px; margin-bottom: 6px; }
+
+  /* ======================================================
+     LOCK OVERLAY
+  ====================================================== */
+  .lock {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 14px;
+  }
+
+  .lock i { font-size: 34px; color: #ef4444; margin-bottom: 6px; }
+
+  /* ======================================================
+     BUTTONS
+  ====================================================== */
+  .primary-btn {
+    margin-top: 10px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    background: #1e3a8a;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .primary-btn:hover { background: #162c6f; }
+  .primary-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+  }
+  .btn-ghost:hover { background: #f3f4f6; }
+
+  .btn-danger { background: #ef4444; }
+  .btn-danger:hover { background: #dc2626; }
+
+  .btn-secondary { background: #6b7280; }
+  .btn-secondary:hover { background: #4b5563; }
+
+  .btn-success { background: #16a34a; }
+  .btn-success:hover { background: #15803d; }
+
+  /* ======================================================
+     MODAL
+  ====================================================== */
+  .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    background: rgba(0,0,0,0.6);
     display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
   }
 
-  .mobile-overlay.active { display: block; }
+  .modal-content {
+    background: #fff;
+    padding: 26px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 480px;
+  }
 
-  .main { padding: 16px; width: 100%; }
+  .modal-content h3 { margin-bottom: 10px; }
 
-  .mobile-header {
+  .close {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  /* ======================================================
+     TOAST
+  ====================================================== */
+  .toast {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1200;
+    width: min(420px, calc(100% - 32px));
+    display: none;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 14px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  .toast.show { display: flex; }
+  .toast i { font-size: 20px; margin-top: 2px; }
+  .toast .t-title { font-weight: 700; font-size: 14px; }
+  .toast .t-msg { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .toast .t-actions { margin-left: auto; display:flex; gap:8px; }
+  .toast .t-actions button { padding: 8px 10px; border-radius: 10px; border: 1px solid #e5e7eb; background:#fff; cursor:pointer; }
+  .toast .t-actions button:hover { background:#f3f4f6; }
+
+  .toast.success i { color: #16a34a; }
+  .toast.warn i { color: #f59e0b; }
+  .toast.error i { color: #ef4444; }
+  .toast.info i { color: #2563eb; }
+
+  /* ======================================================
+     POST A JOB FORM STYLING
+  ====================================================== */
+  #post-job h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  #post-job p { font-size: 13px; color: #6b7280; }
+  #post-job .cv-card { padding: 28px; }
+  #post-job h3 { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 14px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+  label { font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
+
+  input, select, textarea {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    font-family: inherit;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  textarea { resize: vertical; min-height: 120px; }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.1); }
+
+  .helper {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6b7280;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap: wrap;
+  }
+  .helper a { color:#2563eb; text-decoration:none; font-weight:600; }
+  .helper a:hover { text-decoration: underline; }
+
+  .locked-field {
+    background: #f9fafb !important;
+    border-color: #e5e7eb !important;
+    color: #374151 !important;
+  }
+
+  .pill {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #1e3a8a;
+    border: 1px solid #dbeafe;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ======================================================
+     MANAGE JOBS
+  ====================================================== */
+  .jobs-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  }
+
+  .jobs-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
-    background: #1e3a8a;
-    color: white;
-    margin: -16px -16px 20px -16px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    margin-bottom: 18px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
-  .mobile-header h1 { font-size: 1.25rem; font-weight: 600; }
+  .jobs-header h3 { font-size: 16px; font-weight: 600; }
 
-  .menu-toggle {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    padding: 4px;
+  .filter {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
   }
 
-  .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-  .stat { padding: 16px; flex-direction: column; align-items: flex-start; }
-  .stat i { font-size: 24px; margin-bottom: 8px; }
-  .stat h3 { font-size: 20px; }
-  .stat span { font-size: 12px; }
+  .jobs-table { width: 100%; }
 
-  .cv-grid { grid-template-columns: 1fr; gap: 16px; }
-  .cv-card { padding: 16px; }
+  .jobs-row {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1.5fr 1fr 1fr;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    gap: 10px;
+  }
 
-  .jobs-row { grid-template-columns: 1fr; gap: 12px; padding: 16px 0; }
-  .jobs-head { display: none; }
-  .jobs-row > div { display: flex; justify-content: space-between; align-items: center; }
-  .jobs-row > div::before {
-    content: attr(data-label);
+  .jobs-row:last-child { border-bottom: none; }
+
+  .jobs-head {
     font-weight: 600;
     color: #2563eb;
-    margin-right: 12px;
+    background: #f8fafc;
+    padding: 14px 10px;
+    border-radius: 12px;
   }
-  .actions { justify-content: flex-end; }
 
-  #post-job .row { grid-template-columns: 1fr; gap: 12px; }
-  #post-job .cv-card { padding: 20px 16px; }
-  #post-job .primary-btn { width: 100%; }
-  #post-job .btn-container,
-  #post-job .btn-group { flex-direction: column; gap: 10px; }
+  .job-location { font-size: 12px; color: #6b7280; margin-top: 4px; }
 
-  body.authorized { flex-direction: column !important; }
-  .mobile-header { width: 100%; flex: 0 0 auto; }
-  .main { width: 100%; flex: 1 1 auto; overflow-x: hidden; }
+  .applied { color: #2563eb; font-weight: 600; cursor: default; }
 
-  .cv-card,
-  .jobs-card,
-  .modal-content { max-width: 100%; }
+  .dates span { display: block; }
+  .dates small { color: #6b7280; font-size: 12px; }
 
-  #post-job input,
-  #post-job select,
-  #post-job textarea { width: 100%; max-width: 100%; }
+  .status { font-weight: 700; font-size: 12px; padding: 6px 10px; border-radius: 999px; display:inline-flex; width: fit-content; }
+  .status.active { color: #065f46; background: #d1fae5; }
+  .status.draft { color: #92400e; background: #ffedd5; }
 
-  .cv-card,
-  .jobs-row,
-  .stat { min-width: 0; }
-}
+  .actions { display: flex; gap: 8px; justify-content:flex-end; }
 
-@media (max-width: 480px) {
-  .mobile-header h1 { font-size: 1.1rem; }
-  .stats { gap: 10px; }
-  .stat { padding: 12px; }
-  .stat h3 { font-size: 18px; }
-  .cv-card { padding: 14px; }
-}
+  .actions button {
+    border: none;
+    background: #eef2ff;
+    color: #1e3a8a;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: .2s;
+  }
+  .actions button:hover { background: #e0e7ff; }
+
+  /* ======================================================
+     COMPANY PROFILE
+  ====================================================== */
+  .company-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .company-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  }
+  .company-card h3 { font-size: 16px; margin-bottom: 8px; }
+  .company-card p { color:#6b7280; font-size: 13px; margin-bottom: 14px; }
+
+  .company-preview {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 16px;
+    background: #f9fafb;
+  }
+  .company-preview .top {
+    display:flex; gap:12px; align-items:center; margin-bottom: 12px;
+  }
+  .company-preview img {
+    width: 54px; height: 54px; border-radius: 14px; object-fit: cover; background:#eef2ff;
+  }
+  .company-preview .name { font-weight: 800; font-size: 15px; }
+  .company-preview .meta { color:#6b7280; font-size: 12px; margin-top: 2px; }
+  .company-preview .chips { display:flex; gap:8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip {
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 8px 10px; border-radius: 999px;
+    border: 1px solid #e5e7eb; background:#fff;
+    font-size: 12px; color:#374151; font-weight: 600;
+  }
+  .chip i { color:#2563eb; }
+
+  @media (max-width: 900px) {
+    .company-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ======================================================
+     ANALYTICS
+  ====================================================== */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .a-card {
+    background:#fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  }
+  .a-card .kpi-title { font-size: 12px; color:#6b7280; }
+  .a-card .kpi-value { font-size: 24px; font-weight: 800; margin-top: 6px; }
+  .a-card .kpi-sub { font-size: 12px; color:#6b7280; margin-top: 6px; }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .chart-card {
+    background:#fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    min-height: 320px;
+  }
+  .chart-card h3 { font-size: 15px; margin-bottom: 10px; }
+  .chart-wrap { position: relative; height: 260px; }
+
+  .table-card {
+    background:#fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  }
+  .table-card h3 { font-size: 15px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  th { color:#2563eb; font-size: 12px; }
+  tr:last-child td { border-bottom: none; }
+  .muted { color:#6b7280; }
+
+  /* ======================================================
+     MOBILE RESPONSIVE DESIGN
+  ====================================================== */
+  @media (max-width: 900px) {
+    .sidebar {
+      position: fixed;
+      left: -100%;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      z-index: 1000;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.mobile-open { left: 0; box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15); }
+
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+
+    .mobile-overlay.active { display: block; }
+
+    .main { padding: 16px; width: 100%; }
+
+    .mobile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #1e3a8a;
+      color: white;
+      margin: -16px -16px 20px -16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .mobile-header h1 { font-size: 1.25rem; font-weight: 600; }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat { padding: 16px; flex-direction: column; align-items: flex-start; }
+    .stat i { font-size: 24px; margin-bottom: 8px; }
+    .stat h3 { font-size: 20px; }
+    .stat span { font-size: 12px; }
+
+    .cv-grid { grid-template-columns: 1fr; gap: 16px; }
+    .cv-card { padding: 16px; }
+
+    .jobs-row { grid-template-columns: 1fr; gap: 12px; padding: 16px 0; }
+    .jobs-head { display: none; }
+    .jobs-row > div { display: flex; justify-content: space-between; align-items: center; }
+    .jobs-row > div::before {
+      content: attr(data-label);
+      font-weight: 700;
+      color: #2563eb;
+      margin-right: 12px;
+    }
+    .actions { justify-content: flex-end; }
+
+    body.authorized { flex-direction: column !important; }
+    .mobile-header { width: 100%; flex: 0 0 auto; }
+    .main { width: 100%; flex: 1 1 auto; overflow-x: hidden; }
+
+    #post-job .row { grid-template-columns: 1fr; gap: 12px; }
+    #post-job .cv-card { padding: 20px 16px; }
+    #post-job .primary-btn { width: 100%; justify-content: center; }
+
+    .analytics-grid { grid-template-columns: 1fr; }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .mobile-header h1 { font-size: 1.1rem; }
+    .stats { gap: 10px; }
+    .stat { padding: 12px; }
+    .stat h3 { font-size: 18px; }
+    .cv-card { padding: 14px; }
+  }
 </style>
 </head>
 
@@ -494,10 +611,10 @@ body {
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
   <div class="brand">
-    <img src="https://dummyimage.com/80x80/2563eb/ffffff&text=CU">
+    <img id="sidebarLogo" src="https://dummyimage.com/80x80/2563eb/ffffff&text=CU" alt="Logo">
     <div>
-      <h2>Career Unified</h2>
-      <div class="location">Recruiter Dashboard</div>
+      <h2 id="sidebarCompanyName">Career Unified</h2>
+      <div class="location" id="sidebarSubtext">Recruiter Dashboard</div>
     </div>
   </div>
 
@@ -530,29 +647,168 @@ body {
 
     <div class="cv-grid">
       <div class="cv-card">
-        <h3> CV Library</h3>
+        <h3><i class='bx bx-file'></i> CV Library</h3>
         <p>Access uploaded CVs from job seekers</p>
-        <button class="primary-btn" onclick="showSection('cvs', document.querySelector('.nav a:nth-child(5)'))">Browse CVs</button>
+        <button class="primary-btn" onclick="showSection('cvs', document.querySelector('.nav a:nth-child(5)'))">
+          Browse CVs
+        </button>
       </div>
 
       <div class="cv-card">
-        <h3> Post a Job</h3>
+        <h3><i class='bx bx-plus-circle'></i> Post a Job</h3>
         <p>Create new job listings</p>
-        <button class="primary-btn" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))">Post Job</button>
+        <button class="primary-btn" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))">
+          Post Job
+        </button>
       </div>
 
       <div class="cv-card">
-        <h3> Manage Jobs</h3>
+        <h3><i class='bx bx-briefcase'></i> Manage Jobs</h3>
         <p>View and edit your job postings</p>
-        <button class="primary-btn" onclick="showSection('jobs', document.querySelector('.nav a:nth-child(4)'))">View Jobs</button>
+        <button class="primary-btn" onclick="showSection('jobs', document.querySelector('.nav a:nth-child(4)'))">
+          View Jobs
+        </button>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <div class="pill" id="companyProfileStatusPill">
+        <i class='bx bx-info-circle'></i>
+        Company profile not loaded yet
       </div>
     </div>
   </div>
 
-  <!-- COMPANY -->
+  <!-- COMPANY PROFILE -->
   <div id="company" class="section">
-    <h2>Company Profile</h2>
-    <p>Company profile management coming next.</p>
+    <div style="display:flex; justify-content: space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom: 12px;">
+      <div>
+        <h2>Company Profile</h2>
+        <p style="color:#6b7280; margin-top:6px;">
+          Set this once and we will auto-fill your job posts with your company details.
+        </p>
+      </div>
+      <div class="pill" id="companyPill">
+        <i class='bx bx-shield-quarter'></i>
+        Auto-fill enabled
+      </div>
+    </div>
+
+    <div class="company-grid">
+      <div class="company-card">
+        <h3>Company details</h3>
+        <p>This is what candidates will see on your job posts.</p>
+
+        <form id="companyForm">
+          <div class="form-group">
+            <label>Company Name <span style="color:red">*</span></label>
+            <input type="text" name="name" id="cp_name" required placeholder="e.g. Career Unified (Pty) Ltd">
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Industry</label>
+              <input type="text" name="industry" id="cp_industry" placeholder="e.g. Recruitment / Tech">
+            </div>
+
+            <div class="form-group">
+              <label>Company Size</label>
+              <select name="size" id="cp_size">
+                <option value="">Select</option>
+                <option>1-10</option>
+                <option>11-50</option>
+                <option>51-200</option>
+                <option>201-500</option>
+                <option>500+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Company Email <span style="color:red">*</span></label>
+              <input type="email" name="email" id="cp_email" required placeholder="e.g. hiring@company.com">
+            </div>
+
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" name="website" id="cp_website" placeholder="https://company.com">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>HQ City</label>
+              <input type="text" name="city" id="cp_city" placeholder="e.g. Johannesburg">
+            </div>
+
+            <div class="form-group">
+              <label>HQ Country</label>
+              <input type="text" name="country" id="cp_country" placeholder="e.g. South Africa">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Logo URL</label>
+            <input type="url" name="logo" id="cp_logo" placeholder="https://.../logo.png">
+          </div>
+
+          <div class="form-group">
+            <label>About (short)</label>
+            <textarea name="about" id="cp_about" rows="4" placeholder="Describe your company in 1–3 sentences."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Contact person (optional)</label>
+            <input type="text" name="contactName" id="cp_contactName" placeholder="e.g. Talent Team">
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top: 14px; flex-wrap:wrap;">
+            <button type="submit" class="primary-btn" id="saveCompanyBtn">
+              <i class='bx bx-save'></i> Save Company Profile
+            </button>
+            <button type="button" class="primary-btn btn-ghost" id="prefillFromAccountBtn">
+              <i class='bx bx-magic-wand'></i> Prefill from account
+            </button>
+          </div>
+
+          <div class="helper">
+            <span><i class='bx bx-check-circle' style="color:#16a34a;"></i> Job form will auto-fill from this profile</span>
+            <span>•</span>
+            <a href="#" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)')); return false;">Go to Post a Job</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="company-card">
+        <h3>Preview</h3>
+        <p>How your company appears to candidates.</p>
+
+        <div class="company-preview">
+          <div class="top">
+            <img id="cp_previewLogo" src="https://dummyimage.com/108x108/2563eb/ffffff&text=CU" alt="Logo">
+            <div>
+              <div class="name" id="cp_previewName">Your Company</div>
+              <div class="meta" id="cp_previewMeta">Industry • Size • City, Country</div>
+            </div>
+          </div>
+
+          <div class="muted" style="font-size:13px;" id="cp_previewAbout">
+            Add a short “About” so candidates quickly trust your brand.
+          </div>
+
+          <div class="chips">
+            <span class="chip"><i class='bx bx-envelope'></i> <span id="cp_previewEmail">email@company.com</span></span>
+            <span class="chip"><i class='bx bx-globe'></i> <span id="cp_previewWebsite">company.com</span></span>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; font-size: 13px; color:#6b7280;">
+          <strong style="color:#111827;">Why this matters:</strong>
+          consistent company details improves candidate trust and reduces drop-off.
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ================= MANAGE JOBS ================= -->
@@ -562,12 +818,24 @@ body {
 
     <div class="jobs-card">
       <div class="jobs-header">
-        <h3>My Job Listings</h3>
-        <select class="filter" id="manageJobsRange">
-          <option value="6">Last 6 Months</option>
-          <option value="12">Last 12 Months</option>
-          <option value="0">All Time</option>
-        </select>
+        <div>
+          <h3>My Job Listings</h3>
+          <div class="muted" style="font-size:13px; margin-top:4px;">
+            Tip: keep “Active” jobs updated to improve applicant quality.
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <select class="filter" id="manageJobsRange" title="Date range">
+            <option value="6">Last 6 Months</option>
+            <option value="12">Last 12 Months</option>
+            <option value="0">All Time</option>
+          </select>
+
+          <button class="primary-btn btn-ghost" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))">
+            <i class='bx bx-plus'></i> New Job
+          </button>
+        </div>
       </div>
 
       <div class="jobs-table">
@@ -576,10 +844,9 @@ body {
           <span>Applications</span>
           <span>Created & Expired</span>
           <span>Status</span>
-          <span>Action</span>
+          <span style="text-align:right;">Action</span>
         </div>
 
-        <!-- ✅ Inject recruiter jobs here -->
         <div id="manageJobsRows">
           <p style="color:#6b7280;">Loading your jobs...</p>
         </div>
@@ -592,16 +859,22 @@ body {
     <div style="margin-bottom: 20px;">
       <h2>Post a Job</h2>
       <p style="color:#6b7280;">Find the perfect candidate for your team</p>
-      <p id="jobFormMode" style="color:#2563eb; font-weight:600; margin-top:8px; display:none;"></p>
+      <p id="jobFormMode" style="color:#2563eb; font-weight:700; margin-top:8px; display:none;"></p>
     </div>
 
     <div class="cv-card">
       <form id="jobForm">
 
-        <!-- hidden for edit mode -->
         <input type="hidden" name="jobId" id="jobId" value="">
+        <input type="hidden" name="companyProfileVersion" id="companyProfileVersion" value="">
 
-        <h3 style="margin-bottom:16px;">Job Details</h3>
+        <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap: wrap;">
+          <h3 style="margin-bottom:16px;">Job Details</h3>
+          <div class="pill" id="jobCompanyAutofillPill">
+            <i class='bx bx-buildings'></i>
+            Company auto-fill: OFF
+          </div>
+        </div>
 
         <div class="form-group">
           <label>Job Title <span style="color:red">*</span></label>
@@ -610,7 +883,7 @@ body {
 
         <div class="row">
           <div class="form-group">
-            <label>Job Category *</label>
+            <label>Job Category <span style="color:red">*</span></label>
             <select name="category" required>
               <option value="">Select category</option>
               <option>IT & Software</option>
@@ -627,7 +900,7 @@ body {
           </div>
 
           <div class="form-group">
-            <label>Job Type *</label>
+            <label>Job Type <span style="color:red">*</span></label>
             <select name="type" required>
               <option value="">Select type</option>
               <option>Full Time</option>
@@ -641,7 +914,7 @@ body {
 
         <div class="row">
           <div class="form-group">
-            <label>Experience Level *</label>
+            <label>Experience Level <span style="color:red">*</span></label>
             <select name="experience" required>
               <option value="">Select level</option>
               <option>Entry</option>
@@ -659,25 +932,25 @@ body {
         </div>
 
         <div class="form-group">
-          <label>Job Description *</label>
-          <textarea name="description" rows="5" required></textarea>
+          <label>Job Description <span style="color:red">*</span></label>
+          <textarea name="description" rows="5" required placeholder="Describe the role, impact, responsibilities, and team..."></textarea>
         </div>
 
         <div class="form-group">
           <label>Requirements</label>
-          <textarea name="requirements" rows="4"></textarea>
+          <textarea name="requirements" rows="4" placeholder="List must-haves and nice-to-haves..."></textarea>
         </div>
 
         <h3 style="margin:30px 0 16px;">Location</h3>
 
         <div class="row">
           <div class="form-group">
-            <label>City *</label>
+            <label>City <span style="color:red">*</span></label>
             <input type="text" name="city" required>
           </div>
 
           <div class="form-group">
-            <label>Country *</label>
+            <label>Country <span style="color:red">*</span></label>
             <input type="text" name="country" required>
           </div>
         </div>
@@ -689,28 +962,31 @@ body {
           </label>
         </div>
 
-        <h3 style="margin:30px 0 16px;">Company Information</h3>
+        <h3 style="margin:30px 0 10px;">Company Information</h3>
+        <div class="muted" style="font-size:13px; margin-bottom: 14px;" id="companyAutofillHint">
+          If your company profile is saved, these fields will be auto-filled and kept consistent.
+        </div>
 
         <div class="form-group">
-          <label>Company Name *</label>
-          <input type="text" name="company" required>
+          <label>Company Name <span style="color:red">*</span></label>
+          <input type="text" name="company" required id="job_company">
         </div>
 
         <div class="row">
           <div class="form-group">
-            <label>Email *</label>
-            <input type="email" name="email" required>
+            <label>Email <span style="color:red">*</span></label>
+            <input type="email" name="email" required id="job_email">
           </div>
 
           <div class="form-group">
             <label>Website</label>
-            <input type="url" name="website">
+            <input type="url" name="website" id="job_website">
           </div>
         </div>
 
         <div class="form-group">
           <label>Logo URL</label>
-          <input type="url" name="logo">
+          <input type="url" name="logo" id="job_logo">
         </div>
 
         <div class="form-group">
@@ -718,10 +994,16 @@ body {
           <input type="text" name="deadline" placeholder="e.g. 31 Jan 2026">
         </div>
 
+        <div class="helper" id="companyAutofillHelper" style="display:none;">
+          <span><i class='bx bx-lock-alt' style="color:#2563eb;"></i> Auto-filled from Company Profile</span>
+          <span>•</span>
+          <a href="#" onclick="showSection('company', document.querySelector('.nav a:nth-child(2)')); return false;">Edit Company Profile</a>
+        </div>
+
         <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
-          <button type="submit" class="primary-btn" id="publishJobBtn">Publish Job</button>
-          <button type="button" class="primary-btn" style="background:#6b7280" id="saveDraftBtn">Save Draft</button>
-          <button type="button" class="primary-btn" style="background:#ef4444; display:none;" id="cancelEditBtn">Cancel Edit</button>
+          <button type="submit" class="primary-btn" id="publishJobBtn"><i class='bx bx-paper-plane'></i> Publish Job</button>
+          <button type="button" class="primary-btn btn-secondary" id="saveDraftBtn"><i class='bx bx-save'></i> Save Draft</button>
+          <button type="button" class="primary-btn btn-danger" style="display:none;" id="cancelEditBtn"><i class='bx bx-x'></i> Cancel Edit</button>
         </div>
 
       </form>
@@ -735,13 +1017,13 @@ body {
         <h2>CV Library</h2>
         <p style="color:#6b7280;" id="cvLibrarySubtext">Browse and unlock candidate CVs</p>
       </div>
-      <div id="currentPlanBadge" style="padding: 8px 16px; background: #eef2ff; color: #1e3a8a; border-radius: 8px; font-weight: 600; font-size: 14px;">
+      <div id="currentPlanBadge" style="padding: 8px 16px; background: #eef2ff; color: #1e3a8a; border-radius: 10px; font-weight: 800; font-size: 14px;">
         Free Plan
       </div>
     </div>
 
     <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-      <button onclick="togglePipeline()" class="primary-btn" style="background: #7c3aed;">
+      <button onclick="togglePipeline()" class="primary-btn" style="background: #0f172a;">
         <i class='bx bx-grid-alt'></i> <span id="pipelineToggleText">Show Pipeline</span>
       </button>
       <button onclick="toggleComparison()" id="compareBtn" class="primary-btn" style="background: #2563eb; display: none;">
@@ -805,7 +1087,7 @@ body {
           </div>
 
           <div class="form-group" style="display: flex; align-items: flex-end;">
-            <button onclick="clearAllFilters()" class="primary-btn" style="background: #6b7280; width: 100%;">
+            <button onclick="clearAllFilters()" class="primary-btn btn-secondary" style="width: 100%;">
               <i class='bx bx-x'></i> Clear Filters
             </button>
           </div>
@@ -885,7 +1167,7 @@ body {
     </div>
   </div>
 
-  <!-- BILLING -->
+  <!-- BILLING (Premium plans later; kept as-is) -->
   <div id="billing" class="section">
     <h2>Packages & Billing</h2>
     <p style="color:#6b7280; margin-bottom:20px;">Choose a plan that fits your needs</p>
@@ -943,11 +1225,92 @@ body {
     </div>
   </div>
 
-  <!-- Analytics section remains as you had it (not pasted here, because your code references updateCharts() only).
-       You can keep your analytics section HTML exactly as you already have in your file. -->
+  <!-- ANALYTICS (NOW FULLY WORKING) -->
   <div id="analytics" class="section">
-    <h2>Analytics</h2>
-    <p style="color:#6b7280;">Analytics UI is already in your project — keeping your existing logic.</p>
+    <div style="display:flex; justify-content: space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; margin-bottom: 12px;">
+      <div>
+        <h2>Analytics</h2>
+        <p style="color:#6b7280; margin-top:6px;">
+          Track job performance, applications, and what’s working.
+        </p>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <select id="analyticsRange" class="filter" title="Analytics range">
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="180">Last 6 months</option>
+          <option value="365">Last 12 months</option>
+          <option value="0">All time</option>
+        </select>
+        <button class="primary-btn btn-ghost" id="refreshAnalyticsBtn">
+          <i class='bx bx-refresh'></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="a-card">
+        <div class="kpi-title">Total jobs posted</div>
+        <div class="kpi-value" id="kpiJobs">0</div>
+        <div class="kpi-sub" id="kpiJobsSub">In selected range</div>
+      </div>
+
+      <div class="a-card">
+        <div class="kpi-title">Total applications</div>
+        <div class="kpi-value" id="kpiApps">0</div>
+        <div class="kpi-sub" id="kpiAppsSub">Across your jobs</div>
+      </div>
+
+      <div class="a-card">
+        <div class="kpi-title">Avg applications per job</div>
+        <div class="kpi-value" id="kpiAvg">0</div>
+        <div class="kpi-sub" id="kpiAvgSub">Helpful to price your listings</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Applications over time</h3>
+        <div class="chart-wrap">
+          <canvas id="appsOverTimeChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Jobs by status</h3>
+        <div class="chart-wrap">
+          <canvas id="jobsStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <h3>Top performing jobs</h3>
+        <div class="muted" style="font-size: 13px;">
+          Sorted by applications (highest first)
+        </div>
+      </div>
+
+      <div style="overflow:auto; margin-top: 8px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Applications</th>
+              <th style="text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="topJobsTable">
+            <tr><td colspan="6" class="muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -958,9 +1321,23 @@ body {
     <h3>Upgrade Required</h3>
     <p id="modalMessage">Please upgrade your subscription to unlock CVs.</p>
     <div style="display: flex; gap: 12px; margin-top: 16px;">
-      <button class="primary-btn" onclick="showSection('billing', document.querySelector('.nav a:nth-child(6)')); closeModal()">View Plans</button>
+      <button class="primary-btn" onclick="showSection('billing', document.querySelector('.nav a:nth-child(6)')); closeModal()">
+        View Plans
+      </button>
       <button class="close" onclick="closeModal()">Close</button>
     </div>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div class="toast info" id="toast">
+  <i class='bx bx-info-circle'></i>
+  <div>
+    <div class="t-title" id="toastTitle">Info</div>
+    <div class="t-msg" id="toastMsg">Message</div>
+  </div>
+  <div class="t-actions">
+    <button onclick="hideToast()"><i class='bx bx-x'></i></button>
   </div>
 </div>
 
@@ -979,7 +1356,7 @@ function showSection(id, el) {
   if (id === 'analytics') {
     setTimeout(() => {
       if (typeof updateCharts === 'function') updateCharts();
-    }, 100);
+    }, 50);
   }
 }
 
@@ -991,6 +1368,25 @@ function openModal(message) {
   document.getElementById('modal').style.display = 'flex';
 }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+/* ======================================================
+   TOAST
+====================================================== */
+let toastTimer = null;
+function showToast(type, title, msg, ms = 3500) {
+  const toast = document.getElementById('toast');
+  toast.className = `toast ${type || 'info'}`;
+  document.getElementById('toastTitle').textContent = title || 'Info';
+  document.getElementById('toastMsg').textContent = msg || '';
+  toast.classList.add('show');
+
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => hideToast(), ms);
+}
+function hideToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.remove('show');
+}
 
 /* ======================================================
    LOGOUT
@@ -1039,13 +1435,25 @@ let recruiterData = null;
 let allCVsCount = 0;
 
 /* ======================================================
-   JOBS: state for Manage Jobs + Edit
+   COMPANY PROFILE (NEW)
+====================================================== */
+let companyProfile = null; // loaded from recruiters/{uid}.companyProfile
+let companyProfileVersion = ""; // timestamp string
+
+/* ======================================================
+   JOBS state
 ====================================================== */
 let recruiterJobsCache = [];
 let editingJobId = null;
 
 /* ======================================================
-   CV LIBRARY: your existing variables (kept)
+   ANALYTICS state
+====================================================== */
+let appsOverTimeChart = null;
+let jobsStatusChart = null;
+
+/* ======================================================
+   CV LIBRARY existing vars (kept)
 ====================================================== */
 let allCVsData = [];
 let selectedForComparison = [];
@@ -1072,18 +1480,28 @@ onAuthStateChanged(auth, async (user) => {
   currentRecruiter = user;
 
   await loadRecruiterData();
+  await loadCompanyProfile();          // ✅ NEW
+  wireCompanyProfileUI();              // ✅ NEW
+
   document.body.classList.add('authorized');
 
+  // Wire company form
+  document.getElementById('companyForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await saveCompanyProfile();
+  });
+
+  document.getElementById('prefillFromAccountBtn')?.addEventListener('click', () => {
+    prefillCompanyFromAccount();
+  });
+
+  // Jobs
   loadCVs();
   updatePlanBadges();
 
-  // ✅ NEW: Load recruiter jobs into Manage Jobs table
   loadManageJobs();
-
-  // Range filter changes reload the table
   document.getElementById('manageJobsRange')?.addEventListener('change', loadManageJobs);
 
-  // Post job buttons
   document.getElementById('saveDraftBtn')?.addEventListener('click', () => saveJob('draft'));
   document.getElementById('jobForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1091,6 +1509,17 @@ onAuthStateChanged(auth, async (user) => {
   });
 
   document.getElementById('cancelEditBtn')?.addEventListener('click', cancelEditJob);
+
+  // Analytics
+  document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => updateCharts());
+  document.getElementById('analyticsRange')?.addEventListener('change', () => updateCharts());
+
+  // Keep mobile header in sync + initial auto-fill
+  handleMobileLayout();
+  applyCompanyProfileToJobForm({ lock: true });
+
+  // Keep preview live
+  bindCompanyPreviewLive();
 });
 
 /* ======================================================
@@ -1126,6 +1555,248 @@ async function loadRecruiterData() {
 }
 
 /* ======================================================
+   COMPANY PROFILE: Load/Save + UX helpers (NEW)
+====================================================== */
+function normalizeUrl(u) {
+  if (!u) return "";
+  const s = String(u).trim();
+  if (!s) return "";
+  if (/^https?:\/\//i.test(s)) return s;
+  return "https://" + s;
+}
+
+async function loadCompanyProfile() {
+  try {
+    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
+    const snap = await getDoc(recruiterRef);
+    const data = snap.exists() ? snap.data() : null;
+
+    companyProfile = data?.companyProfile || null;
+    companyProfileVersion = data?.companyProfileVersion || "";
+
+    updateCompanyPills();
+
+    // Fill company form if present
+    if (companyProfile) {
+      setCompanyForm(companyProfile);
+    } else {
+      // prefill basics from auth email as a helpful UX baseline
+      prefillCompanyFromAccount(true);
+    }
+
+    renderCompanyPreview(getCompanyFormValue());
+
+  } catch (err) {
+    console.error("loadCompanyProfile error:", err);
+    companyProfile = null;
+    companyProfileVersion = "";
+    updateCompanyPills();
+  }
+}
+
+function updateCompanyPills() {
+  const pill = document.getElementById('companyPill');
+  const dashPill = document.getElementById('companyProfileStatusPill');
+  const jobPill = document.getElementById('jobCompanyAutofillPill');
+
+  const ok = !!(companyProfile && companyProfile.name && companyProfile.email);
+
+  if (pill) {
+    pill.innerHTML = ok
+      ? `<i class='bx bx-check-circle'></i> Auto-fill enabled`
+      : `<i class='bx bx-error-circle'></i> Auto-fill needs setup`;
+    pill.style.background = ok ? '#dbeafe' : '#ffedd5';
+    pill.style.color = ok ? '#1e3a8a' : '#92400e';
+    pill.style.borderColor = ok ? '#bfdbfe' : '#fed7aa';
+  }
+
+  if (dashPill) {
+    dashPill.innerHTML = ok
+      ? `<i class='bx bx-check-circle'></i> Company profile set — job posts will auto-fill`
+      : `<i class='bx bx-error-circle'></i> Set your company profile to auto-fill job posts`;
+    dashPill.style.background = ok ? '#dbeafe' : '#ffedd5';
+    dashPill.style.color = ok ? '#1e3a8a' : '#92400e';
+    dashPill.style.borderColor = ok ? '#bfdbfe' : '#fed7aa';
+  }
+
+  if (jobPill) {
+    jobPill.innerHTML = ok
+      ? `<i class='bx bx-buildings'></i> Company auto-fill: ON`
+      : `<i class='bx bx-buildings'></i> Company auto-fill: OFF`;
+    jobPill.style.background = ok ? '#dbeafe' : '#f3f4f6';
+    jobPill.style.color = ok ? '#1e3a8a' : '#374151';
+    jobPill.style.borderColor = ok ? '#bfdbfe' : '#e5e7eb';
+  }
+}
+
+function getCompanyFormValue() {
+  return {
+    name: document.getElementById('cp_name')?.value?.trim() || "",
+    industry: document.getElementById('cp_industry')?.value?.trim() || "",
+    size: document.getElementById('cp_size')?.value?.trim() || "",
+    email: document.getElementById('cp_email')?.value?.trim() || "",
+    website: normalizeUrl(document.getElementById('cp_website')?.value || ""),
+    city: document.getElementById('cp_city')?.value?.trim() || "",
+    country: document.getElementById('cp_country')?.value?.trim() || "",
+    logo: normalizeUrl(document.getElementById('cp_logo')?.value || ""),
+    about: document.getElementById('cp_about')?.value?.trim() || "",
+    contactName: document.getElementById('cp_contactName')?.value?.trim() || ""
+  };
+}
+
+function setCompanyForm(p) {
+  document.getElementById('cp_name').value = p?.name || "";
+  document.getElementById('cp_industry').value = p?.industry || "";
+  document.getElementById('cp_size').value = p?.size || "";
+  document.getElementById('cp_email').value = p?.email || "";
+  document.getElementById('cp_website').value = p?.website || "";
+  document.getElementById('cp_city').value = p?.city || "";
+  document.getElementById('cp_country').value = p?.country || "";
+  document.getElementById('cp_logo').value = p?.logo || "";
+  document.getElementById('cp_about').value = p?.about || "";
+  document.getElementById('cp_contactName').value = p?.contactName || "";
+}
+
+function renderCompanyPreview(p) {
+  const name = p.name || "Your Company";
+  const industry = p.industry || "Industry";
+  const size = p.size || "Size";
+  const city = p.city || "City";
+  const country = p.country || "Country";
+  const meta = `${industry} • ${size} • ${city}${country ? ", " + country : ""}`;
+  const about = p.about || "Add a short “About” so candidates quickly trust your brand.";
+  const email = p.email || "email@company.com";
+  const website = p.website ? p.website.replace(/^https?:\/\//i, "") : "company.com";
+
+  document.getElementById('cp_previewName').textContent = name;
+  document.getElementById('cp_previewMeta').textContent = meta;
+  document.getElementById('cp_previewAbout').textContent = about;
+  document.getElementById('cp_previewEmail').textContent = email;
+  document.getElementById('cp_previewWebsite').textContent = website;
+
+  const logoEl = document.getElementById('cp_previewLogo');
+  if (logoEl) {
+    logoEl.src = p.logo || "https://dummyimage.com/108x108/2563eb/ffffff&text=CU";
+  }
+
+  // Sidebar branding (nice UX for recruiters)
+  const sidebarLogo = document.getElementById('sidebarLogo');
+  const sidebarName = document.getElementById('sidebarCompanyName');
+  const sidebarSub = document.getElementById('sidebarSubtext');
+
+  if (sidebarName) sidebarName.textContent = name || "Career Unified";
+  if (sidebarSub) sidebarSub.textContent = "Recruiter Dashboard";
+  if (sidebarLogo) sidebarLogo.src = p.logo || "https://dummyimage.com/80x80/2563eb/ffffff&text=CU";
+}
+
+function bindCompanyPreviewLive() {
+  const ids = ['cp_name','cp_industry','cp_size','cp_email','cp_website','cp_city','cp_country','cp_logo','cp_about','cp_contactName'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => renderCompanyPreview(getCompanyFormValue()));
+      el.addEventListener('change', () => renderCompanyPreview(getCompanyFormValue()));
+    }
+  });
+}
+
+function prefillCompanyFromAccount(silent=false) {
+  const email = currentRecruiter?.email || "";
+  if (!silent) showToast('info', 'Prefilled', 'We filled what we can. Update the rest and save.', 2800);
+  if (email && !document.getElementById('cp_email').value) document.getElementById('cp_email').value = email;
+  renderCompanyPreview(getCompanyFormValue());
+}
+
+async function saveCompanyProfile() {
+  const btn = document.getElementById('saveCompanyBtn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const p = getCompanyFormValue();
+
+    if (!p.name || !p.email) {
+      showToast('warn', 'Missing required fields', 'Company Name and Company Email are required.', 4200);
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    const version = new Date().toISOString();
+
+    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
+    await setDoc(recruiterRef, {
+      companyProfile: p,
+      companyProfileVersion: version,
+      companyProfileUpdatedAt: serverTimestamp()
+    }, { merge: true });
+
+    companyProfile = p;
+    companyProfileVersion = version;
+
+    updateCompanyPills();
+    applyCompanyProfileToJobForm({ lock: true });
+
+    showToast('success', 'Saved', 'Company profile saved. Job posts will auto-fill automatically.', 3500);
+  } catch (err) {
+    console.error("saveCompanyProfile error:", err);
+    showToast('error', 'Save failed', 'Could not save company profile. Check console for details.', 4500);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function wireCompanyProfileUI() {
+  updateCompanyPills();
+  renderCompanyPreview(companyProfile || getCompanyFormValue());
+  applyCompanyProfileToJobForm({ lock: true });
+}
+
+function applyCompanyProfileToJobForm({ lock } = { lock: true }) {
+  const ok = !!(companyProfile && companyProfile.name && companyProfile.email);
+
+  const helper = document.getElementById('companyAutofillHelper');
+  if (helper) helper.style.display = ok ? 'flex' : 'none';
+
+  const hint = document.getElementById('companyAutofillHint');
+  if (hint) {
+    hint.textContent = ok
+      ? 'These fields are auto-filled from Company Profile for consistency (edit from Company Profile).'
+      : 'Save your Company Profile to auto-fill these fields automatically.';
+  }
+
+  const companyEl = document.getElementById('job_company');
+  const emailEl = document.getElementById('job_email');
+  const webEl = document.getElementById('job_website');
+  const logoEl = document.getElementById('job_logo');
+  const verEl = document.getElementById('companyProfileVersion');
+
+  if (!companyEl || !emailEl || !webEl || !logoEl) return;
+
+  if (ok) {
+    companyEl.value = companyProfile.name || "";
+    emailEl.value = companyProfile.email || "";
+    webEl.value = companyProfile.website || "";
+    logoEl.value = companyProfile.logo || "";
+    if (verEl) verEl.value = companyProfileVersion || "";
+
+    if (lock) {
+      [companyEl, emailEl, webEl, logoEl].forEach(el => {
+        el.readOnly = true;
+        el.classList.add('locked-field');
+      });
+    }
+  } else {
+    // allow editing if no profile
+    [companyEl, emailEl, webEl, logoEl].forEach(el => {
+      el.readOnly = false;
+      el.classList.remove('locked-field');
+    });
+    if (verEl) verEl.value = "";
+  }
+
+  updateCompanyPills();
+}
+
+/* ======================================================
    JOBS: helper functions
 ====================================================== */
 function slugify(text) {
@@ -1144,28 +1815,36 @@ function getMonthsAgoDate(months) {
   return d;
 }
 
-function formatDate(d) {
-  if (!d) return "—";
-  try {
-    return new Date(d).toLocaleDateString();
-  } catch {
-    return "—";
-  }
-}
-
 /* ======================================================
    JOBS: Save (Publish/Draft) + Edit
+   ✅ UPDATED: Company details come from Company Profile automatically
 ====================================================== */
 async function saveJob(status) {
   const form = document.getElementById('jobForm');
   if (!form) return;
 
+  // enforce latest company profile auto-fill before saving
+  applyCompanyProfileToJobForm({ lock: true });
+
   const fd = new FormData(form);
   const data = Object.fromEntries(fd.entries());
-
   const remoteChecked = form.remote?.checked || false;
 
-  // Keep your original jobData idea, just persist it now
+  const hasCompanyProfile = !!(companyProfile && companyProfile.name && companyProfile.email);
+  if (!hasCompanyProfile) {
+    showToast('warn', 'Set Company Profile', 'Please save your company profile first so job posts stay consistent.', 5000);
+    showSection('company', document.querySelector('.nav a:nth-child(2)'));
+    return;
+  }
+
+  const jobCompany = {
+    company: companyProfile.name || (data.company || '').trim(),
+    email: companyProfile.email || (data.email || '').trim(),
+    website: companyProfile.website || (data.website || '').trim(),
+    logo: companyProfile.logo || (data.logo || '').trim(),
+    companyProfileVersion: companyProfileVersion || ""
+  };
+
   const jobData = {
     title: (data.title || '').trim(),
     category: (data.category || '').trim(),
@@ -1177,23 +1856,27 @@ async function saveJob(status) {
     city: (data.city || '').trim(),
     country: (data.country || '').trim(),
     remote: remoteChecked,
-    company: (data.company || '').trim(),
-    email: (data.email || '').trim(),
-    website: (data.website || '').trim(),
-    logo: (data.logo || '').trim(),
+    ...jobCompany,
     deadline: (data.deadline || '').trim(),
     status: status === 'draft' ? 'draft' : 'active',
     recruiterId: currentRecruiter.uid,
     updatedAt: serverTimestamp(),
-    applicationsCount: 0
+    applicationsCount: 0,
+
+    // helpful for future features
+    companyIndustry: companyProfile.industry || "",
+    companySize: companyProfile.size || "",
+    companyAbout: companyProfile.about || "",
+    companyHQCity: companyProfile.city || "",
+    companyHQCountry: companyProfile.country || "",
+    companyContactName: companyProfile.contactName || ""
   };
 
   if (!jobData.title || !jobData.category || !jobData.type || !jobData.experience || !jobData.description || !jobData.city || !jobData.country || !jobData.company || !jobData.email) {
-    alert("Please fill in all required fields.");
+    showToast('warn', 'Missing required fields', 'Please fill in all required fields.', 4200);
     return;
   }
 
-  // generate stable slug
   const baseSlug = slugify(`${jobData.title}-${jobData.company}-${jobData.city}`);
   jobData.slug = baseSlug;
 
@@ -1204,37 +1887,23 @@ async function saveJob(status) {
     if (draftBtn) draftBtn.disabled = true;
 
     if (editingJobId) {
-      // update
       const ref = doc(db, "jobs", editingJobId);
-      await updateDoc(ref, {
-        ...jobData,
-        // keep createdAt from original doc
-      });
-
-      alert(status === 'draft' ? "Draft updated successfully ✅" : "Job updated successfully ✅");
+      await updateDoc(ref, { ...jobData });
+      showToast('success', 'Updated', status === 'draft' ? 'Draft updated successfully.' : 'Job updated successfully.', 3200);
     } else {
-      // create new
-      await addDoc(collection(db, "jobs"), {
-        ...jobData,
-        createdAt: serverTimestamp()
-      });
-
-      alert(status === 'draft' ? "Draft saved ✅" : "Job published successfully ✅");
+      await addDoc(collection(db, "jobs"), { ...jobData, createdAt: serverTimestamp() });
+      showToast('success', 'Saved', status === 'draft' ? 'Draft saved.' : 'Job published successfully.', 3200);
     }
 
-    // reset form + mode
     form.reset();
     cancelEditJob(true);
+    applyCompanyProfileToJobForm({ lock: true });
 
-    // refresh manage jobs
     await loadManageJobs();
-
-    // optionally jump to Manage Jobs
-    // showSection('jobs', document.querySelector('.nav a:nth-child(4)'));
-
+    // refresh analytics if user later opens it
   } catch (err) {
     console.error("saveJob error:", err);
-    alert("Failed to save job. Check console for details.");
+    showToast('error', 'Save failed', 'Failed to save job. Check console for details.', 4500);
   } finally {
     const publishBtn = document.getElementById('publishJobBtn');
     const draftBtn = document.getElementById('saveDraftBtn');
@@ -1260,11 +1929,17 @@ function setFormEditMode(job) {
   form.city.value = job.city || '';
   form.country.value = job.country || '';
   form.remote.checked = !!job.remote;
-  form.company.value = job.company || '';
-  form.email.value = job.email || '';
-  form.website.value = job.website || '';
-  form.logo.value = job.logo || '';
+
+  // Company fields come from Company Profile; still set for legacy docs
+  document.getElementById('job_company').value = (companyProfile?.name || job.company || '');
+  document.getElementById('job_email').value = (companyProfile?.email || job.email || '');
+  document.getElementById('job_website').value = (companyProfile?.website || job.website || '');
+  document.getElementById('job_logo').value = (companyProfile?.logo || job.logo || '');
+  document.getElementById('companyProfileVersion').value = companyProfileVersion || job.companyProfileVersion || "";
+
   form.deadline.value = job.deadline || '';
+
+  applyCompanyProfileToJobForm({ lock: true });
 
   const mode = document.getElementById('jobFormMode');
   if (mode) {
@@ -1273,10 +1948,10 @@ function setFormEditMode(job) {
   }
 
   const cancelBtn = document.getElementById('cancelEditBtn');
-  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+  if (cancelBtn) cancelBtn.style.display = 'inline-flex';
 
   const publishBtn = document.getElementById('publishJobBtn');
-  if (publishBtn) publishBtn.textContent = "Update Job";
+  if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-edit'></i> Update Job";
 }
 
 function cancelEditJob(silent=false) {
@@ -1289,10 +1964,10 @@ function cancelEditJob(silent=false) {
   if (cancelBtn) cancelBtn.style.display = 'none';
 
   const publishBtn = document.getElementById('publishJobBtn');
-  if (publishBtn) publishBtn.textContent = "Publish Job";
+  if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
 
   if (!silent) {
-    // keep form data if user wants? your current UX resets only when saved, so do nothing here
+    // nothing (you said you prefer not changing unrelated behavior)
   }
 }
 
@@ -1309,32 +1984,19 @@ async function loadManageJobs() {
     const months = parseInt(document.getElementById('manageJobsRange')?.value || "6", 10);
     const start = getMonthsAgoDate(months);
 
-    let q;
-    if (start) {
-      // For date filtering we rely on createdAt; if some docs have missing createdAt, they just won't show in date-filtered mode.
-      // We'll keep simple.
-      q = query(
-        collection(db, "jobs"),
-        where("recruiterId", "==", currentRecruiter.uid),
-        orderBy("createdAt", "desc")
-      );
-    } else {
-      q = query(
-        collection(db, "jobs"),
-        where("recruiterId", "==", currentRecruiter.uid),
-        orderBy("createdAt", "desc")
-      );
-    }
+    const q = query(
+      collection(db, "jobs"),
+      where("recruiterId", "==", currentRecruiter.uid),
+      orderBy("createdAt", "desc")
+    );
 
     const snap = await getDocs(q);
 
     recruiterJobsCache = [];
     snap.forEach(d => {
-      const j = d.data();
-      recruiterJobsCache.push({ id: d.id, ...j });
+      recruiterJobsCache.push({ id: d.id, ...d.data() });
     });
 
-    // optional: apply client-side month filter
     const filtered = start
       ? recruiterJobsCache.filter(j => {
           const created = j.createdAt?.toDate ? j.createdAt.toDate() : null;
@@ -1366,16 +2028,19 @@ async function loadManageJobs() {
           <div class="job-location">
             <i class='bx bx-map'></i> ${j.remote ? "Remote" : `${j.city || ""}${j.country ? ", " + j.country : ""}`.trim()}
           </div>
+          <div class="muted" style="font-size:12px; margin-top:4px;">
+            <i class='bx bx-buildings'></i> ${j.company || companyProfile?.name || 'Company'}
+          </div>
         </div>
 
-        <div data-label="Applications" class="applied">${j.applicationsCount || 0} Applied</div>
+        <div data-label="Applications" class="applied">${j.applicationsCount || 0}</div>
 
         <div data-label="Dates" class="dates">
           <span>${createdText}</span>
           <small>Expires: ${expiresText}</small>
         </div>
 
-        <div data-label="Status" class="${statusClass}">${(j.status || "active").toUpperCase()}</div>
+        <div data-label="Status"><span class="${statusClass}">${(j.status || "active").toUpperCase()}</span></div>
 
         <div data-label="Actions" class="actions">
           <button title="View" data-action="view" data-id="${j.id}"><i class='bx bx-show'></i></button>
@@ -1400,17 +2065,15 @@ document.addEventListener('click', async (e) => {
 
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
-
   if (!action || !id) return;
 
   const job = recruiterJobsCache.find(j => j.id === id);
   if (!job) {
-    alert("Job not found. Refresh the page.");
+    showToast('warn', 'Not found', 'Job not found. Refresh the page.', 3500);
     return;
   }
 
   if (action === 'view') {
-    // We'll wire jobs.html to read this slug next
     const slug = job.slug || slugify(`${job.title}-${job.company}-${job.city}`);
     window.open(`jobs.html?slug=${encodeURIComponent(slug)}`, "_blank");
   }
@@ -1425,17 +2088,209 @@ document.addEventListener('click', async (e) => {
     if (!confirm("Delete this job permanently?")) return;
     try {
       await deleteDoc(doc(db, "jobs", id));
-      alert("✅ Job deleted");
+      showToast('success', 'Deleted', 'Job deleted successfully.', 2800);
       await loadManageJobs();
     } catch (err) {
       console.error("delete job error:", err);
-      alert("❌ Failed to delete job");
+      showToast('error', 'Delete failed', 'Failed to delete job.', 3800);
     }
   }
 });
 
 /* ======================================================
-   YOUR EXISTING CV/PLAN LOGIC (UNCHANGED)
+   ANALYTICS: Working charts + table (NEW)
+   Uses jobs collection fields: createdAt, status, applicationsCount
+====================================================== */
+function startDateFromRangeDays(days) {
+  const n = parseInt(days || "30", 10);
+  if (!n || n === 0) return null;
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d;
+}
+
+function safeDateFromTS(ts) {
+  if (!ts) return null;
+  if (ts?.toDate) return ts.toDate();
+  try { return new Date(ts); } catch { return null; }
+}
+
+function toISODateKey(d) {
+  const x = new Date(d);
+  x.setHours(0,0,0,0);
+  return x.toISOString().slice(0,10);
+}
+
+function fillDateSeries(start, end) {
+  const map = new Map();
+  const cur = new Date(start);
+  cur.setHours(0,0,0,0);
+  const last = new Date(end);
+  last.setHours(0,0,0,0);
+
+  while (cur <= last) {
+    map.set(toISODateKey(cur), 0);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return map;
+}
+
+async function updateCharts() {
+  try {
+    const range = document.getElementById('analyticsRange')?.value || "30";
+    const start = startDateFromRangeDays(range);
+
+    // load all recruiter jobs (then filter by createdAt client-side)
+    const q = query(
+      collection(db, "jobs"),
+      where("recruiterId", "==", currentRecruiter.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const snap = await getDocs(q);
+    let jobs = [];
+    snap.forEach(d => jobs.push({ id: d.id, ...d.data() }));
+
+    if (start) {
+      jobs = jobs.filter(j => {
+        const created = safeDateFromTS(j.createdAt);
+        return created ? created >= start : true;
+      });
+    }
+
+    const totalJobs = jobs.length;
+    const totalApps = jobs.reduce((sum, j) => sum + (parseInt(j.applicationsCount || 0, 10) || 0), 0);
+    const avg = totalJobs > 0 ? (totalApps / totalJobs) : 0;
+
+    document.getElementById('kpiJobs').textContent = totalJobs;
+    document.getElementById('kpiApps').textContent = totalApps;
+    document.getElementById('kpiAvg').textContent = avg.toFixed(1);
+
+    document.getElementById('kpiJobsSub').textContent = start ? "In selected range" : "All time";
+    document.getElementById('kpiAppsSub').textContent = "Across your jobs";
+    document.getElementById('kpiAvgSub').textContent = totalJobs ? "Across posted jobs" : "Post jobs to see averages";
+
+    // Applications over time (daily)
+    const today = new Date();
+    const seriesStart = start || (() => {
+      const d = new Date(today);
+      d.setDate(d.getDate() - 30);
+      return d;
+    })();
+
+    const series = fillDateSeries(seriesStart, today);
+
+    // distribute applications by created date (simple & consistent with your schema)
+    // (When you later store per-application timestamps, you can replace this to true daily counts.)
+    jobs.forEach(j => {
+      const created = safeDateFromTS(j.createdAt) || today;
+      const key = toISODateKey(created);
+      if (series.has(key)) series.set(key, (series.get(key) || 0) + (parseInt(j.applicationsCount || 0, 10) || 0));
+    });
+
+    const labels = Array.from(series.keys());
+    const values = Array.from(series.values());
+
+    if (appsOverTimeChart) appsOverTimeChart.destroy();
+    const ctx1 = document.getElementById('appsOverTimeChart');
+    appsOverTimeChart = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Applications',
+          data: values,
+          borderWidth: 2,
+          tension: 0.25
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 6 } },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Jobs by status (active/draft)
+    const statusCounts = { active: 0, draft: 0, other: 0 };
+    jobs.forEach(j => {
+      const s = String(j.status || 'active').toLowerCase();
+      if (s === 'active') statusCounts.active++;
+      else if (s === 'draft') statusCounts.draft++;
+      else statusCounts.other++;
+    });
+
+    if (jobsStatusChart) jobsStatusChart.destroy();
+    const ctx2 = document.getElementById('jobsStatusChart');
+    jobsStatusChart = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Active', 'Draft', 'Other'],
+        datasets: [{
+          data: [statusCounts.active, statusCounts.draft, statusCounts.other],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+
+    // Top jobs table
+    const top = [...jobs].sort((a, b) => (b.applicationsCount || 0) - (a.applicationsCount || 0)).slice(0, 10);
+    const tbody = document.getElementById('topJobsTable');
+
+    if (!tbody) return;
+
+    if (top.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="muted">No jobs in this range yet.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = top.map(j => {
+      const created = safeDateFromTS(j.createdAt);
+      const createdText = created ? created.toLocaleDateString() : '—';
+      const loc = j.remote ? 'Remote' : `${j.city || ''}${j.country ? ', ' + j.country : ''}`.trim();
+      const s = String(j.status || 'active').toUpperCase();
+      const apps = parseInt(j.applicationsCount || 0, 10) || 0;
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:800;">${j.title || 'Untitled'}</div>
+            <div class="muted" style="font-size:12px;"><i class='bx bx-buildings'></i> ${j.company || companyProfile?.name || 'Company'}</div>
+          </td>
+          <td class="muted">${loc || '—'}</td>
+          <td class="muted">${s}</td>
+          <td class="muted">${createdText}</td>
+          <td style="font-weight:800;">${apps}</td>
+          <td style="text-align:right;">
+            <button class="primary-btn btn-ghost" style="margin-top:0; padding:8px 10px;"
+              onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)')); setFormEditMode(${JSON.stringify({id:j.id})});">
+              Edit
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error("updateCharts error:", err);
+    showToast('error', 'Analytics failed', 'Could not load analytics. Check console.', 4500);
+    const tbody = document.getElementById('topJobsTable');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="muted">Failed to load.</td></tr>`;
+  }
+}
+// expose for the nav handler
+window.updateCharts = updateCharts;
+
+/* ======================================================
+   YOUR EXISTING CV/PLAN LOGIC (kept)
 ====================================================== */
 async function loadCVs() {
   const grid = document.getElementById("cvGrid");
@@ -1547,7 +2402,6 @@ async function loadCVs() {
 
   } catch (err) {
     console.error("CV load error:", err);
-    console.error("Error details:", err.code, err.message);
     document.getElementById("cvGrid").innerHTML = "<p style='color: #ef4444;'>Error loading CVs. Please refresh the page.</p>";
   }
 }
@@ -1557,7 +2411,7 @@ function updateCVLibrarySubtext() {
 
   if (recruiterData.plan === 'free') {
     if (allCVsCount > 10) {
-      subtext.innerHTML = `First 10 CVs shown clearly. <span style="color: #ef4444; font-weight: 600;">Upgrade to view all ${allCVsCount} CVs clearly and download them</span>`;
+      subtext.innerHTML = `First 10 CVs shown clearly. <span style="color: #ef4444; font-weight: 800;">Upgrade to view all ${allCVsCount} CVs clearly and download them</span>`;
     } else {
       subtext.textContent = `Showing all ${allCVsCount} CVs (upgrade to download)`;
     }
@@ -1601,11 +2455,11 @@ window.unlockCV = async function(cvId, cvURL, cvName) {
     await loadRecruiterData();
     loadCVs();
     window.open(cvURL, '_blank');
-    alert(' CV unlocked successfully!');
+    showToast('success', 'Unlocked', 'CV unlocked successfully.', 2800);
 
   } catch (error) {
     console.error('Error unlocking CV:', error);
-    alert(' Error unlocking CV. Please try again.');
+    showToast('error', 'Unlock failed', 'Error unlocking CV. Please try again.', 3800);
   }
 }
 
@@ -1753,7 +2607,7 @@ function displayFilteredCVs(cvs) {
     card.className = "cv-card";
     card.style.position = "relative";
     if (isSelected) card.style.border = "2px solid #2563eb";
-    if (isFavorite) card.style.borderColor = "#fbbf24";
+    if (isFavorite) card.style.borderColor = "#f59e0b";
 
     const uploadDate = data.uploadedAt || new Date();
     const daysAgo = Math.floor((new Date() - uploadDate) / (1000 * 60 * 60 * 24));
@@ -1765,9 +2619,9 @@ function displayFilteredCVs(cvs) {
             <h3>${data.fullName}</h3>
             <p><strong>${data.jobTitle}</strong></p>
           </div>
-          <i class='bx bxs-star favorite-star ${isFavorite ? 'active' : ''}"
+          <i class='bx bxs-star favorite-star ${isFavorite ? 'active' : ''}'
             onclick="toggleFavorite('${cvId}')"
-            style="font-size: 20px; cursor: pointer; color: ${isFavorite ? '#fbbf24' : '#d1d5db'};">
+            style="font-size: 20px; cursor: pointer; color: ${isFavorite ? '#f59e0b' : '#d1d5db'};">
           </i>
         </div>
 
@@ -1828,10 +2682,10 @@ function displayFilteredCVs(cvs) {
         ` : ''}
 
         ${isUnlocked ? `
-          <button class="primary-btn" onclick="window.open('${data.cvURL}', '_blank')" style="background: #6366f1;" title="Preview CV">
+          <button class="primary-btn" onclick="window.open('${data.cvURL}', '_blank')" style="background: #2563eb;" title="Preview CV">
             <i class='bx bx-show'></i>
           </button>
-          <button class="primary-btn" onclick="window.open('${data.cvURL}', '_blank'); window.open('${data.cvURL}?download=1', '_blank')" style="background: #10b981;" title="Download CV">
+          <button class="primary-btn" onclick="window.open('${data.cvURL}', '_blank'); window.open('${data.cvURL}?download=1', '_blank')" style="background: #16a34a;" title="Download CV">
             <i class='bx bx-download'></i>
           </button>
         ` : isFree ? `
@@ -1908,7 +2762,7 @@ function renderComparison() {
       </div>
 
       <button onclick="toggleFavorite('${cvId}')"
-        style="margin-top: 12px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; color: ${favorites.includes(cvId) ? '#fbbf24' : '#6b7280'};">
+        style="margin-top: 12px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; color: ${favorites.includes(cvId) ? '#f59e0b' : '#6b7280'};">
         <i class='bx bxs-star' style="font-size: 16px;"></i>
         ${favorites.includes(cvId) ? 'Favorited' : 'Mark Favorite'}
       </button>
@@ -1967,19 +2821,19 @@ function renderPipeline() {
       const lastNote = notes.length > 0 ? notes[notes.length - 1] : null;
 
       card.innerHTML = `
-        <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${cv.fullName}</div>
+        <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">${cv.fullName}</div>
         <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px;">${cv.jobTitle}</div>
 
         ${lastNote ? `<div class="candidate-note">${lastNote.text}</div>` : ''}
 
         <div style="display: flex; gap: 4px; margin-top: 8px;">
           <button onclick="addCandidateNote('${cvId}')"
-            style="background: #f3f4f6; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">
+            style="background: #f3f4f6; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 11px;">
             <i class='bx bx-plus'></i>
           </button>
           <button onclick="toggleFavorite('${cvId}')"
-            style="background: ${favorites.includes(cvId) ? '#fef3c7' : '#f3f4f6'}; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
-            <i class='bx bxs-star' style="font-size: 12px; color: ${favorites.includes(cvId) ? '#fbbf24' : '#6b7280'};"></i>
+            style="background: ${favorites.includes(cvId) ? '#ffedd5' : '#f3f4f6'}; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer;">
+            <i class='bx bxs-star' style="font-size: 12px; color: ${favorites.includes(cvId) ? '#f59e0b' : '#6b7280'};"></i>
           </button>
         </div>
       `;
@@ -2062,8 +2916,9 @@ window.showSection = function(id, el) {
 
   if (window.innerWidth <= 900) closeMobileSidebar();
 
-  // ✅ When switching to manage jobs, refresh it
   if (id === 'jobs') loadManageJobs();
+  if (id === 'post-job') applyCompanyProfileToJobForm({ lock: true });
+  if (id === 'analytics') updateCharts();
 }
 
 window.addEventListener('load', handleMobileLayout);
