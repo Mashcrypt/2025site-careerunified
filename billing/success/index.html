@@ -1,41 +1,303 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Payment Successful • Career Unified</title>
-    <style>
-      body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#f8fafc; }
-      .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-      .card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:28px; max-width:520px; width:100%; box-shadow: 0 1px 2px rgba(0,0,0,.05); text-align:center; }
-      h1 { margin:0; font-size:24px; color:#0f172a; }
-      p { margin:12px 0 0; color:#475569; line-height:1.5; }
-      .btns { margin-top:18px; display:flex; flex-direction:column; gap:10px; }
-      a { display:inline-flex; align-items:center; justify-content:center; padding:12px 14px; border-radius:12px; text-decoration:none; font-weight:600; }
-      .primary { background:#2563eb; color:#fff; }
-      .primary:hover { background:#1d4ed8; }
-      .ghost { border:1px solid #e2e8f0; color:#0f172a; background:#fff; }
-      .ghost:hover { background:#f1f5f9; }
-      .small { font-size:12px; color:#64748b; margin-top:16px; }
-      .badge { display:inline-block; margin-bottom:10px; font-size:12px; color:#0f766e; background:#ecfdf5; border:1px solid #a7f3d0; padding:4px 10px; border-radius:999px; font-weight:600; }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="card">
-        <div class="badge">Payment Confirmed</div>
-        <h1>Payment successful </h1>
-        <p>Your subscription is now active. You can start using AI features immediately.</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful • Career Unified</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Lato:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f2454;
+      --navy-mid: #1e3a8a;
+      --navy-light: #e8edf8;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --text-primary: #0b1426;
+      --text-secondary: #5a6a85;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --bg: #f3f5f9;
+    }
 
-        <div class="btns">
-          <a class="primary" href="/cv-generator/">Continue to Resume Builder</a>
-          <a class="ghost" href="/">Go to Home</a>
-        </div>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        <p class="small">
-          If your AI tools still look locked, wait a few seconds and refresh — Paystack webhooks can take a moment.
-        </p>
-      </div>
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 20px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(30,58,138,.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(5,150,105,.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .wordmark {
+      text-align: center;
+      margin-bottom: 28px;
+      animation: fadeDown .5s ease both;
+    }
+    .wordmark span {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: .4px;
+    }
+    .wordmark span em {
+      font-style: normal;
+      color: var(--navy-mid);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px 40px 36px;
+      box-shadow: 0 2px 6px rgba(15,36,84,.06), 0 8px 32px rgba(15,36,84,.08);
+      animation: fadeUp .5s ease .1s both;
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 36px 24px 28px; }
+    }
+
+    .icon-ring {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 28px;
+      position: relative;
+    }
+    .icon-ring svg.ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      animation: spinIn .7s ease .2s both;
+    }
+    .icon-ring svg.check {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      animation: checkPop .4s cubic-bezier(.34,1.56,.64,1) .6s both;
+    }
+
+    @keyframes spinIn {
+      from { opacity: 0; transform: rotate(-90deg) scale(.8); }
+      to   { opacity: 1; transform: rotate(0deg) scale(1); }
+    }
+    @keyframes checkPop {
+      from { opacity: 0; transform: scale(.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .status-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--green-light);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px var(--green-light); }
+      50%       { box-shadow: 0 0 0 6px rgba(5,150,105,.12); }
+    }
+    .status-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+
+    .btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 20px;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background .15s, transform .12s, box-shadow .15s;
+      letter-spacing: .2px;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--navy-mid);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(30,58,138,.25);
+    }
+    .btn-primary:hover {
+      background: var(--navy);
+      box-shadow: 0 4px 16px rgba(30,58,138,.35);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg); }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 14px 16px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      font-size: 12.5px;
+      color: #92400e;
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .note svg {
+      width: 15px;
+      height: 15px;
+      stroke: #d97706;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <div class="wordmark">
+      <span>Career <em>Unified</em></span>
     </div>
-  </body>
+
+    <div class="card">
+
+      <div class="icon-ring">
+        <svg class="ring" viewBox="0 0 72 72" fill="none">
+          <circle cx="36" cy="36" r="34" stroke="#d1fae5" stroke-width="4"/>
+          <circle cx="36" cy="36" r="34" stroke="#059669" stroke-width="4"
+            stroke-dasharray="213" stroke-dashoffset="53" stroke-linecap="round"/>
+        </svg>
+        <svg class="check" viewBox="0 0 72 72" fill="none">
+          <polyline points="22,37 31,46 50,27"
+            stroke="#059669" stroke-width="3.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="status-label">
+        <span class="status-dot"></span>
+        <span class="status-text">Payment Confirmed</span>
+      </div>
+
+      <h1>Your AI tools are now active</h1>
+      <p class="sub">
+        Your subscription is live. Head over to the Resume Builder and start using all AI-powered features right away.
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="btns">
+        <a class="btn btn-primary" href="/cv-generator/">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Continue to Resume Builder
+        </a>
+        <a class="btn btn-secondary" href="/">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Go to Home
+        </a>
+      </div>
+
+      <div class="note">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>If your AI tools still appear locked, wait a few seconds and refresh — Paystack webhooks can take a moment to process.</span>
+      </div>
+
+    </div>
+  </div>
+
+</body>
 </html>
