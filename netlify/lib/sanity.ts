@@ -17,7 +17,9 @@ export async function getJob(jobId: string) {
 }
 `;
 
-  const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+  const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(
+    query
+  )}`;
 
   const res = await fetch(url);
 
@@ -46,7 +48,48 @@ export async function getJobBySlug(slug: string) {
 }
 `;
 
-  const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+  const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(
+    query
+  )}`;
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Sanity fetch failed");
+  }
+
+  const json = await res.json();
+  return json.result;
+}
+
+/**
+ * NEW: Get bursary by slug (for /bursary/<slug> Open Graph)
+ * Matches your schema:
+ * - name
+ * - provider
+ * - faculty
+ * - deadline
+ * - description
+ * - providerLogo (image) => providerLogo.asset->url
+ */
+export async function getBursaryBySlug(slug: string) {
+  const query = `
+*[_type == "bursary" && slug.current == "${slug}"][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  provider,
+  faculty,
+  deadline,
+  description,
+  "providerLogoUrl": providerLogo.asset->url,
+  applicationLink
+}
+`;
+
+  const url = `https://${PROJECT_ID}.api.sanity.io/v2023-08-01/data/query/${DATASET}?query=${encodeURIComponent(
+    query
+  )}`;
 
   const res = await fetch(url);
 
