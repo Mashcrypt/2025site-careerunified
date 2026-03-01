@@ -6,14 +6,12 @@
 # CV GENERATOR (NO REDIRECT LOOPS)
 # ================================
 
-# Old page -> new route
 [[redirects]]
   from = "/cv-generator.html"
   to = "/cv-generator"
   status = 301
   force = true
 
-# Serve the Vite app for BOTH /cv-generator and /cv-generator/
 [[redirects]]
   from = "/cv-generator"
   to = "/cv-generator/index.html"
@@ -28,12 +26,10 @@
 # JOBS (Edge Function + SPA)
 # ================================
 
-# Run the Edge Function for ALL job slugs (Open Graph)
 [[edge_functions]]
   function = "job"
   path = "/jobs/*"
 
-# Always serve your main SPA jobs page for any /jobs/<slug>
 [[redirects]]
   from = "/jobs/*"
   to = "/jobs.html"
@@ -43,13 +39,19 @@
 # ================================
 # BURSARIES (Edge Function + SPA)
 # ================================
+# STEP 3 IMPLEMENTED:
+# - Edge function path must match the slug route you SHARE on WhatsApp
+# - And the function name must match the edge function filename
+#   netlify/edge-functions/bursary-og.ts  => function = "bursary-og"
+# - Use /bursary/* so it catches /bursary/<slug> (NOT just /bursary?slug=...)
 
 [[edge_functions]]
-  function = "bursaryog"
-  path = "/bursary*"
+  function = "bursary-og"
+  path = "/bursary/*"
 
+# Humans always land on bursaries.html (SPA), keeping the same pretty URL
 [[redirects]]
-  from = "/bursary*"
+  from = "/bursary/*"
   to = "/bursaries.html"
   status = 200
   force = true
