@@ -601,11 +601,6 @@
 
     /* ======================================================= */
     /* MOBILE — max-width: 900px                               */
-    /*                                                         */
-    /* THE PROVEN PATTERN:                                     */
-    /* • bursaries-preview = the ONE scroll container (70vh)  */
-    /* • description-content = overflow visible, flows freely  */
-    /* • No nested scroll traps, touch goes straight to panel  */
     /* ======================================================= */
     @media (max-width: 900px) {
 
@@ -628,24 +623,17 @@
         width: 100%;
       }
 
-      /* Left panel — unconstrained, normal page flow */
       .bursaries-left {
         max-height: none;
         overflow-y: visible;
         padding-right: 0;
       }
 
-      /* ─────────────────────────────────────────────────────
-         THE KEY FIX:
-         bursaries-preview is the single scroll container.
-         It has a height cap and overflow-y: auto.
-         Everything inside flows naturally within it.
-         ───────────────────────────────────────────────────── */
       .bursaries-preview {
         position: static;
-        display: block;           /* exit flex so height is natural   */
-        max-height: 70vh;         /* cap so it doesn't fill the screen */
-        overflow-y: auto;         /* THIS is the one scroll container  */
+        display: block;
+        max-height: 70vh;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
         padding: 20px;
@@ -653,28 +641,24 @@
         overflow-x: hidden;
       }
 
-      /* Slide wrapper — natural height, no flex stretching */
       .preview-slide {
         display: block;
         height: auto;
         min-height: 0;
       }
 
-      /* Provider row — no flex-shrink issues */
       .provider-row {
         flex-shrink: 0;
       }
 
-      /* Content wrapper — natural height */
       .preview-content-wrapper {
         display: block;
         height: auto;
         min-height: 0;
       }
 
-      /* Description — full natural height, NO independent scroll */
       .bursaries-preview .description-content {
-        overflow-y: visible;      /* let it flow, parent panel scrolls */
+        overflow-y: visible;
         max-height: none;
         min-height: 0;
         flex: none;
@@ -684,7 +668,6 @@
         -webkit-overflow-scrolling: auto;
       }
 
-      /* Apply button — full width */
       .apply-btn {
         display: block;
         width: 100%;
@@ -694,34 +677,26 @@
         margin-top: 4px;
       }
 
-      /* Filter */
       .filter         { margin-bottom: 16px; }
       .filter select  { padding: 14px 16px; font-size: 16px; }
 
-      /* Cards */
       .bursary-card        { padding: 14px; }
       .bursary-card strong { font-size: 1rem; }
       .bursary-card p      { font-size: 0.85rem; }
 
-      /* Preview text */
       .bursaries-preview h2 { font-size: 1.25rem; }
       .bursaries-preview p  { font-size: 0.9rem; }
 
       .close-preview-btn svg { width: 24px; height: 24px; }
 
-      /* Footer */
       .footer-links   { flex-direction: column; gap: 8px; }
       .footer-links a { font-size: 14px; }
 
-      /* Scroll buttons */
       .scroll-btn { width: 44px; height: 44px; font-size: 20px; right: 16px; }
       #scrollUp   { bottom: 80px; }
       #scrollDown { bottom: 24px; }
     }
 
-    /* =============================== */
-    /* MOBILE — max-width: 400px       */
-    /* =============================== */
     @media (max-width: 400px) {
       header h1              { font-size: 1.75rem; }
       .bursary-card strong   { font-size: 0.95rem; }
@@ -868,6 +843,12 @@
        =============================================================== */
 
     const BURSARY_SHARE_BASE = "https://careerunified.com/bursary";
+
+    /* =============================== */
+    /* ✅ STEP 2: AUTO-OPEN FROM SHARE */
+    /* =============================== */
+    const __urlParams = new URLSearchParams(window.location.search);
+    const __incomingSlug = (__urlParams.get('slug') || '').trim();
 
     /* =============================== */
     /* NAV — Mobile Menu               */
@@ -1199,6 +1180,30 @@
         injectBursarySchema();
         populateFacultyFilter();
         renderBursaries();
+
+        /* ==========================================================
+           ✅ STEP 2: AUTO-OPEN FROM SHARE LINK
+           - If user lands on /bursaries.html?slug=...
+           - Open that bursary in the preview panel automatically
+           - Keep logic intact (only sets selectedIndex + calls showPreview/render)
+           ========================================================== */
+        if (__incomingSlug) {
+          const idx = bursaries.findIndex(b => {
+            const s = (b?.slug?.current || b?.slug || '').toString();
+            return s === __incomingSlug;
+          });
+
+          if (idx >= 0) {
+            selectedIndex = idx;
+            showPreview(bursaries[idx], 'left');
+            renderBursaries(facultyFilter.value);
+
+            if (window.innerWidth <= 900) {
+              bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }
+
       } catch (err) {
         console.error('Sanity failed — using cache', err);
       }
@@ -1364,11 +1369,9 @@
           </div>
         </div>`;
 
-      /* Wire share button after render */
       const shareBtn = document.getElementById('shareBtn');
       if (shareBtn) shareBtn.onclick = () => copyToClipboard(shareUrl);
 
-      /* Update OG meta for JS-aware crawlers */
       const ogLogo = getProviderLogoOgUrl(b) || 'https://careerunified.com/android-chrome-512x512.png';
       setMeta('og:title',            safeText(b.name, 'Bursary – Career Unified'));
       setMeta('og:description',      safeText(b.description, '').substring(0, 150) || 'Bursary opportunity on Career Unified.');
@@ -1431,7 +1434,7 @@
 
     const last = localStorage.getItem(BURSARY_CACHE_TIME);
     if (!last || Date.now() - last > CACHE_TTL) fetchBursaries();
-    else fetchBursaries(); // always background refresh
+    else fetchBursaries();
 
     setInterval(fetchBursaries, 5 * 60 * 1000);
 
@@ -1451,7 +1454,6 @@
       if (!e.target.closest('#bursaryPreview')) return;
       const dx = e.changedTouches[0].screenX - touchStartX;
       const dy = e.changedTouches[0].screenY - touchStartY;
-      /* Only fire for clear horizontal swipes */
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
         if (dx < 0) goToNextBursary();
         else        goToPreviousBursary();
@@ -1494,6 +1496,7 @@
 
 </body>
 </html>
+
 
 
 
