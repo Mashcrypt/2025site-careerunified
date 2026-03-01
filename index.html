@@ -325,7 +325,9 @@ function getBadge(job) {
 }
 
 /* ===============================
-   RECENT JOBS (LOGIC UNCHANGED)
+   RECENT JOBS (FIXED)
+   - Fix [object Object] by fetching company->name
+   - Fix click-open by linking with ?slug= (jobs.html expects slug)
 ================================ */
 
 const homeJobList = document.getElementById('homeJobList');
@@ -341,8 +343,13 @@ async function renderRecentJobs() {
 
   // 2️⃣ Fetch fresh jobs in background
   let jobs = await window.sanityClient.fetch(`*[_type=="job"] | order(posted desc){
+    _id,
     title,
-    company,
+    "slug": slug.current,
+    company->{
+      name,
+      logo
+    },
     location,
     category,
     posted,
@@ -357,7 +364,7 @@ async function renderRecentJobs() {
   // 4️⃣ Render updated data
   renderJobsUI(jobs);
 }
-  
+
 function renderJobsUI(jobs) {
   statJobs.innerText = jobs.length + '+';
 
@@ -375,8 +382,17 @@ function renderJobsUI(jobs) {
     const isUrgent = (deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7;
     const badge = getBadge(job);
 
+    // ✅ Company name fix (prevents [object Object])
+    const companyName =
+      (job.company && typeof job.company === 'object' && job.company.name)
+        ? job.company.name
+        : (typeof job.company === 'string' ? job.company : '');
+
+    // ✅ Open job fix: jobs.html reads ?slug=
+    const jobSlug = (typeof job.slug === 'string' && job.slug.trim()) ? job.slug.trim() : '';
+
     const card = document.createElement('a');
-    card.href = "jobs.html?job=" + encodeURIComponent(job.title);
+    card.href = "jobs.html?slug=" + encodeURIComponent(jobSlug);
     card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
     card.style.textDecoration = "none";
     card.style.color = "inherit";
@@ -387,7 +403,7 @@ function renderJobsUI(jobs) {
         <span class="badge">${job.category}</span>
         ${badge ? `<span class="badge-sponsored">${badge}</span>` : ''}
       </h3>
-      <p class="company">${job.company || 'Confidential'}</p>
+      <p class="company">${companyName || 'Confidential'}</p>
       <p>${job.location}</p>
       <p class="meta">
         Posted: ${job.posted} • Closing: ${job.deadline}
@@ -399,8 +415,8 @@ function renderJobsUI(jobs) {
   });
 }
 
-
 renderRecentJobs();
+
 const statBursaries = document.getElementById("statBursaries");
 const statVarsity = document.getElementById("statVarsity");
 
@@ -469,6 +485,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
