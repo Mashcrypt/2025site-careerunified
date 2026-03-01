@@ -2,29 +2,30 @@
 
 export async function handler(event) {
   try {
+    const headers = corsHeaders(event.headers?.origin);
+
+    // Preflight
     if (event.httpMethod === "OPTIONS") {
-      return {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-        },
-        body: "",
-      };
+      return { statusCode: 200, headers, body: "" };
     }
 
     if (event.httpMethod !== "POST") {
-      return json(405, { status: false, message: "Method not allowed" });
+      return json(405, { status: false, message: "Method not allowed" }, headers);
     }
 
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
-      return json(500, { status: false, message: "Missing PAYSTACK_SECRET_KEY" });
+      return json(500, { status: false, message: "Missing PAYSTACK_SECRET_KEY" }, headers);
     }
 
-    const body = JSON.parse(event.body || "{}");
-    const { plan, recruiterId, email, callbackUrl } = body;
+    let body;
+    try {
+      body = JSON.parse(event.body || "{}");
+    } catch {
+      return json(400, { status: false, message: "Invalid JSON body" }, headers);
+    }
+
+    const { plan, recruiterId, email, callbackUrl } = body || {};
 
     const PLAN_CONFIG = {
       starter: { amountZAR: 299, unlocks: 50 },
@@ -33,29 +34,35 @@ export async function handler(event) {
     };
 
     if (!PLAN_CONFIG[plan]) {
-      return json(400, { status: false, message: "Invalid plan" });
+      return json(400, { status: false, message: "Invalid plan" }, headers);
     }
     if (!email || !recruiterId) {
-      return json(400, { status: false, message: "Missing email or recruiterId" });
+      return json(400, { status: false, message: "Missing email or recruiterId" }, headers);
     }
 
     const amount = Math.round(Number(PLAN_CONFIG[plan].amountZAR) * 100); // ZAR cents
-    if (!amount || amount < 100) {
-      return json(400, { status: false, message: "Invalid amount" });
+    if (!Number.isFinite(amount) || amount < 100) {
+      return json(400, { status: false, message: "Invalid amount" }, headers);
     }
 
-    // Metadata is how we "remember" what this payment is for
+    // Safe callback fallback (must be a URL)
+    const safeCallbackUrl =
+      typeof callbackUrl === "string" && callbackUrl.trim()
+        ? callbackUrl.trim()
+        : "https://careerunified.com/recruiter-dashboard.html";
+
+    // Metadata is how we remember what this payment is for
     const payload = {
       email,
-      amount: String(amount),
+      amount, // Paystack accepts integer subunit amount
       currency: "ZAR",
-      callback_url: callbackUrl,
+      callback_url: safeCallbackUrl,
       metadata: {
         recruiterId,
         plan,
         unlocks: PLAN_CONFIG[plan].unlocks,
-        product: "Career Unified Recruiter Subscription"
-      }
+        product: "Career Unified Recruiter Subscription",
+      },
     };
 
     const resp = await fetch("https://api.paystack.co/transaction/initialize", {
@@ -67,30 +74,42 @@ export async function handler(event) {
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json();
+    const data = await resp.json().catch(() => null);
 
     if (!resp.ok || !data?.status) {
       return json(resp.status || 400, {
         status: false,
         message: data?.message || "Paystack initialize failed",
-        error: data,
-      });
+        error: data || null,
+      }, headers);
     }
 
-    return json(200, data);
-
+    return json(200, data, headers);
   } catch (err) {
-    return json(500, { status: false, message: "Server error", error: String(err) });
+    const headers = corsHeaders();
+    return json(
+      500,
+      { status: false, message: "Server error", error: String(err?.message || err) },
+      headers
+    );
   }
 }
 
-function json(statusCode, body) {
+function corsHeaders(origin) {
+  // If you want to lock this down later, replace "*" with your domain.
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    "Content-Type": "application/json",
+  };
+}
+
+function json(statusCode, body, headers) {
   return {
     statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+    headers: headers || corsHeaders(),
     body: JSON.stringify(body),
   };
 }
