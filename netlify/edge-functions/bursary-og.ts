@@ -1,150 +1,159 @@
-export default async (request: Request) => {
-  const url = new URL(request.url);
+// netlify/edge-functions/bursary-og.ts
 
-  // ✅ Works for:
-  // /bursary?slug=testing-bursary
-  // /bursary/testing-bursary (optional)
-  const qsSlug = url.searchParams.get("slug")?.trim();
-  const pathSlug = url.pathname.split("/").filter(Boolean).pop();
-  const slug = qsSlug || (pathSlug && pathSlug !== "bursary" ? pathSlug : "");
+function escapeAttr(str: string) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
-  if (!slug) return new Response("Missing slug", { status: 400 });
+function snippet(text: string, maxLen = 140) {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (cleaned.length <= maxLen) return cleaned;
+  return cleaned.slice(0, maxLen - 1).trim() + "…";
+}
 
-  const projectId = Deno.env.get("SANITY_PROJECT_ID")!;
-  const dataset = Deno.env.get("SANITY_DATASET")!;
+// Detect social media bots / link preview scrapers
+function isSocialCrawler(ua: string) {
+  const s = (ua || "").toLowerCase();
+  return (
+    s.includes("whatsapp") ||
+    s.includes("facebookexternalhit") ||
+    s.includes("facebot") ||
+    s.includes("twitterbot") ||
+    s.includes("telegrambot") ||
+    s.includes("slackbot") ||
+    s.includes("discordbot") ||
+    s.includes("linkedinbot") ||
+    s.includes("pinterest") ||
+    s.includes("googlebot") ||
+    s.includes("bingbot")
+  );
+}
+
+type Bursary = {
+  name?: string;
+  description?: string;
+  provider?: string;
+  faculty?: string;
+  deadline?: string;
+  slug?: string;
+  providerLogoUrl?: string | null;
+};
+
+async function getBursaryBySlug(slug: string): Promise<Bursary | null> {
+  const projectId = Deno.env.get("SANITY_PROJECT_ID");
+  const dataset = Deno.env.get("SANITY_DATASET");
   const apiVersion = Deno.env.get("SANITY_API_VERSION") || "2024-01-01";
+  const token = Deno.env.get("SANITY_READ_TOKEN"); // optional (only needed if dataset is private)
+
+  if (!projectId || !dataset) return null;
 
   const groq = `*[_type=="bursary" && slug.current==$slug][0]{
     name,
     description,
-    "slug": slug.current,
     provider,
     faculty,
     deadline,
-    applicationLink,
-    "logoRef": providerLogo.asset->_ref
+    "slug": slug.current,
+    "providerLogoUrl": providerLogo.asset->url
   }`;
 
-  const params = encodeURIComponent(JSON.stringify({ slug }));
   const query = encodeURIComponent(groq);
+  const params = encodeURIComponent(JSON.stringify({ slug }));
 
-  const sanityUrl =
-    `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${query}&$params=${params}`;
+  const sanityUrl = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${query}&$params=${params}`;
 
-  let data: any = null;
-  try {
-    const res = await fetch(sanityUrl);
-    const json = await res.json();
-    data = json?.result || null;
-  } catch {
-    data = null;
-  }
-
-  // If not found, still return an OG page (better than redirect for crawlers)
-  if (!data) {
-    const fallbackHtml = buildHtml({
-      title: "Bursaries & Scholarships South Africa – Career Unified",
-      desc: "Discover bursaries, scholarships, and funding opportunities for students in South Africa.",
-      ogUrl: `https://careerunified.com/bursary?slug=${encodeURIComponent(slug)}`,
-      ogImage: "https://careerunified.com/images/social-share-bursaries.png",
-      redirectTo: `https://careerunified.com/bursaries.html?slug=${encodeURIComponent(slug)}`
-    });
-
-    return new Response(fallbackHtml, {
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
-  }
-
-  const title = `${data.name} – Career Unified`;
-  const desc = (data.description || "").toString().slice(0, 160);
-
-  // ✅ Make og:url match the shared URL
-  const ogUrl = `https://careerunified.com/bursary?slug=${encodeURIComponent(data.slug)}`;
-
-  // ✅ Build a 1200x630 Sanity CDN image if we have an asset ref
-  const ogImage =
-    sanityRefToOgImageUrl(data.logoRef, projectId, dataset) ||
-    "https://careerunified.com/images/social-share-bursaries.png";
-
-  // Humans land here (your SPA page)
-  const redirectTo = `https://careerunified.com/bursaries.html?slug=${encodeURIComponent(data.slug)}`;
-
-  const html = buildHtml({ title, desc, ogUrl, ogImage, redirectTo });
-
-  return new Response(html, {
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      // During testing, avoid WhatsApp caching old previews
-      "cache-control": "no-store",
-    },
+  const res = await fetch(sanityUrl, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined
   });
-};
 
-function buildHtml(opts: {
-  title: string;
-  desc: string;
-  ogUrl: string;
-  ogImage: string;
-  redirectTo: string;
-}) {
-  const { title, desc, ogUrl, ogImage, redirectTo } = opts;
+  if (!res.ok) return null;
 
-  return `<!doctype html>
+  const json = await res.json();
+  return (json?.result as Bursary) || null;
+}
+
+export default async (request: Request) => {
+  try {
+    const url = new URL(request.url);
+
+    // /bursary/<slug>
+    const parts = url.pathname.split("/").filter(Boolean);
+    const slug = parts.length >= 2 ? parts[1] : null;
+
+    // If someone hits /bursary or /bursary/ with no slug, just let Netlify serve normally
+    if (!slug || slug === "bursary") return fetch(request);
+
+    // Humans land in SPA (your preview panel will auto-open using ?slug=)
+    const redirectTo = `/bursaries.html?slug=${encodeURIComponent(slug)}`;
+
+    const ua = request.headers.get("user-agent") || "";
+
+    // ✅ Humans: do a REAL redirect = no flash
+    if (!isSocialCrawler(ua)) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: redirectTo,
+          "cache-control": "no-store"
+        }
+      });
+    }
+
+    // ✅ Crawlers: return OG HTML so WhatsApp preview works
+    const bursary = await getBursaryBySlug(slug);
+    if (!bursary) return fetch(request);
+
+    const bursaryName = bursary.name || "Bursary Opportunity";
+    const providerName = bursary.provider || "Provider";
+    const facultyText = bursary.faculty ? ` • ${bursary.faculty}` : "";
+    const deadlineText = bursary.deadline ? ` • Deadline: ${bursary.deadline}` : "";
+
+    const shareUrl = `https://careerunified.com/bursary/${slug}`;
+
+    const image =
+      bursary.providerLogoUrl ||
+      "https://careerunified.com/android-chrome-512x512.png";
+
+    const desc = snippet(bursary.description || "", 140);
+
+    const ogTitle = `${bursaryName} – Career Unified`;
+    const ogDescription = `${providerName}${facultyText}${deadlineText}${desc ? " • " + desc : ""}`.trim();
+
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>${escapeHtml(title)}</title>
+  <meta charset="UTF-8" />
+  <title>${escapeAttr(ogTitle)}</title>
+  <meta name="description" content="${escapeAttr(ogDescription)}" />
 
-<meta name="description" content="${escapeHtml(desc)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Career Unified" />
+  <meta property="og:title" content="${escapeAttr(ogTitle)}" />
+  <meta property="og:description" content="${escapeAttr(ogDescription)}" />
+  <meta property="og:image" content="${escapeAttr(image)}" />
+  <meta property="og:url" content="${escapeAttr(shareUrl)}" />
 
-<meta property="og:site_name" content="Career Unified" />
-<meta property="og:title" content="${escapeHtml(title)}" />
-<meta property="og:description" content="${escapeHtml(desc)}" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="${escapeHtml(ogUrl)}" />
-
-<meta property="og:image" content="${escapeHtml(ogImage)}" />
-<meta property="og:image:secure_url" content="${escapeHtml(ogImage)}" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="${escapeHtml(title)}" />
-<meta name="twitter:description" content="${escapeHtml(desc)}" />
-<meta name="twitter:image" content="${escapeHtml(ogImage)}" />
-
-<meta http-equiv="refresh" content="0; url=${escapeHtml(redirectTo)}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeAttr(ogTitle)}" />
+  <meta name="twitter:description" content="${escapeAttr(ogDescription)}" />
+  <meta name="twitter:image" content="${escapeAttr(image)}" />
 </head>
 <body>
-<script>location.replace(${JSON.stringify(redirectTo)})</script>
+  <h1>${escapeAttr(bursaryName)}</h1>
+  <p>${escapeAttr(providerName)}</p>
 </body>
 </html>`;
-}
 
-// Converts Sanity image asset ref -> 1200x630 CDN URL
-// ref looks like: "image-<assetId>-<w>x<h>-<format>"
-function sanityRefToOgImageUrl(ref: string | null | undefined, projectId: string, dataset: string) {
-  if (!ref || typeof ref !== "string") return "";
-  if (!ref.startsWith("image-")) return "";
-
-  const parts = ref.split("-");
-  const assetId = parts[1];
-  const format = parts[3] || "png";
-  if (!assetId) return "";
-
-  // ✅ 1200x630 is best for WhatsApp previews
-  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${assetId}-1200x630.${format}`;
-}
-
-function escapeHtml(s: string) {
-  return String(s)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+    return new Response(html, {
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store"
+      }
+    });
+  } catch {
+    return new Response("Edge function error", { status: 500 });
+  }
+};
