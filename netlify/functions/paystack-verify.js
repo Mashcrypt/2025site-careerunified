@@ -1,12 +1,40 @@
 // netlify/functions/paystack-verify.js
 
-export async function handler(event) {
-  try {
-    const headers = corsHeaders(event.headers?.origin);
+import { getAdmin } from "./_firebaseAdmin";
 
+export async function handler(event) {
+  const headers = corsHeaders(event.headers?.origin);
+
+  try {
     // Preflight
     if (event.httpMethod === "OPTIONS") {
       return { statusCode: 200, headers, body: "" };
+    }
+
+    // Require auth (Firebase ID token)
+    const authHeader =
+      event.headers?.authorization || event.headers?.Authorization || "";
+    const tokenMatch = String(authHeader).match(/^Bearer\s+(.+)$/i);
+    const idToken = tokenMatch?.[1];
+
+    if (!idToken) {
+      return json(
+        401,
+        { status: false, message: "Missing Authorization Bearer token" },
+        headers
+      );
+    }
+
+    const admin = getAdmin();
+    const decoded = await admin.auth().verifyIdToken(idToken);
+
+    if (!decoded?.uid) {
+      return json(401, { status: false, message: "Invalid token" }, headers);
+    }
+
+    // Must be recruiter
+    if (decoded.recruiter !== true) {
+      return json(403, { status: false, message: "Recruiter access only" }, headers);
     }
 
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -30,38 +58,41 @@ export async function handler(event) {
       return json(400, { status: false, message: "Missing reference" }, headers);
     }
 
+    // Verify with Paystack
     const resp = await fetch(
       `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
       {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${secretKey}`,
-        },
+        headers: { Authorization: `Bearer ${secretKey}` },
       }
     );
 
     const data = await resp.json().catch(() => null);
 
     if (!resp.ok || !data?.status) {
-      return json(resp.status || 400, {
-        status: false,
-        message: data?.message || "Paystack verify failed",
-        error: data || null,
-      }, headers);
+      return json(
+        resp.status || 400,
+        {
+          status: false,
+          message: data?.message || "Paystack verify failed",
+          error: data || null,
+        },
+        headers
+      );
     }
 
     const tx = data.data;
 
     // Must be success before delivering value
     if (String(tx.status || "").toLowerCase() !== "success") {
-      return json(200, {
-        status: false,
-        message: `Transaction not successful (${tx.status})`,
-        data: tx,
-      }, headers);
+      return json(
+        200,
+        { status: false, message: `Transaction not successful (${tx.status})`, data: tx },
+        headers
+      );
     }
 
-    // Validate metadata (what plan is being purchased)
+    // Read metadata
     const plan = tx.metadata?.plan;
     const recruiterId = tx.metadata?.recruiterId;
 
@@ -72,19 +103,28 @@ export async function handler(event) {
     };
 
     if (!PLAN_CONFIG[plan]) {
-      return json(200, {
-        status: false,
-        message: "Verified payment but metadata.plan is invalid",
-        data: tx,
-      }, headers);
+      return json(
+        200,
+        { status: false, message: "Verified payment but metadata.plan is invalid", data: tx },
+        headers
+      );
     }
 
     if (!recruiterId) {
-      return json(200, {
-        status: false,
-        message: "Verified payment but metadata.recruiterId is missing",
-        data: tx,
-      }, headers);
+      return json(
+        200,
+        { status: false, message: "Verified payment but metadata.recruiterId is missing", data: tx },
+        headers
+      );
+    }
+
+    // ✅ Ensure the caller is the same recruiter in metadata
+    if (String(recruiterId) !== String(decoded.uid)) {
+      return json(
+        403,
+        { status: false, message: "Recruiter mismatch (token uid != metadata recruiterId)" },
+        headers
+      );
     }
 
     // Verify amount & currency to prevent tampering
@@ -96,19 +136,71 @@ export async function handler(event) {
       return json(200, { status: false, message: "Amount mismatch", data: tx }, headers);
     }
 
-    return json(200, {
-      status: true,
-      message: "Verification successful",
-      data: {
+    const db = admin.firestore();
+
+    // ✅ Prevent double-processing (idempotent)
+    const paymentRef = db.collection("paystackPayments").doc(String(tx.reference));
+    const recruiterRef = db.collection("recruiters").doc(String(decoded.uid));
+
+    await db.runTransaction(async (t) => {
+      const existingPay = await t.get(paymentRef);
+      if (existingPay.exists) {
+        // already processed
+        return;
+      }
+
+      const unlocksToSet =
+        plan === "enterprise" ? -1 : PLAN_CONFIG[plan].unlocks;
+
+      // Update recruiter subscription server-side
+      t.set(
+        recruiterRef,
+        {
+          plan,
+          unlocksRemaining: unlocksToSet,
+          totalUnlocks: unlocksToSet,
+          upgradedAt: new Date().toISOString(),
+          lastPaymentRef: tx.reference,
+          lastPaymentVerifiedAt: new Date().toISOString(),
+          paystackCustomer: tx.customer || null,
+          paystackAuthorization: tx.authorization || null,
+        },
+        { merge: true }
+      );
+
+      // Record processed reference (prevents replay)
+      t.set(paymentRef, {
         reference: tx.reference,
+        recruiterId: decoded.uid,
         plan,
-        unlocks: PLAN_CONFIG[plan].unlocks,
-        recruiterId,
+        amount: tx.amount,
+        currency: tx.currency,
+        status: tx.status,
+        paidAt: tx.paid_at || null,
+        createdAt: new Date().toISOString(),
+      });
+    });
+
+    return json(
+      200,
+      {
+        status: true,
+        message: "Verification successful",
+        data: {
+          reference: tx.reference,
+          plan,
+          unlocks: PLAN_CONFIG[plan].unlocks,
+          recruiterId: decoded.uid,
+        },
       },
-    }, headers);
+      headers
+    );
   } catch (err) {
-    const headers = corsHeaders();
-    return json(500, { status: false, message: "Server error", error: String(err) }, headers);
+    return json(
+      500,
+      { status: false, message: "Server error", error: String(err?.message || err) },
+      headers
+    );
   }
 }
 
