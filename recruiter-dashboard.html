@@ -1560,7 +1560,8 @@ async function handlePaystackReturn() {
     // ✅ Fulfill subscription in recruiter doc AFTER verified
     const recruiterRef = doc(db, "recruiters", currentRecruiter.uid);
 
-    const unlocksToSet = plan === "enterprise" ? -1 : (Number(unlocks) || PLAN_CONFIG[plan].unlocks);
+    const unlocksToSet =
+      plan === "enterprise" ? -1 : (Number(unlocks) || PLAN_CONFIG[plan].unlocks);
 
     await updateDoc(recruiterRef, {
       plan,
@@ -1576,7 +1577,7 @@ async function handlePaystackReturn() {
     loadCVs();
 
     if (typeof window.closeModal === "function") window.closeModal();
-    alert(`Payment verified! You are now on the ${PLAN_CONFIG[plan].label} plan.`);
+    alert(` Payment verified! You are now on the ${PLAN_CONFIG[plan].label} plan.`);
   } catch (e) {
     console.error("handlePaystackReturn error:", e);
     if (typeof window.closeModal === "function") window.closeModal();
@@ -1585,67 +1586,6 @@ async function handlePaystackReturn() {
     );
   }
 }
-
-    // ✅ IMPORTANT:
-    // Do NOT update recruiter plan/unlocks here.
-    // Webhook will set plan/unlocks in Firestore.
-    //
-    // We only store lastPaymentRef to avoid repeated verify loops
-    // and refresh recruiter data so UI updates once webhook has run.
-
-    try {
-      const recruiterRef = doc(db, "recruiters", currentRecruiter.uid);
-      await updateDoc(recruiterRef, {
-        lastPaymentRef: reference,
-        lastPaymentVerifiedAt: new Date().toISOString(),
-      });
-    } catch (e) {
-      // not fatal (webhook still fulfills)
-      console.warn("Could not store lastPaymentRef:", e);
-    }
-
-    await loadRecruiterData();
-    updatePlanBadges();
-    loadCVs();
-
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert(
-      ` Payment verified for ${PLAN_CONFIG[plan].label}. Your subscription will activate automatically.`
-    );
-  } catch (e) {
-    console.error("handlePaystackReturn error:", e);
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert(
-      "Could not finalize upgrade. If you were charged, contact support with your reference."
-    );
-  }
-}
-
-    // update recruiter doc (fulfillment)
-    const recruiterRef = doc(db, "recruiters", currentRecruiter.uid);
-
-    await updateDoc(recruiterRef, {
-      plan,
-      unlocksRemaining: unlocks,
-      totalUnlocks: unlocks,
-      upgradedAt: new Date().toISOString(),
-      lastPaymentRef: reference
-    });
-
-    // reload + refresh UI
-    await loadRecruiterData();
-    updatePlanBadges();
-    loadCVs();
-
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert(`✅ Payment verified! You are now on the ${PLAN_CONFIG[plan].label} plan.`);
-  } catch (e) {
-    console.error("handlePaystackReturn error:", e);
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert("Could not finalize upgrade. If you were charged, contact support with your reference.");
-  }
-}
-
 /* ======================================================
    COMPANY PROFILE (NEW)
 ====================================================== */
