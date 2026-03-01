@@ -1,6 +1,12 @@
 export default async (request: Request, context: any) => {
   const url = new URL(request.url);
-  const slug = url.pathname.split("/").filter(Boolean).pop();
+
+  // ✅ SUPPORT BOTH:
+  // 1) /bursary?slug=xxx  (your current share links)
+  // 2) /bursary/xxx       (optional)
+  const qsSlug = url.searchParams.get("slug")?.trim();
+  const pathSlug = url.pathname.split("/").filter(Boolean).pop();
+  const slug = qsSlug || (pathSlug && pathSlug !== "bursary" ? pathSlug : "");
 
   if (!slug) return new Response("Missing slug", { status: 400 });
 
@@ -9,7 +15,6 @@ export default async (request: Request, context: any) => {
   const dataset = Deno.env.get("SANITY_DATASET")!;
   const apiVersion = Deno.env.get("SANITY_API_VERSION") || "2024-01-01";
 
-  // Public CDN query (works if your dataset is public readable)
   const groq = `*[_type=="bursary" && slug.current==$slug][0]{
     name,
     description,
@@ -43,7 +48,10 @@ export default async (request: Request, context: any) => {
 
   const title = `${data.name} – Career Unified`;
   const desc = (data.description || "").toString().slice(0, 160);
-  const ogUrl = `https://careerunified.com/bursaries/${data.slug}`;
+
+  // ✅ Make og:url match the shared URL format
+  const ogUrl = `https://careerunified.com/bursary?slug=${encodeURIComponent(data.slug)}`;
+
   const ogImage =
     data.logo ||
     "https://careerunified.com/images/social-share-bursaries.png";
@@ -60,11 +68,14 @@ export default async (request: Request, context: any) => {
 
 <meta name="description" content="${escapeHtml(desc)}" />
 
+<meta property="og:site_name" content="Career Unified" />
 <meta property="og:title" content="${escapeHtml(title)}" />
 <meta property="og:description" content="${escapeHtml(desc)}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${ogUrl}" />
 <meta property="og:image" content="${ogImage}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeHtml(title)}" />
@@ -81,7 +92,8 @@ export default async (request: Request, context: any) => {
   return new Response(html, {
     headers: {
       "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=300",
+      // During testing WhatsApp caching can be painful; you can switch back later.
+      "cache-control": "no-store",
     },
   });
 };
