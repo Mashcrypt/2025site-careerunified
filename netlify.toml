@@ -41,12 +41,16 @@
   force = true
 
 # ================================
-# BURSARIES
+# BURSARIES (Edge Function + SPA)
 # ================================
 
+[[edge_functions]]
+  function = "bursaryog"
+  path = "/bursary*"
+
 [[redirects]]
-  from = "/bursary/:slug"
-  to = "/bursary/[slug].html"
+  from = "/bursary*"
+  to = "/bursaries.html"
   status = 200
   force = true
 
