@@ -27,10 +27,11 @@ export async function handler(event) {
 
     const { plan, recruiterId, email, callbackUrl } = body || {};
 
+    // ✅ Use Paystack Plan Codes (recurring subscriptions)
     const PLAN_CONFIG = {
-      starter: { amountZAR: 299, unlocks: 50 },
-      pro: { amountZAR: 699, unlocks: 200 },
-      enterprise: { amountZAR: 1499, unlocks: -1 },
+      starter: { planCode: "PLN_gzu62x76jlk46ea", unlocks: 50 },
+      pro: { planCode: "PLN_sbhnn6dc1fb2lvb", unlocks: 200 },
+      enterprise: { planCode: "PLN_svkkopjlfaq8f3q", unlocks: -1 },
     };
 
     if (!PLAN_CONFIG[plan]) {
@@ -40,26 +41,20 @@ export async function handler(event) {
       return json(400, { status: false, message: "Missing email or recruiterId" }, headers);
     }
 
-    const amount = Math.round(Number(PLAN_CONFIG[plan].amountZAR) * 100); // ZAR cents
-    if (!Number.isFinite(amount) || amount < 100) {
-      return json(400, { status: false, message: "Invalid amount" }, headers);
-    }
-
     // Safe callback fallback (must be a URL)
     const safeCallbackUrl =
       typeof callbackUrl === "string" && callbackUrl.trim()
         ? callbackUrl.trim()
         : "https://careerunified.com/recruiter-dashboard.html";
 
-    // Metadata is how we remember what this payment is for
+    // ✅ Subscription init payload: send `plan` (plan code), NOT `amount`
     const payload = {
       email,
-      amount, // Paystack accepts integer subunit amount
-      currency: "ZAR",
+      plan: PLAN_CONFIG[plan].planCode,
       callback_url: safeCallbackUrl,
       metadata: {
         recruiterId,
-        plan,
+        plan, // keep your internal plan name too
         unlocks: PLAN_CONFIG[plan].unlocks,
         product: "Career Unified Recruiter Subscription",
       },
@@ -77,11 +72,15 @@ export async function handler(event) {
     const data = await resp.json().catch(() => null);
 
     if (!resp.ok || !data?.status) {
-      return json(resp.status || 400, {
-        status: false,
-        message: data?.message || "Paystack initialize failed",
-        error: data || null,
-      }, headers);
+      return json(
+        resp.status || 400,
+        {
+          status: false,
+          message: data?.message || "Paystack initialize failed",
+          error: data || null,
+        },
+        headers
+      );
     }
 
     return json(200, data, headers);
