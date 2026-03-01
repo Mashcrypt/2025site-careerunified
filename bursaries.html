@@ -842,13 +842,29 @@
        BURSARIES PAGE
        =============================================================== */
 
+    // ✅ Step 3 compatibility: share links must be /bursary/<slug>
     const BURSARY_SHARE_BASE = "https://careerunified.com/bursary";
 
     /* =============================== */
-    /* ✅ STEP 2: AUTO-OPEN FROM SHARE */
+    /* ✅ AUTO-OPEN FROM SHARE (Step 2/3)
+       Supports BOTH:
+       - /bursaries.html?slug=abc
+       - /bursary/abc   (Netlify serves bursaries.html but URL path stays /bursary/abc)
     /* =============================== */
     const __urlParams = new URLSearchParams(window.location.search);
-    const __incomingSlug = (__urlParams.get('slug') || '').trim();
+    const __incomingSlugFromQuery = (__urlParams.get('slug') || '').trim();
+
+    function __getSlugFromPathname() {
+      try {
+        const p = (window.location.pathname || '').replace(/\/+$/, '');
+        // Match /bursary/<slug>
+        const parts = p.split('/').filter(Boolean);
+        if (parts.length >= 2 && parts[0] === 'bursary') return (parts[1] || '').trim();
+        return '';
+      } catch { return ''; }
+    }
+
+    const __incomingSlug = __incomingSlugFromQuery || __getSlugFromPathname();
 
     /* =============================== */
     /* NAV — Mobile Menu               */
@@ -1047,8 +1063,9 @@
       } catch { return ''; }
     }
 
+    // ✅ Step 3: pretty share URL used by WhatsApp, handled by Edge Function at /bursary/*
     function makeShareUrl(b) {
-      return `${BURSARY_SHARE_BASE}?slug=${encodeURIComponent(getSlugValue(b))}`;
+      return `${BURSARY_SHARE_BASE}/${encodeURIComponent(getSlugValue(b))}`;
     }
 
     async function copyToClipboard(text) {
@@ -1182,10 +1199,9 @@
         renderBursaries();
 
         /* ==========================================================
-           ✅ STEP 2: AUTO-OPEN FROM SHARE LINK
-           - If user lands on /bursaries.html?slug=...
-           - Open that bursary in the preview panel automatically
-           - Keep logic intact (only sets selectedIndex + calls showPreview/render)
+           ✅ AUTO-OPEN FROM SHARE LINK
+           - Works for /bursaries.html?slug=...
+           - Works for /bursary/<slug> (Step 3 routing)
            ========================================================== */
         if (__incomingSlug) {
           const idx = bursaries.findIndex(b => {
@@ -1372,6 +1388,7 @@
       const shareBtn = document.getElementById('shareBtn');
       if (shareBtn) shareBtn.onclick = () => copyToClipboard(shareUrl);
 
+      // JS meta updates help some crawlers, but WhatsApp relies on your Edge Function HTML.
       const ogLogo = getProviderLogoOgUrl(b) || 'https://careerunified.com/android-chrome-512x512.png';
       setMeta('og:title',            safeText(b.name, 'Bursary – Career Unified'));
       setMeta('og:description',      safeText(b.description, '').substring(0, 150) || 'Bursary opportunity on Career Unified.');
@@ -1485,17 +1502,18 @@
     const down = document.getElementById('scrollDown');
 
     window.addEventListener('scroll', () => {
-      const show        = window.scrollY > 300 ? 'block' : 'none';
-      up.style.display  = show;
+      const show         = window.scrollY > 300 ? 'block' : 'none';
+      up.style.display   = show;
       down.style.display = show;
     });
 
-    up.onclick   = () => window.scrollTo({ top: 0,                        behavior: 'smooth' });
+    up.onclick   = () => window.scrollTo({ top: 0,                         behavior: 'smooth' });
     down.onclick = () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   </script>
 
 </body>
 </html>
+
 
 
 
