@@ -2,46 +2,68 @@
 
 export async function handler(event) {
   try {
+    const headers = corsHeaders(event.headers?.origin);
+
+    // Preflight
+    if (event.httpMethod === "OPTIONS") {
+      return { statusCode: 200, headers, body: "" };
+    }
+
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
-      return json(500, { status: false, message: "Missing PAYSTACK_SECRET_KEY" });
+      return json(500, { status: false, message: "Missing PAYSTACK_SECRET_KEY" }, headers);
     }
 
-    const reference =
-      event.queryStringParameters?.reference ||
-      (event.body ? JSON.parse(event.body).reference : null);
+    // Accept reference from querystring (GET) or JSON body (POST)
+    let reference = event.queryStringParameters?.reference || null;
+
+    if (!reference && event.body) {
+      try {
+        const parsed = JSON.parse(event.body);
+        reference = parsed?.reference || null;
+      } catch {
+        return json(400, { status: false, message: "Invalid JSON body" }, headers);
+      }
+    }
 
     if (!reference) {
-      return json(400, { status: false, message: "Missing reference" });
+      return json(400, { status: false, message: "Missing reference" }, headers);
     }
 
-    const resp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${secretKey}`,
-      },
-    });
+    const resp = await fetch(
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+        },
+      }
+    );
 
-    const data = await resp.json();
+    const data = await resp.json().catch(() => null);
 
     if (!resp.ok || !data?.status) {
       return json(resp.status || 400, {
         status: false,
         message: data?.message || "Paystack verify failed",
-        error: data,
-      });
+        error: data || null,
+      }, headers);
     }
 
     const tx = data.data;
 
     // Must be success before delivering value
-    if (tx.status !== "success") {
-      return json(200, { status: false, message: `Transaction not successful (${tx.status})`, data: tx });
+    if (String(tx.status || "").toLowerCase() !== "success") {
+      return json(200, {
+        status: false,
+        message: `Transaction not successful (${tx.status})`,
+        data: tx,
+      }, headers);
     }
 
     // Validate metadata (what plan is being purchased)
     const plan = tx.metadata?.plan;
-    const unlocks = tx.metadata?.unlocks;
+    const recruiterId = tx.metadata?.recruiterId;
 
     const PLAN_CONFIG = {
       starter: { amount: 29900, unlocks: 50, currency: "ZAR" },
@@ -50,16 +72,28 @@ export async function handler(event) {
     };
 
     if (!PLAN_CONFIG[plan]) {
-      return json(200, { status: false, message: "Verified payment but metadata.plan is invalid", data: tx });
+      return json(200, {
+        status: false,
+        message: "Verified payment but metadata.plan is invalid",
+        data: tx,
+      }, headers);
+    }
+
+    if (!recruiterId) {
+      return json(200, {
+        status: false,
+        message: "Verified payment but metadata.recruiterId is missing",
+        data: tx,
+      }, headers);
     }
 
     // Verify amount & currency to prevent tampering
     if (String(tx.currency || "").toUpperCase() !== PLAN_CONFIG[plan].currency) {
-      return json(200, { status: false, message: "Currency mismatch", data: tx });
+      return json(200, { status: false, message: "Currency mismatch", data: tx }, headers);
     }
 
     if (Number(tx.amount) !== PLAN_CONFIG[plan].amount) {
-      return json(200, { status: false, message: "Amount mismatch", data: tx });
+      return json(200, { status: false, message: "Amount mismatch", data: tx }, headers);
     }
 
     return json(200, {
@@ -68,22 +102,30 @@ export async function handler(event) {
       data: {
         reference: tx.reference,
         plan,
-        unlocks: PLAN_CONFIG[plan].unlocks
-      }
-    });
-
+        unlocks: PLAN_CONFIG[plan].unlocks,
+        recruiterId,
+      },
+    }, headers);
   } catch (err) {
-    return json(500, { status: false, message: "Server error", error: String(err) });
+    const headers = corsHeaders();
+    return json(500, { status: false, message: "Server error", error: String(err) }, headers);
   }
 }
 
-function json(statusCode, body) {
+function corsHeaders(origin) {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    "Content-Type": "application/json",
+  };
+}
+
+function json(statusCode, body, headers) {
   return {
     statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+    headers: headers || corsHeaders(),
     body: JSON.stringify(body),
   };
 }
