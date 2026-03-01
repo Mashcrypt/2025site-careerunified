@@ -1,3 +1,4 @@
+// netlify/functions/paystack-webhook.ts
 import type { Handler } from "@netlify/functions";
 import crypto from "crypto";
 import { getAdmin } from "./_firebaseAdmin";
@@ -29,9 +30,47 @@ function isValidPlan(plan: any): plan is "starter" | "job_seeker" | "career_pro"
   return plan === "starter" || plan === "job_seeker" || plan === "career_pro";
 }
 
-// ✅ Recruiter plans (NEW)
+// ✅ Recruiter plans
 function isValidRecruiterPlan(plan: any): plan is "starter" | "pro" | "enterprise" {
   return plan === "starter" || plan === "pro" || plan === "enterprise";
+}
+
+type RecruiterPlan = "starter" | "pro" | "enterprise";
+
+const RECRUITER_PLAN_CONFIG: Record<
+  RecruiterPlan,
+  { amount: number; currency: string; unlocks: number }
+> = {
+  starter: { amount: 29900, currency: "ZAR", unlocks: 50 },
+  pro: { amount: 69900, currency: "ZAR", unlocks: 200 },
+  enterprise: { amount: 149900, currency: "ZAR", unlocks: -1 },
+};
+
+/**
+ * ✅ Find recruiter doc reference from event data.
+ * Paystack renewal events often won't include metadata.
+ * We try:
+ * 1) metadata.recruiterId
+ * 2) paystack customer_code match in recruiters collection
+ */
+async function resolveRecruiterRef(admin: any, data: any) {
+  const recruiterId = data?.metadata?.recruiterId as string | undefined;
+  if (recruiterId) {
+    return admin.firestore().doc(`recruiters/${recruiterId}`);
+  }
+
+  const customerCode = data?.customer?.customer_code as string | undefined;
+  if (!customerCode) return null;
+
+  const qs = await admin
+    .firestore()
+    .collection("recruiters")
+    .where("paystack.customer_code", "==", customerCode)
+    .limit(1)
+    .get();
+
+  if (qs.empty) return null;
+  return qs.docs[0].ref;
 }
 
 export const handler: Handler = async (event) => {
@@ -61,34 +100,23 @@ export const handler: Handler = async (event) => {
 
   const admin = getAdmin();
 
-  // --- Recommended: treat charge.success as the primary "unlock" event ---
+  // ============================================================
+  // 1) CHARGE.SUCCESS
+  // - Primary "first payment" event for both AI and recruiters
+  // ============================================================
   if (eventType === "charge.success") {
-    // ============================================================
-    // ✅ NEW: RECRUITER SUBSCRIPTION BRANCH (does NOT affect AI)
-    // Detect recruiter payments using metadata.recruiterId + metadata.plan
-    // This matches what you send in paystack-init.js:
-    // metadata: { recruiterId, plan, unlocks, product: ... }
-    // ============================================================
+    // ✅ Recruiter branch (does NOT affect AI)
     const recruiterId = data?.metadata?.recruiterId as string | undefined;
     const recruiterPlan = data?.metadata?.plan as string | undefined;
 
     if (recruiterId && recruiterPlan) {
-      // Only handle if it matches recruiter plan set
       if (!isValidRecruiterPlan(recruiterPlan)) return ok();
 
-      // (Optional but recommended) Validate amount & currency against your plan pricing
-      const PLAN_CONFIG: Record<"starter" | "pro" | "enterprise", { amount: number; currency: string; unlocks: number }> =
-        {
-          starter: { amount: 29900, currency: "ZAR", unlocks: 50 },
-          pro: { amount: 69900, currency: "ZAR", unlocks: 200 },
-          enterprise: { amount: 149900, currency: "ZAR", unlocks: -1 },
-        };
-
-      const expected = PLAN_CONFIG[recruiterPlan];
+      // Validate amount & currency
+      const expected = RECRUITER_PLAN_CONFIG[recruiterPlan];
       const txAmount = Number(data?.amount);
       const txCurrency = String(data?.currency || "").toUpperCase();
 
-      // If these don’t match, ignore safely (prevents tampering)
       if (txCurrency !== expected.currency) return ok();
       if (txAmount !== expected.amount) return ok();
 
@@ -99,12 +127,16 @@ export const handler: Handler = async (event) => {
           plan: recruiterPlan,
           unlocksRemaining: expected.unlocks,
           totalUnlocks: expected.unlocks,
+          subscriptionStatus: "active",
           upgradedAt: new Date().toISOString(),
           paystack: {
             lastEvent: eventType,
             lastReference: data?.reference || null,
             customer_code: data?.customer?.customer_code || null,
             authorization: data?.authorization || null,
+            // sometimes present, safe to store:
+            subscription_code: data?.subscription?.subscription_code || null,
+            plan_code: data?.plan?.plan_code || null,
           },
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
@@ -114,16 +146,12 @@ export const handler: Handler = async (event) => {
       return ok();
     }
 
-    // ============================================================
     // ✅ EXISTING AI PLAN LOGIC (UNCHANGED)
-    // We rely on metadata.uid set during initialize
-    // ============================================================
     const uid = data?.metadata?.uid as string | undefined;
     if (!uid) return ok(); // ignore safely
 
     const userRef = admin.firestore().doc(`users/${uid}`);
 
-    // Helper: activate plan safely
     const activatePlan = async (planToUse: string, extraPaystack?: Record<string, any>) => {
       await userRef.set(
         {
@@ -147,13 +175,11 @@ export const handler: Handler = async (event) => {
     const selectedPlan = data?.metadata?.selectedPlan;
     const refFromPaystack = data?.reference as string | undefined;
 
-    // If we stored a pending reference, enforce it to avoid accidental mismatches
     const userSnap = await userRef.get();
     const user = userSnap.data() || {};
     const pendingRef = user.pendingPaystackReference as string | undefined;
 
     if (pendingRef && refFromPaystack && pendingRef !== refFromPaystack) {
-      // Not the transaction we created for upgrade; ignore
       return ok();
     }
 
@@ -167,14 +193,15 @@ export const handler: Handler = async (event) => {
     return ok();
   }
 
-  // --- Optional: subscription.create (not always present/reliable for first unlock) ---
+  // ============================================================
+  // 2) SUBSCRIPTION.CREATE (AI only, kept as-is)
+  // ============================================================
   if (eventType === "subscription.create") {
     const uid = data?.metadata?.uid as string | undefined;
-    if (!uid) return ok(); // ignore safely
+    if (!uid) return ok();
 
     const userRef = admin.firestore().doc(`users/${uid}`);
 
-    // Helper: activate plan safely
     const activatePlan = async (planToUse: string, extraPaystack?: Record<string, any>) => {
       await userRef.set(
         {
@@ -207,15 +234,52 @@ export const handler: Handler = async (event) => {
     return ok();
   }
 
-  // --- Renewal/invoice events (keep active + reset monthly usage) ---
+  // ============================================================
+  // 3) INVOICE.UPDATE (Renewal success)
+  // - AI: unchanged
+  // - Recruiters: NEW support (activate + optionally reset unlocks)
+  // ============================================================
   if (eventType === "invoice.update") {
+    // ✅ Recruiter renewal handling
+    const recruiterRef = await resolveRecruiterRef(admin, data);
+    if (recruiterRef) {
+      // Keep subscription active (you can expand with stricter checks later)
+      const snap = await recruiterRef.get();
+      const existing = snap.data() || {};
+      const currentPlan = (existing.plan as RecruiterPlan) || "starter";
+
+      const unlocksToSet =
+        currentPlan === "enterprise"
+          ? -1
+          : RECRUITER_PLAN_CONFIG[currentPlan]?.unlocks ?? existing.unlocksRemaining ?? 0;
+
+      await recruiterRef.set(
+        {
+          subscriptionStatus: "active",
+          // OPTIONAL: reset monthly unlocks on successful renewal
+          unlocksRemaining: unlocksToSet,
+          totalUnlocks: unlocksToSet,
+          paystack: {
+            ...(existing.paystack || {}),
+            lastEvent: eventType,
+            lastReference: data?.reference || null,
+            customer_code: data?.customer?.customer_code || existing?.paystack?.customer_code || null,
+            subscription_code:
+              data?.subscription?.subscription_code || existing?.paystack?.subscription_code || null,
+          },
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      return ok();
+    }
+
+    // ✅ AI unchanged
     const uid = data?.metadata?.uid as string | undefined;
     if (!uid) return ok();
 
     const userRef = admin.firestore().doc(`users/${uid}`);
-
-    // Only keep active if Paystack indicates a successful state (varies by payload)
-    // If you want stricter logic, we can check data.status fields here.
     const userSnap = await userRef.get();
     const currentPlan = (userSnap.data()?.plan as string) || "starter";
 
@@ -232,7 +296,29 @@ export const handler: Handler = async (event) => {
     return ok();
   }
 
+  // ============================================================
+  // 4) INVOICE.PAYMENT_FAILED
+  // - AI: unchanged
+  // - Recruiters: NEW support
+  // ============================================================
   if (eventType === "invoice.payment_failed") {
+    const recruiterRef = await resolveRecruiterRef(admin, data);
+    if (recruiterRef) {
+      await recruiterRef.set(
+        {
+          subscriptionStatus: "past_due",
+          paystack: {
+            lastEvent: eventType,
+            lastReference: data?.reference || null,
+            customer_code: data?.customer?.customer_code || null,
+          },
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return ok();
+    }
+
     const uid = data?.metadata?.uid as string | undefined;
     if (!uid) return ok();
 
@@ -248,7 +334,29 @@ export const handler: Handler = async (event) => {
     return ok();
   }
 
+  // ============================================================
+  // 5) SUBSCRIPTION.DISABLE
+  // - AI: unchanged
+  // - Recruiters: NEW support
+  // ============================================================
   if (eventType === "subscription.disable") {
+    const recruiterRef = await resolveRecruiterRef(admin, data);
+    if (recruiterRef) {
+      await recruiterRef.set(
+        {
+          subscriptionStatus: "cancelled",
+          paystack: {
+            lastEvent: eventType,
+            lastReference: data?.reference || null,
+            customer_code: data?.customer?.customer_code || null,
+          },
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return ok();
+    }
+
     const uid = data?.metadata?.uid as string | undefined;
     if (!uid) return ok();
 
