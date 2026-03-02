@@ -64,6 +64,43 @@ function isFirebaseConfigured() {
   return required.every((v) => typeof v === 'string' && v.trim().length > 0);
 }
 
+function buildContactLines(data: ResumeData) {
+  const pi = data?.personalInfo;
+  const fullName = (pi?.fullName || '').trim();
+
+  const email = (pi?.email || '').trim();
+  const phone = (pi?.phone || '').trim();
+  const location = (pi?.location || '').trim();
+  const linkedin = (pi?.linkedin || '').trim();
+  const website = (pi?.website || '').trim();
+
+  const line1Parts = [email, phone].filter(Boolean);
+  const line2Parts = [location].filter(Boolean);
+
+  // Prefer website over linkedin if both exist? include both if present but keep neat
+  const linkParts = [linkedin, website].filter(Boolean);
+
+  return {
+    fullName,
+    contactLine1: line1Parts.join(' • '),
+    contactLine2: line2Parts.join(' • '),
+    contactLine3: linkParts.join(' • '),
+  };
+}
+
+function safeFilePart(name: string) {
+  return (name || 'Candidate')
+    .trim()
+    .replace(/[^a-z0-9\-\s_]/gi, '')
+    .replace(/\s+/g, ' ')
+    .slice(0, 60);
+}
+
+function hasClosingAlready(text: string) {
+  const tail = (text || '').slice(-500);
+  return /(sincerely|kind regards|regards|yours faithfully|yours sincerely|best regards)/i.test(tail);
+}
+
 export function AITailor({ data, onApplySuggestions }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
@@ -311,24 +348,22 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
   };
 
-  // ✅ Download edited cover letter as a clean A4 PDF
+  // ✅ Download edited cover letter as a clean A4 PDF + header/date + signature (if needed)
   const downloadCoverLetterPDF = useCallback(async () => {
-    const text = (coverLetter || '').trim();
-    if (!text) return;
+    const raw = (coverLetter || '').trim();
+    if (!raw) return;
 
     setIsDownloadingCover(true);
+    setErrorMsg('');
 
     try {
       // Lazy-load to keep bundle light
       const mod = await import('jspdf');
       const jsPDF = mod.jsPDF;
 
-      const fullName = (data?.personalInfo?.fullName || 'Candidate').trim();
-      const safeName = fullName
-        .replace(/[^a-z0-9\-\s_]/gi, '')
-        .replace(/\s+/g, ' ')
-        .slice(0, 60);
+      const { fullName, contactLine1, contactLine2, contactLine3 } = buildContactLines(data);
 
+      const safeName = safeFilePart(fullName);
       const fileName = `Cover Letter - ${safeName || 'Candidate'}`;
 
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -339,18 +374,71 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       const marginX = 20;
       const marginY = 20;
 
-      const fontSize = 11;
+      // Typography
+      const bodyFontSize = 11;
       const lineHeight = 6;
 
       doc.setFont('times', 'normal');
-      doc.setFontSize(fontSize);
+
+      // Date (top-right)
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('en-ZA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      // Header (top-left)
+      let cursorY = marginY;
+
+      // Date first line on the right
+      doc.setFontSize(11);
+      doc.text(dateStr, pageWidth - marginX, cursorY, { align: 'right' });
+
+      // Name + contacts on left
+      if (fullName) {
+        doc.setFont('times', 'bold');
+        doc.setFontSize(14);
+        doc.text(fullName, marginX, cursorY + 7);
+        doc.setFont('times', 'normal');
+        doc.setFontSize(10);
+
+        let infoY = cursorY + 12;
+
+        if (contactLine1) {
+          doc.text(contactLine1, marginX, infoY);
+          infoY += 5;
+        }
+        if (contactLine2) {
+          doc.text(contactLine2, marginX, infoY);
+          infoY += 5;
+        }
+        if (contactLine3) {
+          doc.text(contactLine3, marginX, infoY);
+          infoY += 5;
+        }
+
+        // Start body after header block
+        cursorY = Math.max(cursorY + 22, infoY + 4);
+      } else {
+        // No name? still leave space after date line
+        cursorY = cursorY + 14;
+      }
+
+      // Body
+      doc.setFont('times', 'normal');
+      doc.setFontSize(bodyFontSize);
 
       const maxTextWidth = pageWidth - marginX * 2;
 
-      const normalized = text.replace(/\r\n/g, '\n');
-      const lines = normalized.split('\n');
+      // Add signature only if missing a closing
+      let textToPrint = raw.replace(/\r\n/g, '\n');
 
-      let cursorY = marginY;
+      if (fullName && !hasClosingAlready(textToPrint)) {
+        textToPrint = `${textToPrint}\n\nSincerely,\n${fullName}`;
+      }
+
+      const lines = textToPrint.split('\n');
 
       for (const rawLine of lines) {
         // Preserve blank lines as paragraph spacing
@@ -365,7 +453,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           if (cursorY + lineHeight > pageHeight - marginY) {
             doc.addPage();
             doc.setFont('times', 'normal');
-            doc.setFontSize(fontSize);
+            doc.setFontSize(bodyFontSize);
             cursorY = marginY;
           }
           doc.text(String(w), marginX, cursorY);
@@ -382,7 +470,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     } finally {
       setIsDownloadingCover(false);
     }
-  }, [coverLetter, data?.personalInfo?.fullName]);
+  }, [coverLetter, data]);
 
   const startSubscription = async (plan: PlanId) => {
     setIsRedirecting(true);
