@@ -5,7 +5,7 @@ function escapeAttr(str: string) {
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&lt;"); // keep consistent escaping
+    .replace(/>/g, "&gt;"); // ✅ correct
 }
 
 function snippet(text: string, maxLen = 140) {
@@ -14,7 +14,6 @@ function snippet(text: string, maxLen = 140) {
   return cleaned.slice(0, maxLen - 1).trim() + "…";
 }
 
-// Detect social media bots / link preview scrapers
 function isSocialCrawler(ua: string) {
   const s = (ua || "").toLowerCase();
   return (
@@ -32,6 +31,13 @@ function isSocialCrawler(ua: string) {
   );
 }
 
+function ensureHttps(url: string) {
+  const u = String(url || "").trim();
+  if (!u) return "";
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  return "https://" + u;
+}
+
 export default async (request: Request) => {
   try {
     const url = new URL(request.url);
@@ -43,9 +49,8 @@ export default async (request: Request) => {
     // If someone hits /bursary or /bursary/ with no slug, do nothing special
     if (!slug || slug === "bursary") return fetch(request);
 
-    // Humans: your SPA should open it using ?slug=
+    // Humans: your SPA opens it using ?slug=
     const redirectTo = `/bursaries.html?slug=${encodeURIComponent(slug)}`;
-
     const ua = request.headers.get("user-agent") || "";
 
     // ✅ Humans: real redirect (same behavior as jobs)
@@ -65,15 +70,16 @@ export default async (request: Request) => {
 
     const bursaryName = bursary.name || "Bursary Opportunity";
     const providerName = bursary.provider || "Provider";
+
     const facultyText = bursary.faculty ? ` • ${bursary.faculty}` : "";
     const deadlineText = bursary.deadline ? ` • Deadline: ${bursary.deadline}` : "";
     const desc = snippet(bursary.description || "", 140);
 
     const shareUrl = `https://careerunified.com/bursary/${slug}`;
 
-    // IMPORTANT: from schema => providerLogo.asset->url
-    const image =
-      bursary.providerLogoUrl || "https://careerunified.com/android-chrome-512x512.png";
+    const image = ensureHttps(
+      bursary.providerLogoUrl || "https://careerunified.com/android-chrome-512x512.png"
+    );
 
     const ogTitle = `${bursaryName} – Career Unified`;
     const ogDescription = `${providerName}${facultyText}${deadlineText}${
@@ -92,6 +98,7 @@ export default async (request: Request) => {
   <meta property="og:title" content="${escapeAttr(ogTitle)}" />
   <meta property="og:description" content="${escapeAttr(ogDescription)}" />
   <meta property="og:image" content="${escapeAttr(image)}" />
+  <meta property="og:image:secure_url" content="${escapeAttr(image)}" />
   <meta property="og:url" content="${escapeAttr(shareUrl)}" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -111,7 +118,8 @@ export default async (request: Request) => {
         "cache-control": "no-store",
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("bursary-og edge error:", err);
     return new Response("Edge function error", { status: 500 });
   }
 };
