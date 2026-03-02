@@ -7,17 +7,16 @@
   <meta name="description" content="Discover the latest jobs, bursaries, and university application deadlines in South Africa. Apply early, find scholarships, and kickstart your career with Career Unified.">
   <meta name="google-site-verification" content="JKMm0zr9nLbLB8JJt0WMWRy54LR7Ae6gTlexinyCMuI" />
 
-
-<!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#1b60a9">
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#1b60a9">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:title" content="Career Unified – Jobs, Bursaries & Universities in South Africa">
@@ -53,18 +52,104 @@
 
   <link rel="stylesheet" href="css/style.css">
 
+  <!-- SMART SEARCH OVERLAY STYLES (ADDED) -->
+  <style>
+  /* ===============================
+     SMART SEARCH OVERLAY
+  ================================ */
+  .smart-search-overlay{
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 9999;
+    background: rgba(0,0,0,0.55);
+    padding: 16px;
+  }
+  .smart-search-overlay.show{ display: flex; align-items: center; justify-content: center; }
+
+  .smart-search-modal{
+    width: 100%;
+    max-width: 520px;
+    background: rgba(12, 18, 28, 0.95);
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    position: relative;
+    backdrop-filter: blur(8px);
+  }
+  .smart-search-modal h3{
+    margin: 4px 0 14px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .smart-search-close{
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 34px;
+  }
+  .smart-search-counts{
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .smart-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+  }
+  .smart-row:last-child{ border-bottom: 0; }
+  .smart-label{ opacity: 0.92; font-weight: 600; }
+  .smart-count{ font-weight: 800; }
+
+  .smart-search-actions{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .smart-btn{
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .smart-btn-jobs{ background: #1b60a9; color: #fff; }
+  .smart-btn-bursaries{ background: #1f8f3a; color: #fff; }
+  .smart-btn-varsity{ background: #c77a17; color: #fff; }
+
+  .smart-search-hint{
+    margin: 12px 0 0;
+    text-align: center;
+    opacity: 0.9;
+    font-size: 14px;
+  }
+  </style>
+
   <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
-</script>
-
+    gtag('config', 'G-2Z934XRVXT', {
+      send_page_view: true
+    });
+  </script>
 </head>
 
 <body>
@@ -86,7 +171,7 @@
 
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-    
+
     <!-- My Account Icon (Desktop) -->
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
@@ -100,7 +185,7 @@
   <div class="mobile-nav">
     <!-- Clickable Logo -->
     <a href="index.html" class="mobile-logo">Career Unified</a>
-    
+
     <div class="mobile-nav-right">
       <!-- Account Icon - Direct Link -->
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
@@ -267,6 +352,38 @@
 })();
 </script>
 
+<!-- GLOBAL SEARCH OVERLAY (ADDED) -->
+<div id="smartSearchOverlay" class="smart-search-overlay" aria-hidden="true">
+  <div class="smart-search-modal" role="dialog" aria-modal="true" aria-labelledby="smartSearchTitle">
+    <button type="button" class="smart-search-close" id="smartSearchClose" aria-label="Close">×</button>
+
+    <h3 id="smartSearchTitle">Where would you like to search?</h3>
+
+    <div class="smart-search-counts">
+      <div class="smart-row">
+        <div class="smart-label">Jobs</div>
+        <div class="smart-count" id="smartCountJobs">0</div>
+      </div>
+      <div class="smart-row">
+        <div class="smart-label">Bursaries</div>
+        <div class="smart-count" id="smartCountBursaries">0</div>
+      </div>
+      <div class="smart-row">
+        <div class="smart-label">Varsities</div>
+        <div class="smart-count" id="smartCountVarsity">0</div>
+      </div>
+    </div>
+
+    <div class="smart-search-actions">
+      <button type="button" class="smart-btn smart-btn-jobs" id="smartBtnJobs">View Jobs</button>
+      <button type="button" class="smart-btn smart-btn-bursaries" id="smartBtnBursaries">View Bursaries</button>
+      <button type="button" class="smart-btn smart-btn-varsity" id="smartBtnVarsity">View Varsities</button>
+    </div>
+
+    <p class="smart-search-hint" id="smartSearchHint">Auto-selecting in <b id="smartCountdown">2</b> seconds…</p>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-links">
@@ -286,8 +403,7 @@
 <script src="js/sanityClient.js"></script>
 
 <script>
-  
-  /* ===============================
+/* ===============================
    CACHE HELPERS
 ================================ */
 function loadCache(key) {
@@ -326,8 +442,6 @@ function getBadge(job) {
 
 /* ===============================
    RECENT JOBS (FIXED)
-   - Fix [object Object] by fetching company->name
-   - Fix click-open by linking with ?slug= (jobs.html expects slug)
 ================================ */
 
 const homeJobList = document.getElementById('homeJobList');
@@ -430,12 +544,291 @@ async function loadStats(){
 
 loadStats();
 
-/* ================= SEARCH ================= */
-function performSearch(){
-  const term = document.getElementById('homeSearch').value.trim();
-  if(!term) return alert('Please enter a keyword');
-  localStorage.setItem('homeSearchTerm', term.toLowerCase());
-  window.location.href='jobs.html';
+/* ================= SMART GLOBAL SEARCH (ADDED) ================= */
+let smartSearchTimer = null;
+let smartCountdownTimer = null;
+
+function normalizeQuery(q) {
+  return (q || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function getPrefWeight(key) {
+  const n = Number(localStorage.getItem(key) || "0");
+  return Math.min(0.6, n * 0.05);
+}
+
+function incPref(key) {
+  const n = Number(localStorage.getItem(key) || "0");
+  localStorage.setItem(key, String(n + 1));
+}
+
+function isAliasUniversity(term) {
+  const map = {
+    "uct": "University of Cape Town",
+    "wits": "University of the Witwatersrand",
+    "uj": "University of Johannesburg",
+    "up": "University of Pretoria",
+    "ukzn": "University of KwaZulu-Natal",
+    "unisa": "University of South Africa",
+    "ufs": "University of the Free State",
+    "nwu": "North-West University",
+    "tuks": "University of Pretoria",
+    "stellenbosch": "Stellenbosch University",
+    "uwc": "University of the Western Cape",
+    "univen": "University of Venda"
+  };
+  return map[term] || null;
+}
+
+function showSmartOverlay(data) {
+  const overlay = document.getElementById("smartSearchOverlay");
+  const closeBtn = document.getElementById("smartSearchClose");
+
+  const cJobs = document.getElementById("smartCountJobs");
+  const cBurs = document.getElementById("smartCountBursaries");
+  const cVars = document.getElementById("smartCountVarsity");
+
+  const btnJobs = document.getElementById("smartBtnJobs");
+  const btnBurs = document.getElementById("smartBtnBursaries");
+  const btnVars = document.getElementById("smartBtnVarsity");
+
+  const countdownEl = document.getElementById("smartCountdown");
+
+  cJobs.textContent = String(data.jobs.count || 0);
+  cBurs.textContent = String(data.bursaries.count || 0);
+  cVars.textContent = String(data.varsity.count || 0);
+
+  if (smartSearchTimer) clearTimeout(smartSearchTimer);
+  if (smartCountdownTimer) clearInterval(smartCountdownTimer);
+
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
+
+  const hide = () => {
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+    if (smartSearchTimer) clearTimeout(smartSearchTimer);
+    if (smartCountdownTimer) clearInterval(smartCountdownTimer);
+  };
+
+  closeBtn.onclick = hide;
+
+  btnJobs.onclick = () => {
+    incPref("search_pref_jobs");
+    hide();
+    redirectTo("jobs", data.term);
+  };
+  btnBurs.onclick = () => {
+    incPref("search_pref_bursaries");
+    hide();
+    redirectTo("bursaries", data.term);
+  };
+  btnVars.onclick = () => {
+    incPref("search_pref_varsity");
+    hide();
+    redirectTo("varsity", data.term);
+  };
+
+  let seconds = 2;
+  countdownEl.textContent = String(seconds);
+
+  smartCountdownTimer = setInterval(() => {
+    seconds -= 1;
+    countdownEl.textContent = String(Math.max(0, seconds));
+    if (seconds <= 0) {
+      clearInterval(smartCountdownTimer);
+    }
+  }, 1000);
+
+  smartSearchTimer = setTimeout(() => {
+    hide();
+    redirectTo(data.best, data.term);
+  }, 2000);
+}
+
+function redirectTo(target, term) {
+  const q = encodeURIComponent(term);
+
+  if (target === "jobs") {
+    localStorage.setItem("homeSearchTerm", term);
+    window.location.href = "jobs.html?q=" + q;
+    return;
+  }
+
+  localStorage.setItem("globalSearchTerm", term);
+
+  if (target === "bursaries") {
+    window.location.href = "bursaries.html?q=" + q;
+    return;
+  }
+
+  if (target === "varsity") {
+    window.location.href = "varsity.html?q=" + q;
+    return;
+  }
+
+  localStorage.setItem("homeSearchTerm", term);
+  window.location.href = "jobs.html?q=" + q;
+}
+
+function decideBestTarget(scores) {
+  const prefJobs = 1 + getPrefWeight("search_pref_jobs");
+  const prefBurs = 1 + getPrefWeight("search_pref_bursaries");
+  const prefVars = 1 + getPrefWeight("search_pref_varsity");
+
+  const sJobs = (scores.jobs.strong * 3 + scores.jobs.count) * prefJobs;
+  const sBurs = (scores.bursaries.strong * 3 + scores.bursaries.count) * prefBurs;
+  const sVars = (scores.varsity.strong * 3 + scores.varsity.count) * prefVars;
+
+  const arr = [
+    { key: "jobs", v: sJobs, raw: scores.jobs.count },
+    { key: "bursaries", v: sBurs, raw: scores.bursaries.count },
+    { key: "varsity", v: sVars, raw: scores.varsity.count }
+  ].sort((a, b) => b.v - a.v);
+
+  return { best: arr[0], second: arr[1] };
+}
+
+function isCloseTie(best, second) {
+  const scoreClose = best.v <= second.v * 1.25;
+  const availabilityClose = best.raw <= second.raw + 2;
+  return scoreClose || availabilityClose;
+}
+
+async function fetchCountsFromSanity(term) {
+  if (!window.sanityClient || typeof window.sanityClient.fetch !== "function") {
+    return null;
+  }
+
+  const q = term + "*";
+
+  const queries = {
+    jobsStrong: `count(*[_type=="job" && (
+      title match $q ||
+      company->name match $q ||
+      category match $q ||
+      location match $q
+    )])`,
+    jobsAll: `count(*[_type=="job" && (
+      title match $q ||
+      company->name match $q ||
+      category match $q ||
+      location match $q ||
+      description match $q ||
+      body match $q
+    )])`,
+
+    bursStrong: `count(*[_type=="bursary" && (
+      title match $q ||
+      name match $q ||
+      sponsor match $q ||
+      provider match $q ||
+      field match $q
+    )])`,
+    bursAll: `count(*[_type=="bursary" && (
+      title match $q ||
+      name match $q ||
+      sponsor match $q ||
+      provider match $q ||
+      field match $q ||
+      description match $q ||
+      body match $q
+    )])`,
+
+    uniStrong: `count(*[_type=="university" && (
+      name match $q ||
+      title match $q ||
+      shortName match $q ||
+      city match $q ||
+      province match $q
+    )])`,
+    uniAll: `count(*[_type=="university" && (
+      name match $q ||
+      title match $q ||
+      shortName match $q ||
+      city match $q ||
+      province match $q ||
+      keywords[] match $q ||
+      description match $q
+    )])`
+  };
+
+  const [
+    jobsStrong,
+    jobsAll,
+    bursStrong,
+    bursAll,
+    uniStrong,
+    uniAll
+  ] = await Promise.all([
+    window.sanityClient.fetch(queries.jobsStrong, { q }),
+    window.sanityClient.fetch(queries.jobsAll, { q }),
+    window.sanityClient.fetch(queries.bursStrong, { q }),
+    window.sanityClient.fetch(queries.bursAll, { q }),
+    window.sanityClient.fetch(queries.uniStrong, { q }),
+    window.sanityClient.fetch(queries.uniAll, { q })
+  ]);
+
+  return {
+    jobs: { strong: Number(jobsStrong || 0), count: Number(jobsAll || 0) },
+    bursaries: { strong: Number(bursStrong || 0), count: Number(bursAll || 0) },
+    varsity: { strong: Number(uniStrong || 0), count: Number(uniAll || 0) }
+  };
+}
+
+/* ================= SEARCH (Enhanced, keeps existing fallback) ================= */
+async function performSearch() {
+  const input = document.getElementById("homeSearch");
+  const raw = input ? input.value : "";
+  const term = normalizeQuery(raw);
+
+  if (!term) return alert("Please enter a keyword");
+
+  const uniAlias = isAliasUniversity(term);
+
+  let counts = null;
+  try {
+    counts = await fetchCountsFromSanity(term);
+  } catch (e) {
+    counts = null;
+  }
+
+  if (!counts) {
+    localStorage.setItem("homeSearchTerm", term);
+    window.location.href = "jobs.html";
+    return;
+  }
+
+  if (uniAlias) {
+    counts.varsity.strong += 50;
+    counts.varsity.count += 50;
+  }
+
+  const { best, second } = decideBestTarget(counts);
+
+  const total = counts.jobs.count + counts.bursaries.count + counts.varsity.count;
+  if (total === 0) {
+    localStorage.setItem("homeSearchTerm", term);
+    window.location.href = "jobs.html";
+    return;
+  }
+
+  if (!isCloseTie(best, second)) {
+    redirectTo(best.key, term);
+    return;
+  }
+
+  showSmartOverlay({
+    term,
+    jobs: counts.jobs,
+    bursaries: counts.bursaries,
+    varsity: counts.varsity,
+    best: best.key
+  });
 }
 
 /* ================= REVEAL ANIMATIONS ================= */
@@ -451,7 +844,6 @@ const observer = new IntersectionObserver(entries => {
 
 revealElements.forEach(el => observer.observe(el));
 
- 
 /* ================= SCROLL ================= */
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
@@ -461,7 +853,6 @@ window.addEventListener('scroll',()=>{
 });
 up.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-
 
 /* ================= MOBILE NAVIGATION ================= */
 const menuBtn = document.getElementById("menuBtn");
@@ -480,11 +871,11 @@ document.addEventListener("click", e => {
     if (mobileMenu) mobileMenu.style.display = "none";
   }
 });
-
 </script>
 
 </body>
 </html>
+
 
 
 
