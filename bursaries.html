@@ -577,6 +577,67 @@
       display: none;
     }
 
+    /* =============================== */
+    /* SEARCH BAR (ADDED)              */
+    /* =============================== */
+    .searchbar-wrap {
+      margin-bottom: 14px;
+    }
+
+    .searchbar-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+
+    .searchbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .searchbar input,
+    .searchbar button {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .searchbar input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .searchbar input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .searchbar button {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .searchbar button:hover {
+      background: #1e40af;
+    }
+
+    .search-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
     @media (max-width: 900px) {
       header { padding: 50px 16px 40px; }
       header h1 { font-size: 2rem; }
@@ -638,6 +699,15 @@
 
       .filter { margin-bottom: 16px; }
       .filter select { padding: 14px 16px; font-size: 16px; }
+
+      /* Search stacks on mobile */
+      .searchbar { flex-direction: column; gap: 12px; }
+      .searchbar input, .searchbar button {
+        width: 100%;
+        min-width: auto;
+        padding: 14px 16px;
+        font-size: 16px;
+      }
 
       .bursary-card { padding: 14px; }
       .bursary-card strong { font-size: 1rem; }
@@ -724,12 +794,28 @@
 
   <main class="bursaries-container">
     <div class="bursaries-left">
+
+      <!-- =============================== -->
+      <!-- SEARCH (ADDED)                  -->
+      <!-- - reads global search from home -->
+      <!-- - powerful local search too     -->
+      <!-- =============================== -->
+      <div class="searchbar-wrap">
+        <label class="searchbar-label" for="bursarySearch">Search bursaries:</label>
+        <div class="searchbar">
+          <input type="text" id="bursarySearch" placeholder="Search bursary name, provider, faculty, keywords...">
+          <button type="button" id="clearSearchBtn" title="Clear search">Clear</button>
+        </div>
+        <div class="search-hint">Tip: Try “engineering”, “nsfas”, “accounting”, “matric”, “undergraduate”, “postgraduate”.</div>
+      </div>
+
       <div class="filter">
         <label for="facultyFilter">Filter by Faculty/Category:</label>
         <select id="facultyFilter">
           <option value="All">All Bursaries</option>
         </select>
       </div>
+
       <ul id="bursaryList"></ul>
     </div>
 
@@ -808,8 +894,103 @@
     const bursaryPreview = document.getElementById('bursaryPreview');
     const toast          = document.getElementById('toast');
 
-    let globalSearch = localStorage.getItem('homeSearchTerm');
-    if (globalSearch) localStorage.removeItem('homeSearchTerm');
+    /* ===============================
+       INTELLIGENT SEARCH (ADDED)
+       - Accept from: ?q= OR localStorage.homeSearchTerm
+       - Local fuzzy-ish ranking (no backend changes)
+       =============================== */
+    const bursarySearchInput = document.getElementById('bursarySearch');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    function normalizeTerm(v) {
+      return (v || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function tokenize(term) {
+      return normalizeTerm(term).split(' ').filter(Boolean).slice(0, 12);
+    }
+
+    function getQueryParam(name) {
+      try { return new URLSearchParams(window.location.search).get(name); }
+      catch { return null; }
+    }
+
+    function getIncomingSearchTerm() {
+      const fromQ  = normalizeTerm(getQueryParam('q'));
+      const fromLS = normalizeTerm(localStorage.getItem('homeSearchTerm'));
+      // keep legacy behavior (your old code removes it) but AFTER we read it
+      if (fromLS) localStorage.removeItem('homeSearchTerm');
+      return fromQ || fromLS || '';
+    }
+
+    function buildSearchText(b) {
+      const name = safeText(b?.name);
+      const provider = safeText(b?.provider);
+      const faculty = safeText(b?.faculty);
+      const desc = safeText(b?.description);
+      const deadline = safeText(b?.deadline);
+      return normalizeTerm([name, provider, faculty, desc, deadline].join(' | '));
+    }
+
+    // Lightweight scoring:
+    // - big boost if startsWith or exact word match
+    // - boost for token matches
+    // - slight boost if provider/name contains the full query
+    function scoreBursary(b, tokens, fullQuery) {
+      if (!tokens.length) return 0;
+
+      const name = normalizeTerm(safeText(b?.name));
+      const provider = normalizeTerm(safeText(b?.provider));
+      const faculty = normalizeTerm(safeText(b?.faculty));
+      const desc = normalizeTerm(safeText(b?.description));
+      const hay = buildSearchText(b);
+
+      let score = 0;
+
+      // Full query contains
+      if (fullQuery && name.includes(fullQuery)) score += 40;
+      if (fullQuery && provider.includes(fullQuery)) score += 25;
+      if (fullQuery && faculty.includes(fullQuery)) score += 15;
+      if (fullQuery && desc.includes(fullQuery)) score += 10;
+
+      // Starts-with boosts
+      if (fullQuery && name.startsWith(fullQuery)) score += 30;
+      if (fullQuery && provider.startsWith(fullQuery)) score += 18;
+
+      // Token matching
+      for (const t of tokens) {
+        if (!t) continue;
+
+        // Exact word-ish match
+        const wordRe = new RegExp(`(^|\\b)${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\b|$)`, 'i');
+
+        if (wordRe.test(name)) score += 18;
+        else if (name.includes(t)) score += 12;
+
+        if (wordRe.test(provider)) score += 12;
+        else if (provider.includes(t)) score += 8;
+
+        if (wordRe.test(faculty)) score += 8;
+        else if (faculty.includes(t)) score += 5;
+
+        if (desc.includes(t)) score += 3;
+
+        // If token not anywhere, small penalty (keeps relevance tight)
+        if (!hay.includes(t)) score -= 2;
+      }
+
+      // Keep score non-negative
+      return Math.max(0, score);
+    }
+
+    function applySearchToUI(term) {
+      if (!bursarySearchInput) return;
+      if (normalizeTerm(bursarySearchInput.value)) return; // don't override user typed
+      bursarySearchInput.value = term || '';
+    }
+
+    const incomingSearch = getIncomingSearchTerm();
+    applySearchToUI(incomingSearch);
 
     const BURSARY_CACHE      = 'careerUnifiedBursaryCache';
     const BURSARY_CACHE_TIME = 'careerUnifiedBursaryCacheTime';
@@ -1059,18 +1240,10 @@
     }
 
     async function fetchBursaries() {
-      let query = `*[_type=="bursary"]`;
-      if (globalSearch) {
-        query = `*[_type=="bursary" && (
-          name match "*${globalSearch}*" ||
-          provider match "*${globalSearch}*" ||
-          faculty match "*${globalSearch}*" ||
-          description match "*${globalSearch}*"
-        )]`;
-      }
-
+      // Keep your existing Sanity fetch logic (no risky query-string interpolation).
+      // We fetch everything and do intelligent search locally.
       try {
-        bursaries = await window.sanityClient.fetch(`${query} | order(deadline asc){
+        bursaries = await window.sanityClient.fetch(`*[_type=="bursary"] | order(deadline asc){
           _id,
           name,
           slug,
@@ -1129,9 +1302,26 @@
     function renderBursaries(filter = 'All') {
       bursaryList.innerHTML = '';
 
-      filteredBursaries = filter === 'All'
+      // Base filter (faculty)
+      const base = filter === 'All'
         ? bursaries
         : bursaries.filter(b => b.faculty === filter);
+
+      // Search filter + ranking (ADDED)
+      const q = normalizeTerm(bursarySearchInput?.value || '');
+      const tokens = tokenize(q);
+
+      let list = base;
+
+      if (q) {
+        list = base
+          .map(b => ({ b, s: scoreBursary(b, tokens, q) }))
+          .filter(x => x.s > 0)
+          .sort((a, b) => b.s - a.s)
+          .map(x => x.b);
+      }
+
+      filteredBursaries = list;
 
       if (!filteredBursaries.length) {
         bursaryList.innerHTML = `
@@ -1141,7 +1331,7 @@
               <path d="m21 21-4.35-4.35"/>
             </svg>
             <h3>No bursaries found</h3>
-            <p>Try selecting a different faculty</p>
+            <p>Try changing your search or filter</p>
           </div>`;
         showDefaultPreview();
         return;
@@ -1219,7 +1409,6 @@
       let safeUrl = extractLink(b.applicationLink);
       if (safeUrl && !safeUrl.startsWith('http')) safeUrl = 'https://' + safeUrl;
 
-      /* ✅ FIX #1: remove missing fallback-company.png */
       const logoSmall = getProviderLogoUrl(b) || '/android-chrome-512x512.png';
       const shareUrl  = makeShareUrl(b);
 
@@ -1241,7 +1430,6 @@
           </div>
 
           <div class="provider-row">
-            <!-- ✅ FIX #2: onerror uses existing file, no 404 -->
             <img class="provider-logo" src="${logoSmall}" alt="Provider logo" onerror="this.src='/android-chrome-512x512.png'">
             <div>
               <div class="provider-name">${safeText(b.provider, 'Provider not specified')}</div>
@@ -1312,6 +1500,24 @@
       showDefaultPreview();
     });
 
+    /* Search hooks (ADDED) */
+    if (bursarySearchInput) {
+      bursarySearchInput.addEventListener('input', () => {
+        selectedIndex = null;
+        renderBursaries(facultyFilter.value);
+        showDefaultPreview();
+      });
+    }
+
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', () => {
+        if (bursarySearchInput) bursarySearchInput.value = '';
+        selectedIndex = null;
+        renderBursaries(facultyFilter.value);
+        showDefaultPreview();
+      });
+    }
+
     showBursarySkeletons();
 
     const last = localStorage.getItem(BURSARY_CACHE_TIME);
@@ -1319,6 +1525,11 @@
     else fetchBursaries();
 
     setInterval(fetchBursaries, 5 * 60 * 1000);
+
+    // If incoming search exists, ensure initial render uses it
+    if (incomingSearch) {
+      renderBursaries(facultyFilter.value);
+    }
 
     let touchStartX = 0;
     let touchStartY = 0;
@@ -1372,6 +1583,7 @@
 
 </body>
 </html>
+
 
 
 
