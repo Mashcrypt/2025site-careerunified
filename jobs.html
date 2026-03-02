@@ -489,11 +489,6 @@
 
     /* ======================================================= */
     /* MOBILE — max-width: 900px                               */
-    /*                                                         */
-    /* THE PROVEN PATTERN (from original working version):     */
-    /* • jobs-preview = the ONE scroll container (70vh cap)    */
-    /* • job-desc = overflow visible, flows to natural height  */
-    /* • No nested scroll traps, touch goes straight to panel  */
     /* ======================================================= */
     @media (max-width: 900px) {
 
@@ -518,49 +513,38 @@
         width: 100%;
       }
 
-      /* Left panel — unconstrained, normal page flow */
       .jobs-left {
         max-height: none;
         overflow-y: visible;
         padding-right: 0;
       }
 
-      /* ─────────────────────────────────────────────
-         THE KEY FIX:
-         jobs-preview is the single scroll container.
-         It has a height cap and overflow-y: auto.
-         Everything inside flows naturally inside it.
-         ───────────────────────────────────────────── */
       .jobs-preview {
         position: static;
-        display: block;           /* exit flex so height is natural  */
-        max-height: 70vh;         /* cap so it doesn't fill screen   */
-        overflow-y: auto;         /* THIS is the one scroll container */
+        display: block;
+        max-height: 70vh;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
         padding: 20px;
         min-height: 300px;
-        /* remove desktop constraints */
         overflow-x: hidden;
       }
 
-      /* Slide — natural height, no flex stretching */
       .preview-slide {
         display: block;
         height: auto;
         min-height: 0;
       }
 
-      /* Content wrapper — natural height */
       .preview-content-wrapper {
         display: block;
         height: auto;
         min-height: 0;
       }
 
-      /* Description — full natural height, NO independent scroll */
       .jobs-preview .job-desc {
-        overflow-y: visible;      /* let it flow, parent panel scrolls */
+        overflow-y: visible;
         max-height: none;
         min-height: 0;
         flex: none;
@@ -568,7 +552,6 @@
         -webkit-overflow-scrolling: auto;
       }
 
-      /* Apply button — full width */
       .apply-btn {
         display: block;
         width: 100%;
@@ -578,7 +561,6 @@
         margin-top: 4px;
       }
 
-      /* Search stacks vertically */
       .search-filter-container {
         flex-direction: column;
         gap: 12px;
@@ -593,25 +575,19 @@
         font-size: 16px;
       }
 
-      /* Cards */
       .job-card       { padding: 14px; }
       .job-card h3    { font-size: 1rem; padding-right: 70px; }
       .job-card p     { font-size: 0.85rem; }
 
-      /* Preview text */
       .jobs-preview h2 { font-size: 1.3rem; }
       .jobs-preview p  { font-size: 0.9rem; }
 
       .close-preview-btn svg { width: 24px; height: 24px; }
 
-      /* Footer */
       .footer-links   { flex-direction: column; gap: 8px; }
       .footer-links a { font-size: 14px; }
     }
 
-    /* =============================== */
-    /* MOBILE — max-width: 400px       */
-    /* =============================== */
     @media (max-width: 400px) {
       header h1        { font-size: 1.75rem; }
       .job-card h3     { font-size: 0.95rem; }
@@ -770,6 +746,42 @@
     let userId    = null;
     let savedJobs = new Set();
     const BOOKMARK_KEY = 'careerUnifiedBookmarks';
+
+    /* ===============================================================
+       SMART SEARCH HANDOFF (ADDED)
+       - Accept search term from: ?q= OR localStorage.homeSearchTerm
+       - Prefill #jobSearch and filter results automatically
+       =============================================================== */
+    function normalizeSearchTerm(v) {
+      return (v || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function getSearchParam(name) {
+      try {
+        return new URLSearchParams(window.location.search).get(name);
+      } catch {
+        return null;
+      }
+    }
+
+    function applyInitialSearchTermToUI() {
+      const input = document.getElementById('jobSearch');
+      if (!input) return;
+
+      // If user already typed something (e.g. back button), don't override.
+      if (normalizeSearchTerm(input.value)) return;
+
+      const fromQ = normalizeSearchTerm(getSearchParam('q'));
+      const fromLS = normalizeSearchTerm(localStorage.getItem('homeSearchTerm'));
+      const term = fromQ || fromLS;
+
+      if (!term) return;
+
+      // keep your existing storage behavior consistent
+      localStorage.setItem('homeSearchTerm', term);
+
+      input.value = term;
+    }
 
     /* =============================== */
     /* NAV — Mobile Menu               */
@@ -1076,10 +1088,18 @@
         }));
 
         jobs = [...sanityNormalized, ...(recruiterJobs || [])];
+
+        // Apply initial term once jobs/search UI is ready (ADDED)
+        applyInitialSearchTermToUI();
+
         renderJobs();
         openFromURL();
       } catch (e) {
         console.error('loadJobs failed:', e);
+
+        // Apply initial term even on failure (ADDED)
+        applyInitialSearchTermToUI();
+
         renderJobs();
       }
     }
@@ -1378,7 +1398,6 @@
       const touch = e.changedTouches[0];
       const dx    = touch.screenX - startX;
       const dy    = touch.screenY - startY;
-      /* Only fire for clear horizontal swipes */
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
         if (dx < 0) goToNextJob();
         else        goToPreviousJob();
@@ -1407,6 +1426,10 @@
     /* INIT                            */
     /* =============================== */
     showSkeletons();
+
+    // Prefill early (safe) (ADDED)
+    applyInitialSearchTermToUI();
+
     loadJobs();
     showDefaultPreview();
   </script>
