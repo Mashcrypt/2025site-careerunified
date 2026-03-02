@@ -10,6 +10,7 @@ import {
   Lock,
   CreditCard,
   BadgePercent,
+  Download,
 } from 'lucide-react';
 
 import { Button } from './ui/button';
@@ -79,6 +80,9 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
 
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [copied, setCopied] = useState(false);
+
+  // ✅ Cover letter PDF download state
+  const [isDownloadingCover, setIsDownloadingCover] = useState(false);
 
   // Billing / upgrade UI
   const [needsUpgrade, setNeedsUpgrade] = useState(false);
@@ -307,6 +311,79 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
   };
 
+  // ✅ Download edited cover letter as a clean A4 PDF
+  const downloadCoverLetterPDF = useCallback(async () => {
+    const text = (coverLetter || '').trim();
+    if (!text) return;
+
+    setIsDownloadingCover(true);
+
+    try {
+      // Lazy-load to keep bundle light
+      const mod = await import('jspdf');
+      const jsPDF = mod.jsPDF;
+
+      const fullName = (data?.personalInfo?.fullName || 'Candidate').trim();
+      const safeName = fullName
+        .replace(/[^a-z0-9\-\s_]/gi, '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 60);
+
+      const fileName = `Cover Letter - ${safeName || 'Candidate'}`;
+
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+
+      const marginX = 20;
+      const marginY = 20;
+
+      const fontSize = 11;
+      const lineHeight = 6;
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(fontSize);
+
+      const maxTextWidth = pageWidth - marginX * 2;
+
+      const normalized = text.replace(/\r\n/g, '\n');
+      const lines = normalized.split('\n');
+
+      let cursorY = marginY;
+
+      for (const rawLine of lines) {
+        // Preserve blank lines as paragraph spacing
+        if (!rawLine.trim()) {
+          cursorY += lineHeight;
+          continue;
+        }
+
+        const wrapped = doc.splitTextToSize(rawLine, maxTextWidth);
+
+        for (const w of wrapped) {
+          if (cursorY + lineHeight > pageHeight - marginY) {
+            doc.addPage();
+            doc.setFont('times', 'normal');
+            doc.setFontSize(fontSize);
+            cursorY = marginY;
+          }
+          doc.text(String(w), marginX, cursorY);
+          cursorY += lineHeight;
+        }
+
+        // slight paragraph spacing after a non-empty line-group
+        cursorY += lineHeight * 0.35;
+      }
+
+      doc.save(`${fileName}.pdf`);
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Could not generate PDF. Please try again.');
+    } finally {
+      setIsDownloadingCover(false);
+    }
+  }, [coverLetter, data?.personalInfo?.fullName]);
+
   const startSubscription = async (plan: PlanId) => {
     setIsRedirecting(true);
     setErrorMsg('');
@@ -461,7 +538,11 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
             </>
           ) : (
             <>
-              {mode === 'cover_letter' ? <Mail className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              {mode === 'cover_letter' ? (
+                <Mail className="h-4 w-4 mr-2" />
+              ) : (
+                <Sparkles className="h-4 w-4 mr-2" />
+              )}
               {mode === 'cover_letter' ? 'Generate Cover Letter' : 'Tailor Resume with AI'}
             </>
           )}
@@ -473,7 +554,11 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
               <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-red-800">
-                  {needsUpgrade ? 'Upgrade Required' : mode === 'cover_letter' ? 'Cover Letter Error' : 'AI Tailor Error'}
+                  {needsUpgrade
+                    ? 'Upgrade Required'
+                    : mode === 'cover_letter'
+                    ? 'Cover Letter Error'
+                    : 'AI Tailor Error'}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
               </div>
@@ -638,15 +723,35 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                 className="bg-white"
               />
 
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3 flex-wrap">
                 <Button
                   onClick={copyCoverLetter}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                  className="flex-1 min-w-[180px] bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   {copied ? 'Copied!' : 'Copy Cover Letter'}
                 </Button>
-                <Button variant="outline" onClick={resetResults}>
+
+                <Button
+                  variant="outline"
+                  onClick={downloadCoverLetterPDF}
+                  disabled={isDownloadingCover || !coverLetter.trim()}
+                  className="min-w-[170px] bg-white text-[#1e3a8a] border border-blue-200 hover:bg-blue-50"
+                >
+                  {isDownloadingCover ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Preparing…
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download PDF
+                    </>
+                  )}
+                </Button>
+
+                <Button variant="outline" onClick={resetResults} className="min-w-[140px]">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Discard
                 </Button>
