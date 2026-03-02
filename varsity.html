@@ -6,6 +6,9 @@
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <meta name="description" content="View all South African universities, application deadlines, and entry requirements. Apply early to secure your spot in 2026.">
 
+<!-- Canonical -->
+<link rel="canonical" href="https://careerunified.com/varsity.html">
+
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -17,8 +20,8 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#1b60a9">
 
-
 <!-- Open Graph / Facebook -->
+<meta property="og:site_name" content="Career Unified">
 <meta property="og:title" content="South African Universities – Career Unified">
 <meta property="og:description" content="Check application deadlines, entry requirements, and university opportunities in South Africa. Apply early and secure your spot.">
 <meta property="og:url" content="https://careerunified.com/varsity.html">
@@ -54,12 +57,8 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'G-2Z934XRVXT', {
-    send_page_view: true
-  });
+  gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
 </script>
-
 
 <style>
 /* =============================== */
@@ -109,10 +108,11 @@ main {
 /* Search & Filter Container */
 .search-controls {
   max-width: 1000px;
-  margin: 0 auto 30px;
+  margin: 0 auto 18px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 #searchInput {
@@ -137,25 +137,71 @@ main {
 }
 
 #sortDeadlineBtn {
-  padding: 12px 24px;
+  padding: 12px 18px;
   border-radius: 8px;
   border: none;
   background: #2563eb;
   color: white;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   font-family: 'Poppins', sans-serif;
   transition: background 0.2s;
   white-space: nowrap;
 }
 
-#sortDeadlineBtn:hover {
-  background: #1d4ed8;
+#sortDeadlineBtn:hover { background: #1d4ed8; }
+#sortDeadlineBtn:active { transform: scale(0.98); }
+
+/* NEW: Clear button */
+#clearSearchBtn {
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.2s, transform 0.02s;
+  white-space: nowrap;
 }
 
-#sortDeadlineBtn:active {
-  transform: scale(0.98);
+#clearSearchBtn:hover { background: #f3f4f6; }
+#clearSearchBtn:active { transform: scale(0.98); }
+
+/* NEW: Sub filters row */
+.sub-controls {
+  max-width: 1000px;
+  margin: 0 auto 26px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#statusFilter {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  cursor: pointer;
+  min-width: 220px;
+}
+
+#statusFilter:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.helper-text {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* =============================== */
@@ -188,14 +234,13 @@ main {
   font-size: 1.15rem;
   text-decoration: none;
   color: #1e3a8a;
-  font-weight: 600;
+  font-weight: 700;
   display: block;
   margin-bottom: 8px;
+  word-break: break-word;
 }
 
-.varsity-card a:hover {
-  color: #2563eb;
-}
+.varsity-card a:hover { color: #2563eb; }
 
 .varsity-card small {
   display: block;
@@ -218,23 +263,16 @@ main {
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 800;
 }
 
-.status.open {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.status.closed {
-  background: #fee2e2;
-  color: #dc2626;
-}
+.status.open { background: #dcfce7; color: #16a34a; }
+.status.closed { background: #fee2e2; color: #dc2626; }
 
 .urgent {
   background: #fef3c7;
   color: #92400e;
-  font-weight: 600;
+  font-weight: 800;
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -242,9 +280,34 @@ main {
   align-items: center;
 }
 
-.urgent::before {
-  content: '⚠️';
-  margin-right: 4px;
+.urgent::before { content: '⚠️'; margin-right: 4px; }
+
+/* =============================== */
+/* Skeleton loading */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 12px;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: shimmer 1.3s infinite;
+}
+
+@keyframes shimmer { 100% { left: 100%; } }
+
+.skeleton-varsity {
+  height: 90px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
 /* Empty State */
@@ -285,12 +348,10 @@ main {
 .footer-links a {
   color: #facc15;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.footer-links a:hover {
-  text-decoration: underline;
-}
+.footer-links a:hover { text-decoration: underline; }
 
 /* Scroll Buttons */
 .scroll-btn {
@@ -310,137 +371,51 @@ main {
   transition: all 0.2s;
 }
 
-.scroll-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
+.scroll-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
 #scrollUp { bottom: 90px; }
 #scrollDown { bottom: 30px; }
 
 /* =============================== */
-/* SKELETON LOADING */
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: #e5e7eb;
-  border-radius: 12px;
-}
-
-.skeleton::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
-  animation: shimmer 1.3s infinite;
-}
-
-@keyframes shimmer {
-  100% { left: 100%; }
-}
-
-.skeleton-varsity {
-  height: 90px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
-
-/* =============================== */
 /* MOBILE RESPONSIVE */
 @media (max-width: 900px) {
-  header {
-    padding: 50px 20px 40px;
-  }
+  header { padding: 50px 20px 40px; }
+  header h1 { font-size: 2rem; }
+  header p { font-size: 1rem; }
 
-  header h1 {
-    font-size: 2rem;
-  }
+  main { padding: 30px 16px; }
 
-  header p {
-    font-size: 1rem;
-  }
+  .search-controls { flex-direction: column; gap: 12px; }
+  #searchInput, #sortDeadlineBtn, #clearSearchBtn { width: 100%; min-width: 100%; }
 
-  main {
-    padding: 30px 16px;
-  }
+  .sub-controls { flex-direction: column; align-items: stretch; }
+  #statusFilter { width: 100%; min-width: 100%; }
 
-  .search-controls {
-    flex-direction: column;
-    gap: 12px;
-  }
+  .varsity-card { padding: 16px; margin-bottom: 12px; }
+  .varsity-card a, .varsity-card > span { font-size: 1.05rem; }
+  .varsity-card small { font-size: 0.85rem; }
 
-  #searchInput,
-  #sortDeadlineBtn {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  #varsityList {
-    padding: 0;
-  }
-
-  .varsity-card {
-    padding: 16px;
-    margin-bottom: 12px;
-  }
-
-  .varsity-card a,
-  .varsity-card > span {
-    font-size: 1.05rem;
-  }
-
-  .varsity-card small {
-    font-size: 0.85rem;
-  }
-
-  .scroll-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-    right: 16px;
-  }
-
+  .scroll-btn { width: 44px; height: 44px; font-size: 18px; right: 16px; }
   #scrollUp { bottom: 80px; }
   #scrollDown { bottom: 24px; }
 
-  .footer-links {
-    flex-direction: column;
-    gap: 12px;
-  }
+  .footer-links { flex-direction: column; gap: 12px; }
 }
 
 @media (max-width: 400px) {
-  header h1 {
-    font-size: 1.75rem;
-  }
-
-  header p {
-    font-size: 0.9rem;
-  }
-
-  main {
-    padding: 24px 12px;
-  }
-
-  .varsity-card {
-    padding: 14px;
-  }
-
-  .varsity-card a,
-  .varsity-card > span {
-    font-size: 1rem;
-  }
+  header h1 { font-size: 1.75rem; }
+  header p { font-size: 0.9rem; }
+  main { padding: 24px 12px; }
+  .varsity-card { padding: 14px; }
+  .varsity-card a, .varsity-card > span { font-size: 1rem; }
 }
 </style>
 </head>
+
 <body>
 
 <!-- NAVIGATION -->
 <nav class="main-nav">
-
   <!-- DESKTOP VIEW -->
   <a href="index.html" class="logo desktop-nav">Career Unified</a>
 
@@ -451,10 +426,10 @@ main {
     <a href="cv-generator.html">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-jobs.html"> Saved Items</a>
+    <a href="saved-items.html">Saved Items</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-    
+
     <!-- My Account Icon (Desktop) -->
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
@@ -466,11 +441,9 @@ main {
 
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <!-- Clickable Logo -->
     <a href="index.html" class="mobile-logo">Career Unified</a>
-    
+
     <div class="mobile-nav-right">
-      <!-- Account Icon - Direct Link -->
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
         <svg viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -478,7 +451,6 @@ main {
         </svg>
       </a>
 
-      <!-- Menu Icon -->
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
         <svg viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -488,7 +460,6 @@ main {
       </button>
     </div>
   </div>
-
 </nav>
 
 <!-- MOBILE SLIDE MENU -->
@@ -499,11 +470,10 @@ main {
   <a href="cv-generator.html">Generate CV</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
-  <a href="saved-items.html"> Saved Items</a>
+  <a href="saved-items.html">Saved Items</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
-
 
 <!-- HEADER -->
 <header>
@@ -515,9 +485,22 @@ main {
 <main>
   <div class="search-controls">
     <input type="text" id="searchInput" placeholder="Search universities..." />
-    <button id="sortDeadlineBtn">Sort by Earliest Deadline</button>
+    <button id="sortDeadlineBtn" type="button">Sort by Earliest Deadline</button>
+    <button id="clearSearchBtn" type="button">Clear</button>
   </div>
-  
+
+  <div class="sub-controls">
+    <select id="statusFilter" aria-label="Filter by application status">
+      <option value="all">All (Open + Closed)</option>
+      <option value="open">Open only</option>
+      <option value="closed">Closed only</option>
+      <option value="tba">Deadline TBA</option>
+    </select>
+    <div class="helper-text">
+      “Open/Closed” is calculated using the deadline date (today vs deadline). If a deadline is missing, it shows as TBA.
+    </div>
+  </div>
+
   <ul id="varsityList"></ul>
 </main>
 
@@ -533,195 +516,303 @@ main {
 </footer>
 
 <!-- SCROLL BUTTONS -->
-<button id="scrollUp" class="scroll-btn">↑</button>
-<button id="scrollDown" class="scroll-btn">↓</button>
+<button id="scrollUp" class="scroll-btn" type="button">↑</button>
+<button id="scrollDown" class="scroll-btn" type="button">↓</button>
 
 <script src="js/sanityClient.js"></script>
 <script>
-// ===== Skeleton loader =====
-const varsityList = document.getElementById('varsityList');
+  // ===== Skeleton loader =====
+  const varsityList = document.getElementById('varsityList');
 
-function showVarsitySkeletons(){
-  varsityList.innerHTML = "";
-  for(let i=0;i<8;i++){
-    const li = document.createElement("li");
-    li.className = "skeleton skeleton-varsity";
-    varsityList.appendChild(li);
-  }
-}
-
-showVarsitySkeletons();
-
-const searchInput = document.getElementById('searchInput');
-const sortBtn = document.getElementById('sortDeadlineBtn');
-let universities = [];
-
-let globalSearch = localStorage.getItem("homeSearchTerm");
-if(globalSearch){
-  searchInput.value = globalSearch;
-  localStorage.removeItem("homeSearchTerm");
-}
-
-// ===== Cache system =====
-const VARSITY_CACHE = "careerUnifiedVarsityCache";
-const VARSITY_CACHE_TIME = "careerUnifiedVarsityCacheTime";
-const CACHE_TTL = 5 * 60 * 1000;
-
-// ===== Load cache instantly =====
-const cached = localStorage.getItem(VARSITY_CACHE);
-if (cached) {
-  try {
-    universities = JSON.parse(cached);
-    injectUniversitySchema();
-    renderList();
-  } catch(e){}
-}
-  
-async function fetchUniversities() {
-  universities = await window.sanityClient.fetch(`
-    *[_type=="university"] | order(deadline asc){
-      _id,
-      name,
-      applicationLink,
-      deadline,
-      notes
+  function showVarsitySkeletons(){
+    varsityList.innerHTML = "";
+    for(let i=0;i<8;i++){
+      const li = document.createElement("li");
+      li.className = "skeleton skeleton-varsity";
+      varsityList.appendChild(li);
     }
-  `);
-  
-  // ===== Save to cache =====
-  localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
-  localStorage.setItem(VARSITY_CACHE_TIME, Date.now());
-
-  injectUniversitySchema();
-  renderList();
-}
-
-function injectUniversitySchema() {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "South African Universities",
-    "itemListElement": universities.map((u, index) => ({
-      "@type": "CollegeOrUniversity",
-      "position": index + 1,
-      "name": u.name,
-      "url": u.applicationLink || "https://careerunified.com/varsity.html",
-      "applicationDeadline": u.deadline || undefined
-    }))
-  };
-
-  const old = document.getElementById("varsity-schema");
-  if (old) old.remove();
-
-  const script = document.createElement("script");
-  script.id = "varsity-schema";
-  script.type = "application/ld+json";
-  script.textContent = JSON.stringify(schema);
-  document.head.appendChild(script);
-}
-
-// Fetch on page load
-const last = localStorage.getItem(VARSITY_CACHE_TIME);
-if (!last || Date.now() - last > CACHE_TTL) {
-  fetchUniversities();    // no cache or expired
-} else {
-  fetchUniversities();    // background refresh
-}
-
-setInterval(fetchUniversities, 5 * 60 * 1000);
-
-function renderList() {
-  const query = searchInput.value.toLowerCase();
-  varsityList.innerHTML = '';
-  const filtered = universities.filter(u =>
-    u.name.toLowerCase().includes(query)
-  );
-
-  if (!filtered.length) {
-    varsityList.innerHTML = `
-      <div class="empty-state">
-        <h3>No universities found</h3>
-        <p>Try adjusting your search terms</p>
-      </div>
-    `;
-    return;
   }
 
-  const today = new Date();
+  showVarsitySkeletons();
 
-  filtered.forEach(uni => {
-    const deadlineDate = uni.deadline ? new Date(uni.deadline) : null;
-    const isOpen = deadlineDate ? deadlineDate >= today : true;
-    const diffDays = deadlineDate
-      ? Math.ceil((deadlineDate - today) / (1000*60*60*24))
-      : null;
-    const isUrgent = diffDays !== null && diffDays <= 7 && isOpen;
+  const searchInput = document.getElementById('searchInput');
+  const sortBtn = document.getElementById('sortDeadlineBtn');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  const statusFilter = document.getElementById('statusFilter');
 
-    const safeUrl =
-      uni.applicationLink && uni.applicationLink.startsWith('http')
-        ? uni.applicationLink
-        : null;
+  let universities = [];
+  let sortAsc = true;
 
-    const li = document.createElement('li');
-    li.className = "varsity-card";
-    
-    const labelsHTML = `
-      <div class="labels">
-        <span class="status ${isOpen ? 'open' : 'closed'}">
-          ${isOpen ? 'Open' : 'Closed'}
-        </span>
-        ${isUrgent ? '<span class="urgent">Urgent!</span>' : ''}
-      </div>
-    `;
-    
-    li.innerHTML = `
-      ${safeUrl
-        ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name}</a>`
-        : `<span>${uni.name}</span>`
-      }
-      <small> Deadline: ${uni.deadline || 'TBA'}</small>
-      ${labelsHTML}
-    `;
-    varsityList.appendChild(li);
+  // ===== Read search from home (existing) + also accept ?q= =====
+  function normalize(v){ return (v || "").toString().trim(); }
+  function normalizeLower(v){ return normalize(v).toLowerCase(); }
+
+  const urlQ = normalize(new URLSearchParams(window.location.search).get("q"));
+  let globalSearch = normalize(localStorage.getItem("homeSearchTerm"));
+  if (urlQ) {
+    searchInput.value = urlQ;
+  } else if(globalSearch){
+    searchInput.value = globalSearch;
+  }
+  if (globalSearch) localStorage.removeItem("homeSearchTerm");
+
+  // ===== Cache system =====
+  const VARSITY_CACHE = "careerUnifiedVarsityCache";
+  const VARSITY_CACHE_TIME = "careerUnifiedVarsityCacheTime";
+  const CACHE_TTL = 5 * 60 * 1000;
+
+  // ===== Load cache instantly =====
+  const cached = localStorage.getItem(VARSITY_CACHE);
+  if (cached) {
+    try {
+      universities = JSON.parse(cached) || [];
+      injectUniversitySchema();
+      renderList();
+    } catch(e){}
+  }
+
+  async function fetchUniversities() {
+    try {
+      universities = await window.sanityClient.fetch(`
+        *[_type=="university"] | order(deadline asc){
+          _id,
+          name,
+          applicationLink,
+          deadline,
+          notes
+        }
+      `);
+
+      localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
+      localStorage.setItem(VARSITY_CACHE_TIME, Date.now());
+
+      injectUniversitySchema();
+      renderList();
+    } catch (err) {
+      console.error("Sanity fetch failed:", err);
+      // if cache exists, keep it; otherwise show empty state
+      renderList();
+    }
+  }
+
+  function injectUniversitySchema() {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "South African Universities",
+      "itemListElement": (universities || []).map((u, index) => ({
+        "@type": "CollegeOrUniversity",
+        "position": index + 1,
+        "name": u?.name || "University",
+        "url": u?.applicationLink || "https://careerunified.com/varsity.html",
+        "applicationDeadline": u?.deadline || undefined
+      }))
+    };
+
+    const old = document.getElementById("varsity-schema");
+    if (old) old.remove();
+
+    const script = document.createElement("script");
+    script.id = "varsity-schema";
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
+  // Fetch on page load
+  const last = localStorage.getItem(VARSITY_CACHE_TIME);
+  if (!last || Date.now() - last > CACHE_TTL) {
+    fetchUniversities(); // no cache or expired
+  } else {
+    fetchUniversities(); // background refresh
+  }
+
+  setInterval(fetchUniversities, 5 * 60 * 1000);
+
+  function safeHttpUrl(raw) {
+    if (!raw) return null;
+    const v = raw.toString().trim();
+    if (!v) return null;
+    if (v.startsWith("http://") || v.startsWith("https://")) return v;
+    // If user stored "www.site.com" in Sanity, allow it safely
+    if (v.startsWith("www.")) return "https://" + v;
+    return null;
+  }
+
+  function parseDeadline(d) {
+    if (!d) return null;
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  function getStatus(deadlineDate) {
+    if (!deadlineDate) return "tba";
+    const today = new Date();
+    // set hours to compare by date, not time
+    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const d = new Date(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+    return d >= t ? "open" : "closed";
+  }
+
+  function isUrgent(deadlineDate) {
+    if (!deadlineDate) return false;
+    const today = new Date();
+    const diff = Math.ceil((deadlineDate - today) / (1000*60*60*24));
+    return diff <= 7 && diff >= 0;
+  }
+
+  function filterByStatus(list, statusValue) {
+    if (statusValue === "all") return list;
+    return list.filter(u => {
+      const d = parseDeadline(u.deadline);
+      const s = getStatus(d);
+      return s === statusValue;
+    });
+  }
+
+  // Smarter search: name + notes + deadline text
+  function filterByQuery(list, q) {
+    const query = normalizeLower(q);
+    if (!query) return list;
+    return list.filter(u => {
+      const hay = normalizeLower([
+        u?.name,
+        u?.notes,
+        u?.deadline
+      ].filter(Boolean).join(" | "));
+      return hay.includes(query);
+    });
+  }
+
+  function sortByDeadline(list) {
+    // Sort: earliest deadlines first, then TBA at bottom
+    return [...list].sort((a,b) => {
+      const da = parseDeadline(a.deadline);
+      const db = parseDeadline(b.deadline);
+
+      if (!da && !db) return (a.name || "").localeCompare(b.name || "");
+      if (!da) return 1;
+      if (!db) return -1;
+
+      return sortAsc ? (da - db) : (db - da);
+    });
+  }
+
+  function renderList() {
+    if (!Array.isArray(universities)) universities = [];
+
+    const q = searchInput.value;
+    const statusVal = statusFilter.value;
+
+    let list = universities;
+    list = filterByQuery(list, q);
+    list = filterByStatus(list, statusVal);
+    list = sortByDeadline(list);
+
+    varsityList.innerHTML = '';
+
+    if (!list.length) {
+      varsityList.innerHTML = `
+        <div class="empty-state">
+          <h3>No universities found</h3>
+          <p>Try changing your search or filter</p>
+        </div>
+      `;
+      return;
+    }
+
+    list.forEach(uni => {
+      const d = parseDeadline(uni.deadline);
+      const status = getStatus(d);
+      const urgent = status === "open" && isUrgent(d);
+
+      const safeUrl = safeHttpUrl(uni.applicationLink);
+
+      const li = document.createElement('li');
+      li.className = "varsity-card";
+
+      const labelsHTML = `
+        <div class="labels">
+          ${
+            status === "tba"
+              ? `<span class="status open" style="background:#e0f2fe;color:#0369a1;">TBA</span>`
+              : `<span class="status ${status}">${status === "open" ? "Open" : "Closed"}</span>`
+          }
+          ${urgent ? '<span class="urgent">Urgent!</span>' : ''}
+        </div>
+      `;
+
+      // Notes (optional)
+      const notesText = (uni.notes && uni.notes.toString().trim()) ? uni.notes.toString().trim() : "";
+      const notesHTML = notesText ? `<small>${notesText}</small>` : ``;
+
+      li.innerHTML = `
+        ${
+          safeUrl
+            ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name || 'University'}</a>`
+            : `<span>${uni.name || 'University'}</span>`
+        }
+        <small>Deadline: ${uni.deadline || 'TBA'}</small>
+        ${notesHTML}
+        ${labelsHTML}
+      `;
+
+      varsityList.appendChild(li);
+    });
+  }
+
+  searchInput.addEventListener('input', () => { renderList(); });
+
+  statusFilter.addEventListener('change', () => { renderList(); });
+
+  sortBtn.addEventListener('click', () => {
+    sortAsc = !sortAsc;
+    sortBtn.textContent = sortAsc ? "Sort by Earliest Deadline" : "Sort by Latest Deadline";
+    renderList();
   });
-}
 
-searchInput.addEventListener('input', renderList);
-sortBtn.addEventListener('click', () => {
-  universities.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-  renderList();
-});
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = "";
+    statusFilter.value = "all";
+    sortAsc = true;
+    sortBtn.textContent = "Sort by Earliest Deadline";
+    renderList();
+  });
 
-// SCROLL BUTTONS
-const up = document.getElementById('scrollUp');
-const down = document.getElementById('scrollDown');
-window.addEventListener('scroll', () => {
-  up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+  // SCROLL BUTTONS
+  const up = document.getElementById('scrollUp');
+  const down = document.getElementById('scrollDown');
 
-/* ================= MOBILE NAVIGATION ================= */
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
+  window.addEventListener('scroll', () => {
+    const show = window.scrollY > 300 ? 'block' : 'none';
+    up.style.display = show;
+    down.style.display = show;
+  });
 
-if (menuBtn) {
-  menuBtn.onclick = () => {
-    const isOpen = mobileMenu.style.display === "block";
-    mobileMenu.style.display = isOpen ? "none" : "block";
-  };
-}
+  up.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+  down.onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
 
-// Close menu when clicking outside
-document.addEventListener("click", e => {
-  if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
-    if (mobileMenu) mobileMenu.style.display = "none";
+  /* ================= MOBILE NAVIGATION ================= */
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (menuBtn) {
+    menuBtn.onclick = () => {
+      const isOpen = mobileMenu.style.display === "block";
+      mobileMenu.style.display = isOpen ? "none" : "block";
+    };
   }
-});
+
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
+      if (mobileMenu) mobileMenu.style.display = "none";
+    }
+  });
 </script>
 
 </body>
 </html>
+
 
 
 
