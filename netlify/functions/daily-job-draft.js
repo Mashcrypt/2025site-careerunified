@@ -24,7 +24,7 @@ export async function handler() {
     }
 
     // ✅ "Thought for 25s"
-    await sleep(25_000);
+    await sleep(2_000);
 
     const postText = await generateWhatsAppPost(job);
 
