@@ -1,65 +1,80 @@
 // netlify/functions/daily-job-draft.js
 import { getDb } from "./_firebaseAdmin";
-import { fetchLatestJobFromSite } from "./_scrapeJobs";
+import { fetchLatestJobsFromSite } from "./_scrapeJobs";
 import { generateWhatsAppPost } from "./_openai";
 import { sendApprovalEmail } from "./_notify";
+
+const COLLECTION = "post_drafts";
+const JOB_LIMIT = 3;
 
 export async function handler() {
   try {
     const db = getDb();
+    const jobs = await fetchLatestJobsFromSite(JOB_LIMIT);
 
-    const job = await fetchLatestJobFromSite();
-
-    if (!job || !job.url) {
-      throw new Error("Job data is missing or invalid.");
-    }
-
-    const existing = await db
-      .collection("job_posts")
-      .where("jobUrl", "==", job.url)
-      .limit(1)
-      .get();
-
-    if (!existing.empty) {
+    if (!jobs.length) {
       return {
         statusCode: 200,
-        body: "No new job (already processed)",
+        body: "No jobs found.",
       };
     }
 
-    const postText = await generateWhatsAppPost(job);
+    let createdCount = 0;
+    const createdIds = [];
 
-    if (!postText || typeof postText !== "string") {
-      throw new Error("OpenAI returned empty post text.");
-    }
+    for (const job of jobs) {
+      if (!job?.url) continue;
 
-    const docRef = await db.collection("job_posts").add({
-      jobUrl: job.url,
-      job,
-      postText,
-      status: "PENDING",
-      createdAt: new Date(),
-    });
+      const existing = await db
+        .collection(COLLECTION)
+        .where("itemUrl", "==", job.url)
+        .limit(1)
+        .get();
 
-    const base = process.env.APPROVAL_BASE_URL;
-    const emailTo = process.env.NOTIFY_EMAIL_TO;
+      if (!existing.empty) {
+        continue;
+      }
 
-    if (base && emailTo) {
-      const cleanBase = base.replace(/\/+$/, "");
-      const approveUrl = `${cleanBase}/.netlify/functions/approve-draft?id=${docRef.id}`;
+      const postText = await generateWhatsAppPost(job);
 
-      await sendApprovalEmail({
-        to: emailTo,
-        subject: "Career Unified: Draft ready for approval",
-        text:
-          `Your daily WhatsApp post draft is ready.\n\nApprove here:\n${approveUrl}\n\n` +
-          `Job:\n${job.title}\n${job.url}`,
+      const docRef = await db.collection(COLLECTION).add({
+        itemUrl: job.url,
+        itemType: "job",
+        item: job,
+        postText,
+        status: "PENDING",
+        createdAt: new Date(),
       });
+
+      createdCount += 1;
+      createdIds.push(docRef.id);
+
+      const base = process.env.APPROVAL_BASE_URL;
+      const emailTo = process.env.NOTIFY_EMAIL_TO;
+
+      if (base && emailTo) {
+        const cleanBase = base.replace(/\/+$/, "");
+        const approveUrl = `${cleanBase}/.netlify/functions/approve-draft?id=${docRef.id}`;
+
+        await sendApprovalEmail({
+          to: emailTo,
+          subject: `Career Unified: New job draft ready`,
+          text:
+            `A new job draft is ready for approval.\n\n` +
+            `Approve here:\n${approveUrl}\n\n` +
+            `Title: ${job.title}\n` +
+            `Company: ${job.company}\n` +
+            `Link: ${job.url}`,
+        });
+      }
     }
 
     return {
       statusCode: 200,
-      body: `Draft created: ${docRef.id}`,
+      body:
+        createdCount > 0
+          ? `Created ${createdCount} new job draft(s): ${createdIds.join(", ")}`
+          : "No new jobs to draft.",
     };
   } catch (e) {
     console.error("daily-job-draft error:", e);
