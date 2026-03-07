@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bursaries – Career Unified</title>
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="description" content="Find bursaries, scholarships, and funding opportunities for South African students. Apply early and secure your financial aid for 2026.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Canonical -->
+  <title>Bursaries & Scholarships in South Africa 2026 | Career Unified</title>
+  <meta name="description" content="Find bursaries, scholarships, and funding opportunities for South African students. Filter by faculty, apply early and secure your financial aid for 2026.">
+  <meta name="keywords" content="bursaries South Africa, scholarships South Africa, student funding, NSFAS, financial aid 2026, undergraduate bursary, postgraduate bursary">
+  <meta name="author" content="Career Unified">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="https://careerunified.com/bursaries.html">
 
   <!-- Favicon -->
@@ -23,19 +23,54 @@
 
   <!-- Open Graph -->
   <meta property="og:site_name" content="Career Unified">
-  <meta property="og:title" content="Bursaries & Scholarships South Africa – Career Unified">
-  <meta property="og:description" content="Discover bursaries, scholarships, and funding opportunities for students in South Africa. Apply early and secure your financial aid.">
+  <meta property="og:title" content="Bursaries & Scholarships in South Africa 2026 | Career Unified">
+  <meta property="og:description" content="Discover bursaries, scholarships, and funding opportunities for students in South Africa. Filter by faculty and apply early to secure financial aid for 2026.">
   <meta property="og:url" content="https://careerunified.com/bursaries.html">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://careerunified.com/android-chrome-512x512.png">
+  <meta property="og:image" content="https://careerunified.com/images/social-share.png">
+  <meta property="og:locale" content="en_ZA">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Bursaries & Scholarships South Africa – Career Unified">
+  <meta name="twitter:title" content="Bursaries & Scholarships in South Africa 2026 | Career Unified">
   <meta name="twitter:description" content="Find bursaries and scholarships for South African students. Apply early to secure funding for 2026.">
-  <meta name="twitter:image" content="https://careerunified.com/android-chrome-512x512.png">
+  <meta name="twitter:image" content="https://careerunified.com/images/social-share.png">
 
-  <!-- Structured Data -->
+  <!-- Structured Data: WebPage + BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Bursaries & Scholarships in South Africa",
+    "description": "Find bursaries, scholarships, and funding opportunities for South African students. Updated regularly with the latest financial aid opportunities.",
+    "url": "https://careerunified.com/bursaries.html",
+    "inLanguage": "en-ZA",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Career Unified",
+      "url": "https://careerunified.com/"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://careerunified.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Bursaries",
+          "item": "https://careerunified.com/bursaries.html"
+        }
+      ]
+    }
+  }
+  </script>
+
+  <!-- Bursary ItemList schema (populated dynamically by JS) -->
   <script type="application/ld+json" id="bursary-schema">
   {
     "@context": "https://schema.org",
@@ -58,14 +93,7 @@
   </script>
 
   <style>
-    /* =============================== */
-    /* RESET & BASE                    */
-    /* =============================== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -75,32 +103,16 @@
       line-height: 1.6;
     }
 
-    /* =============================== */
-    /* HEADER                          */
-    /* =============================== */
-    header {
+    /* PAGE HERO — section instead of header to avoid semantic conflict */
+    .page-hero {
       text-align: center;
       padding: 60px 20px 50px;
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #fff;
     }
+    .page-hero h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; }
 
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-    }
-
-    header p {
-      margin-top: 8px;
-      font-size: 1.1rem;
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-
-    /* =============================== */
-    /* BURSARIES PAGE LAYOUT           */
-    /* =============================== */
     .bursaries-container {
       display: flex;
       max-width: 1200px;
@@ -118,13 +130,12 @@
       padding-right: 10px;
     }
 
-    /* DESKTOP: sticky panel, description scrolls inside */
     .bursaries-preview {
       flex: 1;
       background: #fff;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       min-height: 420px;
       position: sticky;
       top: 20px;
@@ -134,21 +145,8 @@
       flex-direction: column;
     }
 
-    /* =============================== */
-    /* FILTER                          */
-    /* =============================== */
-    .filter {
-      margin-bottom: 20px;
-    }
-
-    .filter label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #374151;
-      font-size: 0.95rem;
-    }
-
+    .filter { margin-bottom: 20px; }
+    .filter label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.95rem; }
     .filter select {
       width: 100%;
       padding: 12px 16px;
@@ -160,16 +158,8 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+    .filter select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
-    .filter select:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    /* =============================== */
-    /* BURSARY CARDS LIST              */
-    /* =============================== */
     #bursaryList {
       list-style: none;
       padding: 0;
@@ -183,42 +173,17 @@
       background: #fff;
       border-radius: 10px;
       padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
       border-left: 3px solid transparent;
     }
+    .bursary-card:hover  { background: #f0f7ff; transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .bursary-card.selected { border-left-color: #facc15; background: #fffbeb; }
+    .bursary-card strong { font-size: 1.1rem; color: #1e3a8a; display: block; margin-bottom: 6px; padding-right: 40px; }
+    .bursary-card p      { margin: 4px 0; font-size: 0.9rem; color: #6b7280; line-height: 1.5; }
 
-    .bursary-card:hover {
-      background: #f0f7ff;
-      transform: translateX(4px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .bursary-card.selected {
-      border-left-color: #facc15;
-      background: #fffbeb;
-    }
-
-    .bursary-card strong {
-      font-size: 1.1rem;
-      color: #1e3a8a;
-      display: block;
-      margin-bottom: 6px;
-      padding-right: 40px;
-    }
-
-    .bursary-card p {
-      margin: 4px 0;
-      font-size: 0.9rem;
-      color: #6b7280;
-      line-height: 1.5;
-    }
-
-    /* =============================== */
-    /* URGENT BADGE                    */
-    /* =============================== */
     .urgent {
       display: inline-block;
       background: #fef3c7;
@@ -232,9 +197,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* =============================== */
-    /* READ MORE                       */
-    /* =============================== */
     .read-more {
       color: #2563eb;
       cursor: pointer;
@@ -244,15 +206,8 @@
       margin-top: 6px;
       transition: color 0.2s;
     }
+    .read-more:hover { color: #1e40af; text-decoration: underline; }
 
-    .read-more:hover {
-      color: #1e40af;
-      text-decoration: underline;
-    }
-
-    /* =============================== */
-    /* PREVIEW HEADER + ACTIONS        */
-    /* =============================== */
     .preview-header {
       display: flex;
       justify-content: space-between;
@@ -262,10 +217,7 @@
       flex-shrink: 0;
     }
 
-    .preview-title-wrap {
-      flex: 1;
-      min-width: 0;
-    }
+    .preview-title-wrap { flex: 1; min-width: 0; }
 
     .bursaries-preview h2 {
       color: #1e3a8a;
@@ -275,12 +227,7 @@
       word-break: break-word;
     }
 
-    .preview-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-shrink: 0;
-    }
+    .preview-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
     .icon-btn-mini {
       background: #eff6ff;
@@ -295,11 +242,7 @@
       justify-content: center;
       transition: transform 0.12s ease, background 0.12s ease;
     }
-
-    .icon-btn-mini:hover {
-      background: #dbeafe;
-      transform: translateY(-1px);
-    }
+    .icon-btn-mini:hover { background: #dbeafe; transform: translateY(-1px); }
 
     .close-preview-btn {
       background: transparent;
@@ -311,47 +254,13 @@
       justify-content: center;
       transition: transform 0.2s;
     }
+    .close-preview-btn:hover { transform: scale(1.1); }
+    .close-preview-btn svg { width: 28px; height: 28px; stroke: #3b82f6; stroke-width: 2.5; }
 
-    .close-preview-btn:hover {
-      transform: scale(1.1);
-    }
+    .provider-row { display: flex; gap: 12px; align-items: center; margin: 8px 0 12px; flex-shrink: 0; }
+    .provider-logo { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #f3f4f6; border: 1px solid #e5e7eb; }
+    .provider-name { font-weight: 700; color: #111827; line-height: 1.2; }
 
-    .close-preview-btn svg {
-      width: 28px;
-      height: 28px;
-      stroke: #3b82f6;
-      stroke-width: 2.5;
-    }
-
-    /* =============================== */
-    /* PROVIDER LOGO IN PREVIEW        */
-    /* =============================== */
-    .provider-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin: 8px 0 12px;
-      flex-shrink: 0;
-    }
-
-    .provider-logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      object-fit: cover;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-    }
-
-    .provider-name {
-      font-weight: 700;
-      color: #111827;
-      line-height: 1.2;
-    }
-
-    /* =============================== */
-    /* PREVIEW CONTENT (DESKTOP)       */
-    /* =============================== */
     .preview-slide {
       display: flex;
       flex-direction: column;
@@ -361,40 +270,15 @@
       animation-fill-mode: both;
       width: 100%;
     }
-
     .slide-left  { animation-name: slideLeft;  }
     .slide-right { animation-name: slideRight; }
+    @keyframes slideLeft  { from { transform: translateX(40px);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideRight { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    @keyframes slideLeft {
-      from { transform: translateX(40px);  opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
-    }
-
-    @keyframes slideRight {
-      from { transform: translateX(-40px); opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
-    }
-
-    .preview-content-wrapper {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .preview-info {
-      flex-shrink: 0;
-      margin-bottom: 10px;
-    }
-
-    .bursaries-preview p {
-      margin: 8px 0;
-      color: #4b5563;
-    }
-
-    .bursaries-preview strong {
-      color: #1f2937;
-    }
+    .preview-content-wrapper { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .preview-info             { flex-shrink: 0; margin-bottom: 10px; }
+    .bursaries-preview p      { margin: 8px 0; color: #4b5563; }
+    .bursaries-preview strong { color: #1f2937; }
 
     .bursaries-preview .description-content {
       white-space: pre-line;
@@ -423,24 +307,11 @@
       font-size: 15px;
       text-align: center;
       flex-shrink: 0;
-      box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
     }
+    .apply-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
 
-    .apply-btn:hover {
-      background: #15803d;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-    }
-
-    .no-link-msg {
-      color: #dc2626;
-      font-weight: 600;
-      padding: 14px;
-      text-align: center;
-      background: #fee2e2;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
+    .no-link-msg { color: #dc2626; font-weight: 600; padding: 14px; text-align: center; background: #fee2e2; border-radius: 8px; flex-shrink: 0; }
 
     .skeleton {
       background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
@@ -448,52 +319,15 @@
       animation: skeleton-shimmer 1.5s infinite;
       border-radius: 10px;
     }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-bursary { height: 120px; margin-bottom: 12px; }
+    .bursary-card.skeleton { cursor: default; border: none; }
+    .bursary-card.skeleton:hover { background: #e5e7eb; transform: none; }
 
-    @keyframes skeleton-shimmer {
-      0%   { background-position:  200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    .skeleton-bursary {
-      height: 120px;
-      margin-bottom: 12px;
-    }
-
-    .bursary-card.skeleton {
-      cursor: default;
-      border: none;
-    }
-
-    .bursary-card.skeleton:hover {
-      background: #e5e7eb;
-      transform: none;
-    }
-
-    .main-footer {
-      background: #1e3a8a;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      margin-top: 60px;
-    }
-
-    .footer-links {
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-links a {
-      color: #facc15;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
+    .main-footer { background: #1e3a8a; color: white; text-align: center; padding: 30px 20px; margin-top: 60px; }
+    .footer-links { margin-bottom: 12px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    .footer-links a { color: #facc15; font-weight: 600; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
 
     .scroll-btn {
       position: fixed;
@@ -508,35 +342,16 @@
       cursor: pointer;
       display: none;
       z-index: 1000;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
       transition: all 0.2s;
     }
-
     #scrollUp   { bottom: 90px; }
     #scrollDown { bottom: 30px; }
+    .scroll-btn:hover { background: #1e3a8a; transform: translateY(-2px); }
 
-    .scroll-btn:hover {
-      background: #1e3a8a;
-      transform: translateY(-2px);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #6b7280;
-    }
-
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      opacity: 0.3;
-    }
-
-    .empty-state h3 {
-      color: #374151;
-      margin-bottom: 8px;
-    }
+    .empty-state     { text-align: center; padding: 60px 20px; color: #6b7280; }
+    .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
+    .empty-state h3  { color: #374151; margin-bottom: 8px; }
 
     .bursary-heart {
       position: absolute;
@@ -551,23 +366,15 @@
       transition: all 0.25s ease;
       z-index: 10;
     }
-
-    .bursary-heart:hover {
-      transform: scale(1.15);
-    }
-
-    .bursary-heart.saved {
-      fill: #3b82f6;
-      stroke: #3b82f6;
-      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
-    }
+    .bursary-heart:hover { transform: scale(1.15); }
+    .bursary-heart.saved { fill: #3b82f6; stroke: #3b82f6; filter: drop-shadow(0 0 6px rgba(59,130,246,0.6)); }
 
     .toast {
       position: fixed;
       left: 50%;
       bottom: 18px;
       transform: translateX(-50%);
-      background: rgba(17, 24, 39, 0.92);
+      background: rgba(17,24,39,0.92);
       color: #fff;
       padding: 10px 14px;
       border-radius: 12px;
@@ -577,26 +384,9 @@
       display: none;
     }
 
-    /* =============================== */
-    /* SEARCH BAR (ADDED)              */
-    /* =============================== */
-    .searchbar-wrap {
-      margin-bottom: 14px;
-    }
-
-    .searchbar-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      color: #374151;
-      font-size: 0.95rem;
-    }
-
-    .searchbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .searchbar-wrap  { margin-bottom: 14px; }
+    .searchbar-label { display: block; margin-bottom: 8px; font-weight: 700; color: #374151; font-size: 0.95rem; }
+    .searchbar       { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .searchbar input,
     .searchbar button {
@@ -607,127 +397,49 @@
       font-family: 'Poppins', sans-serif;
       transition: all 0.2s;
     }
-
-    .searchbar input {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .searchbar input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .searchbar button {
-      background: #2563eb;
-      color: #fff;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .searchbar button:hover {
-      background: #1e40af;
-    }
-
-    .search-hint {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #6b7280;
-    }
+    .searchbar input      { flex: 1; min-width: 200px; }
+    .searchbar input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .searchbar button     { background: #2563eb; color: #fff; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; }
+    .searchbar button:hover { background: #1e40af; }
+    .search-hint          { margin-top: 8px; font-size: 12px; color: #6b7280; }
 
     @media (max-width: 900px) {
-      header { padding: 50px 16px 40px; }
-      header h1 { font-size: 2rem; }
-      header p  { font-size: 1rem; }
+      .page-hero          { padding: 50px 16px 40px; }
+      .page-hero h1       { font-size: 2rem; }
+      .page-hero p        { font-size: 1rem; }
 
-      .bursaries-container {
-        flex-direction: column;
-        margin: 20px auto;
-        padding: 0 16px;
-        gap: 16px;
-      }
+      .bursaries-container { flex-direction: column; margin: 20px auto; padding: 0 16px; gap: 16px; }
+      .bursaries-left, .bursaries-preview { width: 100%; }
+      .bursaries-left     { max-height: none; overflow-y: visible; padding-right: 0; }
 
-      .bursaries-left,
-      .bursaries-preview {
-        width: 100%;
-      }
-
-      .bursaries-left {
-        max-height: none;
-        overflow-y: visible;
-        padding-right: 0;
-      }
-
-      .bursaries-preview {
-        position: static;
-        display: block;
-        max-height: 70vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        padding: 20px;
-        min-height: 300px;
-        overflow-x: hidden;
-      }
-
-      .preview-slide { display: block; height: auto; min-height: 0; }
-      .provider-row { flex-shrink: 0; }
+      .bursaries-preview  { position: static; display: block; max-height: 70vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 20px; min-height: 300px; overflow-x: hidden; }
+      .preview-slide      { display: block; height: auto; min-height: 0; }
       .preview-content-wrapper { display: block; height: auto; min-height: 0; }
 
-      .bursaries-preview .description-content {
-        overflow-y: visible;
-        max-height: none;
-        min-height: 0;
-        flex: none;
-        font-size: 0.9rem;
-        padding: 14px;
-        margin-bottom: 16px;
-        -webkit-overflow-scrolling: auto;
-      }
+      .bursaries-preview .description-content { overflow-y: visible; max-height: none; min-height: 0; flex: none; font-size: 0.9rem; padding: 14px; margin-bottom: 16px; }
 
-      .apply-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 14px;
-        font-size: 16px;
-        margin-top: 4px;
-      }
+      .apply-btn          { display: block; width: 100%; text-align: center; padding: 14px; font-size: 16px; margin-top: 4px; }
+      .filter             { margin-bottom: 16px; }
+      .filter select      { padding: 14px 16px; font-size: 16px; }
 
-      .filter { margin-bottom: 16px; }
-      .filter select { padding: 14px 16px; font-size: 16px; }
-
-      /* Search stacks on mobile */
       .searchbar { flex-direction: column; gap: 12px; }
-      .searchbar input, .searchbar button {
-        width: 100%;
-        min-width: auto;
-        padding: 14px 16px;
-        font-size: 16px;
-      }
+      .searchbar input, .searchbar button { width: 100%; min-width: auto; padding: 14px 16px; font-size: 16px; }
 
-      .bursary-card { padding: 14px; }
+      .bursary-card        { padding: 14px; }
       .bursary-card strong { font-size: 1rem; }
-      .bursary-card p { font-size: 0.85rem; }
-
+      .bursary-card p      { font-size: 0.85rem; }
       .bursaries-preview h2 { font-size: 1.25rem; }
       .bursaries-preview p  { font-size: 0.9rem; }
-
       .close-preview-btn svg { width: 24px; height: 24px; }
-
-      .footer-links { flex-direction: column; gap: 8px; }
-      .footer-links a { font-size: 14px; }
-
-      .scroll-btn { width: 44px; height: 44px; font-size: 20px; right: 16px; }
-      #scrollUp   { bottom: 80px; }
-      #scrollDown { bottom: 24px; }
+      .footer-links        { flex-direction: column; gap: 8px; }
+      .footer-links a      { font-size: 14px; }
+      .scroll-btn          { width: 44px; height: 44px; font-size: 20px; right: 16px; }
+      #scrollUp            { bottom: 80px; }
+      #scrollDown          { bottom: 24px; }
     }
 
     @media (max-width: 400px) {
-      header h1 { font-size: 1.75rem; }
+      .page-hero h1        { font-size: 1.75rem; }
       .bursary-card strong { font-size: 0.95rem; }
       .bursaries-preview h2 { font-size: 1.15rem; }
     }
@@ -735,11 +447,12 @@
 </head>
 <body>
 
+  <!-- NAVIGATION -->
   <nav class="main-nav">
     <a href="index.html" class="logo desktop-nav">Career Unified</a>
     <div class="nav-links desktop-nav">
       <a href="jobs.html">Jobs</a>
-      <a href="bursaries.html">Bursaries</a>
+      <a href="bursaries.html" aria-current="page">Bursaries</a>
       <a href="varsity.html">Varsity</a>
       <a href="cv-generator.html">Generate CV</a>
       <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
@@ -748,28 +461,17 @@
       <a href="signup.html">Sign Up</a>
       <a href="login.html">Login</a>
       <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </a>
     </div>
-
     <div class="mobile-nav">
       <a href="index.html" class="mobile-logo">Career Unified</a>
       <div class="mobile-nav-right">
         <a href="account-page.html" class="icon-btn" aria-label="My Account">
-          <svg viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
         <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-          <svg viewBox="0 0 24 24">
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="6"  x2="21" y2="6"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
     </div>
@@ -787,53 +489,58 @@
     <a href="login.html">Login</a>
   </div>
 
-  <header>
-    <h1>Available Bursaries</h1>
-    <p>Find bursaries and scholarships for South African students</p>
-  </header>
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <h1>Bursaries &amp; Scholarships in South Africa</h1>
+    <p>Find funding opportunities for students — updated regularly</p>
+  </section>
 
+  <!-- BREADCRUMB -->
+  <nav aria-label="Breadcrumb" style="max-width:1200px;margin:16px auto 0;padding:0 20px;font-size:0.85rem;color:#6b7280;">
+    <ol style="list-style:none;display:flex;gap:6px;flex-wrap:wrap;">
+      <li><a href="/" style="color:#2563eb;text-decoration:none;">Home</a></li>
+      <li aria-hidden="true" style="color:#d1d5db;">›</li>
+      <li aria-current="page" style="color:#374151;">Bursaries</li>
+    </ol>
+  </nav>
+
+  <!-- MAIN -->
   <main class="bursaries-container">
     <div class="bursaries-left">
 
-      <!-- =============================== -->
-      <!-- SEARCH (ADDED)                  -->
-      <!-- - reads global search from home -->
-      <!-- - powerful local search too     -->
-      <!-- =============================== -->
       <div class="searchbar-wrap">
         <label class="searchbar-label" for="bursarySearch">Search bursaries:</label>
-        <div class="searchbar">
-          <input type="text" id="bursarySearch" placeholder="Search bursary name, provider, faculty, keywords...">
-          <button type="button" id="clearSearchBtn" title="Clear search">Clear</button>
+        <div class="searchbar" role="search" aria-label="Search bursaries">
+          <input type="search" id="bursarySearch" placeholder="Search bursary name, provider, faculty, keywords..." aria-label="Search bursaries">
+          <button type="button" id="clearSearchBtn">Clear</button>
         </div>
-        <div class="search-hint">Tip: Try “engineering”, “nsfas”, “accounting”, “matric”, “undergraduate”, “postgraduate”.</div>
+        <p class="search-hint">Try: "engineering", "nsfas", "accounting", "matric", "undergraduate", "postgraduate"</p>
       </div>
 
       <div class="filter">
-        <label for="facultyFilter">Filter by Faculty/Category:</label>
-        <select id="facultyFilter">
+        <label for="facultyFilter">Filter by Faculty / Category:</label>
+        <select id="facultyFilter" aria-label="Filter bursaries by faculty">
           <option value="All">All Bursaries</option>
         </select>
       </div>
 
-      <ul id="bursaryList"></ul>
+      <ul id="bursaryList" aria-label="Bursary listings" aria-live="polite"></ul>
     </div>
 
-    <div class="bursaries-preview" id="bursaryPreview">
-      <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-        <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+    <aside class="bursaries-preview" id="bursaryPreview" aria-label="Bursary details">
+      <div style="text-align:center;color:#9ca3af;padding:40px 20px;">
+        <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px;stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
           <path d="M12 14l9-5-9-5-9 5 9 5z"/>
           <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
           <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
         </svg>
-        <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
-        <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 8px;">
-          Tip: Open a bursary and tap <strong>Share</strong> to copy a link for WhatsApp.
-        </p>
+        <p style="font-size:1.1rem;color:#6b7280;">Select a bursary to view details</p>
+        <p style="font-size:0.9rem;color:#9ca3af;margin-top:8px;">Tip: Open a bursary and tap <strong>Share</strong> to copy a link for WhatsApp.</p>
       </div>
-    </div>
+    </aside>
   </main>
 
+  <!-- FOOTER -->
   <footer class="main-footer">
     <div class="footer-links">
       <a href="about-us.html">About Us</a>
@@ -844,11 +551,12 @@
     <p>&copy; 2026 Career Unified. All rights reserved.</p>
   </footer>
 
-  <div class="toast" id="toast">Copied!</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied!</div>
 
-  <button id="scrollUp"   class="scroll-btn">↑</button>
-  <button id="scrollDown" class="scroll-btn">↓</button>
+  <button id="scrollUp"   class="scroll-btn" aria-label="Scroll to top">↑</button>
+  <button id="scrollDown" class="scroll-btn" aria-label="Scroll to bottom">↓</button>
 
+  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -875,14 +583,11 @@
 
     const menuBtn    = document.getElementById('menuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-
     if (menuBtn) {
       menuBtn.onclick = () => {
-        const isOpen = mobileMenu.style.display === 'block';
-        mobileMenu.style.display = isOpen ? 'none' : 'block';
+        mobileMenu.style.display = mobileMenu.style.display === 'block' ? 'none' : 'block';
       };
     }
-
     document.addEventListener('click', e => {
       if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
         if (mobileMenu) mobileMenu.style.display = 'none';
@@ -894,98 +599,59 @@
     const bursaryPreview = document.getElementById('bursaryPreview');
     const toast          = document.getElementById('toast');
 
-    /* ===============================
-       INTELLIGENT SEARCH (ADDED)
-       - Accept from: ?q= OR localStorage.homeSearchTerm
-       - Local fuzzy-ish ranking (no backend changes)
-       =============================== */
+    /* ── SEARCH ── */
     const bursarySearchInput = document.getElementById('bursarySearch');
-    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const clearSearchBtn     = document.getElementById('clearSearchBtn');
 
-    function normalizeTerm(v) {
-      return (v || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
-    }
-
-    function tokenize(term) {
-      return normalizeTerm(term).split(' ').filter(Boolean).slice(0, 12);
-    }
+    function normalizeTerm(v) { return (v||'').toString().trim().toLowerCase().replace(/\s+/g,' '); }
+    function tokenize(term)   { return normalizeTerm(term).split(' ').filter(Boolean).slice(0,12); }
 
     function getQueryParam(name) {
-      try { return new URLSearchParams(window.location.search).get(name); }
-      catch { return null; }
+      try { return new URLSearchParams(window.location.search).get(name); } catch { return null; }
     }
 
     function getIncomingSearchTerm() {
       const fromQ  = normalizeTerm(getQueryParam('q'));
       const fromLS = normalizeTerm(localStorage.getItem('homeSearchTerm'));
-      // keep legacy behavior (your old code removes it) but AFTER we read it
       if (fromLS) localStorage.removeItem('homeSearchTerm');
       return fromQ || fromLS || '';
     }
 
     function buildSearchText(b) {
-      const name = safeText(b?.name);
-      const provider = safeText(b?.provider);
-      const faculty = safeText(b?.faculty);
-      const desc = safeText(b?.description);
-      const deadline = safeText(b?.deadline);
-      return normalizeTerm([name, provider, faculty, desc, deadline].join(' | '));
+      return normalizeTerm([safeText(b?.name), safeText(b?.provider), safeText(b?.faculty), safeText(b?.description), safeText(b?.deadline)].join(' | '));
     }
 
-    // Lightweight scoring:
-    // - big boost if startsWith or exact word match
-    // - boost for token matches
-    // - slight boost if provider/name contains the full query
     function scoreBursary(b, tokens, fullQuery) {
       if (!tokens.length) return 0;
-
-      const name = normalizeTerm(safeText(b?.name));
+      const name     = normalizeTerm(safeText(b?.name));
       const provider = normalizeTerm(safeText(b?.provider));
-      const faculty = normalizeTerm(safeText(b?.faculty));
-      const desc = normalizeTerm(safeText(b?.description));
-      const hay = buildSearchText(b);
-
+      const faculty  = normalizeTerm(safeText(b?.faculty));
+      const desc     = normalizeTerm(safeText(b?.description));
+      const hay      = buildSearchText(b);
       let score = 0;
 
-      // Full query contains
-      if (fullQuery && name.includes(fullQuery)) score += 40;
+      if (fullQuery && name.includes(fullQuery))     score += 40;
       if (fullQuery && provider.includes(fullQuery)) score += 25;
-      if (fullQuery && faculty.includes(fullQuery)) score += 15;
-      if (fullQuery && desc.includes(fullQuery)) score += 10;
-
-      // Starts-with boosts
-      if (fullQuery && name.startsWith(fullQuery)) score += 30;
+      if (fullQuery && faculty.includes(fullQuery))  score += 15;
+      if (fullQuery && desc.includes(fullQuery))     score += 10;
+      if (fullQuery && name.startsWith(fullQuery))   score += 30;
       if (fullQuery && provider.startsWith(fullQuery)) score += 18;
 
-      // Token matching
       for (const t of tokens) {
         if (!t) continue;
-
-        // Exact word-ish match
         const wordRe = new RegExp(`(^|\\b)${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\b|$)`, 'i');
-
-        if (wordRe.test(name)) score += 18;
-        else if (name.includes(t)) score += 12;
-
-        if (wordRe.test(provider)) score += 12;
-        else if (provider.includes(t)) score += 8;
-
-        if (wordRe.test(faculty)) score += 8;
-        else if (faculty.includes(t)) score += 5;
-
-        if (desc.includes(t)) score += 3;
-
-        // If token not anywhere, small penalty (keeps relevance tight)
-        if (!hay.includes(t)) score -= 2;
+        if (wordRe.test(name))     score += 18; else if (name.includes(t))     score += 12;
+        if (wordRe.test(provider)) score += 12; else if (provider.includes(t)) score += 8;
+        if (wordRe.test(faculty))  score += 8;  else if (faculty.includes(t))  score += 5;
+        if (desc.includes(t))      score += 3;
+        if (!hay.includes(t))      score -= 2;
       }
-
-      // Keep score non-negative
       return Math.max(0, score);
     }
 
     function applySearchToUI(term) {
       if (!bursarySearchInput) return;
-      if (normalizeTerm(bursarySearchInput.value)) return; // don't override user typed
+      if (normalizeTerm(bursarySearchInput.value)) return;
       bursarySearchInput.value = term || '';
     }
 
@@ -999,78 +665,49 @@
     let bursaries         = [];
     let filteredBursaries = [];
     let selectedIndex     = null;
-
-    let userId        = null;
-    let savedBursaries = new Set();
+    let userId            = null;
+    let savedBursaries    = new Set();
 
     if (typeof firebase !== 'undefined' && firebase.auth) {
       firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          userId = user.uid;
-          loadSavedBursaries();
-        } else {
-          userId = null;
-          savedBursaries.clear();
-          updateHearts();
-        }
+        if (user) { userId = user.uid; loadSavedBursaries(); }
+        else       { userId = null; savedBursaries.clear(); updateHearts(); }
       });
     }
 
     const BOOKMARK_KEY = 'careerUnifiedBookmarks';
-
-    function getBookmarks() { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]'); }
+    function getBookmarks()      { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]'); }
     function saveBookmarks(list) { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list)); }
 
     function addToLocalStorage(type, id) {
       const key = `${type}:${id}`;
-      let bookmarks = getBookmarks();
-      if (!bookmarks.includes(key)) {
-        bookmarks.push(key);
-        saveBookmarks(bookmarks);
-      }
+      let bm = getBookmarks();
+      if (!bm.includes(key)) { bm.push(key); saveBookmarks(bm); }
     }
 
     function removeFromLocalStorage(type, id) {
-      const key = `${type}:${id}`;
-      let bookmarks = getBookmarks().filter(x => x !== key);
-      saveBookmarks(bookmarks);
+      saveBookmarks(getBookmarks().filter(x => x !== `${type}:${id}`));
     }
 
     async function loadSavedBursaries() {
       if (!userId) return;
       try {
-        const snapshot = await firebase.firestore()
-          .collection('users').doc(userId).collection('saved').get();
-
+        const snapshot = await firebase.firestore().collection('users').doc(userId).collection('saved').get();
         savedBursaries.clear();
-        let bookmarks = getBookmarks().filter(x => !x.startsWith('bursary:'));
-
+        let bm = getBookmarks().filter(x => !x.startsWith('bursary:'));
         snapshot.forEach(doc => {
           savedBursaries.add(doc.id);
-          const data = doc.data();
-          if (data.type === 'bursary') {
-            bookmarks.push(`bursary:${doc.id.replace('bursary_', '')}`);
-          }
+          if (doc.data().type === 'bursary') bm.push(`bursary:${doc.id.replace('bursary_', '')}`);
         });
-
-        saveBookmarks(bookmarks);
+        saveBookmarks(bm);
         updateHearts();
-      } catch (err) {
-        console.error('Error loading saved bursaries:', err);
-      }
+      } catch (err) { console.error('Error loading saved bursaries:', err); }
     }
 
     async function toggleBursarySave(bursary) {
-      if (!userId) {
-        alert('Please log in to save bursaries');
-        window.location.href = 'login.html';
-        return;
-      }
-
+      if (!userId) { alert('Please log in to save bursaries'); window.location.href = 'login.html'; return; }
       const docId = 'bursary_' + bursary._id;
-      const ref   = firebase.firestore()
-        .collection('users').doc(userId).collection('saved').doc(docId);
-
+      const ref   = firebase.firestore().collection('users').doc(userId).collection('saved').doc(docId);
       try {
         if (savedBursaries.has(docId)) {
           await ref.delete();
@@ -1078,31 +715,22 @@
           removeFromLocalStorage('bursary', bursary._id);
         } else {
           await ref.set({
-            type:            'bursary',
-            name:            bursary.name,
-            faculty:         bursary.faculty,
-            provider:        bursary.provider,
-            deadline:        bursary.deadline,
+            type: 'bursary', name: bursary.name, faculty: bursary.faculty,
+            provider: bursary.provider, deadline: bursary.deadline,
             applicationLink: extractLink(bursary.applicationLink),
-            savedAt:         firebase.firestore.FieldValue.serverTimestamp()
+            savedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           savedBursaries.add(docId);
           addToLocalStorage('bursary', bursary._id);
         }
         updateHearts();
-      } catch (err) {
-        console.error('Error toggling save:', err);
-        alert('Failed to save bursary. Please try again.');
-      }
+      } catch (err) { console.error('Error toggling save:', err); alert('Failed to save bursary. Please try again.'); }
     }
 
     function updateHearts() {
       document.querySelectorAll('.bursary-heart').forEach(heart => {
         const card = heart.closest('.bursary-card');
-        if (card && card.dataset.id) {
-          const docId = 'bursary_' + card.dataset.id;
-          heart.classList.toggle('saved', savedBursaries.has(docId));
-        }
+        if (card && card.dataset.id) heart.classList.toggle('saved', savedBursaries.has('bursary_' + card.dataset.id));
       });
     }
 
@@ -1114,15 +742,13 @@
       window.__toastTimer = setTimeout(() => toast.style.display = 'none', 1800);
     }
 
-    function safeText(v, fallback = '') {
-      return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
-    }
+    function safeText(v, fallback = '') { return (typeof v === 'string' && v.trim()) ? v.trim() : fallback; }
 
     function extractLink(raw) {
       if (!raw) return null;
       if (typeof raw === 'string') return raw.trim();
       if (raw.current) return raw.current.trim();
-      if (raw.href) return raw.href.trim();
+      if (raw.href)    return raw.href.trim();
       return null;
     }
 
@@ -1133,29 +759,19 @@
     }
 
     function getProviderLogoUrl(b) {
-      try {
-        if (!b?.providerLogo) return '';
-        return window.sanityClient?.imageUrl(b.providerLogo)
-          ?.width(120)?.height(120)?.fit('crop')?.url() || '';
-      } catch { return ''; }
+      try { return window.sanityClient?.imageUrl(b.providerLogo)?.width(120)?.height(120)?.fit('crop')?.url() || ''; } catch { return ''; }
     }
 
     function getProviderLogoOgUrl(b) {
-      try {
-        if (!b?.providerLogo) return '';
-        return window.sanityClient?.imageUrl(b.providerLogo)
-          ?.width(1200)?.height(630)?.fit('crop')?.url() || '';
-      } catch { return ''; }
+      try { return window.sanityClient?.imageUrl(b.providerLogo)?.width(1200)?.height(630)?.fit('crop')?.url() || ''; } catch { return ''; }
     }
 
-    function makeShareUrl(b) {
-      return `${BURSARY_SHARE_BASE}/${encodeURIComponent(getSlugValue(b))}`;
-    }
+    function makeShareUrl(b) { return `${BURSARY_SHARE_BASE}/${encodeURIComponent(getSlugValue(b))}`; }
 
     async function copyToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text);
-        showToast('Link copied ');
+        showToast('Link copied ✓');
       } catch {
         const ta = document.createElement('textarea');
         ta.value = text;
@@ -1163,8 +779,21 @@
         ta.select();
         document.execCommand('copy');
         ta.remove();
-        showToast('Link copied ');
+        showToast('Link copied ✓');
       }
+    }
+
+    /* ── Dynamic title + canonical update per bursary ── */
+    function updatePageMeta(b) {
+      const name     = safeText(b.name, 'Bursary');
+      const provider = safeText(b.provider, 'Career Unified');
+      document.title = `${name} – ${provider} | Career Unified`;
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+      canonical.href = makeShareUrl(b);
+
+      setMeta('description', safeText(b.description, '').substring(0, 155) || `Apply for the ${name} bursary on Career Unified.`);
     }
 
     function setMeta(name, content) {
@@ -1172,8 +801,8 @@
       let tag = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
       if (!tag) {
         tag = document.createElement('meta');
-        if (name.startsWith('og:')) tag.setAttribute('property', name);
-        else                        tag.setAttribute('name', name);
+        if (name.startsWith('og:') || name.startsWith('twitter:')) tag.setAttribute('property', name);
+        else tag.setAttribute('name', name);
         document.head.appendChild(tag);
       }
       tag.setAttribute('content', content);
@@ -1182,7 +811,7 @@
     function showBursarySkeletons() {
       bursaryList.innerHTML = '';
       for (let i = 0; i < 6; i++) {
-        const li     = document.createElement('li');
+        const li = document.createElement('li');
         li.className = 'bursary-card skeleton skeleton-bursary';
         bursaryList.appendChild(li);
       }
@@ -1190,25 +819,23 @@
 
     function injectBursarySchema() {
       const schema = {
-        '@context':       'https://schema.org',
-        '@type':          'ItemList',
-        'name':           'Bursaries in South Africa',
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        'name': 'Bursaries in South Africa',
         'itemListElement': bursaries.map((b, index) => ({
-          '@type':                  'Scholarship',
-          'position':               index + 1,
-          'name':                   safeText(b.name, 'Bursary'),
+          '@type': 'Scholarship',
+          'position': index + 1,
+          'name': safeText(b.name, 'Bursary'),
           'provider': { '@type': 'Organization', 'name': safeText(b.provider, 'Provider') },
           'applicationDeadline': b.deadline || undefined,
           'url': makeShareUrl(b)
         }))
       };
-
       const old = document.getElementById('bursary-schema');
       if (old) old.remove();
-
-      const script       = document.createElement('script');
-      script.id          = 'bursary-schema';
-      script.type        = 'application/ld+json';
+      const script = document.createElement('script');
+      script.id = 'bursary-schema';
+      script.type = 'application/ld+json';
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
     }
@@ -1216,43 +843,29 @@
     loadCachedBursaries();
 
     function loadCachedBursaries() {
-      const cached = localStorage.getItem(BURSARY_CACHE);
-      if (!cached) return;
       try {
+        const cached = localStorage.getItem(BURSARY_CACHE);
+        if (!cached) return;
         bursaries = JSON.parse(cached);
         injectBursarySchema();
         populateFacultyFilter();
         renderBursaries();
-      } catch (e) {
-        console.warn('Cache invalid');
-      }
+      } catch { console.warn('Cache invalid'); }
     }
 
     function populateFacultyFilter() {
       facultyFilter.innerHTML = `<option value="All">All Bursaries</option>`;
-      const faculties = Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort();
-      faculties.forEach(f => {
-        const opt       = document.createElement('option');
-        opt.value       = f;
-        opt.textContent = f;
+      Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort().forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = f;
         facultyFilter.appendChild(opt);
       });
     }
 
     async function fetchBursaries() {
-      // Keep your existing Sanity fetch logic (no risky query-string interpolation).
-      // We fetch everything and do intelligent search locally.
       try {
         bursaries = await window.sanityClient.fetch(`*[_type=="bursary"] | order(deadline asc){
-          _id,
-          name,
-          slug,
-          provider,
-          providerLogo,
-          faculty,
-          description,
-          deadline,
-          applicationLink
+          _id, name, slug, provider, providerLogo, faculty, description, deadline, applicationLink
         }`);
 
         localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
@@ -1263,72 +876,45 @@
         renderBursaries();
 
         if (__incomingSlug) {
-          const idx = bursaries.findIndex(b => {
-            const s = (b?.slug?.current || b?.slug || '').toString();
-            return s === __incomingSlug;
-          });
-
+          const idx = bursaries.findIndex(b => (b?.slug?.current || b?.slug || '').toString() === __incomingSlug);
           if (idx >= 0) {
             selectedIndex = idx;
             showPreview(bursaries[idx], 'left');
             renderBursaries(facultyFilter.value);
-
-            if (window.innerWidth <= 900) {
-              bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            if (window.innerWidth <= 900) bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
-
-      } catch (err) {
-        console.error('Sanity failed — using cache', err);
-      }
+      } catch (err) { console.error('Sanity failed — using cache', err); }
     }
 
     function showDefaultPreview() {
       bursaryPreview.innerHTML = `
-        <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-          <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+        <div style="text-align:center;color:#9ca3af;padding:40px 20px;">
+          <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px;stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
             <path d="M12 14l9-5-9-5-9 5 9 5z"/>
             <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
             <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
           </svg>
-          <p style="font-size: 1.1rem; color: #6b7280;">Select a bursary to view details</p>
-          <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 8px;">
-            Tip: Open a bursary and tap <strong>Share</strong> to copy a link for WhatsApp.
-          </p>
+          <p style="font-size:1.1rem;color:#6b7280;">Select a bursary to view details</p>
+          <p style="font-size:0.9rem;color:#9ca3af;margin-top:8px;">Tip: Open a bursary and tap <strong>Share</strong> to copy a link for WhatsApp.</p>
         </div>`;
     }
 
     function renderBursaries(filter = 'All') {
       bursaryList.innerHTML = '';
-
-      // Base filter (faculty)
-      const base = filter === 'All'
-        ? bursaries
-        : bursaries.filter(b => b.faculty === filter);
-
-      // Search filter + ranking (ADDED)
-      const q = normalizeTerm(bursarySearchInput?.value || '');
+      const base = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
+      const q      = normalizeTerm(bursarySearchInput?.value || '');
       const tokens = tokenize(q);
 
-      let list = base;
-
-      if (q) {
-        list = base
-          .map(b => ({ b, s: scoreBursary(b, tokens, q) }))
-          .filter(x => x.s > 0)
-          .sort((a, b) => b.s - a.s)
-          .map(x => x.b);
-      }
-
-      filteredBursaries = list;
+      filteredBursaries = q
+        ? base.map(b => ({ b, s: scoreBursary(b, tokens, q) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).map(x => x.b)
+        : base;
 
       if (!filteredBursaries.length) {
         bursaryList.innerHTML = `
           <div class="empty-state">
-            <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+            <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
             <h3>No bursaries found</h3>
             <p>Try changing your search or filter</p>
@@ -1341,24 +927,18 @@
 
       filteredBursaries.forEach((b, index) => {
         const deadlineDate = b.deadline ? new Date(b.deadline) : null;
-        const isUrgent     = deadlineDate
-          ? ((deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7)
-          : false;
-
-        const desc      = safeText(b.description, '');
-        const shortDesc = desc.length > 150 ? desc.substring(0, 150) + '...' : desc;
-        const readMore  = desc.length > 150
-          ? `<span class="read-more" data-index="${index}">Read more</span>`
-          : '';
+        const isUrgent     = deadlineDate ? ((deadlineDate - today) / (1000*60*60*24) <= 7) : false;
+        const desc         = safeText(b.description, '');
+        const shortDesc    = desc.length > 150 ? desc.substring(0, 150) + '...' : desc;
+        const readMore     = desc.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
 
         const li      = document.createElement('li');
         li.className  = 'bursary-card';
         li.dataset.id = b._id;
-
         if (index === selectedIndex) li.classList.add('selected');
 
         li.innerHTML = `
-          <svg class="bursary-heart" viewBox="0 0 24 24">
+          <svg class="bursary-heart" viewBox="0 0 24 24" aria-label="Save bursary" role="button" tabindex="0">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
           </svg>
           <strong>${safeText(b.name, 'Untitled bursary')}</strong>
@@ -1370,22 +950,12 @@
 
         li.onclick = e => {
           if (e.target.closest('.bursary-heart')) return;
-
-          if (e.target.classList.contains('read-more')) {
-            e.stopPropagation();
-            toggleDesc(parseInt(e.target.dataset.index, 10));
-            return;
-          }
-
-          const prev      = selectedIndex;
-          selectedIndex   = index;
-          const direction = prev !== null && index > prev ? 'left' : 'right';
-          showPreview(b, direction);
+          if (e.target.classList.contains('read-more')) { e.stopPropagation(); toggleDesc(parseInt(e.target.dataset.index, 10)); return; }
+          const prev    = selectedIndex;
+          selectedIndex = index;
+          showPreview(b, prev !== null && index > prev ? 'left' : 'right');
           renderBursaries(filter);
-
-          if (window.innerWidth <= 900) {
-            bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          if (window.innerWidth <= 900) bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
         bursaryList.appendChild(li);
@@ -1419,42 +989,36 @@
               <h2>${safeText(b.name, 'Untitled bursary')}</h2>
             </div>
             <div class="preview-actions">
-              <button class="icon-btn-mini" id="shareBtn" type="button" title="Copy share link">Share</button>
+              <button class="icon-btn-mini" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link">Share</button>
               <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <line x1="18" y1="6"  x2="6"  y2="18"></line>
-                  <line x1="6"  y1="6"  x2="18" y2="18"></line>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
           </div>
-
           <div class="provider-row">
-            <img class="provider-logo" src="${logoSmall}" alt="Provider logo" onerror="this.src='/android-chrome-512x512.png'">
+            <img class="provider-logo" src="${logoSmall}" alt="${safeText(b.provider, 'Provider')} logo" width="44" height="44" loading="lazy" onerror="this.src='/android-chrome-512x512.png'">
             <div>
               <div class="provider-name">${safeText(b.provider, 'Provider not specified')}</div>
-              <div style="font-size: 12px; color: #6b7280;">Share link shows title/logo/description on WhatsApp</div>
+              <div style="font-size:12px;color:#6b7280;">Share shows title/logo/description on WhatsApp</div>
             </div>
           </div>
-
           <div class="preview-content-wrapper">
             <div class="preview-info">
               <p><strong>Faculty:</strong>  ${safeText(b.faculty,  'Not specified')}</p>
               <p><strong>Deadline:</strong> ${safeText(b.deadline, 'Not specified')}</p>
             </div>
             <div class="description-content">${safeText(b.description, 'Description not provided.')}</div>
-            ${
-              safeUrl
-                ? `<a href="${safeUrl}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Now</a>`
-                : `<p class="no-link-msg">No application link provided</p>`
-            }
+            ${safeUrl
+              ? `<a href="${safeUrl}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Now</a>`
+              : `<p class="no-link-msg">No application link provided</p>`}
           </div>
         </div>`;
 
-      const shareBtn = document.getElementById('shareBtn');
-      if (shareBtn) shareBtn.onclick = () => copyToClipboard(shareUrl);
+      document.getElementById('shareBtn').onclick = () => copyToClipboard(shareUrl);
 
-      const ogLogo = getProviderLogoOgUrl(b) || 'https://careerunified.com/android-chrome-512x512.png';
+      updatePageMeta(b);
+
+      const ogLogo = getProviderLogoOgUrl(b) || 'https://careerunified.com/images/social-share.png';
       setMeta('og:title',            safeText(b.name, 'Bursary – Career Unified'));
       setMeta('og:description',      safeText(b.description, '').substring(0, 150) || 'Bursary opportunity on Career Unified.');
       setMeta('og:image',            ogLogo);
@@ -1468,12 +1032,12 @@
 
     function closePreview() {
       selectedIndex = null;
+      document.title = 'Bursaries & Scholarships in South Africa 2026 | Career Unified';
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.href = 'https://careerunified.com/bursaries.html';
       showDefaultPreview();
       renderBursaries(facultyFilter.value);
-
-      if (window.innerWidth <= 900) {
-        bursaryList.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      if (window.innerWidth <= 900) bursaryList.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function toggleDesc(index) {
@@ -1481,32 +1045,16 @@
       const b      = filteredBursaries[index];
       const full   = safeText(b?.description, '');
       if (!descEl || !full) return;
-
       const next        = descEl.nextElementSibling;
       const isCollapsed = descEl.textContent.trim().endsWith('...');
-
-      if (isCollapsed) {
-        descEl.textContent = full;
-        if (next && next.classList.contains('read-more')) next.textContent = 'Read less';
-      } else {
-        descEl.textContent = full.substring(0, 150) + '...';
-        if (next && next.classList.contains('read-more')) next.textContent = 'Read more';
-      }
+      descEl.textContent = isCollapsed ? full : full.substring(0, 150) + '...';
+      if (next && next.classList.contains('read-more')) next.textContent = isCollapsed ? 'Read less' : 'Read more';
     }
 
-    facultyFilter.addEventListener('change', e => {
-      selectedIndex = null;
-      renderBursaries(e.target.value);
-      showDefaultPreview();
-    });
+    facultyFilter.addEventListener('change', e => { selectedIndex = null; renderBursaries(e.target.value); showDefaultPreview(); });
 
-    /* Search hooks (ADDED) */
     if (bursarySearchInput) {
-      bursarySearchInput.addEventListener('input', () => {
-        selectedIndex = null;
-        renderBursaries(facultyFilter.value);
-        showDefaultPreview();
-      });
+      bursarySearchInput.addEventListener('input', () => { selectedIndex = null; renderBursaries(facultyFilter.value); showDefaultPreview(); });
     }
 
     if (clearSearchBtn) {
@@ -1519,21 +1067,12 @@
     }
 
     showBursarySkeletons();
-
-    const last = localStorage.getItem(BURSARY_CACHE_TIME);
-    if (!last || Date.now() - last > CACHE_TTL) fetchBursaries();
-    else fetchBursaries();
-
+    fetchBursaries();
     setInterval(fetchBursaries, 5 * 60 * 1000);
+    if (incomingSearch) renderBursaries(facultyFilter.value);
 
-    // If incoming search exists, ensure initial render uses it
-    if (incomingSearch) {
-      renderBursaries(facultyFilter.value);
-    }
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-
+    /* ── SWIPE ── */
+    let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', e => {
       if (!e.target.closest('#bursaryPreview')) return;
       touchStartX = e.changedTouches[0].screenX;
@@ -1545,44 +1084,38 @@
       const dx = e.changedTouches[0].screenX - touchStartX;
       const dy = e.changedTouches[0].screenY - touchStartY;
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
-        if (dx < 0) goToNextBursary();
-        else        goToPreviousBursary();
+        if (dx < 0) goToNextBursary(); else goToPreviousBursary();
       }
     }, { passive: true });
 
     function goToNextBursary() {
-      if (selectedIndex === null || filteredBursaries.length === 0) return;
-      if (selectedIndex < filteredBursaries.length - 1) {
-        selectedIndex++;
-        showPreview(filteredBursaries[selectedIndex], 'left');
-        renderBursaries(facultyFilter.value);
-      }
+      if (selectedIndex === null || selectedIndex >= filteredBursaries.length - 1) return;
+      selectedIndex++;
+      showPreview(filteredBursaries[selectedIndex], 'left');
+      renderBursaries(facultyFilter.value);
     }
 
     function goToPreviousBursary() {
-      if (selectedIndex === null || filteredBursaries.length === 0) return;
-      if (selectedIndex > 0) {
-        selectedIndex--;
-        showPreview(filteredBursaries[selectedIndex], 'right');
-        renderBursaries(facultyFilter.value);
-      }
+      if (selectedIndex === null || selectedIndex <= 0) return;
+      selectedIndex--;
+      showPreview(filteredBursaries[selectedIndex], 'right');
+      renderBursaries(facultyFilter.value);
     }
 
+    /* ── SCROLL BUTTONS ── */
     const up   = document.getElementById('scrollUp');
     const down = document.getElementById('scrollDown');
-
     window.addEventListener('scroll', () => {
-      const show         = window.scrollY > 300 ? 'block' : 'none';
-      up.style.display   = show;
-      down.style.display = show;
+      const show = window.scrollY > 300 ? 'block' : 'none';
+      up.style.display = down.style.display = show;
     });
-
-    up.onclick   = () => window.scrollTo({ top: 0,                         behavior: 'smooth' });
+    up.onclick   = () => window.scrollTo({ top: 0,                          behavior: 'smooth' });
     down.onclick = () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   </script>
 
 </body>
 </html>
+
 
 
 
