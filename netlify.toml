@@ -1,11 +1,78 @@
+# ================================
+# BUILD
+# ================================
 [build]
   publish = "."
   command = "npm run build"
 
+[build.environment]
+  NODE_VERSION = "20"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+# ================================
+# SECURITY + SEO HEADERS
+# ================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ================================
+# CANONICAL: /index.html → /
+# Prevents duplicate content penalty
+# ================================
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+# ================================
+# TRAILING SLASH NORMALISATION
+# Prevents duplicate URLs for SEO
+# ================================
+[[redirects]]
+  from = "/jobs/"
+  to = "/jobs.html"
+  status = 301
+
+[[redirects]]
+  from = "/bursaries/"
+  to = "/bursaries.html"
+  status = 301
+
+[[redirects]]
+  from = "/varsity/"
+  to = "/varsity.html"
+  status = 301
+
+[[redirects]]
+  from = "/about-us/"
+  to = "/about-us.html"
+  status = 301
+
+[[redirects]]
+  from = "/contact-us/"
+  to = "/contact-us.html"
+  status = 301
+
+[[redirects]]
+  from = "/privacy/"
+  to = "/privacy.html"
+  status = 301
+
+[[redirects]]
+  from = "/terms/"
+  to = "/terms.html"
+  status = 301
+
 # ================================
 # CV GENERATOR (NO REDIRECT LOOPS)
 # ================================
-
 [[redirects]]
   from = "/cv-generator.html"
   to = "/cv-generator"
@@ -25,7 +92,6 @@
 # ================================
 # JOBS (Edge Function + SPA)
 # ================================
-
 [[edge_functions]]
   function = "job"
   path = "/jobs/*"
@@ -39,29 +105,72 @@
 # ================================
 # BURSARIES (Edge Function + SPA)
 # ================================
-# STEP 3 IMPLEMENTED:
-# - Edge function path must match the slug route you SHARE on WhatsApp
-# - And the function name must match the edge function filename
-#   netlify/edge-functions/bursary-og.ts  => function = "bursary-og"
-# - Use /bursary/* so it catches /bursary/<slug> (NOT just /bursary?slug=...)
-
 [[edge_functions]]
   function = "bursary-og"
   path = "/bursary/*"
 
-# Humans always land on bursaries.html (SPA), keeping the same pretty URL
 [[redirects]]
   from = "/bursary/*"
   to = "/bursaries.html"
   status = 200
   force = true
 
-[build.environment]
-  NODE_VERSION = "20"
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+# ================================
+# CACHE HEADERS — speeds up SEO
+# crawl and improves Core Web Vitals
+# ================================
+
+# Static assets: cache 1 year
+[[headers]]
+  for = "/favicon.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# CSS/JS: cache 1 week (you may update these)
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# HTML pages: always revalidate (important for fresh SEO content)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Sitemap + robots: short cache so Google sees updates fast
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
 
 # ================================
-# Pdf export
+# PDF EXPORT FUNCTION
 # ================================
 [functions]
   node_bundler = "esbuild"
