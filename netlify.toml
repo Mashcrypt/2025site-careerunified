@@ -179,5 +179,14 @@
 [functions."export-pdf"]
   memory = 1024
   timeout = 26
+# ================================
+# FOR AUTONOMUS EMAIL FUNCTION
+# ================================
+[functions]
+  node_bundler = "esbuild"
 
+[functions."daily-job-draft"]
+  schedule = "0 6,12,18 * * *"
 
+[functions."daily-bursary-draft"]
+  schedule = "30 8,17 * * *"
