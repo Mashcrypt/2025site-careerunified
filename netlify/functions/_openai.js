@@ -1,5 +1,44 @@
 // netlify/functions/_openai.js
 
+async function callGemini(apiKey, model, prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [{ text: prompt }],
+        },
+      ],
+    }),
+  });
+
+  const raw = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`${model} -> ${raw}`);
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error(`${model} -> Non-JSON response: ${raw}`);
+  }
+
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+  if (!text) {
+    throw new Error(`${model} -> Gemini returned empty response: ${raw}`);
+  }
+
+  return text;
+}
+
 export async function generateWhatsAppPost(job) {
   const apiKey = process.env.GEMINI_API_KEY;
 
@@ -16,7 +55,8 @@ Style:
 - Bullet highlights with emojis
 - Clear call to action
 - End with direct job link
-- Clean formatting
+- Clean, professional formatting
+- No hashtags
 
 Job data:
 Title: ${job.title}
@@ -25,38 +65,23 @@ Location: ${job.location}
 Salary: ${job.salary || "Not specified"}
 Closing Date: ${job.closingDate || "Not specified"}
 Link: ${job.url}
-`;
+`.trim();
 
-  const resp = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-      }),
+  const models = [
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite-preview-06-17",
+  ];
+
+  const errors = [];
+
+  for (const model of models) {
+    try {
+      return await callGemini(apiKey, model, prompt);
+    } catch (err) {
+      errors.push(err?.message || String(err));
     }
-  );
-
-  if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(`Gemini error: ${err}`);
   }
 
-  const data = await resp.json();
-
-  const text =
-    data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-  if (!text) {
-    throw new Error("Gemini returned empty response");
-  }
-
-  return text;
+  throw new Error(`Gemini failed for all models: ${errors.join(" | ")}`);
 }
