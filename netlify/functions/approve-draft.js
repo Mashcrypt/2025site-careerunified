@@ -1,6 +1,8 @@
 // netlify/functions/approve-draft.js
 import { getDb } from "./_firebaseAdmin";
 
+const COLLECTION = "post_drafts";
+
 function escapeHtml(s = "") {
   return s.replace(/[&<>"']/g, (c) => ({
     "&": "&amp;",
@@ -14,18 +16,25 @@ function escapeHtml(s = "") {
 export async function handler(event) {
   try {
     const id = event.queryStringParameters?.id;
-    if (!id) return { statusCode: 400, body: "Missing id" };
+    if (!id) {
+      return { statusCode: 400, body: "Missing id" };
+    }
 
     const db = getDb();
-    const ref = db.collection("job_posts").doc(id);
+    const ref = db.collection(COLLECTION).doc(id);
     const snap = await ref.get();
 
-    if (!snap.exists) return { statusCode: 404, body: "Draft not found" };
+    if (!snap.exists) {
+      return { statusCode: 404, body: "Draft not found" };
+    }
 
     const data = snap.data() || {};
 
     if (data.status === "PENDING") {
-      await ref.update({ status: "APPROVED", approvedAt: new Date() });
+      await ref.update({
+        status: "APPROVED",
+        approvedAt: new Date(),
+      });
     }
 
     const postText = data.postText || "";
@@ -36,11 +45,11 @@ export async function handler(event) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Approve WhatsApp Post</title>
+  <title>Approve Draft</title>
   <style>
-    body { font-family: system-ui, Arial; padding: 16px; max-width: 760px; margin: 0 auto; }
-    pre { white-space: pre-wrap; background: #f6f7f9; padding: 12px; border-radius: 10px; }
-    button { padding: 10px 14px; border-radius: 10px; border: 0; cursor: pointer; }
+    body { font-family: system-ui, Arial, sans-serif; padding: 16px; max-width: 760px; margin: 0 auto; }
+    pre { white-space: pre-wrap; background: #f6f7f9; padding: 14px; border-radius: 12px; line-height: 1.6; }
+    button { padding: 10px 14px; border-radius: 10px; border: 0; cursor: pointer; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -58,8 +67,15 @@ export async function handler(event) {
 </body>
 </html>`;
 
-    return { statusCode: 200, headers: { "Content-Type": "text/html" }, body: html };
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "text/html" },
+      body: html,
+    };
   } catch (e) {
-    return { statusCode: 500, body: `Error: ${e?.message || String(e)}` };
+    return {
+      statusCode: 500,
+      body: `Error: ${e?.message || String(e)}`,
+    };
   }
 }
