@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Career Unified – Jobs, Bursaries & University Opportunities in South Africa</title>
   <meta name="description" content="Discover the latest jobs, bursaries, and university application deadlines in South Africa. Apply early, find scholarships, and kickstart your career with Career Unified.">
+  <meta name="keywords" content="jobs South Africa, bursaries South Africa, university applications, graduate jobs, internships, scholarships, career opportunities">
+  <link rel="canonical" href="https://careerunified.com/">
   <meta name="google-site-verification" content="JKMm0zr9nLbLB8JJt0WMWRy54LR7Ae6gTlexinyCMuI" />
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Career Unified">
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -24,6 +28,8 @@
   <meta property="og:url" content="https://careerunified.com/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://careerunified.com/images/social-share.png">
+  <meta property="og:site_name" content="Career Unified">
+  <meta property="og:locale" content="en_ZA">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
@@ -31,19 +37,108 @@
   <meta name="twitter:description" content="Find jobs, bursaries, and university opportunities in South Africa. Apply early and secure your career opportunities.">
   <meta name="twitter:image" content="https://careerunified.com/images/social-share.png">
 
-  <!-- Structured Data -->
+  <!-- ============================================================
+       STRUCTURED DATA — fixes the ? question mark icons in Google
+       Three schemas working together:
+       1. Organization  — tells Google who you are
+       2. WebSite       — enables the search box in Google results
+       3. SiteLinksSearchBox — verifies your sitelinks (removes ?)
+  ============================================================ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Career Unified",
+    "url": "https://careerunified.com/",
+    "logo": "https://careerunified.com/android-chrome-512x512.png",
+    "description": "Career Unified is a free South African platform for discovering jobs, bursaries, and university application opportunities.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "url": "https://careerunified.com/contact-us.html"
+    },
+    "sameAs": []
+  }
+  </script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Career Unified",
     "url": "https://careerunified.com/",
-    "description": "Discover jobs, bursaries, and university application deadlines in South Africa. Career Unified helps students and graduates find opportunities early.",
+    "description": "Discover jobs, bursaries, and university application deadlines in South Africa.",
+    "inLanguage": "en-ZA",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://careerunified.com/search?q={search_term_string}",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://careerunified.com/jobs.html?q={search_term_string}"
+      },
       "query-input": "required name=search_term_string"
     }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Career Unified Main Sections",
+    "description": "Main sections of the Career Unified platform",
+    "itemListElement": [
+      {
+        "@type": "SiteLinksSearchBox",
+        "url": "https://careerunified.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://careerunified.com/jobs.html?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Available Jobs",
+        "description": "Browse and apply for the latest job listings in South Africa.",
+        "url": "https://careerunified.com/jobs.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Bursaries",
+        "description": "Find bursaries, scholarships, and funding opportunities for South African students.",
+        "url": "https://careerunified.com/bursaries.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Varsity",
+        "description": "View all South African universities, application deadlines, and requirements.",
+        "url": "https://careerunified.com/varsity.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Professional CV Builder",
+        "description": "Generate a professional CV for free using Career Unified's CV builder tool.",
+        "url": "https://careerunified.com/cv-generator.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "name": "About Us",
+        "description": "Learn about Career Unified and our mission to connect South Africans with opportunities.",
+        "url": "https://careerunified.com/about-us.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "name": "Contact Us",
+        "description": "Get in touch with the Career Unified team.",
+        "url": "https://careerunified.com/contact-us.html"
+      }
+    ]
   }
   </script>
 
@@ -52,11 +147,8 @@
 
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- SMART SEARCH OVERLAY STYLES (ADDED) -->
+  <!-- SMART SEARCH OVERLAY STYLES -->
   <style>
-  /* ===============================
-     SMART SEARCH OVERLAY
-  ================================ */
   .smart-search-overlay{
     position: fixed;
     inset: 0;
@@ -145,10 +237,7 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
-    gtag('config', 'G-2Z934XRVXT', {
-      send_page_view: true
-    });
+    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
   </script>
 </head>
 
@@ -168,11 +257,9 @@
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
     <a href="saved-items.html"> Saved Items</a>
-
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
 
-    <!-- My Account Icon (Desktop) -->
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
       <svg viewBox="0 0 24 24">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -183,11 +270,9 @@
 
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <!-- Clickable Logo -->
     <a href="index.html" class="mobile-logo">Career Unified</a>
 
     <div class="mobile-nav-right">
-      <!-- Account Icon - Direct Link -->
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
         <svg viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -195,7 +280,6 @@
         </svg>
       </a>
 
-      <!-- Menu Icon -->
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
         <svg viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -227,14 +311,14 @@
   <h1>Career Unified</h1>
   <p class="slogan">One click from your dream</p>
 
-  <form class="hero-search" onsubmit="performSearch(); return false;">
-    <input type="text" id="homeSearch" placeholder="Search jobs, companies, bursaries, universities...">
+  <form class="hero-search" onsubmit="performSearch(); return false;" role="search" aria-label="Search jobs, bursaries and universities">
+    <input type="search" id="homeSearch" placeholder="Search jobs, companies, bursaries, universities..." aria-label="Search">
     <button type="submit">Search</button>
   </form>
 </header>
 
 <!-- QUICK STATS -->
-<section class="quick-stats">
+<section class="quick-stats" aria-label="Platform statistics">
   <div class="stat">
     <h3 id="statJobs">0+</h3>
     <p>Jobs Available</p>
@@ -292,35 +376,25 @@
   </p>
 
   <div class="why-grid">
-
     <div class="why-card reveal">
       <h3>What we do</h3>
-      <p>
-        We bring together verified jobs, bursaries, and university opportunities in one place — updated daily.
-      </p>
+      <p>We bring together verified jobs, bursaries, and university opportunities in one place — updated daily.</p>
     </div>
 
     <div class="why-card reveal">
       <h3>Who it's for</h3>
-      <p>
-        For students, graduates, and job seekers who want real opportunities without scams or paywalls.
-      </p>
+      <p>For students, graduates, and job seekers who want real opportunities without scams or paywalls.</p>
     </div>
 
     <div class="why-card reveal">
       <h3>Why you should stay</h3>
-      <p>
-        We track deadlines, remove expired posts, and give you free tools so you never miss a chance.
-      </p>
+      <p>We track deadlines, remove expired posts, and give you free tools so you never miss a chance.</p>
     </div>
 
     <div class="why-card reveal highlight">
       <h3>Why choose Career Unified?</h3>
-      <p>
-        Unlike other platforms that charge or show outdated listings, Career Unified is free, transparent, and focused on real South African opportunities.
-      </p>
+      <p>Unlike other platforms that charge or show outdated listings, Career Unified is free, transparent, and focused on real South African opportunities.</p>
     </div>
-
   </div>
 </section>
 
@@ -340,11 +414,9 @@
 (function () {
   const notice = document.getElementById('cookieNotice');
   const acceptBtn = document.getElementById('acceptCookies');
-
   if (localStorage.getItem('cookiesAccepted') === 'true') {
     notice.style.display = 'none';
   }
-
   acceptBtn.addEventListener('click', () => {
     localStorage.setItem('cookiesAccepted', 'true');
     notice.style.display = 'none';
@@ -352,7 +424,7 @@
 })();
 </script>
 
-<!-- GLOBAL SEARCH OVERLAY (ADDED) -->
+<!-- GLOBAL SEARCH OVERLAY -->
 <div id="smartSearchOverlay" class="smart-search-overlay" aria-hidden="true">
   <div class="smart-search-modal" role="dialog" aria-modal="true" aria-labelledby="smartSearchTitle">
     <button type="button" class="smart-search-close" id="smartSearchClose" aria-label="Close">×</button>
@@ -422,7 +494,6 @@ function saveCache(key, data) {
 /* ===============================
    LISTING TIER HELPERS
 ================================ */
-
 function isPromotionActive(job) {
   if (!job.sponsoredUntil) return true;
   return new Date(job.sponsoredUntil) >= new Date();
@@ -441,21 +512,17 @@ function getBadge(job) {
 }
 
 /* ===============================
-   RECENT JOBS (FIXED)
+   RECENT JOBS
 ================================ */
-
 const homeJobList = document.getElementById('homeJobList');
 const statJobs = document.getElementById('statJobs');
 
 async function renderRecentJobs() {
-
-  // 1️⃣ Show cached jobs instantly
   const cachedJobs = loadCache("home_jobs_cache");
   if (cachedJobs && cachedJobs.length) {
     renderJobsUI(cachedJobs);
   }
 
-  // 2️⃣ Fetch fresh jobs in background
   let jobs = await window.sanityClient.fetch(`*[_type=="job"] | order(posted desc){
     _id,
     title,
@@ -472,10 +539,7 @@ async function renderRecentJobs() {
     sponsoredUntil
   }`);
 
-  // 3️⃣ Save fresh data
   saveCache("home_jobs_cache", jobs);
-
-  // 4️⃣ Render updated data
   renderJobsUI(jobs);
 }
 
@@ -496,13 +560,11 @@ function renderJobsUI(jobs) {
     const isUrgent = (deadlineDate - today) / (1000 * 60 * 60 * 24) <= 7;
     const badge = getBadge(job);
 
-    // ✅ Company name fix (prevents [object Object])
     const companyName =
       (job.company && typeof job.company === 'object' && job.company.name)
         ? job.company.name
         : (typeof job.company === 'string' ? job.company : '');
 
-    // ✅ Open job fix: jobs.html reads ?slug=
     const jobSlug = (typeof job.slug === 'string' && job.slug.trim()) ? job.slug.trim() : '';
 
     const card = document.createElement('a');
@@ -537,23 +599,18 @@ const statVarsity = document.getElementById("statVarsity");
 async function loadStats(){
   const bursaries = await sanityClient.fetch(`*[_type=="bursary"]{_id}`);
   const varsities = await sanityClient.fetch(`*[_type=="university"]{_id}`);
-
   statBursaries.innerText = bursaries.length + "+";
   statVarsity.innerText = varsities.length;
 }
 
 loadStats();
 
-/* ================= SMART GLOBAL SEARCH (ADDED) ================= */
+/* ================= SMART GLOBAL SEARCH ================= */
 let smartSearchTimer = null;
 let smartCountdownTimer = null;
 
 function normalizeQuery(q) {
-  return (q || "")
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
+  return (q || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function getPrefWeight(key) {
@@ -587,15 +644,12 @@ function isAliasUniversity(term) {
 function showSmartOverlay(data) {
   const overlay = document.getElementById("smartSearchOverlay");
   const closeBtn = document.getElementById("smartSearchClose");
-
   const cJobs = document.getElementById("smartCountJobs");
   const cBurs = document.getElementById("smartCountBursaries");
   const cVars = document.getElementById("smartCountVarsity");
-
   const btnJobs = document.getElementById("smartBtnJobs");
   const btnBurs = document.getElementById("smartBtnBursaries");
   const btnVars = document.getElementById("smartBtnVarsity");
-
   const countdownEl = document.getElementById("smartCountdown");
 
   cJobs.textContent = String(data.jobs.count || 0);
@@ -617,21 +671,9 @@ function showSmartOverlay(data) {
 
   closeBtn.onclick = hide;
 
-  btnJobs.onclick = () => {
-    incPref("search_pref_jobs");
-    hide();
-    redirectTo("jobs", data.term);
-  };
-  btnBurs.onclick = () => {
-    incPref("search_pref_bursaries");
-    hide();
-    redirectTo("bursaries", data.term);
-  };
-  btnVars.onclick = () => {
-    incPref("search_pref_varsity");
-    hide();
-    redirectTo("varsity", data.term);
-  };
+  btnJobs.onclick = () => { incPref("search_pref_jobs"); hide(); redirectTo("jobs", data.term); };
+  btnBurs.onclick = () => { incPref("search_pref_bursaries"); hide(); redirectTo("bursaries", data.term); };
+  btnVars.onclick = () => { incPref("search_pref_varsity"); hide(); redirectTo("varsity", data.term); };
 
   let seconds = 2;
   countdownEl.textContent = String(seconds);
@@ -639,9 +681,7 @@ function showSmartOverlay(data) {
   smartCountdownTimer = setInterval(() => {
     seconds -= 1;
     countdownEl.textContent = String(Math.max(0, seconds));
-    if (seconds <= 0) {
-      clearInterval(smartCountdownTimer);
-    }
+    if (seconds <= 0) clearInterval(smartCountdownTimer);
   }, 1000);
 
   smartSearchTimer = setTimeout(() => {
@@ -652,25 +692,14 @@ function showSmartOverlay(data) {
 
 function redirectTo(target, term) {
   const q = encodeURIComponent(term);
-
   if (target === "jobs") {
     localStorage.setItem("homeSearchTerm", term);
     window.location.href = "jobs.html?q=" + q;
     return;
   }
-
   localStorage.setItem("globalSearchTerm", term);
-
-  if (target === "bursaries") {
-    window.location.href = "bursaries.html?q=" + q;
-    return;
-  }
-
-  if (target === "varsity") {
-    window.location.href = "varsity.html?q=" + q;
-    return;
-  }
-
+  if (target === "bursaries") { window.location.href = "bursaries.html?q=" + q; return; }
+  if (target === "varsity") { window.location.href = "varsity.html?q=" + q; return; }
   localStorage.setItem("homeSearchTerm", term);
   window.location.href = "jobs.html?q=" + q;
 }
@@ -700,71 +729,20 @@ function isCloseTie(best, second) {
 }
 
 async function fetchCountsFromSanity(term) {
-  if (!window.sanityClient || typeof window.sanityClient.fetch !== "function") {
-    return null;
-  }
+  if (!window.sanityClient || typeof window.sanityClient.fetch !== "function") return null;
 
   const q = term + "*";
 
   const queries = {
-    jobsStrong: `count(*[_type=="job" && (
-      title match $q ||
-      company->name match $q ||
-      category match $q ||
-      location match $q
-    )])`,
-    jobsAll: `count(*[_type=="job" && (
-      title match $q ||
-      company->name match $q ||
-      category match $q ||
-      location match $q ||
-      description match $q ||
-      body match $q
-    )])`,
-
-    bursStrong: `count(*[_type=="bursary" && (
-      title match $q ||
-      name match $q ||
-      sponsor match $q ||
-      provider match $q ||
-      field match $q
-    )])`,
-    bursAll: `count(*[_type=="bursary" && (
-      title match $q ||
-      name match $q ||
-      sponsor match $q ||
-      provider match $q ||
-      field match $q ||
-      description match $q ||
-      body match $q
-    )])`,
-
-    uniStrong: `count(*[_type=="university" && (
-      name match $q ||
-      title match $q ||
-      shortName match $q ||
-      city match $q ||
-      province match $q
-    )])`,
-    uniAll: `count(*[_type=="university" && (
-      name match $q ||
-      title match $q ||
-      shortName match $q ||
-      city match $q ||
-      province match $q ||
-      keywords[] match $q ||
-      description match $q
-    )])`
+    jobsStrong: `count(*[_type=="job" && (title match $q || company->name match $q || category match $q || location match $q)])`,
+    jobsAll: `count(*[_type=="job" && (title match $q || company->name match $q || category match $q || location match $q || description match $q || body match $q)])`,
+    bursStrong: `count(*[_type=="bursary" && (title match $q || name match $q || sponsor match $q || provider match $q || field match $q)])`,
+    bursAll: `count(*[_type=="bursary" && (title match $q || name match $q || sponsor match $q || provider match $q || field match $q || description match $q || body match $q)])`,
+    uniStrong: `count(*[_type=="university" && (name match $q || title match $q || shortName match $q || city match $q || province match $q)])`,
+    uniAll: `count(*[_type=="university" && (name match $q || title match $q || shortName match $q || city match $q || province match $q || keywords[] match $q || description match $q)])`
   };
 
-  const [
-    jobsStrong,
-    jobsAll,
-    bursStrong,
-    bursAll,
-    uniStrong,
-    uniAll
-  ] = await Promise.all([
+  const [jobsStrong, jobsAll, bursStrong, bursAll, uniStrong, uniAll] = await Promise.all([
     window.sanityClient.fetch(queries.jobsStrong, { q }),
     window.sanityClient.fetch(queries.jobsAll, { q }),
     window.sanityClient.fetch(queries.bursStrong, { q }),
@@ -780,7 +758,6 @@ async function fetchCountsFromSanity(term) {
   };
 }
 
-/* ================= SEARCH (Enhanced, keeps existing fallback) ================= */
 async function performSearch() {
   const input = document.getElementById("homeSearch");
   const raw = input ? input.value : "";
@@ -791,11 +768,7 @@ async function performSearch() {
   const uniAlias = isAliasUniversity(term);
 
   let counts = null;
-  try {
-    counts = await fetchCountsFromSanity(term);
-  } catch (e) {
-    counts = null;
-  }
+  try { counts = await fetchCountsFromSanity(term); } catch (e) { counts = null; }
 
   if (!counts) {
     localStorage.setItem("homeSearchTerm", term);
@@ -809,8 +782,8 @@ async function performSearch() {
   }
 
   const { best, second } = decideBestTarget(counts);
-
   const total = counts.jobs.count + counts.bursaries.count + counts.varsity.count;
+
   if (total === 0) {
     localStorage.setItem("homeSearchTerm", term);
     window.location.href = "jobs.html";
@@ -822,32 +795,21 @@ async function performSearch() {
     return;
   }
 
-  showSmartOverlay({
-    term,
-    jobs: counts.jobs,
-    bursaries: counts.bursaries,
-    varsity: counts.varsity,
-    best: best.key
-  });
+  showSmartOverlay({ term, jobs: counts.jobs, bursaries: counts.bursaries, varsity: counts.varsity, best: best.key });
 }
 
 /* ================= REVEAL ANIMATIONS ================= */
 const revealElements = document.querySelectorAll('.reveal');
-
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('show');
-    }
+    if (entry.isIntersecting) entry.target.classList.add('show');
   });
 }, { threshold: 0.2 });
-
 revealElements.forEach(el => observer.observe(el));
 
 /* ================= SCROLL ================= */
 const up = document.getElementById('scrollUp');
 const down = document.getElementById('scrollDown');
-
 window.addEventListener('scroll',()=>{
   up.style.display = down.style.display = window.scrollY > 300 ? 'block' : 'none';
 });
@@ -857,15 +819,12 @@ down.onclick=()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smoot
 /* ================= MOBILE NAVIGATION ================= */
 const menuBtn = document.getElementById("menuBtn");
 const mobileMenu = document.getElementById("mobileMenu");
-
 if (menuBtn) {
   menuBtn.onclick = () => {
     const isOpen = mobileMenu.style.display === "block";
     mobileMenu.style.display = isOpen ? "none" : "block";
   };
 }
-
-// Close menu when clicking outside
 document.addEventListener("click", e => {
   if (!e.target.closest(".mobile-nav") && !e.target.closest(".mobile-menu")) {
     if (mobileMenu) mobileMenu.style.display = "none";
@@ -875,6 +834,7 @@ document.addEventListener("click", e => {
 
 </body>
 </html>
+
 
 
 
