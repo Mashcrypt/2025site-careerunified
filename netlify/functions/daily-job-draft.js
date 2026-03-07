@@ -4,15 +4,16 @@ import { fetchLatestJobFromSite } from "./_scrapeJobs";
 import { generateWhatsAppPost } from "./_openai";
 import { sendApprovalEmail } from "./_notify";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export async function handler() {
   try {
     const db = getDb();
 
     const job = await fetchLatestJobFromSite();
 
-    // Skip if this job URL was already processed
+    if (!job || !job.url) {
+      throw new Error("Job data is missing or invalid.");
+    }
+
     const existing = await db
       .collection("job_posts")
       .where("jobUrl", "==", job.url)
@@ -20,13 +21,17 @@ export async function handler() {
       .get();
 
     if (!existing.empty) {
-      return { statusCode: 200, body: "No new job (already processed)" };
+      return {
+        statusCode: 200,
+        body: "No new job (already processed)",
+      };
     }
 
-    // ✅ "Thought for 25s"
-    await sleep(2_000);
-
     const postText = await generateWhatsAppPost(job);
+
+    if (!postText || typeof postText !== "string") {
+      throw new Error("OpenAI returned empty post text.");
+    }
 
     const docRef = await db.collection("job_posts").add({
       jobUrl: job.url,
@@ -40,7 +45,9 @@ export async function handler() {
     const emailTo = process.env.NOTIFY_EMAIL_TO;
 
     if (base && emailTo) {
-      const approveUrl = `${base}/.netlify/functions/approve-draft?id=${docRef.id}`;
+      const cleanBase = base.replace(/\/+$/, "");
+      const approveUrl = `${cleanBase}/.netlify/functions/approve-draft?id=${docRef.id}`;
+
       await sendApprovalEmail({
         to: emailTo,
         subject: "Career Unified: Draft ready for approval",
@@ -50,8 +57,15 @@ export async function handler() {
       });
     }
 
-    return { statusCode: 200, body: `Draft created: ${docRef.id}` };
+    return {
+      statusCode: 200,
+      body: `Draft created: ${docRef.id}`,
+    };
   } catch (e) {
-    return { statusCode: 500, body: `Error: ${e?.message || String(e)}` };
+    console.error("daily-job-draft error:", e);
+    return {
+      statusCode: 500,
+      body: `Error: ${e?.message || String(e)}`,
+    };
   }
 }
