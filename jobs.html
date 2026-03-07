@@ -2,13 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Jobs – Career Unified</title>
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="description" content="Browse verified jobs in South Africa. Filter by company, location, salary and apply instantly on Career Unified.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobs in South Africa – Browse & Apply | Career Unified</title>
+  <meta name="description" content="Browse hundreds of verified jobs in South Africa. Filter by category, location and salary. Apply instantly — updated daily on Career Unified.">
+  <meta name="keywords" content="jobs South Africa, job vacancies, graduate jobs, internships, full time jobs, part time jobs, remote jobs South Africa">
+  <meta name="author" content="Career Unified">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://careerunified.com/jobs.html">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Jobs in South Africa – Browse & Apply | Career Unified">
+  <meta property="og:description" content="Browse hundreds of verified jobs in South Africa. Filter by category, location and salary. Apply instantly — updated daily.">
+  <meta property="og:url" content="https://careerunified.com/jobs.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://careerunified.com/images/social-share.png">
+  <meta property="og:site_name" content="Career Unified">
+  <meta property="og:locale" content="en_ZA">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jobs in South Africa – Browse & Apply | Career Unified">
+  <meta name="twitter:description" content="Browse hundreds of verified jobs in South Africa. Filter by category, location and salary. Apply instantly.">
+  <meta name="twitter:image" content="https://careerunified.com/images/social-share.png">
+
+  <!-- Structured Data: Jobs listing page + breadcrumb -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Jobs in South Africa",
+    "description": "Browse and apply for verified job listings in South Africa. Updated daily with full-time, part-time, internship and graduate opportunities.",
+    "url": "https://careerunified.com/jobs.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Career Unified",
+      "url": "https://careerunified.com/"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://careerunified.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Jobs",
+          "item": "https://careerunified.com/jobs.html"
+        }
+      ]
+    }
+  }
+  </script>
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -30,15 +78,11 @@
     gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
   </script>
 
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
   <style>
-    /* =============================== */
-    /* RESET & BASE                    */
-    /* =============================== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -48,32 +92,16 @@
       line-height: 1.6;
     }
 
-    /* =============================== */
-    /* HEADER                          */
-    /* =============================== */
-    header {
+    /* PAGE HERO — renamed from header to avoid semantic conflict with site <header> */
+    .page-hero {
       text-align: center;
       padding: 60px 20px 50px;
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #fff;
     }
+    .page-hero h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; }
 
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-    }
-
-    header p {
-      margin-top: 8px;
-      font-size: 1.1rem;
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-
-    /* =============================== */
-    /* JOBS PAGE LAYOUT                */
-    /* =============================== */
     .jobs-container {
       display: flex;
       max-width: 1200px;
@@ -92,13 +120,12 @@
       padding-right: 10px;
     }
 
-    /* DESKTOP: sticky panel, description scrolls inside */
     .jobs-preview {
       flex: 1;
       background: #fff;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       min-height: 420px;
       position: sticky;
       top: 20px;
@@ -108,9 +135,6 @@
       flex-direction: column;
     }
 
-    /* =============================== */
-    /* SEARCH & FILTER                 */
-    /* =============================== */
     .search-filter-container {
       display: flex;
       gap: 10px;
@@ -129,21 +153,14 @@
       transition: all 0.2s;
     }
 
-    .search-filter-container input {
-      flex: 1;
-      min-width: 200px;
-    }
+    .search-filter-container input  { flex: 1; min-width: 200px; }
+    .search-filter-container select { background: white; cursor: pointer; }
 
     .search-filter-container input:focus,
     .search-filter-container select:focus {
       outline: none;
       border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .search-filter-container select {
-      background: white;
-      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
     .search-filter-container button {
@@ -154,14 +171,8 @@
       cursor: pointer;
       white-space: nowrap;
     }
+    .search-filter-container button:hover { background: #1e40af; }
 
-    .search-filter-container button:hover {
-      background: #1e40af;
-    }
-
-    /* =============================== */
-    /* JOB CARDS LIST                  */
-    /* =============================== */
     .jobs-list {
       list-style: none;
       padding: 0;
@@ -175,45 +186,18 @@
       background: #fff;
       border-radius: 10px;
       padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
       border-left: 3px solid transparent;
     }
+    .job-card:hover        { background: #f0f7ff; transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .job-card.selected     { border-left-color: #facc15; background: #fffbeb; }
+    .job-card h3           { font-size: 1.1rem; color: #1e3a8a; margin-bottom: 8px; padding-right: 80px; }
+    .job-card p            { margin: 4px 0; font-size: 0.9rem; color: #6b7280; }
+    .job-card strong       { color: #374151; font-weight: 600; }
 
-    .job-card:hover {
-      background: #f0f7ff;
-      transform: translateX(4px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .job-card.selected {
-      border-left-color: #facc15;
-      background: #fffbeb;
-    }
-
-    .job-card h3 {
-      font-size: 1.1rem;
-      color: #1e3a8a;
-      margin-bottom: 8px;
-      padding-right: 80px;
-    }
-
-    .job-card p {
-      margin: 4px 0;
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-
-    .job-card strong {
-      color: #374151;
-      font-weight: 600;
-    }
-
-    /* =============================== */
-    /* JOB BADGE                       */
-    /* =============================== */
     .job-badge {
       position: absolute;
       top: 12px;
@@ -229,9 +213,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* =============================== */
-    /* JOB PREVIEW (DESKTOP)           */
-    /* =============================== */
     .preview-header {
       display: flex;
       justify-content: space-between;
@@ -251,37 +232,12 @@
       transition: transform 0.2s;
       flex-shrink: 0;
     }
+    .close-preview-btn:hover { transform: scale(1.1); }
+    .close-preview-btn svg   { width: 28px; height: 28px; stroke: #3b82f6; stroke-width: 2.5; }
 
-    .close-preview-btn:hover {
-      transform: scale(1.1);
-    }
+    .jobs-preview h2 { color: #1e3a8a; font-size: 1.75rem; margin: 0; flex: 1; padding-right: 10px; }
+    .jobs-preview .job-badge { position: relative; top: 0; right: 0; display: inline-block; margin-bottom: 12px; z-index: 1; margin-right: 12px; }
 
-    .close-preview-btn svg {
-      width: 28px;
-      height: 28px;
-      stroke: #3b82f6;
-      stroke-width: 2.5;
-    }
-
-    .jobs-preview h2 {
-      color: #1e3a8a;
-      font-size: 1.75rem;
-      margin: 0;
-      flex: 1;
-      padding-right: 10px;
-    }
-
-    .jobs-preview .job-badge {
-      position: relative;
-      top: 0;
-      right: 0;
-      display: inline-block;
-      margin-bottom: 12px;
-      z-index: 1;
-      margin-right: 12px;
-    }
-
-    /* DESKTOP: flex column so description stretches and scrolls */
     .preview-slide {
       display: flex;
       flex-direction: column;
@@ -291,42 +247,17 @@
       animation-fill-mode: both;
       width: 100%;
     }
-
     .slide-left  { animation-name: slideLeft;  }
     .slide-right { animation-name: slideRight; }
 
-    @keyframes slideLeft {
-      from { transform: translateX(40px);  opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
-    }
+    @keyframes slideLeft  { from { transform: translateX(40px);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideRight { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    @keyframes slideRight {
-      from { transform: translateX(-40px); opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
-    }
+    .preview-content-wrapper { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .preview-info             { flex-shrink: 0; margin-bottom: 12px; }
+    .jobs-preview p           { margin: 8px 0; color: #4b5563; }
+    .jobs-preview strong      { color: #1f2937; }
 
-    .preview-content-wrapper {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .preview-info {
-      flex-shrink: 0;
-      margin-bottom: 12px;
-    }
-
-    .jobs-preview p {
-      margin: 8px 0;
-      color: #4b5563;
-    }
-
-    .jobs-preview strong {
-      color: #1f2937;
-    }
-
-    /* DESKTOP: description scrolls inside the fixed panel */
     .jobs-preview .job-desc {
       white-space: pre-line;
       padding: 16px;
@@ -342,9 +273,6 @@
       overscroll-behavior: contain;
     }
 
-    /* =============================== */
-    /* APPLY BUTTON                    */
-    /* =============================== */
     .apply-btn {
       display: block;
       background: #16a34a;
@@ -357,18 +285,10 @@
       font-size: 15px;
       text-align: center;
       flex-shrink: 0;
-      box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -6px 12px rgba(0,0,0,0.05);
     }
+    .apply-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
 
-    .apply-btn:hover {
-      background: #15803d;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-    }
-
-    /* =============================== */
-    /* SKELETON LOADER                 */
-    /* =============================== */
     .skeleton {
       background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
       background-size: 200% 100%;
@@ -377,92 +297,20 @@
       position: relative;
       overflow: hidden;
     }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-job { height: 110px; margin-bottom: 12px; }
+    .job-card.skeleton { cursor: default; border: none; }
+    .job-card.skeleton:hover { background: #e5e7eb; transform: none; }
 
-    @keyframes skeleton-shimmer {
-      0%   { background-position:  200% 0; }
-      100% { background-position: -200% 0; }
-    }
+    .main-footer { background: #1e3a8a; color: white; text-align: center; padding: 30px 20px; margin-top: 60px; }
+    .footer-links { margin-bottom: 12px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    .footer-links a { color: #facc15; font-weight: 600; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
 
-    .skeleton-job {
-      height: 110px;
-      margin-bottom: 12px;
-    }
+    .empty-state      { text-align: center; padding: 60px 20px; color: #6b7280; }
+    .empty-state svg  { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
+    .empty-state h3   { color: #374151; margin-bottom: 8px; }
 
-    .job-card.skeleton {
-      cursor: default;
-      border: none;
-    }
-
-    .job-card.skeleton:hover {
-      background: #e5e7eb;
-      transform: none;
-    }
-
-    /* =============================== */
-    /* FOOTER                          */
-    /* =============================== */
-    .main-footer {
-      background: #1e3a8a;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      margin-top: 60px;
-    }
-
-    .footer-links {
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-links a {
-      color: #facc15;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
-
-    /* =============================== */
-    /* SEO FALLBACK                    */
-    /* =============================== */
-    .seo-content {
-      position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-    }
-
-    /* =============================== */
-    /* EMPTY STATE                     */
-    /* =============================== */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #6b7280;
-    }
-
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      opacity: 0.3;
-    }
-
-    .empty-state h3 {
-      color: #374151;
-      margin-bottom: 8px;
-    }
-
-    /* =============================== */
-    /* HEART / SAVE ICON               */
-    /* =============================== */
     .heart-icon {
       width: 22px;
       height: 22px;
@@ -476,120 +324,42 @@
       transition: all 0.25s ease;
       z-index: 10;
     }
+    .heart-icon:hover { transform: scale(1.15); }
+    .heart-icon.saved { fill: #60a5fa; stroke: #60a5fa; filter: drop-shadow(0 0 6px rgba(96,165,250,0.6)); }
 
-    .heart-icon:hover {
-      transform: scale(1.15);
-    }
-
-    .heart-icon.saved {
-      fill: #60a5fa;
-      stroke: #60a5fa;
-      filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.6));
-    }
-
-    /* ======================================================= */
-    /* MOBILE — max-width: 900px                               */
-    /* ======================================================= */
     @media (max-width: 900px) {
+      .page-hero          { padding: 50px 16px 40px; }
+      .page-hero h1       { font-size: 2rem; }
+      .page-hero p        { font-size: 1rem; }
 
-      header {
-        padding: 50px 16px 40px;
-      }
+      .jobs-container     { flex-direction: column; margin: 20px auto; padding: 0 16px; gap: 16px; min-height: auto; padding-bottom: 80px; }
+      .jobs-left, .jobs-preview { width: 100%; }
+      .jobs-left          { max-height: none; overflow-y: visible; padding-right: 0; }
 
-      header h1 { font-size: 2rem; }
-      header p  { font-size: 1rem; }
+      .jobs-preview       { position: static; display: block; max-height: 70vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 20px; min-height: 300px; overflow-x: hidden; }
+      .preview-slide      { display: block; height: auto; min-height: 0; }
+      .preview-content-wrapper { display: block; height: auto; min-height: 0; }
+      .jobs-preview .job-desc { overflow-y: visible; max-height: none; min-height: 0; flex: none; margin-bottom: 16px; -webkit-overflow-scrolling: auto; }
 
-      .jobs-container {
-        flex-direction: column;
-        margin: 20px auto;
-        padding: 0 16px;
-        gap: 16px;
-        min-height: auto;
-        padding-bottom: 80px;
-      }
+      .apply-btn          { display: block; width: 100%; text-align: center; padding: 14px; font-size: 16px; margin-top: 4px; }
 
-      .jobs-left,
-      .jobs-preview {
-        width: 100%;
-      }
-
-      .jobs-left {
-        max-height: none;
-        overflow-y: visible;
-        padding-right: 0;
-      }
-
-      .jobs-preview {
-        position: static;
-        display: block;
-        max-height: 70vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        padding: 20px;
-        min-height: 300px;
-        overflow-x: hidden;
-      }
-
-      .preview-slide {
-        display: block;
-        height: auto;
-        min-height: 0;
-      }
-
-      .preview-content-wrapper {
-        display: block;
-        height: auto;
-        min-height: 0;
-      }
-
-      .jobs-preview .job-desc {
-        overflow-y: visible;
-        max-height: none;
-        min-height: 0;
-        flex: none;
-        margin-bottom: 16px;
-        -webkit-overflow-scrolling: auto;
-      }
-
-      .apply-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 14px;
-        font-size: 16px;
-        margin-top: 4px;
-      }
-
-      .search-filter-container {
-        flex-direction: column;
-        gap: 12px;
-      }
-
+      .search-filter-container { flex-direction: column; gap: 12px; }
       .search-filter-container input,
       .search-filter-container select,
-      .search-filter-container button {
-        width: 100%;
-        min-width: auto;
-        padding: 14px 16px;
-        font-size: 16px;
-      }
+      .search-filter-container button { width: 100%; min-width: auto; padding: 14px 16px; font-size: 16px; }
 
       .job-card       { padding: 14px; }
       .job-card h3    { font-size: 1rem; padding-right: 70px; }
       .job-card p     { font-size: 0.85rem; }
-
       .jobs-preview h2 { font-size: 1.3rem; }
       .jobs-preview p  { font-size: 0.9rem; }
-
       .close-preview-btn svg { width: 24px; height: 24px; }
-
       .footer-links   { flex-direction: column; gap: 8px; }
       .footer-links a { font-size: 14px; }
     }
 
     @media (max-width: 400px) {
-      header h1        { font-size: 1.75rem; }
+      .page-hero h1    { font-size: 1.75rem; }
       .job-card h3     { font-size: 0.95rem; }
       .job-badge       { font-size: 10px; padding: 3px 8px; }
       .jobs-preview h2 { font-size: 1.2rem; }
@@ -598,15 +368,11 @@
 </head>
 <body>
 
-  <!-- =============================== -->
-  <!-- NAVIGATION                      -->
-  <!-- =============================== -->
+  <!-- NAVIGATION -->
   <nav class="main-nav">
-
-    <!-- Desktop -->
     <a href="index.html" class="logo desktop-nav">Career Unified</a>
     <div class="nav-links desktop-nav">
-      <a href="jobs.html">Jobs</a>
+      <a href="jobs.html" aria-current="page">Jobs</a>
       <a href="bursaries.html">Bursaries</a>
       <a href="varsity.html">Varsity</a>
       <a href="cv-generator.html">Generate CV</a>
@@ -616,33 +382,20 @@
       <a href="signup.html">Sign Up</a>
       <a href="login.html">Login</a>
       <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </a>
     </div>
-
-    <!-- Mobile -->
     <div class="mobile-nav">
       <a href="index.html" class="mobile-logo">Career Unified</a>
       <div class="mobile-nav-right">
         <a href="account-page.html" class="icon-btn" aria-label="My Account">
-          <svg viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
         <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-          <svg viewBox="0 0 24 24">
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="6"  x2="21" y2="6"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
     </div>
-
   </nav>
 
   <!-- Mobile Slide Menu -->
@@ -658,24 +411,29 @@
     <a href="login.html">Login</a>
   </div>
 
-  <!-- =============================== -->
-  <!-- HEADER                          -->
-  <!-- =============================== -->
-  <header>
-    <h1>Available Jobs</h1>
-    <p>Find your next opportunity in South Africa</p>
-  </header>
+  <!-- PAGE HERO (renamed from <header> to avoid semantic conflict) -->
+  <section class="page-hero">
+    <h1>Available Jobs in South Africa</h1>
+    <p>Find your next opportunity — updated daily</p>
+  </section>
 
-  <!-- =============================== -->
-  <!-- MAIN CONTENT                    -->
-  <!-- =============================== -->
+  <!-- BREADCRUMB (visible to Google, useful for users) -->
+  <nav aria-label="Breadcrumb" style="max-width:1200px;margin:16px auto 0;padding:0 20px;font-size:0.85rem;color:#6b7280;">
+    <ol style="list-style:none;display:flex;gap:6px;flex-wrap:wrap;">
+      <li><a href="/" style="color:#2563eb;text-decoration:none;">Home</a></li>
+      <li aria-hidden="true" style="color:#d1d5db;">›</li>
+      <li aria-current="page" style="color:#374151;">Jobs</li>
+    </ol>
+  </nav>
+
+  <!-- MAIN CONTENT -->
   <main class="jobs-container">
 
     <!-- Left: Search + Job List -->
     <div class="jobs-left">
-      <div class="search-filter-container">
-        <input type="text" id="jobSearch" placeholder="Search jobs, companies, keywords...">
-        <select id="categoryFilter">
+      <div class="search-filter-container" role="search" aria-label="Filter jobs">
+        <input type="search" id="jobSearch" placeholder="Search jobs, companies, keywords..." aria-label="Search jobs">
+        <select id="categoryFilter" aria-label="Filter by category">
           <option value="all">All Categories</option>
           <option value="internship">Internship / Graduate</option>
           <option value="temporary">Temporary</option>
@@ -683,33 +441,23 @@
         </select>
         <button id="sortBtn">Sort by Deadline</button>
       </div>
-      <ul class="jobs-list" id="jobList"></ul>
+      <ul class="jobs-list" id="jobList" aria-label="Job listings" aria-live="polite"></ul>
     </div>
 
     <!-- Right: Job Preview -->
-    <div class="jobs-preview" id="jobPreview">
-      <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-        <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+    <aside class="jobs-preview" id="jobPreview" aria-label="Job details">
+      <div style="text-align:center;color:#9ca3af;padding:40px 20px;">
+        <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px;stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
           <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
         </svg>
-        <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+        <p style="font-size:1.1rem;color:#6b7280;">Select a job to view details</p>
       </div>
-    </div>
-
-    <!-- SEO Content (hidden) -->
-    <section class="seo-content" aria-hidden="true">
-      <h2>Latest Jobs in South Africa</h2>
-      <p>Career Unified lists verified job opportunities across South Africa including IT, finance, retail, engineering, hospitality, government, and graduate roles.</p>
-      <p>Our platform updates daily to help job seekers find full-time, part-time, remote, and internship positions from trusted employers.</p>
-      <p>Use Career Unified to search, filter, and apply for jobs across all provinces in South Africa.</p>
-    </section>
+    </aside>
 
   </main>
 
-  <!-- =============================== -->
-  <!-- FOOTER                          -->
-  <!-- =============================== -->
+  <!-- FOOTER -->
   <footer class="main-footer">
     <div class="footer-links">
       <a href="about-us.html">About Us</a>
@@ -720,9 +468,7 @@
     <p>&copy; 2026 Career Unified. All rights reserved.</p>
   </footer>
 
-  <!-- =============================== -->
-  <!-- FIREBASE SDK                    -->
-  <!-- =============================== -->
+  <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -731,10 +477,6 @@
   <script src="js/sanityClient.js"></script>
 
   <script>
-    /* ===============================================================
-       JOBS PAGE — Sanity + Firestore + Saved Jobs + Mobile Scroll Fix
-       =============================================================== */
-
     const jobList    = document.getElementById('jobList');
     const jobPreview = document.getElementById('jobPreview');
 
@@ -747,141 +489,81 @@
     let savedJobs = new Set();
     const BOOKMARK_KEY = 'careerUnifiedBookmarks';
 
-    /* ===============================================================
-       SMART SEARCH HANDOFF (ADDED)
-       - Accept search term from: ?q= OR localStorage.homeSearchTerm
-       - Prefill #jobSearch and filter results automatically
-       =============================================================== */
+    /* ── SMART SEARCH HANDOFF ── */
     function normalizeSearchTerm(v) {
       return (v || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
     }
 
     function getSearchParam(name) {
-      try {
-        return new URLSearchParams(window.location.search).get(name);
-      } catch {
-        return null;
-      }
+      try { return new URLSearchParams(window.location.search).get(name); } catch { return null; }
     }
 
     function applyInitialSearchTermToUI() {
       const input = document.getElementById('jobSearch');
       if (!input) return;
-
-      // If user already typed something (e.g. back button), don't override.
       if (normalizeSearchTerm(input.value)) return;
-
-      const fromQ = normalizeSearchTerm(getSearchParam('q'));
+      const fromQ  = normalizeSearchTerm(getSearchParam('q'));
       const fromLS = normalizeSearchTerm(localStorage.getItem('homeSearchTerm'));
-      const term = fromQ || fromLS;
-
+      const term   = fromQ || fromLS;
       if (!term) return;
-
-      // keep your existing storage behavior consistent
       localStorage.setItem('homeSearchTerm', term);
-
       input.value = term;
     }
 
-    /* =============================== */
-    /* NAV — Mobile Menu               */
-    /* =============================== */
+    /* ── NAV ── */
     const menuBtn    = document.getElementById('menuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-
     if (menuBtn) {
       menuBtn.onclick = () => {
         const isOpen = mobileMenu.style.display === 'block';
         mobileMenu.style.display = isOpen ? 'none' : 'block';
       };
     }
-
     document.addEventListener('click', e => {
       if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
         if (mobileMenu) mobileMenu.style.display = 'none';
       }
     });
 
-    /* =============================== */
-    /* LOCAL STORAGE HELPERS           */
-    /* =============================== */
-    function getBookmarks() {
-      return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]');
-    }
-
-    function saveBookmarks(list) {
-      localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list));
-    }
+    /* ── LOCAL STORAGE HELPERS ── */
+    function getBookmarks()       { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]'); }
+    function saveBookmarks(list)  { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list)); }
 
     function addToLocalStorage(type, id) {
       const key = `${type}:${id}`;
-      let bookmarks = getBookmarks();
-      if (!bookmarks.includes(key)) {
-        bookmarks.push(key);
-        saveBookmarks(bookmarks);
-      }
+      let bm = getBookmarks();
+      if (!bm.includes(key)) { bm.push(key); saveBookmarks(bm); }
     }
 
     function removeFromLocalStorage(type, id) {
-      const key     = `${type}:${id}`;
-      let bookmarks = getBookmarks().filter(x => x !== key);
-      saveBookmarks(bookmarks);
+      const key = `${type}:${id}`;
+      saveBookmarks(getBookmarks().filter(x => x !== key));
     }
 
-    /* =============================== */
-    /* AUTH — Saved Hearts             */
-    /* =============================== */
+    /* ── AUTH ── */
     if (typeof firebase !== 'undefined' && firebase.auth) {
       firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          userId = user.uid;
-          loadSavedJobs();
-        } else {
-          userId = null;
-          savedJobs.clear();
-          updateHearts();
-        }
+        if (user) { userId = user.uid; loadSavedJobs(); }
+        else       { userId = null; savedJobs.clear(); updateHearts(); }
       });
     }
 
     async function loadSavedJobs() {
       if (!userId) return;
       try {
-        const snapshot = await firebase.firestore()
-          .collection('users')
-          .doc(userId)
-          .collection('saved')
-          .get();
-
+        const snapshot = await firebase.firestore().collection('users').doc(userId).collection('saved').get();
         savedJobs.clear();
-        let bookmarks = getBookmarks().filter(x => !x.startsWith('job:'));
-
-        snapshot.forEach(doc => {
-          savedJobs.add(doc.id);
-          bookmarks.push(`job:${doc.id.replace('job_', '')}`);
-        });
-
-        saveBookmarks(bookmarks);
+        let bm = getBookmarks().filter(x => !x.startsWith('job:'));
+        snapshot.forEach(doc => { savedJobs.add(doc.id); bm.push(`job:${doc.id.replace('job_', '')}`); });
+        saveBookmarks(bm);
         updateHearts();
-      } catch (err) {
-        console.error('Failed to load saved jobs:', err);
-      }
+      } catch (err) { console.error('Failed to load saved jobs:', err); }
     }
 
     async function toggleSaveJob(job) {
-      if (!userId) {
-        alert('Please log in to save jobs');
-        window.location.href = 'login.html';
-        return;
-      }
-
+      if (!userId) { alert('Please log in to save jobs'); window.location.href = 'login.html'; return; }
       const docId = 'job_' + job._id;
-      const ref   = firebase.firestore()
-        .collection('users')
-        .doc(userId)
-        .collection('saved')
-        .doc(docId);
-
+      const ref   = firebase.firestore().collection('users').doc(userId).collection('saved').doc(docId);
       try {
         if (savedJobs.has(docId)) {
           await ref.delete();
@@ -889,64 +571,42 @@
           removeFromLocalStorage('job', job._id);
         } else {
           await ref.set({
-            type:      'job',
-            title:     job.title,
-            company:   job.company?.name || job.company || null,
-            deadline:  job.deadline  || null,
-            location:  job.location  || null,
-            salary:    job.salary    || null,
-            applyLink: job.applyLink || null,
-            savedAt:   firebase.firestore.FieldValue.serverTimestamp()
+            type: 'job', title: job.title, company: job.company?.name || job.company || null,
+            deadline: job.deadline || null, location: job.location || null,
+            salary: job.salary || null, applyLink: job.applyLink || null,
+            savedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           savedJobs.add(docId);
           addToLocalStorage('job', job._id);
         }
         updateHearts();
-      } catch (err) {
-        console.error('Error toggling save:', err);
-        alert('Failed to save job. Please try again.');
-      }
+      } catch (err) { console.error('Error toggling save:', err); alert('Failed to save job. Please try again.'); }
     }
 
     function updateHearts() {
       document.querySelectorAll('.heart-icon').forEach(heart => {
-        const jobCard = heart.closest('.job-card');
-        if (jobCard && jobCard.dataset.id) {
-          const docId = 'job_' + jobCard.dataset.id;
-          heart.classList.toggle('saved', savedJobs.has(docId));
-        }
+        const card = heart.closest('.job-card');
+        if (card && card.dataset.id) heart.classList.toggle('saved', savedJobs.has('job_' + card.dataset.id));
       });
     }
 
     document.addEventListener('click', e => {
       if (e.target.closest('.heart-icon')) {
         e.stopPropagation();
-        const jobCard = e.target.closest('.job-card');
-        if (jobCard && jobCard.dataset.jobData) {
-          try {
-            const job = JSON.parse(jobCard.dataset.jobData);
-            toggleSaveJob(job);
-          } catch (err) {
-            console.error('Error parsing job data:', err);
-          }
+        const card = e.target.closest('.job-card');
+        if (card && card.dataset.jobData) {
+          try { toggleSaveJob(JSON.parse(card.dataset.jobData)); } catch (err) { console.error('Error parsing job data:', err); }
         }
       }
     });
 
-    /* =============================== */
-    /* HELPERS                         */
-    /* =============================== */
+    /* ── HELPERS ── */
     function safeText(v, fallback = '') {
       return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
     }
 
     function slugify(str) {
-      return safeText(str, 'job')
-        .toLowerCase()
-        .replace(/&/g, 'and')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 60);
+      return safeText(str, 'job').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
     }
 
     function toISODateString(d) {
@@ -954,11 +614,8 @@
         if (!d) return null;
         if (d.toDate) d = d.toDate();
         const dt = (d instanceof Date) ? d : new Date(d);
-        if (isNaN(dt.getTime())) return null;
-        return dt.toISOString();
-      } catch {
-        return null;
-      }
+        return isNaN(dt.getTime()) ? null : dt.toISOString();
+      } catch { return null; }
     }
 
     function getJobLogo(job) {
@@ -971,62 +628,37 @@
       return window.sanityClient?.imageUrl(job.company?.logo)?.width(80).height(80).fit('crop').url() || '';
     }
 
-    /* =============================== */
-    /* FIRESTORE JOBS (PUBLIC)         */
-    /* =============================== */
+    /* ── FIRESTORE JOBS ── */
     async function fetchRecruiterJobs() {
       if (!firebase?.firestore) return [];
       try {
-        const db   = firebase.firestore();
-        const snap = await db.collection('jobs')
-          .orderBy('createdAt', 'desc')
-          .limit(300)
-          .get();
-
+        const snap = await firebase.firestore().collection('jobs').orderBy('createdAt', 'desc').limit(300).get();
         const list = [];
-        snap.forEach(doc => {
-          const data       = doc.data() || {};
-          const normalized = normalizeRecruiterJob(doc.id, data);
-          if (normalized) list.push(normalized);
-        });
+        snap.forEach(doc => { const n = normalizeRecruiterJob(doc.id, doc.data() || {}); if (n) list.push(n); });
         return list;
-      } catch (e) {
-        console.error('Failed to fetch Firestore jobs:', e);
-        return [];
-      }
+      } catch (e) { console.error('Failed to fetch Firestore jobs:', e); return []; }
     }
 
     function normalizeRecruiterJob(id, data) {
       const status = (data.status || data.state || data.approvalStatus || '').toString().toLowerCase();
-
-      const hidden = ['rejected', 'declined', 'removed', 'deleted', 'blocked'];
-      if (hidden.includes(status)) return null;
-
+      if (['rejected','declined','removed','deleted','blocked'].includes(status)) return null;
       if (!!data.draft || status === 'draft') return null;
-
-      const approvedLike = ['approved', 'active', 'published', 'live'];
+      const approvedLike = ['approved','active','published','live'];
       if (status && !approvedLike.includes(status)) return null;
 
       const title       = safeText(data.title, safeText(data.jobTitle, 'Untitled Job'));
       const companyName = safeText(data.company?.name) || safeText(data.companyName) || safeText(data.company) || 'Confidential';
       const logoUrl     = safeText(data.company?.logoUrl) || safeText(data.logoUrl) || safeText(data.logo) || '';
-      const location    = safeText(data.location)
-                          || [safeText(data.city), safeText(data.country)].filter(Boolean).join(', ')
-                          || 'South Africa';
+      const location    = safeText(data.location) || [safeText(data.city), safeText(data.country)].filter(Boolean).join(', ') || 'South Africa';
       const description = safeText(data.description) || safeText(data.jobDescription) || safeText(data.desc) || 'Description not provided.';
       const salary      = safeText(data.salary) || safeText(data.salaryRange) || '';
 
       const deadlineISO = toISODateString(data.deadline || data.applicationDeadline || data.closingDate);
-      const deadline    = safeText(data.deadline)
-                          || safeText(data.applicationDeadline)
-                          || safeText(data.closingDate)
-                          || (deadlineISO ? new Date(deadlineISO).toDateString() : '');
+      const deadline    = safeText(data.deadline) || safeText(data.applicationDeadline) || safeText(data.closingDate) || (deadlineISO ? new Date(deadlineISO).toDateString() : '');
 
       const email     = safeText(data.email || data.applyEmail || data.contactEmail);
       const website   = safeText(data.website);
-      const applyLink = safeText(data.applyLink) || safeText(data.applyURL) || safeText(data.applyUrl)
-                        || website
-                        || (email ? `mailto:${email}?subject=${encodeURIComponent('Application: ' + title)}` : '#');
+      const applyLink = safeText(data.applyLink) || safeText(data.applyURL) || safeText(data.applyUrl) || website || (email ? `mailto:${email}?subject=${encodeURIComponent('Application: ' + title)}` : '#');
 
       const category    = safeText(data.category, 'all').toLowerCase();
       const listingTier = safeText(data.listingTier || data.tier, '');
@@ -1036,77 +668,49 @@
       const postedISO   = toISODateString(data.posted || data.createdAt || data.created_at);
 
       return {
-        _id:            id,
-        slug,
-        title,
-        description,
-        location,
-        salary:         salary || null,
-        deadline:       deadline || '',
-        posted:         postedISO || null,
-        jobType:        safeText(data.type || data.jobType || data.employmentType, 'FULL_TIME'),
-        category,
-        listingTier:    listingTier || '',
-        badge:          badge || '',
+        _id: id, slug, title, description, location, salary: salary || null,
+        deadline: deadline || '', posted: postedISO || null,
+        jobType: safeText(data.type || data.jobType || data.employmentType, 'FULL_TIME'),
+        category, listingTier: listingTier || '', badge: badge || '',
         sponsoredUntil: toISODateString(data.sponsoredUntil) || null,
-        applyLink,
-        company:        { name: companyName, logoUrl },
-        _source:        'firestore'
+        applyLink, company: { name: companyName, logoUrl }, _source: 'firestore'
       };
     }
 
-    function findJobInMemoryBySlug(slug) {
-      return jobs.find(j => j.slug === slug) || null;
-    }
+    function findJobInMemoryBySlug(slug) { return jobs.find(j => j.slug === slug) || null; }
 
     async function fetchFirestoreJobBySlug(slug) {
       try {
-        const db   = firebase.firestore();
-        const snap = await db.collection('jobs').where('slug', '==', slug).limit(1).get();
+        const snap = await firebase.firestore().collection('jobs').where('slug', '==', slug).limit(1).get();
         if (snap.empty) return null;
         const doc = snap.docs[0];
         return normalizeRecruiterJob(doc.id, doc.data() || {});
-      } catch {
-        return null;
-      }
+      } catch { return null; }
     }
 
-    /* =============================== */
-    /* LOAD JOBS (Sanity + Firestore)  */
-    /* =============================== */
+    /* ── LOAD JOBS ── */
     async function loadJobs() {
       try {
         const [sanityJobs, recruiterJobs] = await Promise.all([
           window.sanityClient.fetchJobs(),
           fetchRecruiterJobs()
         ]);
-
         const sanityNormalized = (sanityJobs || []).map(j => ({
-          ...j,
-          _source: 'sanity',
+          ...j, _source: 'sanity',
           company: j.company?.name ? { ...j.company, name: j.company.name } : j.company
         }));
-
         jobs = [...sanityNormalized, ...(recruiterJobs || [])];
-
-        // Apply initial term once jobs/search UI is ready (ADDED)
         applyInitialSearchTermToUI();
-
         renderJobs();
         openFromURL();
       } catch (e) {
         console.error('loadJobs failed:', e);
-
-        // Apply initial term even on failure (ADDED)
         applyInitialSearchTermToUI();
-
         renderJobs();
       }
     }
 
-    /* =============================== */
-    /* UI RENDER                       */
-    /* =============================== */
+    /* ── RENDER ── */
     function renderJobs() {
       const searchTerm = (document.getElementById('jobSearch')?.value || '').toLowerCase();
       const category   = document.getElementById('categoryFilter')?.value || 'all';
@@ -1116,9 +720,8 @@
           const title       = safeText(j.title).toLowerCase();
           const companyName = safeText(j.company?.name || j.company).toLowerCase();
           const desc        = safeText(j.description).toLowerCase();
-          const matchesCategory = category === 'all' || safeText(j.category).toLowerCase() === category;
-          const matchesSearch   = title.includes(searchTerm) || companyName.includes(searchTerm) || desc.includes(searchTerm);
-          return matchesCategory && matchesSearch;
+          return (category === 'all' || safeText(j.category).toLowerCase() === category)
+              && (title.includes(searchTerm) || companyName.includes(searchTerm) || desc.includes(searchTerm));
         })
         .sort((a, b) => {
           const tier = getPriority(b) - getPriority(a);
@@ -1131,9 +734,8 @@
       if (filteredJobs.length === 0) {
         jobList.innerHTML = `
           <div class="empty-state">
-            <svg viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+            <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
             <h3>No jobs found</h3>
             <p>Try adjusting your search or filters</p>
@@ -1150,20 +752,18 @@
         if (index === selectedIndex) li.classList.add('selected');
 
         const logoUrl   = getJobCardLogo(job);
-        const badgeText = job.badge
-          || (job.listingTier === 'premier'   ? 'Premier'   : '')
-          || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
+        const badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : '') || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
 
         li.innerHTML = `
           ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
           <div class="job-row">
-            <img src="${logoUrl || '/fallback-company.png'}" class="company-logo"/>
+            <img src="${logoUrl || '/fallback-company.png'}" class="company-logo" alt="${job.company?.name || 'Company'} logo" width="80" height="80" loading="lazy">
             <div>
               <h3>${job.title}</h3>
               <p>${job.company?.name || 'Confidential'}</p>
               <p>${job.location || 'Not specified'}</p>
             </div>
-            <svg class="heart-icon" viewBox="0 0 24 24">
+            <svg class="heart-icon" viewBox="0 0 24 24" aria-label="Save job" role="button" tabindex="0">
               <path d="M12 21s-6.7-4.35-10-9C-1 6 3.5 2 7.5 4.5 10 6 12 8 12 8s2-2 4.5-3.5C20.5 2 25 6 22 12c-3.3 4.65-10 9-10 9z"/>
             </svg>
           </div>`;
@@ -1186,9 +786,7 @@
       updateHearts();
     }
 
-    /* =============================== */
-    /* OPEN FROM URL                   */
-    /* =============================== */
+    /* ── OPEN FROM URL ── */
     async function openFromURL() {
       if (openedFromURL) return;
       openedFromURL = true;
@@ -1225,24 +823,17 @@
       renderJobs();
     }
 
-    /* =============================== */
-    /* PREVIEW RENDER                  */
-    /* =============================== */
+    /* ── PREVIEW ── */
     function showPreview(job, direction = 'left') {
-      const badgeText = job.badge
-        || (job.listingTier === 'premier'   ? 'Premier'   : '')
-        || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
+      const badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : '') || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
 
       jobPreview.innerHTML = `
         <div class="preview-slide ${direction === 'left' ? 'slide-left' : 'slide-right'}">
           <div class="preview-header">
             ${badgeText ? `<span class="job-badge">${badgeText}</span>` : ''}
             <h2>${job.title}</h2>
-            <button class="close-preview-btn" onclick="closePreview()" aria-label="Close preview">
-              <svg viewBox="0 0 24 24" fill="none">
-                <line x1="18" y1="6"  x2="6"  y2="18"></line>
-                <line x1="6"  y1="6"  x2="18" y2="18"></line>
-              </svg>
+            <button class="close-preview-btn" onclick="closePreview()" aria-label="Close job preview">
+              <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
           <div class="preview-content-wrapper">
@@ -1253,7 +844,7 @@
               <p><strong>Closing:</strong>  ${job.deadline  || 'Not specified'}</p>
             </div>
             <div class="job-desc">${safeText(job.description, 'Description not provided.')}</div>
-            <a class="apply-btn" href="${job.applyLink || '#'}" target="_blank" rel="noopener">Apply Now</a>
+            <a class="apply-btn" href="${job.applyLink || '#'}" target="_blank" rel="noopener noreferrer">Apply Now</a>
           </div>
         </div>`;
 
@@ -1272,35 +863,42 @@
 
     function showDefaultPreview() {
       jobPreview.innerHTML = `
-        <div style="text-align: center; color: #9ca3af; padding: 40px 20px;">
-          <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+        <div style="text-align:center;color:#9ca3af;padding:40px 20px;">
+          <svg viewBox="0 0 24 24" style="width:64px;height:64px;margin:0 auto 16px;stroke:currentColor;fill:none;stroke-width:2;" aria-hidden="true">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
           </svg>
-          <p style="font-size: 1.1rem; color: #6b7280;">Select a job to view details</p>
+          <p style="font-size:1.1rem;color:#6b7280;">Select a job to view details</p>
         </div>`;
     }
 
-    /* =============================== */
-    /* SEO META + SCHEMA               */
-    /* =============================== */
+    /* ── SEO META + SCHEMA ── */
     function injectMeta(job, logo) {
-      setMeta('og:title',            job.title);
+      document.title = `${job.title} at ${job.company?.name || 'Company'} | Career Unified`;
+      setCanonical(`https://careerunified.com/jobs/${job.slug}`);
+      setMeta('description', safeText(job.description).substring(0, 155));
+      setMeta('og:title',            `${job.title} – ${job.company?.name || 'Career Unified'}`);
       setMeta('og:description',      safeText(job.description).substring(0, 150));
       setMeta('og:image',            logo);
       setMeta('og:url',              window.location.href);
       setMeta('twitter:card',        'summary_large_image');
-      setMeta('twitter:title',       job.title);
+      setMeta('twitter:title',       `${job.title} – ${job.company?.name || 'Career Unified'}`);
       setMeta('twitter:description', safeText(job.description).substring(0, 150));
       setMeta('twitter:image',       logo);
+    }
+
+    function setCanonical(url) {
+      let tag = document.querySelector('link[rel="canonical"]');
+      if (!tag) { tag = document.createElement('link'); tag.rel = 'canonical'; document.head.appendChild(tag); }
+      tag.href = url;
     }
 
     function setMeta(name, content) {
       let tag = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
       if (!tag) {
         tag = document.createElement('meta');
-        if (name.startsWith('og:')) tag.setAttribute('property', name);
-        else                        tag.setAttribute('name', name);
+        if (name.startsWith('og:') || name.startsWith('twitter:')) tag.setAttribute('property', name);
+        else tag.setAttribute('name', name);
         document.head.appendChild(tag);
       }
       tag.setAttribute('content', content);
@@ -1308,43 +906,44 @@
 
     function injectJobSchema(job) {
       const schema = {
-        '@context':       'https://schema.org',
-        '@type':          'JobPosting',
-        'title':          job.title,
-        'description':    safeText(job.description),
-        'datePosted':     job.posted   || undefined,
-        'validThrough':   job.deadline || undefined,
-        'employmentType': job.jobType  || 'FULL_TIME',
+        '@context': 'https://schema.org',
+        '@type': 'JobPosting',
+        'title': job.title,
+        'description': safeText(job.description),
+        'datePosted': job.posted || undefined,
+        'validThrough': job.deadline || undefined,
+        'employmentType': job.jobType || 'FULL_TIME',
         'hiringOrganization': {
-          '@type':  'Organization',
-          'name':   job.company?.name || 'Confidential',
+          '@type': 'Organization',
+          'name': job.company?.name || 'Confidential',
           'sameAs': 'https://careerunified.com'
         },
         'jobLocation': {
-          '@type':   'Place',
-          'address': { '@type': 'PostalAddress', 'addressCountry': 'ZA' }
+          '@type': 'Place',
+          'address': {
+            '@type': 'PostalAddress',
+            'addressLocality': job.location || 'South Africa',
+            'addressCountry': 'ZA'
+          }
         },
         'baseSalary': job.salary ? {
-          '@type':    'MonetaryAmount',
+          '@type': 'MonetaryAmount',
           'currency': 'ZAR',
-          'value':    { '@type': 'QuantitativeValue', 'value': job.salary, 'unitText': 'MONTH' }
+          'value': { '@type': 'QuantitativeValue', 'value': job.salary, 'unitText': 'MONTH' }
         } : undefined,
-        'url': job.applyLink
+        'url': `https://careerunified.com/jobs/${job.slug}`
       };
 
       const old = document.getElementById('job-schema');
       if (old) old.remove();
-
-      const script       = document.createElement('script');
-      script.id          = 'job-schema';
-      script.type        = 'application/ld+json';
+      const script = document.createElement('script');
+      script.id = 'job-schema';
+      script.type = 'application/ld+json';
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
     }
 
-    /* =============================== */
-    /* PRIORITY SORT                   */
-    /* =============================== */
+    /* ── PRIORITY SORT ── */
     function getPriority(job) {
       const today = new Date();
       if ((job.listingTier === 'premier' || job.listingTier === 'sponsored') && job.sponsoredUntil) {
@@ -1355,9 +954,7 @@
       return 0;
     }
 
-    /* =============================== */
-    /* SEARCH / FILTER HOOKS           */
-    /* =============================== */
+    /* ── FILTER HOOKS ── */
     document.getElementById('jobSearch')?.addEventListener('input', () => renderJobs());
     document.getElementById('categoryFilter')?.addEventListener('change', () => renderJobs());
     document.getElementById('sortBtn')?.addEventListener('click', () => {
@@ -1366,76 +963,59 @@
       renderJobs();
     });
 
-    /* =============================== */
-    /* SKELETON LOADER                 */
-    /* =============================== */
+    /* ── SKELETON ── */
     function showSkeletons() {
       jobList.innerHTML = '';
       for (let i = 0; i < 6; i++) {
-        const li     = document.createElement('li');
+        const li = document.createElement('li');
         li.className = 'job-card skeleton skeleton-job';
         jobList.appendChild(li);
       }
     }
 
-    /* =============================== */
-    /* MOBILE SWIPE (between jobs)     */
-    /* =============================== */
-    let startX = 0;
-    let startY = 0;
-
+    /* ── MOBILE SWIPE ── */
+    let startX = 0, startY = 0;
     document.addEventListener('touchstart', e => {
       const preview = e.target.closest('#jobPreview');
       if (!preview) return;
-      const touch = e.changedTouches[0];
-      startX = touch.screenX;
-      startY = touch.screenY;
+      startX = e.changedTouches[0].screenX;
+      startY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     document.addEventListener('touchend', e => {
       const preview = e.target.closest('#jobPreview');
       if (!preview) return;
-      const touch = e.changedTouches[0];
-      const dx    = touch.screenX - startX;
-      const dy    = touch.screenY - startY;
+      const dx = e.changedTouches[0].screenX - startX;
+      const dy = e.changedTouches[0].screenY - startY;
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
-        if (dx < 0) goToNextJob();
-        else        goToPreviousJob();
+        if (dx < 0) goToNextJob(); else goToPreviousJob();
       }
     });
 
     function goToNextJob() {
-      if (selectedIndex === null || filteredJobs.length === 0) return;
-      if (selectedIndex < filteredJobs.length - 1) {
-        selectedIndex++;
-        showPreview(filteredJobs[selectedIndex], 'left');
-        renderJobs();
-      }
+      if (selectedIndex === null || selectedIndex >= filteredJobs.length - 1) return;
+      selectedIndex++;
+      showPreview(filteredJobs[selectedIndex], 'left');
+      renderJobs();
     }
 
     function goToPreviousJob() {
-      if (selectedIndex === null || filteredJobs.length === 0) return;
-      if (selectedIndex > 0) {
-        selectedIndex--;
-        showPreview(filteredJobs[selectedIndex], 'right');
-        renderJobs();
-      }
+      if (selectedIndex === null || selectedIndex <= 0) return;
+      selectedIndex--;
+      showPreview(filteredJobs[selectedIndex], 'right');
+      renderJobs();
     }
 
-    /* =============================== */
-    /* INIT                            */
-    /* =============================== */
+    /* ── INIT ── */
     showSkeletons();
-
-    // Prefill early (safe) (ADDED)
     applyInitialSearchTermToUI();
-
     loadJobs();
     showDefaultPreview();
   </script>
 
 </body>
 </html>
+
 
 
 
