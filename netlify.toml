@@ -182,8 +182,6 @@
 # ================================
 # FOR AUTONOMUS EMAIL FUNCTION
 # ================================
-[functions]
-  node_bundler = "esbuild"
 
 [functions."daily-job-draft"]
   schedule = "0 6,12,18 * * *"
