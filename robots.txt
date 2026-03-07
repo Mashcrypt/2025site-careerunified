@@ -1,9 +1,22 @@
 # robots.txt for Career Unified
-
 User-agent: *
-Disallow: /recruiter-dashboard.html
+
+# Block private/admin pages
+Disallow: /admin.html
 Disallow: /admin-dashboard.html
+Disallow: /recruiter-dashboard.html
 Disallow: /recruiter-apply.html
+Disallow: /account-page.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /saved-items.html
+Disallow: /billing/
+Disallow: /netlify/
+Disallow: /sanity/
+Disallow: /js/
+Disallow: /css/
+
+# Allow all public content
 Allow: /
 
 Sitemap: https://careerunified.com/sitemap.xml
