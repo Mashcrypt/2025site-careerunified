@@ -1,8 +1,10 @@
+// netlify/functions/_openai.js
+
 export async function generateWhatsAppPost(job) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error("Missing OPENAI_API_KEY");
+    throw new Error("Missing GEMINI_API_KEY");
   }
 
   const prompt = `
@@ -14,6 +16,7 @@ Style:
 - Bullet highlights with emojis
 - Clear call to action
 - End with direct job link
+- Clean formatting
 
 Job data:
 Title: ${job.title}
@@ -24,28 +27,36 @@ Closing Date: ${job.closingDate || "Not specified"}
 Link: ${job.url}
 `;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "You write concise WhatsApp job posts." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.6
-    })
-  });
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
+      }),
+    }
+  );
 
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`OpenAI error: ${err}`);
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error(`Gemini error: ${resp.status} ${err}`);
   }
 
-  const data = await response.json();
+  const data = await resp.json();
 
-  return data.choices?.[0]?.message?.content?.trim();
+  const text =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+  if (!text) {
+    throw new Error("Gemini returned empty response");
+  }
+
+  return text;
 }
