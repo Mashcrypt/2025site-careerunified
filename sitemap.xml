@@ -1,59 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Public pages to index -->
+  <!-- Homepage — use trailing slash, not /index.html -->
   <url>
-    <loc>https://careerunified.com/index.html</loc>
+    <loc>https://careerunified.com/</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
+  <!-- Core content pages -->
   <url>
     <loc>https://careerunified.com/jobs.html</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-
   <url>
     <loc>https://careerunified.com/bursaries.html</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-
   <url>
     <loc>https://careerunified.com/varsity.html</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-
   <url>
     <loc>https://careerunified.com/cv-generator.html</loc>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- Supporting pages -->
   <url>
     <loc>https://careerunified.com/about-us.html</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-
-  <url>
-    <loc>https://careerunified.com/privacy.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://careerunified.com/terms.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
   <url>
     <loc>https://careerunified.com/contact-us.html</loc>
+    <lastmod>2026-03-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://careerunified.com/privacy.html</loc>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://careerunified.com/terms.html</loc>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>
