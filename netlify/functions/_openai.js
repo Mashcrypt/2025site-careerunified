@@ -47,16 +47,34 @@ export async function generateWhatsAppPost(job) {
   }
 
   const prompt = `
-Turn this job into a WhatsApp Channel post.
+Write a clean WhatsApp-ready job post in plain professional text.
 
-Style:
-- Attention grabbing headline
-- Short intro
-- Bullet highlights with emojis
-- Clear call to action
-- End with direct job link
-- Clean, professional formatting
-- No hashtags
+IMPORTANT RULES:
+- Do not use asterisks
+- Do not use emojis
+- Do not use hashtags
+- Do not use markdown
+- Do not use bullet points
+- Do not invent duties, benefits, or requirements
+- Do not exaggerate
+- Keep it simple, clean, and professional
+- Match this exact structure
+
+OUTPUT FORMAT:
+
+{JOB TITLE}
+
+Company: {COMPANY}
+Location: {LOCATION}
+Salary: {SALARY}
+Closing Date: {CLOSING DATE}
+
+{Write 1 short professional paragraph summarising the opportunity based only on the available job information. Keep it clear and natural.}
+
+{JOB URL}
+
+If salary is missing, write: Salary: Not specified
+If closing date is missing, write: Closing Date: Not specified
 
 Job data:
 Title: ${job.title}
@@ -77,7 +95,15 @@ Link: ${job.url}
 
   for (const model of models) {
     try {
-      return await callGemini(apiKey, model, prompt);
+      const result = await callGemini(apiKey, model, prompt);
+
+      return result
+        .replace(/\*\*/g, "")
+        .replace(/\*/g, "")
+        .replace(/[#_`]/g, "")
+        .replace(/[•▪■►▶]/g, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
     } catch (err) {
       errors.push(err?.message || String(err));
     }
