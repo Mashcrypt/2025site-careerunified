@@ -359,6 +359,40 @@ a:hover {
   background: #eab308;
 }
 
+/* ── FOOTER SOCIALS ── */
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  color: #fff;
+}
+
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.social-icon.whatsapp  { background: #25D366; }
+.social-icon.facebook  { background: #1877F2; }
+.social-icon.x-twitter { background: #000; }
+.social-icon.linkedin  { background: #0A66C2; }
+
+.social-icon:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  opacity: 0.92;
+}
 /* ====================================
    FAST SCROLL BUTTONS
 ==================================== */
