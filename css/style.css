@@ -315,7 +315,39 @@ a:hover {
 .footer-links a:hover {
   text-decoration: underline;
 }
+/* Social icon boxes */
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
 
+.social-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.social-icon-box svg {
+  width: 18px;
+  height: 18px;
+}
+
+.social-icon-box:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: #fff;
+}
 /* ====================================
    COOKIE NOTICE
 ==================================== */
