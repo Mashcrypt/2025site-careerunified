@@ -9,6 +9,7 @@
   <meta name="author" content="Career Unified">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="https://careerunified.com/bursaries.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -443,6 +444,90 @@
       .bursary-card strong { font-size: 0.95rem; }
       .bursaries-preview h2 { font-size: 1.15rem; }
     }
+
+    .footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.footer-socials a {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+
+  color: #fff;
+  font-size: 18px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow effect layer */
+.footer-socials a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 0;
+}
+
+/* Icon stays above glow */
+.footer-socials a i {
+  position: relative;
+  z-index: 1;
+}
+
+/* HOVER BASE ANIMATION */
+.footer-socials a:hover {
+  transform: translateY(-6px) scale(1.08);
+  border-color: transparent;
+}
+
+/* BRAND COLORS + GLOW */
+.footer-socials a:nth-child(1):hover::before {
+  background: rgba(24, 119, 242, 0.25); /* Facebook */
+}
+.footer-socials a:nth-child(2):hover::before {
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7); /* Instagram */
+}
+.footer-socials a:nth-child(3):hover::before {
+  background: rgba(0,0,0,0.4); /* TikTok */
+}
+.footer-socials a:nth-child(4):hover::before {
+  background: rgba(37, 211, 102, 0.25); /* WhatsApp */
+}
+.footer-socials a:nth-child(5):hover::before {
+  background: rgba(0, 119, 181, 0.25); /* LinkedIn */
+}
+
+.footer-socials a:hover::before {
+  opacity: 1;
+}
+
+/* ICON COLOR CHANGE */
+.footer-socials a:nth-child(1):hover { color: #1877f2; }
+.footer-socials a:nth-child(2):hover { color: #ee2a7b; }
+.footer-socials a:nth-child(3):hover { color: #fff; }
+.footer-socials a:nth-child(4):hover { color: #25d366; }
+.footer-socials a:nth-child(5):hover { color: #0077b5; }
+
+/* OPTIONAL: subtle pulse when hovering */
+.footer-socials a:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
   </style>
 </head>
 <body>
@@ -541,15 +626,41 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="main-footer">
-    <div class="footer-links">
-      <a href="about-us.html">About Us</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="contact-us.html">Contact Us</a>
-    </div>
-    <p>&copy; 2026 Career Unified. All rights reserved.</p>
-  </footer>
+<footer class="main-footer">
+  <div class="footer-links">
+    <a href="about-us.html">About Us</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms &amp; Conditions</a>
+    <a href="contact-us.html">Contact Us</a>
+  </div>
+
+  <!-- SOCIAL ICONS -->
+  <div class="footer-socials">
+
+    <a href="https://facebook.com/YOUR_PAGE" target="_blank" aria-label="Facebook">
+      <i class="fab fa-facebook-f"></i>
+    </a>
+
+    <a href="https://instagram.com/YOUR_HANDLE" target="_blank" aria-label="Instagram">
+      <i class="fab fa-instagram"></i>
+    </a>
+
+    <a href="https://tiktok.com/@YOUR_HANDLE" target="_blank" aria-label="TikTok">
+      <i class="fab fa-tiktok"></i>
+    </a>
+
+    <a href="https://wa.me/YOUR_NUMBER" target="_blank" aria-label="WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <a href="https://linkedin.com/in/YOUR_PROFILE" target="_blank" aria-label="LinkedIn">
+      <i class="fab fa-linkedin-in"></i>
+    </a>
+
+  </div>
+
+  <p>&copy; 2026 Career Unified. All rights reserved.</p>
+</footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite">Copied!</div>
 
