@@ -9,6 +9,7 @@
   <meta name="author" content="Career Unified">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="https://careerunified.com/jobs.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Jobs in South Africa – Browse & Apply | Career Unified">
@@ -364,6 +365,35 @@
       .job-badge       { font-size: 10px; padding: 3px 8px; }
       .jobs-preview h2 { font-size: 1.2rem; }
     }
+
+    .footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 20px 0;
+}
+
+.footer-socials a {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+
+  color: #fff;
+  font-size: 18px;
+
+  transition: all 0.3s ease;
+}
+
+.footer-socials a:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-3px);
+}
   </style>
 </head>
 <body>
@@ -457,16 +487,41 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="main-footer">
-    <div class="footer-links">
-      <a href="about-us.html">About Us</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="contact-us.html">Contact Us</a>
-    </div>
-    <p>&copy; 2026 Career Unified. All rights reserved.</p>
-  </footer>
+ <footer class="main-footer">
+  <div class="footer-links">
+    <a href="about-us.html">About Us</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms &amp; Conditions</a>
+    <a href="contact-us.html">Contact Us</a>
+  </div>
+
+  <!-- SOCIAL ICONS -->
+  <div class="footer-socials">
+
+    <a href="https://facebook.com/YOUR_PAGE" target="_blank" aria-label="Facebook">
+      <i class="fab fa-facebook-f"></i>
+    </a>
+
+    <a href="https://instagram.com/YOUR_HANDLE" target="_blank" aria-label="Instagram">
+      <i class="fab fa-instagram"></i>
+    </a>
+
+    <a href="https://tiktok.com/@YOUR_HANDLE" target="_blank" aria-label="TikTok">
+      <i class="fab fa-tiktok"></i>
+    </a>
+
+    <a href="https://wa.me/YOUR_NUMBER" target="_blank" aria-label="WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <a href="https://linkedin.com/in/YOUR_PROFILE" target="_blank" aria-label="LinkedIn">
+      <i class="fab fa-linkedin-in"></i>
+    </a>
+
+  </div>
+
+  <p>&copy; 2026 Career Unified. All rights reserved.</p>
+</footer>
 
   <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
