@@ -32,13 +32,98 @@ h1 { color: #0b1f44; }
 }
 .apply {
   display: inline-block;
-  margin-top: 20px;
   background: #00b67a;
   color: white;
   padding: 14px 25px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  border: 0;
+  cursor: pointer;
+  text-align: center;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.ai-tailor {
+  display: inline-block;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  padding: 14px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 0;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 31, 68, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.modal-backdrop.open {
+  display: flex;
+}
+.modal {
+  max-width: 440px;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(11, 31, 68, 0.28);
+}
+.modal h2 {
+  margin: 0 0 10px;
+  color: #0b1f44;
+}
+.modal p {
+  color: #4b5563;
+  line-height: 1.5;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+.modal-actions button {
+  border: 0;
+  border-radius: 6px;
+  padding: 11px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cancel {
+  background: #eef2f7;
+  color: #0b1f44;
+}
+.continue {
+  background: #00b67a;
+  color: white;
+}
+@media (max-width: 640px) {
+  .actions {
+    flex-direction: column;
+  }
+  .apply,
+  .ai-tailor {
+    width: 100%;
+  }
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+  .modal-actions button {
+    width: 100%;
+  }
 }
 </style>
 </head>
@@ -57,11 +142,27 @@ h1 { color: #0b1f44; }
 
   <div id="description"></div>
 
-  <a id="apply" class="apply" target="_blank">Apply Now</a>
+  <div class="actions">
+    <button id="apply" class="apply" type="button">Apply Now</button>
+    <button id="aiTailor" class="ai-tailor" type="button">AI Tailor CV</button>
+  </div>
+</div>
+
+<div id="applyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="applyModalTitle">
+  <div class="modal">
+    <h2 id="applyModalTitle">You&rsquo;re leaving Career Unified</h2>
+    <p>This button will take you to the employer&rsquo;s external application page. Please make sure you meet the requirements before applying.</p>
+    <div class="modal-actions">
+      <button id="cancelApply" class="cancel" type="button">Cancel</button>
+      <button id="continueApply" class="continue" type="button">Continue to Apply</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const slug = window.location.pathname.split("/").pop()
+let currentJob = null
+let currentApplyLink = ""
 
 const query = encodeURIComponent(`*[_type=="job" && slug.current=="${slug}"][0]{
   title,
@@ -79,6 +180,7 @@ fetch("https://qjg5raj1.api.sanity.io/v2024-01-01/data/query/production?query=" 
 .then(res => res.json())
 .then(data => {
   const job = data.result
+  currentJob = job
 
   if (!job) {
     document.body.innerHTML = "<h2>Job not found</h2>"
@@ -92,9 +194,74 @@ fetch("https://qjg5raj1.api.sanity.io/v2024-01-01/data/query/production?query=" 
   document.getElementById("salary").textContent = job.salary || "Market related"
   document.getElementById("closing").textContent = job.deadline || "Open until filled"
   document.getElementById("description").innerHTML = job.description
-  document.getElementById("apply").href = job.applyLink
+  currentApplyLink = job.applyLink || ""
 
   document.title = job.title + " | CareerUnified"
+})
+
+const applyModal = document.getElementById("applyModal")
+const applyButton = document.getElementById("apply")
+const cancelApplyButton = document.getElementById("cancelApply")
+const continueApplyButton = document.getElementById("continueApply")
+const aiTailorButton = document.getElementById("aiTailor")
+
+function openApplyModal() {
+  applyModal.classList.add("open")
+}
+
+function closeApplyModal() {
+  applyModal.classList.remove("open")
+}
+
+function getDisplayedText(id) {
+  const element = document.getElementById(id)
+  return element ? element.textContent.trim() : ""
+}
+
+function buildJobDescriptionPayload() {
+  const title = getDisplayedText("title")
+  const company = getDisplayedText("company")
+  const location = getDisplayedText("location")
+  const salary = getDisplayedText("salary")
+  const closingDate = getDisplayedText("closing")
+  const description = getDisplayedText("description")
+  const fullText = [
+    `Job Title: ${title}`,
+    `Company: ${company}`,
+    `Location: ${location}`,
+    salary ? `Salary: ${salary}` : "",
+    closingDate ? `Closing Date: ${closingDate}` : "",
+    "",
+    "Job Description:",
+    description,
+  ].filter((line, index, lines) => line || lines[index - 1]).join("\n")
+
+  return {
+    title,
+    company,
+    location,
+    salary,
+    closingDate,
+    description,
+    fullText,
+  }
+}
+
+applyButton.addEventListener("click", openApplyModal)
+cancelApplyButton.addEventListener("click", closeApplyModal)
+applyModal.addEventListener("click", event => {
+  if (event.target === applyModal) closeApplyModal()
+})
+continueApplyButton.addEventListener("click", () => {
+  if (currentApplyLink) {
+    window.open(currentApplyLink, "_blank", "noopener,noreferrer")
+  }
+  closeApplyModal()
+})
+aiTailorButton.addEventListener("click", () => {
+  if (!currentJob) return
+  sessionStorage.setItem("careerUnifiedAITailorJob", JSON.stringify(buildJobDescriptionPayload()))
+  window.location.href = "/cv-generator/?tab=ai&source=job"
 })
 </script>
 

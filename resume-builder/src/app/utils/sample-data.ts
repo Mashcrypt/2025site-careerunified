@@ -8,6 +8,7 @@ export const southAfricanSampleData: ResumeData = {
     location: 'Cape Town, Western Cape',
     linkedin: 'linkedin.com/in/john-smith',
     website: 'john-portfolio.co.za',
+    driversLicense: 'Code B',
     summary:
       'Results-driven Software Engineer with 6+ years of experience developing innovative fintech solutions for South African markets. Proven track record of building scalable applications that have served over 500,000 users. Passionate about leveraging technology to solve African business challenges and mentor emerging developers.',
   },

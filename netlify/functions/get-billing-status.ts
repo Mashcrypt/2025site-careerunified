@@ -34,6 +34,17 @@ function planLimit(plan: string) {
   return 0; // free
 }
 
+function timestampToDate(value: any): Date | null {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate();
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+  return null;
+}
+
 export const handler: Handler = async (event) => {
   const origin = event.headers.origin || event.headers.Origin;
   const baseHeaders = corsHeaders(origin);
@@ -62,9 +73,16 @@ export const handler: Handler = async (event) => {
   const snap = await userRef.get();
   const user = snap.data() || {};
 
-  const plan = (user.plan as string) || "free";
-  const subscriptionStatus =
-    (user.subscriptionStatus as string) || (plan === "free" ? "inactive" : "active");
+  const storedPlan = (user.plan as string) || "free";
+  const storedStatus =
+    (user.subscriptionStatus as string) || (storedPlan === "free" ? "inactive" : "active");
+  const periodEnd = timestampToDate(user.subscriptionCurrentPeriodEnd);
+  const isExpiredPaidPlan =
+    storedPlan !== "free" &&
+    storedStatus === "active" &&
+    (!periodEnd || periodEnd.getTime() <= Date.now());
+  const plan = isExpiredPaidPlan ? "free" : storedPlan;
+  const subscriptionStatus = isExpiredPaidPlan ? "past_due" : storedStatus;
 
   const used = Number(user.applicationsUsedThisMonth || 0);
   const limit = planLimit(plan);
@@ -82,7 +100,8 @@ export const handler: Handler = async (event) => {
       freeResumeUsed,
       freeCoverUsed,
       pendingPlan: (user.pendingPlan as string) || null,
-      pendingPaystackReference: (user.pendingPaystackReference as string) || null,
+      pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
+      subscriptionCurrentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,
     },
     baseHeaders
   );

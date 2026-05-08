@@ -1,4 +1,5 @@
 import type { ResumeData } from '../../types/resume';
+import { CarFront } from 'lucide-react';
 
 type Props = {
   data: ResumeData;
@@ -60,6 +61,12 @@ export function EngineeringBlueprintTemplate({ data, colorTheme }: Props) {
               {p.phone ? <span>{p.phone}</span> : <span>+27 00 000 0000</span>}
               {p.linkedin ? <span>{p.linkedin}</span> : null}
               {p.website ? <span>{p.website}</span> : null}
+              {p.driversLicense ? (
+                <span className="inline-flex items-center gap-1">
+                  <CarFront className="h-3.5 w-3.5" />
+                  {p.driversLicense}
+                </span>
+              ) : null}
             </div>
 
             {p.summary ? (

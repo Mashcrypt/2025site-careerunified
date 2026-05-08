@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import {
   Sparkles,
   Loader2,
@@ -25,6 +25,7 @@ import { getFirebaseAuth } from '../utils/firebaseClient';
 interface AITailorProps {
   data: ResumeData;
   onApplySuggestions: (data: ResumeData) => void;
+  initialJobDescription?: string;
 }
 
 type TailorMode = 'tailor' | 'cover_letter';
@@ -49,7 +50,7 @@ type BillingStatus = {
   freeResumeUsed: boolean;
   freeCoverUsed: boolean;
   pendingPlan?: string | null;
-  pendingPaystackReference?: string | null;
+  pendingPayfastPaymentId?: string | null;
 };
 
 function isFirebaseConfigured() {
@@ -59,7 +60,10 @@ function isFirebaseConfigured() {
     import.meta.env.VITE_FIREBASE_API_KEY,
     import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
     import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     import.meta.env.VITE_FIREBASE_APP_ID,
+    import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   ];
   return required.every((v) => typeof v === 'string' && v.trim().length > 0);
 }
@@ -101,10 +105,12 @@ function hasClosingAlready(text: string) {
   return /(sincerely|kind regards|regards|yours faithfully|yours sincerely|best regards)/i.test(tail);
 }
 
-export function AITailor({ data, onApplySuggestions }: AITailorProps) {
+export function AITailor({ data, onApplySuggestions, initialJobDescription }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
   const [jobDescription, setJobDescription] = useState('');
+  const [hasImportedJobDescription, setHasImportedJobDescription] = useState(false);
+  const hasAppliedInitialJobDescription = useRef(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Tailor results
@@ -150,6 +156,28 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     setNeedsUpgrade(false);
   }, []);
 
+  useEffect(() => {
+    if (hasAppliedInitialJobDescription.current) return;
+    if (!initialJobDescription?.trim()) return;
+
+    hasAppliedInitialJobDescription.current = true;
+
+    if (!jobDescription.trim()) {
+      setJobDescription(initialJobDescription);
+      setHasImportedJobDescription(true);
+    }
+  }, [initialJobDescription, jobDescription]);
+
+  const clearImportedJob = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem('careerUnifiedAITailorJob');
+    }
+
+    setJobDescription('');
+    setHasImportedJobDescription(false);
+    resetResults();
+  }, [resetResults]);
+
   const getIdTokenOrThrow = useCallback(async () => {
     if (!isFirebaseConfigured()) {
       throw new Error(
@@ -181,7 +209,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           freeResumeUsed: false,
           freeCoverUsed: false,
           pendingPlan: null,
-          pendingPaystackReference: null,
+          pendingPayfastPaymentId: null,
         });
         return;
       }
@@ -197,7 +225,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
           freeResumeUsed: false,
           freeCoverUsed: false,
           pendingPlan: null,
-          pendingPaystackReference: null,
+          pendingPayfastPaymentId: null,
         });
         return;
       }
@@ -210,11 +238,14 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       });
 
       const payload = await res.json().catch(() => null);
-      if (!res.ok) return;
+      if (!res.ok) {
+        setErrorMsg('Could not verify billing status. Please refresh or login again.');
+        return;
+      }
 
       setBilling(payload as BillingStatus);
     } catch {
-      // ignore
+      setErrorMsg('Could not verify billing status. Please refresh or login again.');
     } finally {
       setIsLoadingBilling(false);
     }
@@ -236,7 +267,7 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
     }
   }, [loadBillingStatus]);
 
-  // ✅ Refresh billing if user landed on /billing/success (Paystack callback)
+  // Refresh billing if user landed on /billing/success after PayFast checkout.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname || '';
@@ -491,32 +522,38 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const paystackMsg =
-          payload?.paystack_message ||
-          payload?.details?.message ||
-          payload?.details?.data?.message;
-
-        const details =
-          paystackMsg ||
-          payload?.error ||
-          payload?.details ||
-          'Could not start checkout. Please try again.';
-
-        setErrorMsg(typeof details === 'string' ? details : JSON.stringify(details));
+        const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
+        const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
+        setErrorMsg(details ? `${error} ${details}` : error);
         setIsRedirecting(false);
         return;
       }
 
-      const url = payload?.authorization_url as string | undefined;
-      if (!url) {
-        setErrorMsg('Checkout link missing from server response.');
+      const paymentUrl = payload?.payment_url as string | undefined;
+      const fields = payload?.fields as Record<string, string> | undefined;
+      if (!paymentUrl || !fields) {
+        setErrorMsg('Could not start PayFast checkout. Please try again.');
         setIsRedirecting(false);
         return;
       }
 
-      window.location.assign(url);
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = paymentUrl;
+      form.style.display = 'none';
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Checkout error. Please try again.');
+      setErrorMsg('Could not start PayFast checkout. Please try again.');
       setIsRedirecting(false);
     }
   };
@@ -594,7 +631,8 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
                   <br />
                   <span className="font-mono text-xs">
                     VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID,
-                    VITE_FIREBASE_APP_ID
+                    VITE_FIREBASE_STORAGE_BUCKET, VITE_FIREBASE_MESSAGING_SENDER_ID,
+                    VITE_FIREBASE_APP_ID, VITE_FIREBASE_MEASUREMENT_ID
                   </span>
                 </p>
               </div>
@@ -603,7 +641,26 @@ export function AITailor({ data, onApplySuggestions }: AITailorProps) {
         )}
 
         <div>
-          <Label htmlFor="jobDescription">Job Description</Label>
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Label htmlFor="jobDescription">Job Description</Label>
+            {hasImportedJobDescription && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={clearImportedJob}
+                className="w-full sm:w-auto"
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear imported job
+              </Button>
+            )}
+          </div>
+          {hasImportedJobDescription && (
+            <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+              Job description imported from Career Unified jobs.
+            </div>
+          )}
           <Textarea
             id="jobDescription"
             value={jobDescription}

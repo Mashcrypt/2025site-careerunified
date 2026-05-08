@@ -3,12 +3,12 @@ import crypto from "crypto";
 import { getAdmin } from "./_firebaseAdmin";
 import { checkRateLimit } from "./_rateLimit";
 
-type PlanId = "starter" | "job_seeker" | "career_pro";
+type RecruiterPlanId = "starter" | "pro" | "enterprise";
 
-const PLAN_AMOUNT: Record<PlanId, string> = {
-  starter: "29.00",
-  job_seeker: "69.00",
-  career_pro: "149.00",
+const PLAN_CONFIG: Record<RecruiterPlanId, { amount: string; label: string; unlocks: number }> = {
+  starter: { amount: "299.00", label: "Starter", unlocks: 50 },
+  pro: { amount: "699.00", label: "Pro", unlocks: 200 },
+  enterprise: { amount: "1499.00", label: "Enterprise", unlocks: -1 },
 };
 
 const REQUIRED_ENV = [
@@ -43,11 +43,12 @@ const PAYFAST_FIELD_ORDER = [
 ] as const;
 
 function corsHeaders(origin?: string) {
-  const allowed = process.env.ALLOWED_ORIGIN || process.env.SITE_URL || "*";
+  const allowed = process.env.ALLOWED_ORIGIN || process.env.SITE_URL || "";
   const cleanAllowed = allowed.replace(/\/+$/, "");
   const cleanOrigin = origin?.replace(/\/+$/, "");
+
   return {
-    "Access-Control-Allow-Origin": allowed === "*" ? "*" : cleanOrigin === cleanAllowed ? cleanOrigin : cleanAllowed,
+    "Access-Control-Allow-Origin": cleanAllowed && cleanOrigin === cleanAllowed ? cleanOrigin : cleanAllowed || "null",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
@@ -65,22 +66,11 @@ function json(statusCode: number, body: any, headers?: Record<string, string>) {
 
 function decodeBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
   if (!eventBody) return "";
-  if (!isBase64Encoded) return eventBody;
-  return Buffer.from(eventBody, "base64").toString("utf8");
+  return isBase64Encoded ? Buffer.from(eventBody, "base64").toString("utf8") : eventBody;
 }
 
-function parseJsonBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
-  const rawBody = decodeBody(eventBody, isBase64Encoded);
-  if (!rawBody.trim()) return {};
-  return JSON.parse(rawBody);
-}
-
-function isPlanId(plan: unknown): plan is PlanId {
-  return plan === "starter" || plan === "job_seeker" || plan === "career_pro";
-}
-
-function todayIsoDate() {
-  return new Date().toISOString().slice(0, 10);
+function isRecruiterPlan(plan: unknown): plan is RecruiterPlanId {
+  return plan === "starter" || plan === "pro" || plan === "enterprise";
 }
 
 function encodePayfastValue(value: string) {
@@ -88,18 +78,15 @@ function encodePayfastValue(value: string) {
 }
 
 function generateSignature(fields: Record<string, string>, passphrase?: string) {
-  const payload = PAYFAST_FIELD_ORDER.filter((key) => {
-    const value = fields[key];
-    return value !== undefined && value !== null && value !== "";
-  })
+  const payload = PAYFAST_FIELD_ORDER.filter((key) => fields[key])
     .map((key) => `${key}=${encodePayfastValue(fields[key])}`)
     .join("&");
+  const signedPayload = passphrase ? `${payload}&passphrase=${encodePayfastValue(passphrase)}` : payload;
+  return crypto.createHash("md5").update(signedPayload).digest("hex");
+}
 
-  const withPassphrase = passphrase
-    ? `${payload}&passphrase=${encodePayfastValue(passphrase)}`
-    : payload;
-
-  return crypto.createHash("md5").update(withPassphrase).digest("hex");
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function firstNameFrom(value?: string | null) {
@@ -122,24 +109,15 @@ function validatePayfastMode(headers?: Record<string, string>) {
 }
 
 export const handler: Handler = async (event) => {
-  const origin = event.headers.origin || event.headers.Origin;
-  const baseHeaders = corsHeaders(origin);
-
+  const baseHeaders = corsHeaders(event.headers.origin || event.headers.Origin);
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: baseHeaders, body: "" };
 
   try {
     if (event.httpMethod !== "POST") return json(405, { error: "Method Not Allowed" }, baseHeaders);
 
-    const missingEnv = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
-    if (missingEnv.length > 0) {
-      return json(
-        500,
-        {
-          error: "Missing required environment variables.",
-          missing: missingEnv,
-        },
-        baseHeaders
-      );
+    const missing = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
+    if (missing.length) {
+      return json(500, { error: "Missing required environment variables.", missing }, baseHeaders);
     }
 
     const modeError = validatePayfastMode(baseHeaders);
@@ -147,14 +125,14 @@ export const handler: Handler = async (event) => {
 
     let body: any;
     try {
-      body = parseJsonBody(event.body, event.isBase64Encoded);
+      body = JSON.parse(decodeBody(event.body, event.isBase64Encoded) || "{}");
     } catch {
       return json(400, { error: "Invalid JSON body" }, baseHeaders);
     }
 
     const plan = body?.plan;
-    if (!isPlanId(plan)) {
-      return json(400, { error: "Invalid plan. Use starter | job_seeker | career_pro." }, baseHeaders);
+    if (!isRecruiterPlan(plan)) {
+      return json(400, { error: "Invalid plan. Use starter | pro | enterprise." }, baseHeaders);
     }
 
     const authHeader = event.headers.authorization || event.headers.Authorization;
@@ -162,28 +140,18 @@ export const handler: Handler = async (event) => {
     if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
 
     const admin = getAdmin();
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    if (decoded.recruiter !== true) return json(403, { error: "Recruiter access only" }, baseHeaders);
 
-    let uid = "";
-    let email: string | undefined;
-    let nameFirst: string | undefined;
-
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      uid = decoded.uid;
-      email = decoded.email;
-      nameFirst = firstNameFrom(decoded.name);
-    } catch {
-      return json(401, { error: "Invalid or expired token" }, baseHeaders);
-    }
-
-    const userRef = admin.firestore().doc(`users/${uid}`);
-    const userSnap = await userRef.get();
-    const user = userSnap.data() || {};
+    const recruiterId = decoded.uid;
+    const recruiterRef = admin.firestore().doc(`recruiters/${recruiterId}`);
+    const recruiterSnap = await recruiterRef.get();
+    const recruiter = recruiterSnap.data() || {};
 
     const rateLimit = await checkRateLimit({
       admin,
-      action: "cv-subscription-checkout",
-      identifier: uid,
+      action: "recruiter-subscription-checkout",
+      identifier: recruiterId,
       limit: 5,
       windowSeconds: 10 * 60,
     });
@@ -198,43 +166,44 @@ export const handler: Handler = async (event) => {
       );
     }
 
-    email = email || (user.email as string | undefined);
-    if (!email) return json(400, { error: "User email not found" }, baseHeaders);
+    const email = decoded.email || (recruiter.email as string | undefined);
+    if (!email) return json(400, { error: "Recruiter email not found" }, baseHeaders);
 
-    nameFirst =
-      nameFirst ||
-      (user.firstName as string | undefined) ||
-      firstNameFrom(user.fullName as string | undefined) ||
-      "Customer";
+    const nameFirst =
+      firstNameFrom(decoded.name) ||
+      (recruiter.firstName as string | undefined) ||
+      firstNameFrom(recruiter.fullName as string | undefined) ||
+      firstNameFrom(recruiter.companyName as string | undefined) ||
+      "Recruiter";
 
     const siteUrl = process.env.SITE_URL!.replace(/\/+$/, "");
-    const amount = PLAN_AMOUNT[plan];
-    const m_payment_id = `sub_${uid}_${Date.now()}`;
+    const cfg = PLAN_CONFIG[plan];
+    const m_payment_id = `rec_${recruiterId}_${Date.now()}`;
 
     const fields: Record<string, string> = {
       merchant_id: process.env.PAYFAST_MERCHANT_ID!,
       merchant_key: process.env.PAYFAST_MERCHANT_KEY!,
-      return_url: `${siteUrl}/billing/success`,
-      cancel_url: `${siteUrl}/cv-generator/`,
+      return_url: `${siteUrl}/recruiter-dashboard.html?payment=pending`,
+      cancel_url: `${siteUrl}/recruiter-dashboard.html#billing`,
       notify_url: `${siteUrl}/.netlify/functions/payfast-itn`,
       name_first: nameFirst,
       email_address: email,
       m_payment_id,
-      amount,
-      item_name: `Career Unified ${formatPlanName(plan)} subscription`,
-      custom_str1: uid,
+      amount: cfg.amount,
+      item_name: `Career Unified Recruiter ${cfg.label} subscription`,
+      custom_str1: recruiterId,
       custom_str2: plan,
-      custom_str3: "careerunified-ai",
+      custom_str3: "careerunified-recruiter",
       subscription_type: "1",
       billing_date: todayIsoDate(),
-      recurring_amount: amount,
+      recurring_amount: cfg.amount,
       frequency: "3",
       cycles: "0",
     };
 
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
-    await userRef.set(
+    await recruiterRef.set(
       {
         pendingPlan: plan,
         pendingPayfastPaymentId: m_payment_id,
@@ -251,7 +220,7 @@ export const handler: Handler = async (event) => {
 
     return json(200, { payment_url, fields }, baseHeaders);
   } catch (error: any) {
-    console.error("CREATE_SUBSCRIPTION_ERROR", error);
+    console.error("CREATE_RECRUITER_SUBSCRIPTION_ERROR", error);
     return json(
       500,
       { error: "Could not start PayFast checkout." },
@@ -259,9 +228,3 @@ export const handler: Handler = async (event) => {
     );
   }
 };
-
-function formatPlanName(plan: PlanId) {
-  if (plan === "starter") return "Starter";
-  if (plan === "job_seeker") return "Job Seeker";
-  return "Career Pro";
-}

@@ -16,6 +16,7 @@ node_modules
 dist
 build
 .cache
+/cv-generator/
 
 # ================================
 # Sanity Studio
@@ -48,9 +49,12 @@ Thumbs.db
 # ================================
 # Environment / secrets
 # ================================
-*.env
-*.env.*
-*.local
+.env
+.env.local
+.env.*.local
+resume-builder/.env
+resume-builder/.env.local
+resume-builder/.env.*.local
 *.pem
 
 # ================================
@@ -58,3 +62,5 @@ Thumbs.db
 # ================================
 *.tsbuildinfo
 
+# Local Netlify folder
+.netlify

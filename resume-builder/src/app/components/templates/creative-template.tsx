@@ -1,5 +1,5 @@
 import type { ResumeData } from '../types/resume';
-import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe, CarFront } from 'lucide-react';
 
 interface CreativeTemplateProps {
   data: ResumeData;
@@ -44,6 +44,12 @@ export function CreativeTemplate({ data }: CreativeTemplateProps) {
               <div className="flex items-center gap-1 bg-white/60 px-3 py-1 rounded-full">
                 <Globe className="h-4 w-4 text-purple-600" />
                 {data.personalInfo.website}
+              </div>
+            )}
+            {data.personalInfo.driversLicense && (
+              <div className="flex items-center gap-1 bg-white/60 px-3 py-1 rounded-full">
+                <CarFront className="h-4 w-4 text-purple-600" />
+                {data.personalInfo.driversLicense}
               </div>
             )}
           </div>

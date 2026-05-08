@@ -1194,7 +1194,7 @@
           <li> Job Posting</li>
           <li> One job featured badge</li>
         </ul>
-      <button class="primary-btn" id="starterPlanBtn" onclick="startPaystackUpgrade('starter')">Upgrade</button>
+      <button class="primary-btn" id="starterPlanBtn" onclick="startPayFastUpgrade('starter')">Upgrade</button>
       </div>
 
       <div class="cv-card">
@@ -1207,7 +1207,7 @@
           <li> Advanced Filters</li>
           <li> Four job featured badge</li>
         </ul>
-        <button class="primary-btn" id="proPlanBtn" onclick="startPaystackUpgrade('pro')">Upgrade</button>
+        <button class="primary-btn" id="proPlanBtn" onclick="startPayFastUpgrade('pro')">Upgrade</button>
       </div>
 
       <div class="cv-card">
@@ -1220,7 +1220,7 @@
           <li> API Access</li>
           <li> Unlimited job featured badge</li>
         </ul>
-        <button class="primary-btn" id="enterprisePlanBtn" onclick="startPaystackUpgrade('enterprise')">Upgrade</button>
+        <button class="primary-btn" id="enterprisePlanBtn" onclick="startPayFastUpgrade('enterprise')">Upgrade</button>
       </div>
     </div>
   </div>
@@ -1434,14 +1434,34 @@ let currentRecruiter = null;
 let recruiterData = null;
 let allCVsCount = 0;
 
+function toDateValue(value) {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate();
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+  return null;
+}
+
+function isRecruiterSubscriptionActive() {
+  if (!recruiterData || recruiterData.plan === "free") return false;
+  if (recruiterData.subscriptionStatus !== "active") return false;
+  const periodEnd = toDateValue(recruiterData.subscriptionCurrentPeriodEnd);
+  return !!periodEnd && periodEnd.getTime() > Date.now();
+}
+
+function effectiveRecruiterPlan() {
+  return isRecruiterSubscriptionActive() ? recruiterData.plan : "free";
+}
+
 /* ======================================================
-   PAYSTACK: Recruiter subscription upgrade (Redirect flow)
+   PAYFAST: Recruiter subscription upgrade (Redirect flow)
    Flow:
-   1) Call paystack-init (server)
-   2) Redirect to Paystack checkout
-   3) Return with ?reference=...
-   4) Call paystack-verify (server) to confirm transaction + return plan/unlocks
-   5) Update Firestore recruiter plan/unlocks here (client) after verified
+   1) Call create-recruiter-subscription (server)
+   2) POST returned fields to PayFast checkout
+   3) PayFast ITN activates the recruiter subscription server-side
 ====================================================== */
 
 const PLAN_CONFIG = {
@@ -1450,7 +1470,7 @@ const PLAN_CONFIG = {
   enterprise: { label: "ENTERPRISE", amountZAR: 1499, unlocks: -1 },
 };
 
-window.startPaystackUpgrade = async function (plan) {
+window.startPayFastUpgrade = async function (plan) {
   const cfg = PLAN_CONFIG[plan];
   if (!cfg) return alert("Unknown plan.");
   if (!currentRecruiter) return alert("Please login again.");
@@ -1466,7 +1486,7 @@ window.startPaystackUpgrade = async function (plan) {
     `Upgrade to ${cfg.label}?\n\n` +
       `Price: R${cfg.amountZAR}/month\n` +
       `CV Unlocks: ${unlocksText}\n\n` +
-      `You will be redirected to Paystack to complete payment.`
+      `You will be redirected to PayFast to complete payment.`
   );
   if (!confirmed) return;
 
@@ -1478,24 +1498,23 @@ window.startPaystackUpgrade = async function (plan) {
       btn.textContent = "Redirecting...";
     }
 
-    const callbackUrl = window.location.origin + window.location.pathname;
+    const idToken = await currentRecruiter.getIdToken();
 
-    const res = await fetch("/.netlify/functions/paystack-init", {
+    const res = await fetch("/.netlify/functions/create-recruiter-subscription", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        plan,
-        recruiterId: currentRecruiter.uid,
-        email: currentRecruiter.email,
-        callbackUrl,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({ plan }),
     });
 
-    const out = await res.json();
+    const out = await res.json().catch(() => null);
 
-    if (!res.ok || !out?.status || !out?.data?.authorization_url) {
-      console.error("paystack-init failed:", out);
-      alert(out?.message || "Failed to start payment. Please try again.");
+    if (!res.ok || !out?.payment_url || !out?.fields) {
+      console.error("create-recruiter-subscription failed:", out);
+      const details = out?.details || (Array.isArray(out?.missing) ? out.missing.join(", ") : "");
+      alert(`${out?.error || "Could not start PayFast checkout. Please try again."}${details ? `\n\n${details}` : ""}`);
       if (btn) {
         btn.disabled = false;
         btn.textContent = "Upgrade";
@@ -1503,14 +1522,25 @@ window.startPaystackUpgrade = async function (plan) {
       return;
     }
 
-    sessionStorage.setItem(
-      "pendingPaystackUpgrade",
-      JSON.stringify({ reference: out.data.reference, plan, ts: Date.now() })
-    );
+    sessionStorage.setItem("pendingPayFastUpgrade", JSON.stringify({ plan, ts: Date.now() }));
 
-    window.location.href = out.data.authorization_url;
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = out.payment_url;
+    form.style.display = "none";
+
+    Object.entries(out.fields).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = String(value);
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
   } catch (e) {
-    console.error("startPaystackUpgrade error:", e);
+    console.error("startPayFastUpgrade error:", e);
     alert("Network error starting payment. Please try again.");
     if (btn) {
       btn.disabled = false;
@@ -1519,73 +1549,6 @@ window.startPaystackUpgrade = async function (plan) {
   }
 };
 
-async function handlePaystackReturn() {
-  const params = new URLSearchParams(window.location.search);
-  const reference = params.get("reference");
-  if (!reference) return;
-
-  try {
-    // clean URL immediately (no ?reference=...)
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    // prevent double processing
-    if (recruiterData?.lastPaymentRef === reference) return;
-
-    if (typeof window.openModal === "function") {
-      window.openModal("Verifying your payment... please wait.");
-    }
-
-    const verifyRes = await fetch(
-      `/.netlify/functions/paystack-verify?reference=${encodeURIComponent(reference)}`
-    );
-    const verifyOut = await verifyRes.json();
-
-    if (!verifyRes.ok || !verifyOut?.status) {
-      console.error("paystack-verify failed:", verifyOut);
-      if (typeof window.closeModal === "function") window.closeModal();
-      alert(
-        verifyOut?.message ||
-          "Payment verification failed. If you were charged, contact support."
-      );
-      return;
-    }
-
-    const { plan, unlocks } = verifyOut.data || {};
-    if (!PLAN_CONFIG[plan]) {
-      if (typeof window.closeModal === "function") window.closeModal();
-      alert("Payment verified but plan is invalid. Contact support.");
-      return;
-    }
-
-    // ✅ Fulfill subscription in recruiter doc AFTER verified
-    const recruiterRef = doc(db, "recruiters", currentRecruiter.uid);
-
-    const unlocksToSet =
-      plan === "enterprise" ? -1 : (Number(unlocks) || PLAN_CONFIG[plan].unlocks);
-
-    await updateDoc(recruiterRef, {
-      plan,
-      unlocksRemaining: unlocksToSet,
-      totalUnlocks: unlocksToSet,
-      upgradedAt: new Date().toISOString(),
-      lastPaymentRef: reference,
-      lastPaymentVerifiedAt: new Date().toISOString(),
-    });
-
-    await loadRecruiterData();
-    updatePlanBadges();
-    loadCVs();
-
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert(` Payment verified! You are now on the ${PLAN_CONFIG[plan].label} plan.`);
-  } catch (e) {
-    console.error("handlePaystackReturn error:", e);
-    if (typeof window.closeModal === "function") window.closeModal();
-    alert(
-      "Could not finalize upgrade. If you were charged, contact support with your reference."
-    );
-  }
-}
 /* ======================================================
    COMPANY PROFILE (NEW)
 ====================================================== */
@@ -1635,8 +1598,10 @@ onAuthStateChanged(auth, async (user) => {
   await loadCompanyProfile();          // ✅ NEW
   wireCompanyProfileUI();              // ✅ NEW
 
-  // ✅ Paystack return (verify & apply plan if redirected back)
-  await handlePaystackReturn();
+  if (new URLSearchParams(window.location.search).get("payment") === "pending") {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    alert("Payment received by PayFast. Your recruiter plan will update once PayFast confirms the subscription.");
+  }
 
   document.body.classList.add('authorized');
 
@@ -1698,8 +1663,16 @@ async function loadRecruiterData() {
       await setDoc(recruiterRef, recruiterData);
     }
 
+    if (recruiterData.plan !== 'free' && !isRecruiterSubscriptionActive()) {
+      recruiterData = {
+        ...recruiterData,
+        plan: 'free',
+        subscriptionStatus: recruiterData.subscriptionStatus === 'active' ? 'past_due' : recruiterData.subscriptionStatus,
+      };
+    }
+
     document.getElementById('remainingUnlocks').textContent =
-      recruiterData.plan === 'enterprise' ? '∞' : recruiterData.unlocksRemaining || 0;
+      effectiveRecruiterPlan() === 'enterprise' ? '∞' : recruiterData.unlocksRemaining || 0;
 
     document.getElementById('unlockedCVs').textContent = recruiterData.unlockedCVs?.length || 0;
 
@@ -2464,7 +2437,7 @@ async function loadCVs() {
     }
 
     let cvQuery;
-    if (recruiterData.plan === 'free') {
+    if (effectiveRecruiterPlan() === 'free') {
       cvQuery = query(collection(db, "cvs"), limit(20));
     } else {
       cvQuery = query(collection(db, "cvs"));
@@ -2564,7 +2537,7 @@ async function loadCVs() {
 function updateCVLibrarySubtext() {
   const subtext = document.getElementById('cvLibrarySubtext');
 
-  if (recruiterData.plan === 'free') {
+  if (effectiveRecruiterPlan() === 'free') {
     if (allCVsCount > 10) {
       subtext.innerHTML = `First 10 CVs shown clearly. <span style="color: #ef4444; font-weight: 800;">Upgrade to view all ${allCVsCount} CVs clearly and download them</span>`;
     } else {
@@ -2576,7 +2549,8 @@ function updateCVLibrarySubtext() {
 }
 
 window.unlockCV = async function(cvId, cvURL, cvName) {
-  if (!recruiterData || recruiterData.plan === 'free') {
+  const activePlan = effectiveRecruiterPlan();
+  if (!recruiterData || activePlan === 'free') {
     openModal('You need to upgrade to a paid plan to unlock CVs. Free plan only allows viewing 10 CV previews.');
     return;
   }
@@ -2586,17 +2560,17 @@ window.unlockCV = async function(cvId, cvURL, cvName) {
     return;
   }
 
-  if (recruiterData.plan !== 'enterprise' && recruiterData.unlocksRemaining <= 0) {
+  if (activePlan !== 'enterprise' && recruiterData.unlocksRemaining <= 0) {
     openModal('You have no remaining unlocks. Please upgrade your plan or purchase more unlocks.');
     return;
   }
 
-  if (!confirm(`Unlock CV for ${cvName}?\n\nThis will use 1 unlock credit.\n\nRemaining after unlock: ${recruiterData.plan === 'enterprise' ? '∞' : recruiterData.unlocksRemaining - 1}`)) return;
+  if (!confirm(`Unlock CV for ${cvName}?\n\nThis will use 1 unlock credit.\n\nRemaining after unlock: ${activePlan === 'enterprise' ? '∞' : recruiterData.unlocksRemaining - 1}`)) return;
 
   try {
     const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
 
-    if (recruiterData.plan === 'enterprise') {
+    if (activePlan === 'enterprise') {
       await updateDoc(recruiterRef, {
         unlockedCVs: [...(recruiterData.unlockedCVs || []), cvId]
       });
@@ -2619,36 +2593,11 @@ window.unlockCV = async function(cvId, cvURL, cvName) {
 }
 
 window.selectPlan = async function(plan, unlocks) {
-  const planNames = { starter: 'STARTER', pro: 'PRO', enterprise: 'ENTERPRISE' };
-  const planName = planNames[plan];
-  const unlocksText = unlocks === -1 ? 'unlimited' : unlocks;
-
-  if (!confirm(`Upgrade to ${planName} plan?\n\n✓ View all ${allCVsCount} CVs\n✓ ${unlocksText} CV unlocks\n\n(Payment integration coming soon)`)) return;
-
-  try {
-    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
-
-    await updateDoc(recruiterRef, {
-      plan: plan,
-      unlocksRemaining: unlocks,
-      totalUnlocks: unlocks,
-      upgradedAt: new Date().toISOString()
-    });
-
-    alert(` Successfully upgraded to ${planName} plan!\n\nYou can now view all CVs and unlock ${unlocksText} candidates.`);
-
-    await loadRecruiterData();
-    updatePlanBadges();
-    loadCVs();
-
-  } catch (error) {
-    console.error('Error upgrading plan:', error);
-    alert(' Error upgrading plan. Please try again.');
-  }
+  await window.startPayFastUpgrade(plan);
 }
 
 function updatePlanBadges() {
-  const planName = recruiterData.plan?.toUpperCase() || 'FREE';
+  const planName = effectiveRecruiterPlan().toUpperCase();
   document.getElementById('currentPlanBadge').textContent = `${planName} Plan`;
 
   const buttons = {
@@ -2665,7 +2614,7 @@ function updatePlanBadges() {
     }
   });
 
-  const currentBtn = buttons[recruiterData.plan];
+  const currentBtn = buttons[effectiveRecruiterPlan()];
   if (currentBtn) {
     currentBtn.disabled = true;
     currentBtn.textContent = 'Current Plan';
@@ -2752,7 +2701,7 @@ function displayFilteredCVs(cvs) {
   cvs.forEach((data, index) => {
     const cvId = data.id;
     const isUnlocked = recruiterData.unlockedCVs?.includes(cvId) || false;
-    const isFree = recruiterData.plan === 'free';
+    const isFree = effectiveRecruiterPlan() === 'free';
     const isInFreeLimit = index < 10;
     const shouldBlur = isFree ? !isInFreeLimit : !isUnlocked;
     const isSelected = selectedForComparison.includes(cvId);
@@ -3083,11 +3032,6 @@ window.addEventListener('resize', handleMobileLayout);
 
 </body>
 </html>
-
-
-
-
-
 
 
 

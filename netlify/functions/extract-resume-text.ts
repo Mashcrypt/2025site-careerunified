@@ -2,6 +2,8 @@ import type { Handler } from "@netlify/functions";
 import Busboy from "busboy";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
+import { getAdmin } from "./_firebaseAdmin";
+import { checkRateLimit, clientIpFromHeaders } from "./_rateLimit";
 
 type ParsedFile = {
   filename: string;
@@ -24,6 +26,14 @@ function corsHeaders(origin?: string) {
   };
 }
 
+function json(statusCode: number, origin: string | undefined, body: any, extraHeaders?: Record<string, string>) {
+  return {
+    statusCode,
+    headers: { ...corsHeaders(origin), "Content-Type": "application/json", ...(extraHeaders || {}) },
+    body: JSON.stringify(body),
+  };
+}
+
 function parseMultipart(event: any): Promise<ParsedFile> {
   return new Promise((resolve, reject) => {
     const contentType = event.headers["content-type"] || event.headers["Content-Type"];
@@ -32,7 +42,6 @@ function parseMultipart(event: any): Promise<ParsedFile> {
     }
 
     const bb = Busboy({ headers: { "content-type": contentType } });
-
     let file: ParsedFile | null = null;
 
     bb.on("file", (_fieldname, stream, info) => {
@@ -47,7 +56,6 @@ function parseMultipart(event: any): Promise<ParsedFile> {
     });
 
     bb.on("error", reject);
-
     bb.on("finish", () => {
       if (!file) return reject(new Error("No file uploaded"));
       resolve(file);
@@ -73,27 +81,53 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    const uploaded = await parseMultipart(event);
+    const admin = getAdmin();
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    let identifier = `ip:${clientIpFromHeaders(event.headers as Record<string, string | undefined>)}`;
 
+    if (idToken) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        identifier = `uid:${decoded.uid}`;
+      } catch {
+        return json(401, origin, { error: "Invalid or expired token" });
+      }
+    }
+
+    const rateLimit = await checkRateLimit({
+      admin,
+      action: "resume-text-extraction",
+      identifier,
+      limit: 10,
+      windowSeconds: 60 * 60,
+    });
+    if (!rateLimit.allowed) {
+      return json(
+        429,
+        origin,
+        {
+          error: "Too many resume imports. Please try again later.",
+          retryAfterSeconds: rateLimit.retryAfterSeconds,
+        },
+        { "Retry-After": String(rateLimit.retryAfterSeconds) }
+      );
+    }
+
+    const uploaded = await parseMultipart(event);
     const name = (uploaded.filename || "").toLowerCase();
-    const isPdf =
-      uploaded.mimeType === "application/pdf" || name.endsWith(".pdf");
+    const isPdf = uploaded.mimeType === "application/pdf" || name.endsWith(".pdf");
     const isDocx =
       uploaded.mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       name.endsWith(".docx");
 
     if (!isPdf && !isDocx) {
-      return {
-        statusCode: 400,
-        headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
-        body: JSON.stringify({
-          error: "Only PDF or DOCX is supported. Please upload a .pdf or .docx file.",
-        }),
-      };
+      return json(400, origin, {
+        error: "Only PDF or DOCX is supported. Please upload a .pdf or .docx file.",
+      });
     }
 
     let text = "";
-
     if (isPdf) {
       const result = await pdf(uploaded.buffer);
       text = result.text || "";
@@ -102,30 +136,16 @@ export const handler: Handler = async (event) => {
       text = result.value || "";
     }
 
-    // Light cleanup
     text = text.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").trim();
 
     if (!text || text.length < 30) {
-      return {
-        statusCode: 422,
-        headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
-        body: JSON.stringify({
-          error:
-            "We couldn’t extract enough readable text from that file. Try a different PDF/DOCX (non-scanned).",
-        }),
-      };
+      return json(422, origin, {
+        error: "We could not extract enough readable text from that file. Try a different PDF/DOCX (non-scanned).",
+      });
     }
 
-    return {
-      statusCode: 200,
-      headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    };
+    return json(200, origin, { text });
   } catch (err: any) {
-    return {
-      statusCode: 500,
-      headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
-      body: JSON.stringify({ error: err?.message || "Extraction failed" }),
-    };
+    return json(500, origin, { error: err?.message || "Extraction failed" });
   }
 };

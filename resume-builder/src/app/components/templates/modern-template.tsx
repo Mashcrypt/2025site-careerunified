@@ -1,5 +1,5 @@
 import type { ResumeData } from '../types/resume';
-import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe, CarFront } from 'lucide-react';
 
 interface ModernTemplateProps {
   data: ResumeData;
@@ -57,6 +57,12 @@ export function ModernTemplate({ data, colorTheme = 'blue' }: ModernTemplateProp
             <div className="flex items-center gap-1">
               <Globe className="h-4 w-4" />
               {data.personalInfo.website}
+            </div>
+          )}
+          {data.personalInfo.driversLicense && (
+            <div className="flex items-center gap-1">
+              <CarFront className="h-4 w-4" />
+              {data.personalInfo.driversLicense}
             </div>
           )}
         </div>

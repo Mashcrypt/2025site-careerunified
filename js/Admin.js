@@ -34,12 +34,8 @@ function logAdminActivity(action) {
 // ===============================
 // ADMIN LOGIN
 // ===============================
-const DEFAULT_ADMIN = {
-  username: "admin",
-  passwordHash: "a94a8fe5ccb19b0e4eaa2b6e57f1a5c3e7008a1f48efec2c982d9067c3c0c58c" // "test"
-};
-
-let admins = JSON.parse(localStorage.getItem('admins')) || [DEFAULT_ADMIN];
+const DEFAULT_ADMINS = [];
+let admins = JSON.parse(localStorage.getItem('admins')) || DEFAULT_ADMINS;
 
 const loginSection = document.getElementById('loginSection');
 const adminPanel = document.getElementById('adminPanel');
@@ -69,7 +65,7 @@ loginForm.addEventListener('submit', async e => {
   );
 
   if (!valid) {
-    loginError.textContent = 'Invalid login details';
+    loginError.textContent = 'Admin access is disabled on the public site.';
     return;
   }
 

@@ -7,31 +7,32 @@
   "scripts": {
     "dev": "sanity dev",
     "start": "sanity start",
-    "build:cv": "npm --prefix resume-builder install && npm --prefix resume-builder run build && rm -rf cv-generator && cp -r resume-builder/dist cv-generator",
-    "build": "sanity build && npm run build:cv",
+    "build:cv": "node scripts/build-cv-generator.mjs",
+    "build": "node scripts/build-cv-generator.mjs",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
-  "keywords": ["sanity"],
+  "keywords": [
+    "sanity"
+  ],
   "dependencies": {
-    "@sanity/vision": "^5.1.0",
-    "firebase-admin": "^12.0.0",
-    "react": "^19.1",
-    "react-dom": "^19.1",
-    "sanity": "^5.1.0",
-    "styled-components": "^6.1.18",
-
+    "@sanity/vision": "^5.24.0",
+    "@sparticuz/chromium": "^123.0.1",
     "busboy": "^1.6.0",
+    "firebase-admin": "^13.8.0",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
-
-    "@sparticuz/chromium": "^123.0.1",
-    "puppeteer-core": "^22.15.0"
+    "puppeteer-core": "^22.15.0",
+    "react": "^19.1",
+    "react-dom": "^19.1",
+    "sanity": "^5.24.0",
+    "styled-components": "^6.1.18"
   },
   "devDependencies": {
+    "@netlify/functions": "^5.2.0",
     "@sanity/eslint-config-studio": "^6.0.0",
-    "@types/react": "^19.1",
     "@types/busboy": "^1.5.4",
+    "@types/react": "^19.1",
     "eslint": "^9.28",
     "prettier": "^3.5",
     "typescript": "^5.8"
@@ -41,5 +42,11 @@
     "printWidth": 100,
     "bracketSpacing": false,
     "singleQuote": true
+  },
+  "overrides": {
+    "@tootallnate/once": "^3.0.1",
+    "js-yaml": "^3.14.2",
+    "retry-request": "^8.0.2",
+    "teeny-request": "^10.1.2"
   }
 }

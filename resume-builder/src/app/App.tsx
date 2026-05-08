@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback, type ReactNode } from 'react';
 import {
   FileText,
   Wand2,
@@ -9,6 +9,9 @@ import {
   FolderOpen,
   Upload,
   Lock,
+  CreditCard,
+  CheckCircle2,
+  Crown,
 } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
@@ -74,17 +77,101 @@ type BillingStatus = {
   freeResumeUsed: boolean;
   freeCoverUsed: boolean;
   pendingPlan?: string | null;
-  pendingPaystackReference?: string | null;
+  pendingPayfastPaymentId?: string | null;
 };
 
+const PLAN_OPTIONS: Array<{
+  id: PlanId;
+  name: string;
+  price: string;
+  benefits: string[];
+  badge?: string;
+}> = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 'R29/month',
+    benefits: ['5 applications per month', 'AI Tailor access', 'Premium AI templates'],
+  },
+  {
+    id: 'job_seeker',
+    name: 'Job Seeker',
+    price: 'R69/month',
+    benefits: ['20 applications per month', 'AI CV and cover letter help', 'Best for active job search'],
+  },
+  {
+    id: 'career_pro',
+    name: 'Career Pro',
+    price: 'R149/month',
+    benefits: ['Unlimited applications', 'Full AI template access', 'Built for ongoing career growth'],
+    badge: 'Best value',
+  },
+];
+
 const TEMPLATE_CANVAS_WIDTH = 816;
+
+function TemplatePreviewFrame({ children }: { children: ReactNode }) {
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState(0.25);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    const updateScale = () => {
+      const width = frame.getBoundingClientRect().width || 0;
+      if (width > 0) setScale(width / TEMPLATE_CANVAS_WIDTH);
+    };
+
+    updateScale();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateScale);
+      observer.observe(frame);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
+  return (
+    <div ref={frameRef} className="h-full w-full overflow-hidden bg-white">
+      <div
+        className="origin-top-left pointer-events-none select-none"
+        style={{
+          width: TEMPLATE_CANVAS_WIDTH,
+          transform: `scale(${scale})`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function formatPlanName(plan?: string | null) {
+  if (plan === 'starter') return 'Starter';
+  if (plan === 'job_seeker') return 'Job Seeker';
+  if (plan === 'career_pro') return 'Career Pro';
+  return 'Free';
+}
+
+function formatLimit(limit?: number | null) {
+  if (limit === null) return 'Unlimited';
+  if (typeof limit === 'number') return String(limit);
+  return '0';
+}
 
 function isFirebaseConfigured() {
   const required = [
     import.meta.env.VITE_FIREBASE_API_KEY,
     import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
     import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     import.meta.env.VITE_FIREBASE_APP_ID,
+    import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   ];
   return required.every((v) => typeof v === 'string' && v.trim().length > 0);
 }
@@ -93,7 +180,23 @@ export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
-  const [activeTab, setActiveTab] = useState('build');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === 'undefined') return 'build';
+    return new URLSearchParams(window.location.search).get('tab') === 'ai' ? 'ai' : 'build';
+  });
+  const [initialAIJobDescription] = useState(() => {
+    if (typeof window === 'undefined') return '';
+
+    try {
+      const raw = window.sessionStorage.getItem('careerUnifiedAITailorJob');
+      if (!raw) return '';
+
+      const payload = JSON.parse(raw) as { fullText?: unknown };
+      return typeof payload.fullText === 'string' ? payload.fullText : '';
+    } catch {
+      return '';
+    }
+  });
 
   // ✅ EDIT #1: On mobile, start at 100% immediately (prevents ugly uncentered first render flash)
   const [previewScale, setPreviewScale] = useState(() => {
@@ -114,6 +217,7 @@ export default function App() {
   }, [billing]);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showManageSubscriptionModal, setShowManageSubscriptionModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -154,9 +258,10 @@ export default function App() {
     if (!el) return;
 
     const compute = () => {
-      const width = el.clientWidth || 0;
-      const paddingAllowance = isMobile ? 18 : 24;
-      const usable = Math.max(0, width - paddingAllowance);
+      const rectWidth = el.getBoundingClientRect().width || 0;
+      const styles = window.getComputedStyle(el);
+      const paddingX = parseFloat(styles.paddingLeft || '0') + parseFloat(styles.paddingRight || '0');
+      const usable = Math.max(0, rectWidth - paddingX - 2);
       const nextFit = Math.min(1, usable / TEMPLATE_CANVAS_WIDTH);
       setFitScale(Number.isFinite(nextFit) && nextFit > 0 ? nextFit : 1);
     };
@@ -187,7 +292,7 @@ export default function App() {
           freeResumeUsed: false,
           freeCoverUsed: false,
           pendingPlan: null,
-          pendingPaystackReference: null,
+          pendingPayfastPaymentId: null,
         });
         return;
       }
@@ -202,7 +307,7 @@ export default function App() {
           freeResumeUsed: false,
           freeCoverUsed: false,
           pendingPlan: null,
-          pendingPaystackReference: null,
+          pendingPayfastPaymentId: null,
         });
         return;
       }
@@ -215,13 +320,13 @@ export default function App() {
 
       const payload = await res.json().catch(() => null);
       if (!res.ok) {
-        setBillingError(payload?.error || 'Could not verify billing status.');
+        setBillingError('Could not verify billing status. Please refresh or login again.');
         return;
       }
 
       setBilling(payload as BillingStatus);
     } catch (e: any) {
-      setBillingError(e?.message || 'Could not verify billing status.');
+      setBillingError('Could not verify billing status. Please refresh or login again.');
     } finally {
       setIsLoadingBilling(false);
     }
@@ -341,11 +446,7 @@ export default function App() {
     })();
 
     return (
-      <div className="h-full w-full overflow-hidden bg-white">
-        <div className="origin-top-left pointer-events-none select-none" style={{ transform: 'scale(0.18)' }}>
-          {thumb}
-        </div>
-      </div>
+      <TemplatePreviewFrame>{thumb}</TemplatePreviewFrame>
     );
   };
 
@@ -476,37 +577,43 @@ export default function App() {
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const paystackMsg =
-          payload?.paystack_message ||
-          payload?.details?.message ||
-          payload?.details?.data?.message;
-
-        const details =
-          paystackMsg ||
-          payload?.error ||
-          payload?.details ||
-          'Could not start checkout. Please try again.';
-
-        setBillingError(typeof details === 'string' ? details : JSON.stringify(details));
+        const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
+        const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
+        setBillingError(details ? `${error} ${details}` : error);
         setIsRedirecting(false);
         return;
       }
 
-      const url = payload?.authorization_url as string | undefined;
-      if (!url) {
-        setBillingError('Checkout link missing from server response.');
+      const paymentUrl = payload?.payment_url as string | undefined;
+      const fields = payload?.fields as Record<string, string> | undefined;
+      if (!paymentUrl || !fields) {
+        setBillingError('Could not start PayFast checkout. Please try again.');
         setIsRedirecting(false);
         return;
       }
 
-      window.location.assign(url);
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = paymentUrl;
+      form.style.display = 'none';
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     } catch (e: any) {
-      setBillingError(e?.message || 'Checkout error. Please try again.');
+      setBillingError('Could not start PayFast checkout. Please try again.');
       setIsRedirecting(false);
     }
   };
 
-  const finalScale = isMobile ? fitScale * previewScale : previewScale;
+  const finalScale = Math.min(1, fitScale * previewScale);
 
   //  EDIT #2: Mobile max zoom = 100% (same as desktop)
   const ZOOM_MIN = isMobile ? 0.7 : 0.5;
@@ -514,6 +621,13 @@ export default function App() {
 
   //  EDIT #3: Zoom step = 5%
   const ZOOM_STEP = 0.05;
+
+  const planName = formatPlanName(billing?.plan);
+  const subscriptionStatus = billing?.subscriptionStatus || 'inactive';
+  const isActiveSubscription = subscriptionStatus === 'active';
+  const applicationsUsed = billing?.used ?? 0;
+  const limitLabel = formatLimit(billing?.limit);
+  const usageLabel = `${applicationsUsed} / ${limitLabel}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
@@ -598,9 +712,69 @@ export default function App() {
           <SmartTips data={resumeData} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <Card className="mb-6 border-blue-100 bg-white/95 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                  {isActiveSubscription ? <CheckCircle2 className="h-5 w-5" /> : <CreditCard className="h-5 w-5" />}
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-sm font-semibold text-slate-900">Plan Status</h2>
+                    <Badge variant={isActiveSubscription ? 'default' : 'secondary'} className="capitalize">
+                      {subscriptionStatus}
+                    </Badge>
+                  </div>
+                  <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-3">
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Current plan</span>
+                      <div className="font-medium text-slate-900">{isLoadingBilling ? 'Checking...' : planName}</div>
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Applications used</span>
+                      <div className="font-medium text-slate-900">{isLoadingBilling ? '...' : usageLabel}</div>
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Limit</span>
+                      <div className="font-medium text-slate-900">{isLoadingBilling ? '...' : limitLabel}</div>
+                    </div>
+                  </div>
+                  {billingError ? (
+                    <p className="mt-3 text-sm text-red-600">{billingError}</p>
+                  ) : !isActiveSubscription ? (
+                    <p className="mt-3 text-sm text-slate-600">
+                      Upgrade to unlock AI templates and AI Tailor
+                    </p>
+                  ) : (
+                    <p className="mt-3 text-sm font-medium text-emerald-700">Subscription active</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" onClick={() => setShowUpgradeModal(true)} className="bg-blue-600 hover:bg-blue-700">
+                  <Crown className="mr-2 h-4 w-4" />
+                  {isActiveSubscription ? 'Change plan' : 'Upgrade'}
+                </Button>
+                {isActiveSubscription ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowManageSubscriptionModal(true)}
+                    className="border-blue-200"
+                  >
+                    Manage subscription
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid min-w-0 grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Panel */}
-          <div className="lg:col-span-5">
+          <div className="min-w-0 lg:col-span-5">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 bg-white shadow-sm">
                 <TabsTrigger
@@ -662,7 +836,7 @@ export default function App() {
 
               <TabsContent value="templates" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
-                  <div className="pr-4 space-y-6">
+                  <div className="space-y-6 lg:pr-4">
                     <div>
                       <h2 className="text-2xl mb-2">Premium Templates</h2>
                       <p className="text-sm text-gray-600 mb-6">
@@ -698,8 +872,8 @@ export default function App() {
                               } ${isLocked ? 'opacity-95' : ''}`}
                               onClick={() => handleTemplateClick(template.id)}
                             >
-                              <CardContent className="p-6">
-                                <div className="aspect-[8.5/11] bg-white rounded-lg mb-4 shadow-inner overflow-hidden border">
+                              <CardContent className="p-3 sm:p-6">
+                                <div className="aspect-[8.5/11] w-full bg-white rounded-lg mb-4 shadow-inner overflow-hidden border">
                                   {renderTemplateThumbnail(template.id)}
                                 </div>
 
@@ -751,7 +925,11 @@ export default function App() {
               <TabsContent value="ai" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4">
-                    <AITailor data={resumeData} onApplySuggestions={setResumeData} />
+                    <AITailor
+                      data={resumeData}
+                      onApplySuggestions={setResumeData}
+                      initialJobDescription={initialAIJobDescription}
+                    />
                   </div>
                 </ScrollArea>
               </TabsContent>
@@ -783,7 +961,7 @@ export default function App() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7">
             <div className="lg:sticky lg:top-24">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -832,16 +1010,17 @@ export default function App() {
                 </div>
               </div>
 
-              <Card className="shadow-2xl overflow-hidden border-2 border-blue-100">
+              <Card className="w-full max-w-full overflow-hidden shadow-2xl border-2 border-blue-100">
                 <CardContent className="p-0">
-                  <ScrollArea className="h-[calc(100vh-260px)] lg:h-[calc(100vh-220px)]">
+                  <ScrollArea className="h-[calc(100vh-260px)] w-full max-w-full lg:h-[calc(100vh-220px)]">
                     <div
                       ref={previewWrapRef}
-                      className="flex justify-center p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100"
+                      className="box-border flex w-full min-w-0 max-w-full justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 p-2 sm:p-6 lg:p-8"
                     >
                       <div
                         style={{
-                          width: TEMPLATE_CANVAS_WIDTH * finalScale,
+                          width: Math.floor(TEMPLATE_CANVAS_WIDTH * finalScale),
+                          maxWidth: '100%',
                           overflow: 'hidden',
                         }}
                       >
@@ -869,37 +1048,56 @@ export default function App() {
 
       {/* Upgrade Modal */}
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
-        <DialogContent>
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Unlock AI Templates</DialogTitle>
+            <DialogTitle>Choose your AI CV plan</DialogTitle>
             <DialogDescription>
-              These templates are available with the AI plan. Upgrade to unlock AI templates and AI Tailor.
+              Secure monthly billing via PayFast
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 text-sm text-slate-700">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Access premium AI-optimized resume templates</li>
-              <li>AI Tailor suggestions matched to job descriptions</li>
-              <li>Faster editing with smarter formatting</li>
-            </ul>
-
+          <div className="space-y-5 text-sm text-slate-700">
             {billingError ? (
               <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-700 text-xs">
                 {billingError}
               </div>
             ) : null}
 
-            <div className="grid md:grid-cols-3 gap-3">
-              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('starter')}>
-                Starter
-              </Button>
-              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('job_seeker')}>
-                Job Seeker
-              </Button>
-              <Button className="w-full" disabled={isRedirecting} onClick={() => startSubscription('career_pro')}>
-                Career Pro
-              </Button>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {PLAN_OPTIONS.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`relative flex min-h-[260px] flex-col rounded-lg border bg-white p-5 shadow-sm ${
+                    plan.id === 'career_pro' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'
+                  }`}
+                >
+                  {plan.badge ? (
+                    <Badge className="absolute right-4 top-4 bg-blue-600 text-white hover:bg-blue-600">
+                      {plan.badge}
+                    </Badge>
+                  ) : null}
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">{plan.name}</h3>
+                    <div className="mt-2 text-2xl font-bold text-slate-950">{plan.price}</div>
+                    <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                      {plan.benefits.map((benefit) => (
+                        <li key={benefit} className="flex gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                          <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Button
+                    className="mt-auto w-full"
+                    disabled={isRedirecting}
+                    onClick={() => startSubscription(plan.id)}
+                  >
+                    {isRedirecting ? 'Starting checkout...' : 'Choose Plan'}
+                  </Button>
+                </div>
+              ))}
             </div>
 
             <Button variant="outline" className="w-full" onClick={() => setShowUpgradeModal(false)}>
@@ -919,7 +1117,7 @@ export default function App() {
                     freeResumeUsed: false,
                     freeCoverUsed: false,
                     pendingPlan: null,
-                    pendingPaystackReference: null,
+                    pendingPayfastPaymentId: null,
                   });
                   setShowUpgradeModal(false);
                 }}
@@ -927,6 +1125,34 @@ export default function App() {
                 (Dev) Unlock AI Plan
               </Button>
             ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showManageSubscriptionModal} onOpenChange={setShowManageSubscriptionModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage subscription</DialogTitle>
+            <DialogDescription>
+              {formatPlanName(billing?.plan)} plan
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-slate-700">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-medium text-emerald-800">
+              Subscription active
+            </div>
+            <p>
+              Subscription management is handled securely through PayFast. Contact support if you need to cancel,
+              pause, or change your plan.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => setShowManageSubscriptionModal(false)}
+            >
+              Close
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

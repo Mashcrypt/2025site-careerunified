@@ -1,4 +1,5 @@
 import type { ResumeData } from '../../types/resume';
+import { CarFront } from 'lucide-react';
 
 type Props = {
   data: ResumeData;
@@ -26,6 +27,13 @@ export function ATSProTemplate({ data }: Props) {
           {p.location} · {p.phone} · {p.email}
           {p.linkedin ? ` · ${p.linkedin}` : ''}
           {p.website ? ` · ${p.website}` : ''}
+          {p.driversLicense ? (
+            <span>
+              {' · '}
+              <CarFront style={{ display: 'inline', width: 13, height: 13, verticalAlign: -2 }} />
+              {` ${p.driversLicense}`}
+            </span>
+          ) : null}
         </div>
       </div>
 

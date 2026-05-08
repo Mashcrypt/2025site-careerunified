@@ -1,4 +1,5 @@
 import type { ResumeData } from '../../types/resume';
+import { CarFront } from 'lucide-react';
 
 type Props = {
   data: ResumeData;
@@ -28,6 +29,12 @@ export function ExecutiveTemplate({ data }: Props) {
             <div style={{ marginTop: 6 }}>{p.email}</div>
             {p.linkedin ? <div style={{ marginTop: 6 }}>{p.linkedin}</div> : null}
             {p.website ? <div style={{ marginTop: 6 }}>{p.website}</div> : null}
+            {p.driversLicense ? (
+              <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CarFront style={{ width: 13, height: 13 }} />
+                <span>{p.driversLicense}</span>
+              </div>
+            ) : null}
           </div>
 
           {data.skills?.length ? (

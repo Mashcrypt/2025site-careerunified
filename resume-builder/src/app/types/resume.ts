@@ -10,6 +10,7 @@ export interface ResumeData {
     location: string;
     linkedin?: string;
     website?: string;
+    driversLicense?: string;
     summary: string;
   };
   experience: Experience[];
@@ -65,6 +66,7 @@ export const EMPTY_RESUME: ResumeData = {
     location: '',
     linkedin: '',
     website: '',
+    driversLicense: '',
     summary: '',
   },
   experience: [],

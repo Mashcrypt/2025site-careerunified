@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { Textarea } from './ui/textarea'
 import type { ResumeData } from '../types/resume'
 import { motion } from 'motion/react'
+import { getFirebaseAuth } from '../utils/firebaseClient'
 
 interface ImportDataProps {
   onImport: (data: ResumeData) => void
@@ -20,6 +21,7 @@ function emptyResume(): ResumeData {
       location: '',
       linkedin: '',
       website: '',
+      driversLicense: '',
       summary: '',
     },
     experience: [],
@@ -363,9 +365,11 @@ export function ImportData({ onImport }: ImportDataProps) {
 
       const formData = new FormData()
       formData.append('file', file)
+      const token = await getFirebaseAuth().currentUser?.getIdToken()
 
       const res = await fetch('/.netlify/functions/extract-resume-text', {
         method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: formData,
       })
 

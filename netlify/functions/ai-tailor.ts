@@ -1,5 +1,6 @@
 import type { Handler } from "@netlify/functions";
 import { getAdmin } from "./_firebaseAdmin";
+import { checkRateLimit } from "./_rateLimit";
 
 type ResumeData = {
   personalInfo: {
@@ -172,6 +173,17 @@ function planLimit(plan: string) {
   return 0; // free
 }
 
+function timestampToDate(value: any): Date | null {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate();
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+  return null;
+}
+
 function corsHeaders(origin?: string) {
   // Set ALLOWED_ORIGIN=https://careerunified.com (or https://www.careerunified.com) in Netlify env to lock it down
   const allowed = process.env.ALLOWED_ORIGIN || "*";
@@ -300,6 +312,24 @@ export const handler: Handler = async (event) => {
     return json(401, { error: "Invalid or expired token" }, baseHeaders);
   }
 
+  const rateLimit = await checkRateLimit({
+    admin,
+    action: "ai-tailor",
+    identifier: uid,
+    limit: 20,
+    windowSeconds: 60 * 60,
+  });
+  if (!rateLimit.allowed) {
+    return json(
+      429,
+      {
+        error: "Too many AI requests. Please try again later.",
+        retryAfterSeconds: rateLimit.retryAfterSeconds,
+      },
+      { ...baseHeaders, "Retry-After": String(rateLimit.retryAfterSeconds) }
+    );
+  }
+
   // Body
   const rawBody = decodeBody(event.body, event.isBase64Encoded);
   const body = safeJsonParse<TailorRequestBody>(rawBody);
@@ -318,8 +348,15 @@ export const handler: Handler = async (event) => {
   const userSnap = await userRef.get();
   const user = userSnap.data() || {};
 
-  const plan = (user.plan as string) || "free";
-  const subscriptionStatus = (user.subscriptionStatus as string) || "inactive";
+  const storedPlan = (user.plan as string) || "free";
+  const storedStatus = (user.subscriptionStatus as string) || "inactive";
+  const periodEnd = timestampToDate(user.subscriptionCurrentPeriodEnd);
+  const isExpiredPaidPlan =
+    storedPlan !== "free" &&
+    storedStatus === "active" &&
+    (!periodEnd || periodEnd.getTime() <= Date.now());
+  const plan = isExpiredPaidPlan ? "free" : storedPlan;
+  const subscriptionStatus = isExpiredPaidPlan ? "past_due" : storedStatus;
   const used = Number(user.applicationsUsedThisMonth || 0);
 
   const freeResumeUsed = Boolean(user.freeResumeUsed);
@@ -328,23 +365,19 @@ export const handler: Handler = async (event) => {
   const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
 
-  const authorization_url =
-    (user.authorization_url as string) ||
-    (user.checkoutUrl as string) ||
-    (process.env.UPGRADE_URL as string) ||
-    null;
+  const upgrade_url = (user.checkoutUrl as string) || (process.env.UPGRADE_URL as string) || null;
 
   // Gate access
   if (!isPaid) {
     if (mode === "tailor" && freeResumeUsed) {
-      return json(402, { error: "Free resume tailor already used. Please upgrade.", authorization_url }, baseHeaders);
+      return json(402, { error: "Free resume tailor already used. Please upgrade.", upgrade_url }, baseHeaders);
     }
     if (mode === "cover_letter" && freeCoverUsed) {
-      return json(402, { error: "Free cover letter already used. Please upgrade.", authorization_url }, baseHeaders);
+      return json(402, { error: "Free cover letter already used. Please upgrade.", upgrade_url }, baseHeaders);
     }
   } else {
     if (used >= limit) {
-      return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", authorization_url }, baseHeaders);
+      return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", upgrade_url }, baseHeaders);
     }
   }
 

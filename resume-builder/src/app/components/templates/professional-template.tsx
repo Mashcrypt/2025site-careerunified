@@ -1,5 +1,5 @@
 import type { ResumeData } from '../types/resume';
-import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe, CarFront } from 'lucide-react';
 
 interface ProfessionalTemplateProps {
   data: ResumeData;
@@ -46,6 +46,12 @@ export function ProfessionalTemplate({ data }: ProfessionalTemplateProps) {
                   <div className="flex items-start gap-2">
                     <Globe className="h-4 w-4 mt-0.5 flex-shrink-0" />
                     <span className="break-all">{data.personalInfo.website}</span>
+                  </div>
+                )}
+                {data.personalInfo.driversLicense && (
+                  <div className="flex items-start gap-2">
+                    <CarFront className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{data.personalInfo.driversLicense}</span>
                   </div>
                 )}
               </div>

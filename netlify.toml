@@ -7,7 +7,6 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
 # ================================
 # SECURITY + SEO HEADERS
@@ -20,6 +19,7 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
 # ================================
 # CANONICAL: /index.html → /
@@ -30,6 +30,22 @@
   to = "/"
   status = 301
   force = true
+
+# Static browser-only admin panels are not safe to expose publicly.
+[[redirects]]
+  from = "/admin.html"
+  to = "/"
+  status = 404
+
+[[redirects]]
+  from = "/admin-dashboard.html"
+  to = "/"
+  status = 404
+
+[[redirects]]
+  from = "/sanity/*"
+  to = "/"
+  status = 404
 
 # ================================
 # TRAILING SLASH NORMALISATION

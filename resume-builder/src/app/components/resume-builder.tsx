@@ -203,6 +203,18 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="driversLicense">Driver’s Licence</Label>
+              <Input
+                id="driversLicense"
+                value={data.personalInfo.driversLicense || ''}
+                onChange={(e) => updatePersonalInfo('driversLicense', e.target.value)}
+                placeholder="Code B, Code 10, Code 14, Learner’s Licence"
+              />
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="summary">Professional Summary</Label>
             <Textarea

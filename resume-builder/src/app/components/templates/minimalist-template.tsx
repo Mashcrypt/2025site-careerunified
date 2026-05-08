@@ -1,4 +1,5 @@
 import type { ResumeData } from '../types/resume';
+import { CarFront } from 'lucide-react';
 
 interface MinimalistTemplateProps {
   data: ResumeData;
@@ -15,10 +16,16 @@ export function MinimalistTemplate({ data }: MinimalistTemplateProps) {
           {data.personalInfo.phone && <span>{data.personalInfo.phone}</span>}
           {data.personalInfo.location && <span>{data.personalInfo.location}</span>}
         </div>
-        {(data.personalInfo.linkedin || data.personalInfo.website) && (
+        {(data.personalInfo.linkedin || data.personalInfo.website || data.personalInfo.driversLicense) && (
           <div className="flex justify-center gap-6 text-sm text-gray-600 mt-2">
             {data.personalInfo.linkedin && <span>{data.personalInfo.linkedin}</span>}
             {data.personalInfo.website && <span>{data.personalInfo.website}</span>}
+            {data.personalInfo.driversLicense && (
+              <span className="inline-flex items-center gap-1">
+                <CarFront className="h-4 w-4" />
+                {data.personalInfo.driversLicense}
+              </span>
+            )}
           </div>
         )}
       </div>

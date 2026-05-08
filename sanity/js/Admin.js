@@ -27,8 +27,8 @@ function logAdminActivity(action) {
 }
 
 // ------------------ SIMPLE ADMIN LOGIN ------------------
-const DEFAULT_ADMIN = { username: "admin", passwordHash: "a94a8fe5ccb19b0e4eaa2b6e57f1a5c3e7008a1f48efec2c982d9067c3c0c58c" }; // Hash for "test"
-let admins = JSON.parse(localStorage.getItem('admins')) || [DEFAULT_ADMIN];
+const DEFAULT_ADMINS = [];
+let admins = JSON.parse(localStorage.getItem('admins')) || DEFAULT_ADMINS;
 
 const loginSection = document.getElementById('loginSection');
 const adminPanel = document.getElementById('adminPanel');
@@ -346,10 +346,6 @@ adminAccountForm.addEventListener('submit', async e => {
 });
 
 window.deleteAdmin = i => {
-  if (admins[i].username === DEFAULT_ADMIN.username) {
-    alert('Default admin cannot be deleted.');
-    return;
-  }
   if (confirm('Delete this admin?')) {
     logAdminActivity(`Deleted admin: ${admins[i].username}`); // Log activity
     admins.splice(i, 1);
