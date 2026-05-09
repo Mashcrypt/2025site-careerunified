@@ -3,6 +3,7 @@ import { getDb } from "./_firebaseAdmin";
 import { fetchLatestBursariesFromSite } from "./_scrapeJobs";
 import { generateWhatsAppPost } from "./_openai";
 import { sendApprovalEmail } from "./_notify";
+import { createApprovalToken } from "./_approvalToken";
 
 const COLLECTION = "post_drafts";
 const BURSARY_LIMIT = 3;
@@ -54,7 +55,8 @@ export async function handler() {
 
       if (base && emailTo) {
         const cleanBase = base.replace(/\/+$/, "");
-        const approveUrl = `${cleanBase}/.netlify/functions/approve-draft?id=${docRef.id}`;
+        const token = createApprovalToken(docRef.id);
+        const approveUrl = `${cleanBase}/.netlify/functions/approve-draft?id=${docRef.id}&token=${token}`;
 
         await sendApprovalEmail({
           to: emailTo,

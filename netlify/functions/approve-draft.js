@@ -1,5 +1,7 @@
 // netlify/functions/approve-draft.js
-import { getDb } from "./_firebaseAdmin";
+import { getAdmin } from "./_firebaseAdmin";
+import { verifyApprovalToken } from "./_approvalToken";
+import { checkRateLimit, clientIpFromHeaders } from "./_rateLimit";
 
 const COLLECTION = "post_drafts";
 
@@ -16,11 +18,31 @@ function escapeHtml(s = "") {
 export async function handler(event) {
   try {
     const id = event.queryStringParameters?.id;
+    const token = event.queryStringParameters?.token;
     if (!id) {
       return { statusCode: 400, body: "Missing id" };
     }
+    if (!token || !verifyApprovalToken(id, token)) {
+      return { statusCode: 403, body: "Invalid or expired approval link" };
+    }
 
-    const db = getDb();
+    const admin = getAdmin();
+    const db = admin.firestore();
+    const rateLimit = await checkRateLimit({
+      admin,
+      action: "draft-approval",
+      identifier: `ip:${clientIpFromHeaders(event.headers)}`,
+      limit: 20,
+      windowSeconds: 60 * 60,
+    });
+    if (!rateLimit.allowed) {
+      return {
+        statusCode: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        body: "Too many approval attempts. Please try again later.",
+      };
+    }
+
     const ref = db.collection(COLLECTION).doc(id);
     const snap = await ref.get();
 
