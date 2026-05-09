@@ -68,6 +68,7 @@ type PremiumTemplateId =
 type AnyTemplateId = TemplateType | PremiumTemplateId;
 
 type PlanId = 'starter' | 'job_seeker' | 'career_pro';
+type AppTab = 'build' | 'templates' | 'ai' | 'analytics' | 'import' | 'versions';
 
 type BillingStatus = {
   plan: 'free' | 'starter' | 'job_seeker' | 'career_pro';
@@ -176,14 +177,29 @@ function isFirebaseConfigured() {
   return required.every((v) => typeof v === 'string' && v.trim().length > 0);
 }
 
+function getInitialTabFromUrl(): AppTab {
+  if (typeof window === 'undefined') return 'build';
+
+  const tab = new URLSearchParams(window.location.search).get('tab');
+  if (
+    tab === 'build' ||
+    tab === 'templates' ||
+    tab === 'ai' ||
+    tab === 'analytics' ||
+    tab === 'import' ||
+    tab === 'versions'
+  ) {
+    return tab;
+  }
+
+  return 'build';
+}
+
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
-  const [activeTab, setActiveTab] = useState(() => {
-    if (typeof window === 'undefined') return 'build';
-    return new URLSearchParams(window.location.search).get('tab') === 'ai' ? 'ai' : 'build';
-  });
+  const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
   const [initialAIJobDescription] = useState(() => {
     if (typeof window === 'undefined') return '';
 
@@ -459,6 +475,24 @@ export default function App() {
     }
     setSelectedTemplate(id);
   };
+
+  const handleTabChange = useCallback((value: string) => {
+    const nextTab: AppTab = (
+      value === 'build' ||
+      value === 'templates' ||
+      value === 'ai' ||
+      value === 'analytics' ||
+      value === 'import' ||
+      value === 'versions'
+    ) ? (value as AppTab) : 'build';
+
+    setActiveTab(nextTab);
+
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', nextTab);
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }, []);
 
   // Instant PDF download via Netlify Function (no print dialog)
   // Requires Netlify function at: /.netlify/functions/export-pdf
@@ -775,7 +809,7 @@ export default function App() {
         <div className="grid min-w-0 grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Panel */}
           <div className="min-w-0 lg:col-span-5">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 bg-white shadow-sm">
                 <TabsTrigger
                   value="build"

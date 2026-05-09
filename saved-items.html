@@ -430,14 +430,15 @@ body {
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: #16a34a;
   color: white;
   border: none;
 }
 
 .action-btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  background: #15803d;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.32);
 }
 
 .action-btn.secondary {
@@ -454,6 +455,82 @@ body {
 .action-btn svg {
   width: 16px;
   height: 16px;
+}
+
+.auth-notice {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 0.92rem;
+}
+
+.auth-notice a {
+  color: #1e40af;
+  font-weight: 700;
+}
+
+.apply-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 1000;
+}
+
+.apply-modal-backdrop.open {
+  display: flex;
+}
+
+.apply-modal {
+  width: min(440px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.26);
+}
+
+.apply-modal h2 {
+  margin: 0 0 10px;
+  color: #1e3a8a;
+  font-size: 1.35rem;
+}
+
+.apply-modal p {
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.apply-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.apply-modal-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cancel-apply-btn {
+  background: #eef2f7;
+  color: #1f2937;
+}
+
+.continue-apply-btn {
+  background: #16a34a;
+  color: #fff;
 }
 
 /* =============================== */
@@ -592,6 +669,14 @@ body {
     flex-direction: column;
   }
 
+  .apply-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .apply-modal-actions button {
+    width: 100%;
+  }
+
   .empty-state {
     padding: 60px 16px;
   }
@@ -645,10 +730,10 @@ body {
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
     <a href="varsity.html">Varsity</a>
-    <a href="cv-generator.html">Generate CV</a>
+    <a href="/cv-generator/">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-jobs.html">Saved Items</a>
+    <a href="saved-items.html">Saved Items</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
@@ -685,10 +770,10 @@ body {
   <a href="jobs.html">Jobs</a>
   <a href="bursaries.html">Bursaries</a>
   <a href="varsity.html">Varsity</a>
-  <a href="cv-generator.html">Generate CV</a>
+  <a href="/cv-generator/">Generate CV</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
-  <a href="saved-jobs.html">Saved Items</a>
+  <a href="saved-items.html">Saved Items</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
@@ -733,6 +818,7 @@ body {
     </div>
 
     <!-- Filter Section -->
+    <div class="auth-notice" id="authNotice">Checking your saved items...</div>
     <div class="filter-section">
       <input type="text" class="search-input" id="searchInput" placeholder="Search saved items...">
       <select class="filter-select" id="sortFilter">
@@ -772,6 +858,22 @@ body {
   <p>© 2026 Career Unified. All rights reserved.</p>
 </footer>
 
+<div id="applyConfirmModal" class="apply-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="applyConfirmTitle">
+  <div class="apply-modal">
+    <h2 id="applyConfirmTitle">You&rsquo;re leaving Career Unified</h2>
+    <p>This button will take you to the employer&rsquo;s external application page. Please make sure you meet the requirements before applying.</p>
+    <div class="apply-modal-actions">
+      <button id="cancelApplyBtn" class="cancel-apply-btn" type="button">Cancel</button>
+      <button id="continueApplyBtn" class="continue-apply-btn" type="button">Continue to Apply</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
 <script src="js/sanityClient.js"></script>
 <script>
 /* ================================
@@ -799,11 +901,11 @@ document.addEventListener("click", e => {
 const BOOKMARK_KEY = "careerUnifiedBookmarks";
 
 function getBookmarks() {
-  return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+  return [];
 }
 
 function saveBookmarks(bookmarks) {
-  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+  return bookmarks;
 }
 
 function removeBookmark(id, type) {
@@ -1110,8 +1212,363 @@ function extractLink(raw) {
   return null;
 }
 
-// Initialize
-loadSavedItems();
+/* ================================
+   ACCOUNT-BACKED SAVED ITEMS
+================================ */
+let currentUser = null;
+let accountSavedJobs = [];
+let accountSavedBursaries = [];
+let pendingApplyLink = "";
+
+const authNotice = document.getElementById("authNotice");
+const applyConfirmModal = document.getElementById("applyConfirmModal");
+const cancelApplyBtn = document.getElementById("cancelApplyBtn");
+const continueApplyBtn = document.getElementById("continueApplyBtn");
+
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function escapeInlineArg(value = "") {
+  return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function timestampMs(value) {
+  if (!value) return 0;
+  if (typeof value.toDate === "function") return value.toDate().getTime();
+  if (typeof value === "string") return new Date(value).getTime() || 0;
+  if (typeof value.seconds === "number") return value.seconds * 1000;
+  return 0;
+}
+
+function setCounts() {
+  document.getElementById("totalJobs").textContent = accountSavedJobs.length;
+  document.getElementById("totalBursaries").textContent = accountSavedBursaries.length;
+  document.getElementById("jobsCount").textContent = accountSavedJobs.length;
+  document.getElementById("bursariesCount").textContent = accountSavedBursaries.length;
+}
+
+function setSignedOutState() {
+  accountSavedJobs = [];
+  accountSavedBursaries = [];
+  setCounts();
+  authNotice.innerHTML = 'Please <a href="login.html">log in</a> to view saved jobs and bursaries tied to your account.';
+  document.getElementById("jobsGrid").innerHTML = renderEmptyState("job", true);
+  document.getElementById("bursariesGrid").innerHTML = renderEmptyState("bursary", true);
+}
+
+function renderEmptyState(type, signedOut = false) {
+  const icon = type === 'job' ? `
+    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+  ` : `
+    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+      <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+    </svg>
+  `;
+
+  const title = signedOut ? 'Sign In to See Saved Items' : (type === 'job' ? 'No Saved Jobs Yet' : 'No Saved Bursaries Yet');
+  const description = signedOut
+    ? 'Saved jobs and bursaries are private to your account, so they only appear after you log in.'
+    : type === 'job'
+    ? 'Start building your collection by saving jobs you are interested in. Click the heart icon on any job listing to save it here.'
+    : 'Start building your collection by saving bursaries you are interested in. Click the heart icon on any bursary listing to save it here.';
+  const link = signedOut ? 'login.html' : (type === 'job' ? 'jobs.html' : 'bursaries.html');
+  const linkText = signedOut ? 'Log In' : (type === 'job' ? 'Browse Jobs' : 'Browse Bursaries');
+
+  return `
+    <div class="empty-state">
+      ${icon}
+      <h3>${title}</h3>
+      <p>${description}</p>
+      <a href="${link}" class="empty-state-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        ${linkText}
+      </a>
+    </div>
+  `;
+}
+
+async function loadSavedItems() {
+  if (!currentUser) return setSignedOutState();
+
+  authNotice.textContent = "Loading saved items for your account...";
+
+  try {
+    const snap = await firebase.firestore()
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("saved")
+      .get();
+
+    accountSavedJobs = [];
+    accountSavedBursaries = [];
+
+    snap.forEach(doc => {
+      const item = { ...doc.data(), docId: doc.id };
+      if (item.type === "job") accountSavedJobs.push(item);
+      if (item.type === "bursary") accountSavedBursaries.push(item);
+    });
+
+    accountSavedJobs.sort((a, b) => timestampMs(b.savedAt) - timestampMs(a.savedAt));
+    accountSavedBursaries.sort((a, b) => timestampMs(b.savedAt) - timestampMs(a.savedAt));
+
+    authNotice.textContent = `Signed in as ${currentUser.email || "your account"}. Saved items are private to this account.`;
+    setCounts();
+    renderJobs(accountSavedJobs);
+    renderBursaries(accountSavedBursaries);
+  } catch (err) {
+    console.error("Error loading saved items:", err);
+    document.getElementById("jobsGrid").innerHTML = '<p style="text-align:center;color:#64748b;">Error loading saved jobs</p>';
+    document.getElementById("bursariesGrid").innerHTML = '<p style="text-align:center;color:#64748b;">Error loading saved bursaries</p>';
+  }
+}
+
+async function removeBookmark(docId, type) {
+  if (!currentUser) return setSignedOutState();
+
+  try {
+    await firebase.firestore()
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("saved")
+      .doc(docId)
+      .delete();
+
+    if (type === "job") {
+      accountSavedJobs = accountSavedJobs.filter(item => item.docId !== docId);
+      renderJobs(accountSavedJobs);
+    } else {
+      accountSavedBursaries = accountSavedBursaries.filter(item => item.docId !== docId);
+      renderBursaries(accountSavedBursaries);
+    }
+    setCounts();
+  } catch (err) {
+    console.error("Error removing saved item:", err);
+    alert("Could not remove this saved item. Please try again.");
+  }
+}
+
+async function clearAll(type) {
+  if (!currentUser) return setSignedOutState();
+  if (!confirm(`Are you sure you want to remove all saved ${type}?`)) return;
+
+  try {
+    const snap = await firebase.firestore()
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("saved")
+      .where("type", "==", type)
+      .get();
+
+    const batch = firebase.firestore().batch();
+    snap.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+
+    if (type === "job") {
+      accountSavedJobs = [];
+      renderJobs(accountSavedJobs);
+    } else {
+      accountSavedBursaries = [];
+      renderBursaries(accountSavedBursaries);
+    }
+    setCounts();
+  } catch (err) {
+    console.error("Error clearing saved items:", err);
+    alert("Could not clear saved items. Please try again.");
+  }
+}
+
+function renderJobs(jobs) {
+  const grid = document.getElementById("jobsGrid");
+  if (!jobs.length) {
+    grid.innerHTML = renderEmptyState("job");
+    return;
+  }
+
+  grid.innerHTML = jobs.map(job => {
+    const company = typeof job.company === "string" ? job.company : (job.company?.name || "Company not specified");
+    const detailsLink = job.slug ? `jobs/${job.slug}` : "jobs.html";
+
+    return `
+      <div class="saved-item">
+        <div class="item-header">
+          <h3 class="item-title">${escapeHtml(job.title || "Untitled job")}</h3>
+          <button class="remove-btn" onclick="removeBookmark('${escapeInlineArg(job.docId)}', 'job')" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="item-meta">
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            ${escapeHtml(company)} &bull; ${escapeHtml(job.location || "Not specified")}
+          </div>
+
+          ${job.salary ? `
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <strong>${escapeHtml(job.salary)}</strong>
+          </div>
+          ` : ""}
+
+          ${job.deadline ? `
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Closes: ${escapeHtml(job.deadline)}
+          </div>
+          ` : ""}
+        </div>
+
+        <div class="item-type-badge">Job</div>
+
+        <div class="item-actions">
+          <button type="button" onclick="openExternalApplyConfirm('${escapeInlineArg(job.applyLink || "#")}')" class="action-btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Apply Now
+          </button>
+          <a href="${detailsLink}" class="action-btn secondary">View Details</a>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderBursaries(bursaries) {
+  const grid = document.getElementById("bursariesGrid");
+  if (!bursaries.length) {
+    grid.innerHTML = renderEmptyState("bursary");
+    return;
+  }
+
+  grid.innerHTML = bursaries.map(bursary => {
+    const link = extractLink(bursary.applicationLink);
+
+    return `
+      <div class="saved-item">
+        <div class="item-header">
+          <h3 class="item-title">${escapeHtml(bursary.name || "Untitled bursary")}</h3>
+          <button class="remove-btn" onclick="removeBookmark('${escapeInlineArg(bursary.docId)}', 'bursary')" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="item-meta">
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            ${escapeHtml(bursary.provider || "Provider not specified")}
+          </div>
+
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            ${escapeHtml(bursary.faculty || "Faculty not specified")}
+          </div>
+
+          ${bursary.deadline ? `
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Closes: ${escapeHtml(bursary.deadline)}
+          </div>
+          ` : ""}
+        </div>
+
+        <div class="item-type-badge bursary">Bursary</div>
+
+        <div class="item-actions">
+          ${link ? `
+          <button type="button" onclick="openExternalApplyConfirm('${escapeInlineArg(link)}')" class="action-btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Apply Now
+          </button>
+          ` : '<button class="action-btn primary" disabled style="opacity:0.5">No Link Available</button>'}
+          <a href="bursaries.html" class="action-btn secondary">View Details</a>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function openExternalApplyConfirm(link) {
+  pendingApplyLink = link || "";
+  applyConfirmModal.classList.add("open");
+}
+
+function closeExternalApplyConfirm() {
+  pendingApplyLink = "";
+  applyConfirmModal.classList.remove("open");
+}
+
+function continueExternalApply() {
+  if (pendingApplyLink && pendingApplyLink !== "#") {
+    window.open(pendingApplyLink, "_blank", "noopener,noreferrer");
+  }
+  closeExternalApplyConfirm();
+}
+
+function initSavedItemsAuth() {
+  cancelApplyBtn.addEventListener("click", closeExternalApplyConfirm);
+  continueApplyBtn.addEventListener("click", continueExternalApply);
+  applyConfirmModal.addEventListener("click", event => {
+    if (event.target === applyConfirmModal) closeExternalApplyConfirm();
+  });
+
+  if (typeof firebase !== "undefined" && firebase.auth) {
+    firebase.auth().onAuthStateChanged(user => {
+      currentUser = user || null;
+      loadSavedItems();
+    });
+  } else {
+    authNotice.textContent = "Saved items are unavailable right now. Please refresh and try again.";
+  }
+}
+
+initSavedItemsAuth();
 </script>
 
 </body>

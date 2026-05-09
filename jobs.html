@@ -87,7 +87,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f7f9fc;
+      background: linear-gradient(180deg, #f7f9fc 0%, #eef4ff 44%, #f7f9fc 100%);
       color: #111827;
       overflow-x: hidden;
       line-height: 1.6;
@@ -105,9 +105,9 @@
 
     .jobs-container {
       display: flex;
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 30px auto;
-      gap: 20px;
+      gap: 24px;
       padding: 0 20px;
       min-height: 100vh;
       padding-bottom: 140px;
@@ -119,14 +119,22 @@
       max-height: calc(100vh - 160px);
       overflow-y: auto;
       padding-right: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: #93c5fd transparent;
     }
+
+    .jobs-left::-webkit-scrollbar,
+    .jobs-preview .job-desc::-webkit-scrollbar { width: 8px; }
+    .jobs-left::-webkit-scrollbar-thumb,
+    .jobs-preview .job-desc::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 999px; }
 
     .jobs-preview {
       flex: 1;
       background: #fff;
-      border-radius: 12px;
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 18px 45px rgba(30,58,138,0.12);
       min-height: 420px;
       position: sticky;
       top: 20px;
@@ -191,10 +199,11 @@
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
-      border-left: 3px solid transparent;
+      border: 1px solid #e5edfb;
+      border-left: 4px solid transparent;
     }
-    .job-card:hover        { background: #f0f7ff; transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .job-card.selected     { border-left-color: #facc15; background: #fffbeb; }
+    .job-card:hover        { background: #f8fbff; transform: translateX(4px); box-shadow: 0 10px 22px rgba(30,58,138,0.12); border-color: #bfdbfe; }
+    .job-card.selected     { border-left-color: #facc15; background: #fffbeb; border-color: #fde68a; box-shadow: 0 12px 26px rgba(250,204,21,0.18); }
     .job-card h3           { font-size: 1.1rem; color: #1e3a8a; margin-bottom: 8px; padding-right: 80px; }
     .job-card p            { margin: 4px 0; font-size: 0.9rem; color: #6b7280; }
     .job-card strong       { color: #374151; font-weight: 600; }
@@ -256,6 +265,31 @@
 
     .preview-content-wrapper { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .preview-info             { flex-shrink: 0; margin-bottom: 12px; }
+    .preview-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .preview-meta-card {
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 10px 12px;
+    }
+    .preview-meta-card span {
+      display: block;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+    }
+    .preview-meta-card strong {
+      color: #1f2937;
+      font-size: 0.92rem;
+    }
     .jobs-preview p           { margin: 8px 0; color: #4b5563; }
     .jobs-preview strong      { color: #1f2937; }
 
@@ -263,6 +297,7 @@
       white-space: pre-line;
       padding: 16px;
       background: #f9fafb;
+      border: 1px solid #e5edfb;
       border-radius: 8px;
       line-height: 1.7;
       color: #374151;
@@ -278,6 +313,9 @@
       display: flex;
       gap: 12px;
       flex-shrink: 0;
+      padding-top: 12px;
+      border-top: 1px solid #e5edfb;
+      background: #fff;
     }
 
     .apply-btn,
@@ -354,6 +392,13 @@
       color: #fff;
     }
 
+    .external-apply-note {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
     .skeleton {
       background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
       background-size: 200% 100%;
@@ -404,6 +449,7 @@
       .jobs-preview       { position: static; display: block; max-height: 70vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 20px; min-height: 300px; overflow-x: hidden; }
       .preview-slide      { display: block; height: auto; min-height: 0; }
       .preview-content-wrapper { display: block; height: auto; min-height: 0; }
+      .preview-info-grid { grid-template-columns: 1fr; }
       .jobs-preview .job-desc { overflow-y: visible; max-height: none; min-height: 0; flex: none; margin-bottom: 16px; -webkit-overflow-scrolling: auto; }
 
       .job-action-buttons { flex-direction: column; }
@@ -528,7 +574,7 @@
       <a href="jobs.html" aria-current="page">Jobs</a>
       <a href="bursaries.html">Bursaries</a>
       <a href="varsity.html">Varsity</a>
-      <a href="cv-generator.html">Generate CV</a>
+      <a href="/cv-generator/">Generate CV</a>
       <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
       <a href="recruiter-apply.html">Apply as Recruiter</a>
       <a href="saved-items.html">Saved Items</a>
@@ -556,7 +602,7 @@
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
     <a href="varsity.html">Varsity</a>
-    <a href="cv-generator.html">Generate CV</a>
+    <a href="/cv-generator/">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
     <a href="saved-items.html">Saved Items</a>
@@ -768,6 +814,7 @@
             type: 'job', title: job.title, company: job.company?.name || job.company || null,
             deadline: job.deadline || null, location: job.location || null,
             salary: job.salary || null, applyLink: job.applyLink || null,
+            slug: job.slug || null,
             savedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           savedJobs.add(docId);
@@ -1094,17 +1141,18 @@
             </button>
           </div>
           <div class="preview-content-wrapper">
-            <div class="preview-info">
-              <p><strong>Company:</strong>  ${job.company?.name || 'Confidential'}</p>
-              <p><strong>Location:</strong> ${job.location  || 'Not specified'}</p>
-              <p><strong>Salary:</strong>   ${job.salary    || 'Not specified'}</p>
-              <p><strong>Closing:</strong>  ${job.deadline  || 'Not specified'}</p>
+            <div class="preview-info preview-info-grid">
+              <div class="preview-meta-card"><span>Company</span><strong>${job.company?.name || 'Confidential'}</strong></div>
+              <div class="preview-meta-card"><span>Location</span><strong>${job.location  || 'Not specified'}</strong></div>
+              <div class="preview-meta-card"><span>Salary</span><strong>${job.salary    || 'Not specified'}</strong></div>
+              <div class="preview-meta-card"><span>Closing</span><strong>${job.deadline  || 'Not specified'}</strong></div>
             </div>
             <div class="job-desc">${safeText(job.description, 'Description not provided.')}</div>
             <div class="job-action-buttons">
               <button class="apply-btn" type="button" onclick="openApplyConfirm('${escapeInlineArg(job.applyLink)}')">Apply Now</button>
               <button class="ai-tailor-btn" type="button" onclick="openAITailorFromJob()">AI Tailor CV</button>
             </div>
+            <p class="external-apply-note">Apply Now opens the employer&rsquo;s external application page after confirmation.</p>
           </div>
         </div>`;
 
