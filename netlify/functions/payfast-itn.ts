@@ -116,7 +116,7 @@ async function validateWithPayfast(data: Record<string, string>) {
 
 function addBillingPeriod(from = new Date()) {
   const next = new Date(from);
-  next.setDate(next.getDate() + 32);
+  next.setMonth(next.getMonth() + 1);
   return next;
 }
 
