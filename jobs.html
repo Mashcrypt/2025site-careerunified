@@ -320,7 +320,10 @@
 
     .apply-btn,
     .ai-tailor-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       color: white;
       padding: 14px;
       border-radius: 8px;
@@ -334,6 +337,15 @@
       border: none;
       cursor: pointer;
       font-family: inherit;
+    }
+
+    .external-link-symbol {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      fill: none;
+      flex-shrink: 0;
     }
 
     .apply-btn { background: #16a34a; }
@@ -382,6 +394,10 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .cancel-apply-btn {
       background: #eef2f7;
@@ -454,7 +470,7 @@
 
       .job-action-buttons { flex-direction: column; }
       .apply-btn,
-      .ai-tailor-btn      { display: block; width: 100%; text-align: center; padding: 14px; font-size: 16px; margin-top: 4px; }
+      .ai-tailor-btn      { display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 14px; font-size: 16px; margin-top: 4px; }
       .apply-modal-actions { flex-direction: column-reverse; }
       .apply-modal-actions button { width: 100%; }
 
@@ -698,7 +714,14 @@
       <p>This button will take you to the employer&rsquo;s external application page. Please make sure you meet the requirements before applying.</p>
       <div class="apply-modal-actions">
         <button id="cancelApplyBtn" class="cancel-apply-btn" type="button">Cancel</button>
-        <button id="continueApplyBtn" class="continue-apply-btn" type="button">Continue to Apply</button>
+        <button id="continueApplyBtn" class="continue-apply-btn" type="button">
+          Continue to Apply
+          <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14 4h6v6"/>
+            <path d="M20 4 10 14"/>
+            <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
@@ -1149,7 +1172,14 @@
             </div>
             <div class="job-desc">${safeText(job.description, 'Description not provided.')}</div>
             <div class="job-action-buttons">
-              <button class="apply-btn" type="button" onclick="openApplyConfirm('${escapeInlineArg(job.applyLink)}')">Apply Now</button>
+              <button class="apply-btn" type="button" onclick="openApplyConfirm('${escapeInlineArg(job.applyLink)}')">
+                Apply Now
+                <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14 4h6v6"/>
+                  <path d="M20 4 10 14"/>
+                  <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
+                </svg>
+              </button>
               <button class="ai-tailor-btn" type="button" onclick="openAITailorFromJob()">AI Tailor CV</button>
             </div>
             <p class="external-apply-note">Apply Now opens the employer&rsquo;s external application page after confirmation.</p>
