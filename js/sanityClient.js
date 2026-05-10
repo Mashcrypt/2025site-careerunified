@@ -32,6 +32,7 @@ window.sanityClient = {
     const query = `
       *[_type == "job"] | order(posted desc) {
         _id,
+        _createdAt,
         title,
         "slug": slug.current,
         description,
@@ -62,6 +63,7 @@ window.sanityClient = {
     const query = `
       *[_type == "job" && slug.current == "${slug}"][0]{
         _id,
+        _createdAt,
         title,
         "slug": slug.current,
         description,
