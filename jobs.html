@@ -708,24 +708,6 @@
   <p>&copy; 2026 Career Unified. All rights reserved.</p>
 </footer>
 
-  <div id="applyConfirmModal" class="apply-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="applyConfirmTitle">
-    <div class="apply-modal">
-      <h2 id="applyConfirmTitle">You&rsquo;re leaving Career Unified</h2>
-      <p>This button will take you to the employer&rsquo;s external application page. Please make sure you meet the requirements before applying.</p>
-      <div class="apply-modal-actions">
-        <button id="cancelApplyBtn" class="cancel-apply-btn" type="button">Cancel</button>
-        <button id="continueApplyBtn" class="continue-apply-btn" type="button">
-          Continue to Apply
-          <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M14 4h6v6"/>
-            <path d="M20 4 10 14"/>
-            <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -737,16 +719,12 @@
   <script>
     const jobList    = document.getElementById('jobList');
     const jobPreview = document.getElementById('jobPreview');
-    const applyConfirmModal = document.getElementById('applyConfirmModal');
-    const cancelApplyBtn = document.getElementById('cancelApplyBtn');
-    const continueApplyBtn = document.getElementById('continueApplyBtn');
 
     let jobs          = [];
     let selectedIndex = null;
     let filteredJobs  = [];
     let openedFromURL = false;
     let currentPreviewJob = null;
-    let pendingApplyLink = '';
 
     let userId    = null;
     let savedJobs = new Set();
@@ -902,21 +880,11 @@
       return safeText(value, '#').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
-    function openApplyConfirm(link) {
-      pendingApplyLink = link || '';
-      applyConfirmModal.classList.add('open');
-    }
-
-    function closeApplyConfirm() {
-      applyConfirmModal.classList.remove('open');
-      pendingApplyLink = '';
-    }
-
-    function continueApply() {
-      if (pendingApplyLink && pendingApplyLink !== '#') {
-        window.open(pendingApplyLink, '_blank', 'noopener,noreferrer');
+    function openExternalApply(link) {
+      const applyLink = safeText(link, '#');
+      if (applyLink && applyLink !== '#') {
+        window.open(applyLink, '_blank', 'noopener,noreferrer');
       }
-      closeApplyConfirm();
     }
 
     function openAITailorFromJob() {
@@ -924,12 +892,6 @@
       sessionStorage.setItem('careerUnifiedAITailorJob', JSON.stringify(buildAITailorJobPayload(currentPreviewJob)));
       window.location.href = '/cv-generator/?tab=ai&source=job';
     }
-
-    cancelApplyBtn.addEventListener('click', closeApplyConfirm);
-    continueApplyBtn.addEventListener('click', continueApply);
-    applyConfirmModal.addEventListener('click', event => {
-      if (event.target === applyConfirmModal) closeApplyConfirm();
-    });
 
     function slugify(str) {
       return safeText(str, 'job').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
@@ -1172,7 +1134,7 @@
             </div>
             <div class="job-desc">${safeText(job.description, 'Description not provided.')}</div>
             <div class="job-action-buttons">
-              <button class="apply-btn" type="button" onclick="openApplyConfirm('${escapeInlineArg(job.applyLink)}')">
+              <button class="apply-btn" type="button" onclick="openExternalApply('${escapeInlineArg(job.applyLink)}')">
                 Apply Now
                 <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M14 4h6v6"/>

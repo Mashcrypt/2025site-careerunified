@@ -172,24 +172,6 @@ h1 { color: #0b1f44; }
   </div>
 </div>
 
-<div id="applyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="applyModalTitle">
-  <div class="modal">
-    <h2 id="applyModalTitle">You&rsquo;re leaving Career Unified</h2>
-    <p>This button will take you to the employer&rsquo;s external application page. Please make sure you meet the requirements before applying.</p>
-    <div class="modal-actions">
-      <button id="cancelApply" class="cancel" type="button">Cancel</button>
-      <button id="continueApply" class="continue" type="button">
-        Continue to Apply
-        <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M14 4h6v6"/>
-          <path d="M20 4 10 14"/>
-          <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</div>
-
 <script>
 const slug = window.location.pathname.split("/").pop()
 let currentJob = null
@@ -230,18 +212,13 @@ fetch("https://qjg5raj1.api.sanity.io/v2024-01-01/data/query/production?query=" 
   document.title = job.title + " | CareerUnified"
 })
 
-const applyModal = document.getElementById("applyModal")
 const applyButton = document.getElementById("apply")
-const cancelApplyButton = document.getElementById("cancelApply")
-const continueApplyButton = document.getElementById("continueApply")
 const aiTailorButton = document.getElementById("aiTailor")
 
-function openApplyModal() {
-  applyModal.classList.add("open")
-}
-
-function closeApplyModal() {
-  applyModal.classList.remove("open")
+function openExternalApply() {
+  if (currentApplyLink) {
+    window.open(currentApplyLink, "_blank", "noopener,noreferrer")
+  }
 }
 
 function getDisplayedText(id) {
@@ -278,17 +255,7 @@ function buildJobDescriptionPayload() {
   }
 }
 
-applyButton.addEventListener("click", openApplyModal)
-cancelApplyButton.addEventListener("click", closeApplyModal)
-applyModal.addEventListener("click", event => {
-  if (event.target === applyModal) closeApplyModal()
-})
-continueApplyButton.addEventListener("click", () => {
-  if (currentApplyLink) {
-    window.open(currentApplyLink, "_blank", "noopener,noreferrer")
-  }
-  closeApplyModal()
-})
+applyButton.addEventListener("click", openExternalApply)
 aiTailorButton.addEventListener("click", () => {
   if (!currentJob) return
   sessionStorage.setItem("careerUnifiedAITailorJob", JSON.stringify(buildJobDescriptionPayload()))
