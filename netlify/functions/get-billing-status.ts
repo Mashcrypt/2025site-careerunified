@@ -28,8 +28,8 @@ function json(statusCode: number, body: any, headers?: Record<string, string>) {
 }
 
 function planLimit(plan: string) {
-  if (plan === "starter") return 5;
-  if (plan === "job_seeker") return 20;
+  if (plan === "starter") return 15;
+  if (plan === "job_seeker") return 40;
   if (plan === "career_pro") return Number.POSITIVE_INFINITY;
   return 0; // free
 }

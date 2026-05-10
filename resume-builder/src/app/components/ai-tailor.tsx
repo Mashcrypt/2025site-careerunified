@@ -736,7 +736,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                       R35 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
-                      <b>5</b> applications / month
+                      <b>15</b> applications / month
                     </p>
                   </div>
                   <Button
@@ -763,7 +763,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                       R79 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
-                      <b>20</b> applications / month
+                      <b>40</b> applications / month
                     </p>
                   </div>
                   <Button

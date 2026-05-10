@@ -92,13 +92,13 @@ const PLAN_OPTIONS: Array<{
     id: 'starter',
     name: 'Starter',
     price: 'R29/month',
-    benefits: ['5 applications per month', 'AI Tailor access', 'Premium AI templates'],
+    benefits: ['15 applications per month', 'AI Tailor access', 'Premium AI templates'],
   },
   {
     id: 'job_seeker',
     name: 'Job Seeker',
     price: 'R69/month',
-    benefits: ['20 applications per month', 'AI CV and cover letter help', 'Best for active job search'],
+    benefits: ['40 applications per month', 'AI CV and cover letter help', 'Best for active job search'],
   },
   {
     id: 'career_pro',
@@ -1082,8 +1082,8 @@ export default function App() {
 
       {/* Upgrade Modal */}
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
+        <DialogContent className="max-h-[calc(100dvh-2rem)] w-[min(96vw,980px)] max-w-[980px] overflow-y-auto p-5 sm:p-6">
+          <DialogHeader className="pr-8">
             <DialogTitle>Choose your AI CV plan</DialogTitle>
             <DialogDescription>
               Secure monthly billing via PayFast
@@ -1097,7 +1097,7 @@ export default function App() {
               </div>
             ) : null}
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               {PLAN_OPTIONS.map((plan) => (
                 <div
                   key={plan.id}
@@ -1124,7 +1124,7 @@ export default function App() {
                   </div>
 
                   <Button
-                    className="mt-auto w-full"
+                    className="mt-5 h-auto min-h-10 w-full whitespace-normal px-4 py-2 text-center leading-snug"
                     disabled={isRedirecting}
                     onClick={() => startSubscription(plan.id)}
                   >
@@ -1147,7 +1147,7 @@ export default function App() {
                     plan: 'starter',
                     subscriptionStatus: 'active',
                     used: 0,
-                    limit: 5,
+                    limit: 15,
                     freeResumeUsed: false,
                     freeCoverUsed: false,
                     pendingPlan: null,
