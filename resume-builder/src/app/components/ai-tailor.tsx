@@ -733,7 +733,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                   <p className="text-xs text-gray-600 mt-1">Student friendly</p>
                   <div className="mt-3">
                     <p className="text-2xl font-bold text-gray-900">
-                      R35 <span className="text-sm font-medium text-gray-600">/ month</span>
+                      R29 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
                       <b>15</b> applications / month
@@ -742,7 +742,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                   <Button
                     onClick={() => startSubscription('starter')}
                     disabled={isRedirecting}
-                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                    className="mt-4 h-auto min-h-10 w-full whitespace-normal bg-gradient-to-r from-blue-600 to-sky-600 px-3 py-2 text-center leading-snug hover:from-blue-700 hover:to-sky-700"
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
                     Choose Starter
@@ -750,17 +750,14 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                 </div>
 
                 <div className="border border-blue-300 rounded-lg p-4 bg-gradient-to-b from-white to-sky-50 relative">
-                  <div className="absolute -top-2 right-3 bg-gradient-to-r from-blue-600 to-sky-600 text-white text-xs px-2 py-1 rounded-full">
-                    Best Value
-                  </div>
                   <p className="text-sm font-medium text-gray-900">Job Seeker</p>
                   <div className="flex items-center gap-2 mt-2">
                     <BadgePercent className="h-4 w-4 text-emerald-600" />
-                    <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
+                    <p className="text-xs text-emerald-700 font-medium">Active job search</p>
                   </div>
                   <div className="mt-3">
                     <p className="text-2xl font-bold text-gray-900">
-                      R79 <span className="text-sm font-medium text-gray-600">/ month</span>
+                      R69 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
                       <b>40</b> applications / month
@@ -769,22 +766,25 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                   <Button
                     onClick={() => startSubscription('job_seeker')}
                     disabled={isRedirecting}
-                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                    className="mt-4 h-auto min-h-10 w-full whitespace-normal bg-gradient-to-r from-blue-600 to-sky-600 px-3 py-2 text-center leading-snug hover:from-blue-700 hover:to-sky-700"
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
                     Choose Job Seeker
                   </Button>
                 </div>
 
-                <div className="border border-blue-200 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30">
+                <div className="border border-blue-300 rounded-lg p-4 bg-gradient-to-b from-white to-blue-50/30 relative">
+                  <div className="absolute -top-2 right-3 bg-gradient-to-r from-blue-600 to-sky-600 text-white text-xs px-2 py-1 rounded-full">
+                    Best Value
+                  </div>
                   <p className="text-sm font-medium text-gray-900">Career Pro</p>
                   <div className="flex items-center gap-2 mt-2">
                     <BadgePercent className="h-4 w-4 text-emerald-600" />
-                    <p className="text-xs text-emerald-700 font-medium">Save 30%</p>
+                    <p className="text-xs text-emerald-700 font-medium">Unlimited access</p>
                   </div>
                   <div className="mt-3">
                     <p className="text-2xl font-bold text-gray-900">
-                      R119 <span className="text-sm font-medium text-gray-600">/ month</span>
+                      R149 <span className="text-sm font-medium text-gray-600">/ month</span>
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
                       <b>Unlimited</b> applications
@@ -793,7 +793,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                   <Button
                     onClick={() => startSubscription('career_pro')}
                     disabled={isRedirecting}
-                    className="w-full mt-4 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
+                    className="mt-4 h-auto min-h-10 w-full whitespace-normal bg-gradient-to-r from-blue-600 to-sky-600 px-3 py-2 text-center leading-snug hover:from-blue-700 hover:to-sky-700"
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
                     Choose Career Pro
