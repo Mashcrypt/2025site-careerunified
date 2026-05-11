@@ -1441,8 +1441,9 @@
     const scrollActions = document.getElementById('scrollActions');
     const scrollUp = document.getElementById('scrollUp');
     const scrollDown = document.getElementById('scrollDown');
+    let scrollButtonHideTimer = null;
 
-    function updateScrollButtons() {
+    function updateScrollButtons(showControls = false) {
       if (!scrollActions || !scrollUp || !scrollDown) return;
 
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -1451,21 +1452,43 @@
       const atTop = currentScroll <= 20;
       const atBottom = currentScroll >= maxScroll - 20;
 
-      scrollActions.classList.toggle('visible', canScroll);
+      if (!canScroll) {
+        scrollActions.classList.remove('visible');
+        return;
+      }
+
+      if (showControls) {
+        scrollActions.classList.add('visible');
+        window.clearTimeout(scrollButtonHideTimer);
+        scrollButtonHideTimer = window.setTimeout(() => {
+          if (!scrollActions.matches(':hover') && !scrollActions.contains(document.activeElement)) {
+            scrollActions.classList.remove('visible');
+          }
+        }, 1200);
+      }
+
       scrollUp.disabled = atTop;
       scrollDown.disabled = atBottom;
     }
 
+    function showScrollButtonsTemporarily() {
+      updateScrollButtons(true);
+    }
+
     if (scrollUp && scrollDown) {
       scrollUp.addEventListener('click', () => {
+        showScrollButtonsTemporarily();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
       scrollDown.addEventListener('click', () => {
+        showScrollButtonsTemporarily();
         window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
       });
 
-      window.addEventListener('scroll', updateScrollButtons, { passive: true });
+      scrollActions.addEventListener('mouseenter', showScrollButtonsTemporarily);
+      scrollActions.addEventListener('focusin', showScrollButtonsTemporarily);
+      window.addEventListener('scroll', showScrollButtonsTemporarily, { passive: true });
       window.addEventListener('resize', updateScrollButtons);
       window.addEventListener('load', updateScrollButtons);
     }
