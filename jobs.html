@@ -495,6 +495,62 @@
     .heart-icon:hover { transform: scale(1.15); }
     .heart-icon.saved { fill: #60a5fa; stroke: #60a5fa; filter: drop-shadow(0 0 6px rgba(96,165,250,0.6)); }
 
+    .scroll-actions {
+      position: fixed;
+      right: 20px;
+      bottom: 22px;
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .scroll-actions.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .scroll-btn {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(191, 219, 254, 0.95);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(30, 58, 138, 0.24);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .scroll-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(30, 58, 138, 0.3);
+    }
+
+    .scroll-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      box-shadow: 0 8px 18px rgba(30, 58, 138, 0.14);
+    }
+
+    .scroll-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     @media (max-width: 900px) {
       .page-hero          { padding: 50px 16px 40px; }
       .page-hero h1       { font-size: 2rem; }
@@ -529,6 +585,8 @@
       .close-preview-btn svg { width: 24px; height: 24px; }
       .footer-links   { flex-direction: column; gap: 8px; }
       .footer-links a { font-size: 14px; }
+      .scroll-actions { right: 14px; bottom: 16px; gap: 8px; }
+      .scroll-btn { width: 42px; height: 42px; }
     }
 
     @media (max-width: 400px) {
@@ -749,6 +807,19 @@
 
   <p>&copy; 2026 Career Unified. All rights reserved.</p>
 </footer>
+
+  <div class="scroll-actions" id="scrollActions" aria-label="Page scroll controls">
+    <button id="scrollUp" class="scroll-btn" type="button" aria-label="Scroll to top" title="Scroll to top">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18 15l-6-6-6 6"></path>
+      </svg>
+    </button>
+    <button id="scrollDown" class="scroll-btn" type="button" aria-label="Scroll to bottom" title="Scroll to bottom">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 9l6 6 6-6"></path>
+      </svg>
+    </button>
+  </div>
 
   <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -1130,6 +1201,7 @@
       });
 
       updateHearts();
+      requestAnimationFrame(updateScrollButtons);
     }
 
     /* ── OPEN FROM URL ── */
@@ -1366,10 +1438,43 @@
     }
 
     /* ── INIT ── */
+    const scrollActions = document.getElementById('scrollActions');
+    const scrollUp = document.getElementById('scrollUp');
+    const scrollDown = document.getElementById('scrollDown');
+
+    function updateScrollButtons() {
+      if (!scrollActions || !scrollUp || !scrollDown) return;
+
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const currentScroll = window.scrollY || document.documentElement.scrollTop || 0;
+      const canScroll = maxScroll > 160;
+      const atTop = currentScroll <= 20;
+      const atBottom = currentScroll >= maxScroll - 20;
+
+      scrollActions.classList.toggle('visible', canScroll);
+      scrollUp.disabled = atTop;
+      scrollDown.disabled = atBottom;
+    }
+
+    if (scrollUp && scrollDown) {
+      scrollUp.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      scrollDown.addEventListener('click', () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      });
+
+      window.addEventListener('scroll', updateScrollButtons, { passive: true });
+      window.addEventListener('resize', updateScrollButtons);
+      window.addEventListener('load', updateScrollButtons);
+    }
+
     showSkeletons();
     applyInitialSearchTermToUI();
     loadJobs();
     showDefaultPreview();
+    updateScrollButtons();
   </script>
 
 </body>
