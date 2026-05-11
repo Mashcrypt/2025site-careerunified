@@ -949,12 +949,12 @@
     }
 
     function isNewJob(job) {
-      const postedDate = job?.posted || job?._createdAt || job?.createdAt || job?.created_at;
-      const postedISO = toISODateString(postedDate);
-      if (!postedISO) return false;
+      const newBadgeDate = job?.createdAt || job?._createdAt || job?.created_at || job?.posted;
+      const newBadgeISO = toISODateString(newBadgeDate);
+      if (!newBadgeISO) return false;
 
-      const postedTime = new Date(postedISO).getTime();
-      const ageMs = Date.now() - postedTime;
+      const createdTime = new Date(newBadgeISO).getTime();
+      const ageMs = Date.now() - createdTime;
       const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
       return ageMs >= 0 && ageMs <= twoDaysMs;
     }
@@ -1040,6 +1040,7 @@
         const sanityNormalized = (sanityJobs || []).map(j => ({
           ...j, _source: 'sanity',
           posted: toISODateString(j.posted || j._createdAt) || j.posted || null,
+          createdAt: toISODateString(j._createdAt) || null,
           company: j.company?.name ? { ...j.company, name: j.company.name } : j.company
         }));
         jobs = [...sanityNormalized, ...(recruiterJobs || [])];
