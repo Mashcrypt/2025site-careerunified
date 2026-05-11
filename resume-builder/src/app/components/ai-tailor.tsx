@@ -49,6 +49,10 @@ type BillingStatus = {
   limit: number | null; // null = unlimited
   freeResumeUsed: boolean;
   freeCoverUsed: boolean;
+  freeResumeTailorsUsed?: number;
+  freeCoverLettersUsed?: number;
+  freeResumeLimit?: number;
+  freeCoverLetterLimit?: number;
   pendingPlan?: string | null;
   pendingPayfastPaymentId?: string | null;
 };
@@ -208,6 +212,10 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          freeResumeTailorsUsed: 0,
+          freeCoverLettersUsed: 0,
+          freeResumeLimit: 3,
+          freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
         });
@@ -224,6 +232,10 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          freeResumeTailorsUsed: 0,
+          freeCoverLettersUsed: 0,
+          freeResumeLimit: 3,
+          freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
         });
@@ -290,8 +302,12 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
     const isPaid = billing.plan !== 'free' && billing.subscriptionStatus === 'active';
 
     if (!isPaid) {
-      const resumeLeft = billing.freeResumeUsed ? 0 : 1;
-      const coverLeft = billing.freeCoverUsed ? 0 : 1;
+      const resumeLimit = billing.freeResumeLimit ?? 3;
+      const coverLimit = billing.freeCoverLetterLimit ?? 3;
+      const resumeUsed = billing.freeResumeTailorsUsed ?? (billing.freeResumeUsed ? 1 : 0);
+      const coverUsed = billing.freeCoverLettersUsed ?? (billing.freeCoverUsed ? 1 : 0);
+      const resumeLeft = Math.max(0, resumeLimit - resumeUsed);
+      const coverLeft = Math.max(0, coverLimit - coverUsed);
       return `Free taste remaining: ${resumeLeft} tailor + ${coverLeft} cover letter`;
     }
 
@@ -722,7 +738,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">Upgrade to continue</h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    Free taste includes <b>1 Resume Tailor</b> + <b>1 Cover Letter</b>. Upgrade for monthly access.
+                    Free taste includes <b>3 Resume Tailors</b> + <b>3 Cover Letters</b>. Upgrade for monthly access.
                   </p>
                 </div>
               </div>

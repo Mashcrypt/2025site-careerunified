@@ -173,6 +173,14 @@ function planLimit(plan: string) {
   return 0; // free
 }
 
+const FREE_TASTE_LIMIT = 3;
+
+function freeUsageCount(user: Record<string, any>, countField: string, legacyField: string) {
+  const count = Number(user[countField] || 0);
+  if (Number.isFinite(count) && count > 0) return count;
+  return Boolean(user[legacyField]) ? 1 : 0;
+}
+
 function timestampToDate(value: any): Date | null {
   if (!value) return null;
   if (typeof value.toDate === "function") return value.toDate();
@@ -359,8 +367,8 @@ export const handler: Handler = async (event) => {
   const subscriptionStatus = isExpiredPaidPlan ? "past_due" : storedStatus;
   const used = Number(user.applicationsUsedThisMonth || 0);
 
-  const freeResumeUsed = Boolean(user.freeResumeUsed);
-  const freeCoverUsed = Boolean(user.freeCoverUsed);
+  const freeResumeTailorsUsed = freeUsageCount(user, "freeResumeTailorsUsed", "freeResumeUsed");
+  const freeCoverLettersUsed = freeUsageCount(user, "freeCoverLettersUsed", "freeCoverUsed");
 
   const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
@@ -369,11 +377,11 @@ export const handler: Handler = async (event) => {
 
   // Gate access
   if (!isPaid) {
-    if (mode === "tailor" && freeResumeUsed) {
-      return json(402, { error: "Free resume tailor already used. Please upgrade.", upgrade_url }, baseHeaders);
+    if (mode === "tailor" && freeResumeTailorsUsed >= FREE_TASTE_LIMIT) {
+      return json(402, { error: "Free resume tailor limit reached. Please upgrade.", upgrade_url }, baseHeaders);
     }
-    if (mode === "cover_letter" && freeCoverUsed) {
-      return json(402, { error: "Free cover letter already used. Please upgrade.", upgrade_url }, baseHeaders);
+    if (mode === "cover_letter" && freeCoverLettersUsed >= FREE_TASTE_LIMIT) {
+      return json(402, { error: "Free cover letter limit reached. Please upgrade.", upgrade_url }, baseHeaders);
     }
   } else {
     if (used >= limit) {
@@ -442,7 +450,11 @@ export const handler: Handler = async (event) => {
     // Usage update
     if (!isPaid) {
       await userRef.set(
-        { freeCoverUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+        {
+          freeCoverLettersUsed: admin.firestore.FieldValue.increment(1),
+          freeCoverUsed: true,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
         { merge: true }
       );
     } else {
@@ -480,7 +492,11 @@ export const handler: Handler = async (event) => {
   // Usage update
   if (!isPaid) {
     await userRef.set(
-      { freeResumeUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() },
+      {
+        freeResumeTailorsUsed: admin.firestore.FieldValue.increment(1),
+        freeResumeUsed: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
       { merge: true }
     );
   } else {

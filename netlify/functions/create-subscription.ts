@@ -79,10 +79,6 @@ function isPlanId(plan: unknown): plan is PlanId {
   return plan === "starter" || plan === "job_seeker" || plan === "career_pro";
 }
 
-function todayIsoDate() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function encodePayfastValue(value: string) {
   return encodeURIComponent(value.trim()).replace(/%20/g, "+");
 }
@@ -226,7 +222,6 @@ export const handler: Handler = async (event) => {
       custom_str2: plan,
       custom_str3: "careerunified-ai",
       subscription_type: "1",
-      billing_date: todayIsoDate(),
       recurring_amount: amount,
       frequency: "3",
       cycles: "0",

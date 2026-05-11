@@ -77,6 +77,10 @@ type BillingStatus = {
   limit: number | null;
   freeResumeUsed: boolean;
   freeCoverUsed: boolean;
+  freeResumeTailorsUsed?: number;
+  freeCoverLettersUsed?: number;
+  freeResumeLimit?: number;
+  freeCoverLetterLimit?: number;
   pendingPlan?: string | null;
   pendingPayfastPaymentId?: string | null;
 };
@@ -307,6 +311,10 @@ export default function App() {
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          freeResumeTailorsUsed: 0,
+          freeCoverLettersUsed: 0,
+          freeResumeLimit: 3,
+          freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
         });
@@ -322,6 +330,10 @@ export default function App() {
           limit: 0,
           freeResumeUsed: false,
           freeCoverUsed: false,
+          freeResumeTailorsUsed: 0,
+          freeCoverLettersUsed: 0,
+          freeResumeLimit: 3,
+          freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
         });
@@ -1150,6 +1162,10 @@ export default function App() {
                     limit: 15,
                     freeResumeUsed: false,
                     freeCoverUsed: false,
+                    freeResumeTailorsUsed: 0,
+                    freeCoverLettersUsed: 0,
+                    freeResumeLimit: 3,
+                    freeCoverLetterLimit: 3,
                     pendingPlan: null,
                     pendingPayfastPaymentId: null,
                   });

@@ -85,10 +85,6 @@ function generateSignature(fields: Record<string, string>, passphrase?: string) 
   return crypto.createHash("md5").update(signedPayload).digest("hex");
 }
 
-function todayIsoDate() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function firstNameFrom(value?: string | null) {
   return value?.trim().split(/\s+/)[0] || undefined;
 }
@@ -195,7 +191,6 @@ export const handler: Handler = async (event) => {
       custom_str2: plan,
       custom_str3: "careerunified-recruiter",
       subscription_type: "1",
-      billing_date: todayIsoDate(),
       recurring_amount: cfg.amount,
       frequency: "3",
       cycles: "0",

@@ -34,6 +34,14 @@ function planLimit(plan: string) {
   return 0; // free
 }
 
+const FREE_TASTE_LIMIT = 3;
+
+function freeUsageCount(user: Record<string, any>, countField: string, legacyField: string) {
+  const count = Number(user[countField] || 0);
+  if (Number.isFinite(count) && count > 0) return count;
+  return Boolean(user[legacyField]) ? 1 : 0;
+}
+
 function timestampToDate(value: any): Date | null {
   if (!value) return null;
   if (typeof value.toDate === "function") return value.toDate();
@@ -87,8 +95,10 @@ export const handler: Handler = async (event) => {
   const used = Number(user.applicationsUsedThisMonth || 0);
   const limit = planLimit(plan);
 
-  const freeResumeUsed = Boolean(user.freeResumeUsed);
-  const freeCoverUsed = Boolean(user.freeCoverUsed);
+  const freeResumeTailorsUsed = freeUsageCount(user, "freeResumeTailorsUsed", "freeResumeUsed");
+  const freeCoverLettersUsed = freeUsageCount(user, "freeCoverLettersUsed", "freeCoverUsed");
+  const freeResumeUsed = freeResumeTailorsUsed >= FREE_TASTE_LIMIT;
+  const freeCoverUsed = freeCoverLettersUsed >= FREE_TASTE_LIMIT;
 
   return json(
     200,
@@ -99,6 +109,10 @@ export const handler: Handler = async (event) => {
       limit: Number.isFinite(limit) ? limit : null, // null = unlimited
       freeResumeUsed,
       freeCoverUsed,
+      freeResumeTailorsUsed,
+      freeCoverLettersUsed,
+      freeResumeLimit: FREE_TASTE_LIMIT,
+      freeCoverLetterLimit: FREE_TASTE_LIMIT,
       pendingPlan: (user.pendingPlan as string) || null,
       pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
       subscriptionCurrentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,
