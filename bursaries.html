@@ -198,6 +198,19 @@
       letter-spacing: 0.5px;
     }
 
+    .closed-badge {
+      display: inline-block;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .read-more {
       color: #2563eb;
       cursor: pointer;
@@ -855,6 +868,31 @@
 
     function safeText(v, fallback = '') { return (typeof v === 'string' && v.trim()) ? v.trim() : fallback; }
 
+    function parseDateValue(value) {
+      if (!value) return null;
+      const date = value?.toDate ? value.toDate() : new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function endOfDay(date) {
+      if (!date) return null;
+      const copy = new Date(date);
+      copy.setHours(23, 59, 59, 999);
+      return copy;
+    }
+
+    function getBursaryCreatedTime(b) {
+      return parseDateValue(b?._createdAt || b?.createdAt || b?.created_at || b?.publishedAt || b?.posted)?.getTime() || 0;
+    }
+
+    function sortRecentBursaries(list) {
+      return [...(list || [])].sort((a, b) => {
+        const createdDiff = getBursaryCreatedTime(b) - getBursaryCreatedTime(a);
+        if (createdDiff) return createdDiff;
+        return (parseDateValue(b?.deadline)?.getTime() || 0) - (parseDateValue(a?.deadline)?.getTime() || 0);
+      });
+    }
+
     function extractLink(raw) {
       if (!raw) return null;
       if (typeof raw === 'string') return raw.trim();
@@ -975,9 +1013,10 @@
 
     async function fetchBursaries() {
       try {
-        bursaries = await window.sanityClient.fetch(`*[_type=="bursary"] | order(deadline asc){
-          _id, name, slug, provider, providerLogo, faculty, description, deadline, applicationLink
+        bursaries = await window.sanityClient.fetch(`*[_type=="bursary"] | order(_createdAt desc){
+          _id, _createdAt, name, slug, provider, providerLogo, faculty, description, deadline, applicationLink
         }`);
+        bursaries = sortRecentBursaries(bursaries);
 
         localStorage.setItem(BURSARY_CACHE, JSON.stringify(bursaries));
         localStorage.setItem(BURSARY_CACHE_TIME, Date.now());
@@ -1013,7 +1052,7 @@
 
     function renderBursaries(filter = 'All') {
       bursaryList.innerHTML = '';
-      const base = filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter);
+      const base = sortRecentBursaries(filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter));
       const q      = normalizeTerm(bursarySearchInput?.value || '');
       const tokens = tokenize(q);
 
@@ -1037,8 +1076,11 @@
       const today = new Date();
 
       filteredBursaries.forEach((b, index) => {
-        const deadlineDate = b.deadline ? new Date(b.deadline) : null;
-        const isUrgent     = deadlineDate ? ((deadlineDate - today) / (1000*60*60*24) <= 7) : false;
+        const deadlineDate = endOfDay(parseDateValue(b.deadline));
+        const daysToClose  = deadlineDate ? ((deadlineDate - today) / (1000*60*60*24)) : null;
+        const isClosed     = daysToClose !== null && daysToClose < 0;
+        const isUrgent     = daysToClose !== null && !isClosed && daysToClose <= 7;
+        const statusBadge  = isClosed ? '<span class="closed-badge">Closed</span>' : (isUrgent ? '<span class="urgent">Closing Soon</span>' : '');
         const desc         = safeText(b.description, '');
         const shortDesc    = desc.length > 150 ? desc.substring(0, 150) + '...' : desc;
         const readMore     = desc.length > 150 ? `<span class="read-more" data-index="${index}">Read more</span>` : '';
@@ -1055,7 +1097,7 @@
           <strong>${safeText(b.name, 'Untitled bursary')}</strong>
           <p><strong>Faculty:</strong>   ${safeText(b.faculty,   'Not specified')}</p>
           <p><strong>Provider:</strong>  ${safeText(b.provider,  'Not specified')}</p>
-          <p><strong>Deadline:</strong>  ${safeText(b.deadline,  'Not specified')} ${isUrgent ? '<span class="urgent">Closing Soon</span>' : ''}</p>
+          <p><strong>Deadline:</strong>  ${safeText(b.deadline,  'Not specified')} ${statusBadge}</p>
           <p id="desc-${index}">${shortDesc || 'Description not provided.'}</p>
           ${readMore}`;
 
