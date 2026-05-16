@@ -329,18 +329,18 @@
   align-items: start;
 }
 
-.footer-brand h2,
+.footer-alerts h2,
 .footer-column h3,
 .footer-feature h3 {
   margin: 0 0 12px;
   color: #fff;
 }
 
-.footer-brand h2 {
+.footer-alerts h2 {
   font-size: 1.7rem;
 }
 
-.footer-brand p,
+.footer-alerts p,
 .footer-feature p,
 .footer-bottom p {
   color: rgba(255,255,255,0.82);
@@ -348,21 +348,57 @@
   margin: 0;
 }
 
-.footer-trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.footer-alert-form {
   margin-top: 18px;
 }
 
-.footer-trust span {
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.07);
-  border-radius: 999px;
-  padding: 7px 10px;
+.footer-alert-form label {
+  display: block;
   color: #fff;
-  font-size: 0.82rem;
   font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.footer-alert-row {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-alert-row input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  outline: none;
+}
+
+.footer-alert-row input::placeholder {
+  color: rgba(255,255,255,0.66);
+}
+
+.footer-alert-row input:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250,204,21,0.18);
+}
+
+.footer-alert-row button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: #facc15;
+  color: #1e3a8a;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.footer-alert-note {
+  display: block;
+  margin-top: 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.83rem;
 }
 
 .footer-grid {
@@ -451,8 +487,14 @@
   .footer-grid {
     grid-template-columns: 1fr;
   }
-  .footer-brand h2 {
+  .footer-alerts h2 {
     font-size: 1.45rem;
+  }
+  .footer-alert-row {
+    flex-direction: column;
+  }
+  .footer-alert-row button {
+    width: 100%;
   }
 }
   </style>
@@ -687,15 +729,21 @@
 ============================================================ -->
 <footer class="main-footer site-footer">
   <div class="footer-shell">
-    <section class="footer-brand" aria-label="Career Unified">
-      <h2>Career Unified</h2>
-      <p>Verified jobs, bursaries, university opportunities, and CV tools for South Africans.</p>
-      <div class="footer-trust" aria-label="Platform trust signals">
-        <span>Verified listings</span>
-        <span>Updated daily</span>
-        <span>POPIA-aware privacy</span>
-        <span>South Africa focused</span>
-      </div>
+    <section class="footer-alerts" aria-label="Job Alerts">
+      <h2>Job Alerts</h2>
+      <p>Get new jobs, bursaries, and career tips sent to your inbox.</p>
+      <form class="footer-alert-form" name="job-alerts" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="job-alerts">
+        <p hidden>
+          <label>Leave this field empty <input name="bot-field"></label>
+        </p>
+        <label for="footerJobAlertEmail">Email address</label>
+        <div class="footer-alert-row">
+          <input id="footerJobAlertEmail" type="email" name="email" placeholder="you@example.com" required>
+          <button type="submit">Subscribe</button>
+        </div>
+        <span class="footer-alert-note">No spam. Just useful opportunities and preparation tips.</span>
+      </form>
     </section>
 
     <nav class="footer-grid" aria-label="Footer navigation">
