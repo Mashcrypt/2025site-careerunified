@@ -92,7 +92,11 @@
     .anonymous-row input { width: auto; }
     .share-form textarea { min-height: 132px; resize: vertical; }
     .share-form button { justify-self: start; border: 0; border-radius: 999px; padding: 13px 18px; color: #fff; background: #16a34a; font-weight: 800; cursor: pointer; }
+    .share-form button:disabled { cursor: wait; opacity: 0.75; }
     .share-note { color: #64748b; font-size: 0.9rem; }
+    .form-status { display: none; border-radius: 14px; padding: 12px 14px; font-weight: 800; }
+    .form-status.success { display: block; color: #166534; background: #dcfce7; border: 1px solid #86efac; }
+    .form-status.error { display: block; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; }
     .cta-strip { margin-top: 30px; background: #1e3a8a; color: #fff; border-radius: 20px; padding: 26px; display: flex; justify-content: space-between; gap: 18px; align-items: center; }
     .cta-strip h2 { font-size: 1.35rem; }
     .cta-strip p { color: rgba(255,255,255,0.82); }
@@ -257,6 +261,7 @@
           </label>
           <button type="submit">Submit Questions</button>
           <p class="share-note">Submissions are reviewed before being added publicly to protect users and keep the question bank useful.</p>
+          <p class="form-status" id="interviewFormStatus" role="status" aria-live="polite"></p>
         </form>
       </div>
     </section>
@@ -354,6 +359,7 @@
     const contributorName = document.getElementById('contributorName');
     const postAsAnonymous = document.getElementById('postAsAnonymous');
     const interviewUploadedAt = document.getElementById('interviewUploadedAt');
+    const interviewFormStatus = document.getElementById('interviewFormStatus');
     const feedbackStorageKey = 'careerUnifiedInterviewQuestionFeedback';
 
     function getSavedFeedback() {
@@ -476,10 +482,45 @@
         contributorName.focus();
       }
     });
-    shareForm?.addEventListener('submit', () => {
+    function setInterviewFormStatus(message, type = 'success') {
+      if (!interviewFormStatus) return;
+      interviewFormStatus.textContent = message;
+      interviewFormStatus.className = `form-status ${type}`;
+    }
+
+    shareForm?.addEventListener('submit', async event => {
+      event.preventDefault();
       if (postAsAnonymous?.checked && contributorName) contributorName.value = 'Anonymous';
       if (contributorName && !contributorName.value.trim()) contributorName.value = 'Anonymous';
       if (interviewUploadedAt) interviewUploadedAt.value = new Date().toISOString();
+
+      const submitButton = shareForm.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+      }
+      setInterviewFormStatus('', '');
+
+      try {
+        const formData = new FormData(shareForm);
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: encodeForm(formData)
+        });
+        if (!response.ok) throw new Error('Interview question form submission failed');
+
+        shareForm.reset();
+        if (contributorName) contributorName.readOnly = false;
+        setInterviewFormStatus('Thank you. Your interview questions were submitted for review.', 'success');
+      } catch (error) {
+        setInterviewFormStatus('Something went wrong. Please try submitting again.', 'error');
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Submit Questions';
+        }
+      }
     });
     renderSharedQuestions();
   </script>

@@ -87,6 +87,16 @@
   to = "/terms.html"
   status = 301
 
+[[redirects]]
+  from = "/cv-tips"
+  to = "/cv-tips.html"
+  status = 200
+
+[[redirects]]
+  from = "/cv-tips/"
+  to = "/cv-tips.html"
+  status = 200
+
 # ================================
 # CV GENERATOR (NO REDIRECT LOOPS)
 # ================================
