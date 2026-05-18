@@ -17,14 +17,21 @@
     .nav-links { display: flex; align-items: center; gap: 26px; }
     .nav-links a { color: #fff; text-decoration: none; font-weight: 700; }
     .nav-links a:hover { color: #facc15; }
-    .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #fff; padding: 78px 22px; text-align: center; }
-    .hero h1 { font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.08; margin-bottom: 16px; }
-    .hero p { max-width: 760px; margin: 0 auto; color: rgba(255,255,255,0.88); font-size: 1.08rem; }
+    .hero { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 68%, #16a34a 140%); color: #fff; padding: 86px 22px 92px; text-align: center; position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; inset: auto 8% -80px; height: 160px; background: rgba(255,255,255,0.12); border-radius: 999px; filter: blur(18px); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.22); border-radius: 999px; padding: 8px 12px; margin-bottom: 18px; background: rgba(255,255,255,0.1); font-weight: 800; position: relative; z-index: 1; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.08; margin-bottom: 16px; position: relative; z-index: 1; }
+    .hero p { max-width: 760px; margin: 0 auto; color: rgba(255,255,255,0.9); font-size: 1.08rem; position: relative; z-index: 1; }
+    .hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 24px; position: relative; z-index: 1; }
+    .hero-actions a { border-radius: 999px; padding: 12px 16px; font-weight: 800; text-decoration: none; }
+    .hero-actions a:first-child { color: #1e3a8a; background: #facc15; }
+    .hero-actions a:last-child { color: #fff; border: 1px solid rgba(255,255,255,0.34); background: rgba(255,255,255,0.1); }
     main { max-width: 1120px; margin: 0 auto; padding: 42px 20px 70px; }
-    .tips-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-bottom: 32px; }
-    .tip-card, .guide-section { background: #fff; border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 16px 34px rgba(30,58,138,0.08); }
-    .tip-card { padding: 22px; }
-    .tip-card span { width: 42px; height: 42px; border-radius: 14px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .tips-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: -82px 0 32px; position: relative; z-index: 2; }
+    .tip-card, .guide-section { background: rgba(255,255,255,0.96); border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 18px 38px rgba(30,58,138,0.1); }
+    .tip-card { padding: 24px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .tip-card:hover { transform: translateY(-4px); box-shadow: 0 24px 46px rgba(30,58,138,0.14); }
+    .tip-card span { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
     .tip-card h2 { color: #1e3a8a; font-size: 1.05rem; margin-bottom: 8px; }
     .tip-card p { color: #4b5563; }
     .guide-section { padding: 28px; margin-top: 22px; }
@@ -32,7 +39,8 @@
     .guide-section ul { padding-left: 22px; color: #374151; }
     .guide-section li { margin: 10px 0; }
     .section-kicker { color: #2563eb; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
-    .interview-hub { background: #fff; border: 1px solid #bfdbfe; border-radius: 22px; box-shadow: 0 20px 42px rgba(30,58,138,0.1); padding: 30px; margin: 34px 0; }
+    .interview-hub { background: linear-gradient(180deg, #fff 0%, #f8fbff 100%); border: 1px solid #bfdbfe; border-radius: 24px; box-shadow: 0 26px 54px rgba(30,58,138,0.13); padding: 34px; margin: 34px 0; position: relative; overflow: hidden; }
+    .interview-hub::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: linear-gradient(90deg, #2563eb, #16a34a, #facc15); }
     .interview-hub-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
     .interview-hub h2 { color: #1e3a8a; font-size: clamp(1.55rem, 3vw, 2.2rem); line-height: 1.15; }
     .interview-hub p { color: #4b5563; }
@@ -40,7 +48,7 @@
     .pill-link { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 11px 15px; text-decoration: none; font-weight: 800; }
     .pill-link.primary { color: #fff; background: #2563eb; }
     .pill-link.secondary { color: #1e3a8a; background: #facc15; }
-    .interview-search { display: grid; grid-template-columns: 1fr minmax(170px, 0.3fr); gap: 12px; margin: 22px 0; }
+    .interview-search { display: grid; grid-template-columns: 1fr minmax(170px, 0.3fr); gap: 12px; margin: 24px 0; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 18px; padding: 12px; }
     .interview-search input, .interview-search select, .share-form input, .share-form select, .share-form textarea {
       width: 100%;
       border: 1px solid #bfdbfe;
@@ -57,12 +65,13 @@
       background: #fff;
     }
     .question-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .question-card { border: 1px solid #dbeafe; border-radius: 16px; background: #f8fbff; padding: 18px; }
-    .question-card h3 { color: #1e3a8a; font-size: 1.05rem; margin-bottom: 6px; }
-    .question-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; color: #64748b; font-size: 0.85rem; font-weight: 700; }
+    .question-card { border: 1px solid #dbeafe; border-radius: 18px; background: #fff; padding: 20px; box-shadow: 0 12px 28px rgba(30,58,138,0.07); }
+    .question-card h3 { color: #1e3a8a; font-size: 1.18rem; margin-bottom: 8px; }
+    .question-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; color: #475569; font-size: 0.82rem; font-weight: 800; }
+    .question-meta span { background: #eff6ff; border: 1px solid #dbeafe; border-radius: 999px; padding: 5px 8px; }
     .question-card ul { padding-left: 20px; color: #374151; }
     .question-card li { margin: 8px 0; }
-    .share-panel { margin-top: 28px; padding-top: 26px; border-top: 1px solid #dbeafe; }
+    .share-panel { margin-top: 28px; padding: 26px; border: 1px solid #dbeafe; border-radius: 20px; background: #fff; }
     .share-form { display: grid; gap: 14px; margin-top: 18px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .share-form label { color: #1e3a8a; font-weight: 800; display: grid; gap: 7px; }
@@ -102,8 +111,13 @@
   </nav>
 
   <header class="hero">
+    <div class="hero-badge"><i class="fa-solid fa-briefcase"></i> Application preparation hub</div>
     <h1>CV Tips & Interview Prep</h1>
     <p>Simple, practical guidance to help you apply with a cleaner CV, prepare stronger answers, and walk into interviews with more confidence.</p>
+    <div class="hero-actions">
+      <a href="#shared-interview-questions">Browse Questions</a>
+      <a href="#share-interview-questions">Share Your Experience</a>
+    </div>
   </header>
 
   <main>
@@ -161,7 +175,7 @@
       </div>
 
       <div class="interview-search" aria-label="Search shared interview questions">
-        <input id="questionSearch" type="search" placeholder="Search company, role, or keyword, e.g. KPMG, audit, graduate">
+        <input id="questionSearch" type="search" placeholder="Search company, role, or keyword, e.g. Shoprite, retail, graduate">
         <select id="questionCategory" aria-label="Filter interview questions by category">
           <option value="all">All categories</option>
           <option value="Accounting">Accounting</option>
@@ -196,7 +210,7 @@
           <div class="form-grid">
             <label>
               Company
-              <input type="text" name="company" placeholder="Example: KPMG" required>
+              <input type="text" name="company" placeholder="Example: Shoprite" required>
             </label>
             <label>
               Role or programme
@@ -222,7 +236,7 @@
           </div>
           <label>
             Questions asked
-            <textarea name="questions" placeholder="Example: Tell us about yourself. Why KPMG? Describe a time you worked under pressure." required></textarea>
+            <textarea name="questions" placeholder="Example: Tell us about yourself. Why Shoprite? Describe a time you worked under pressure." required></textarea>
           </label>
           <label>
             Preparation tip
@@ -265,17 +279,17 @@
   <script>
     const sharedQuestions = [
       {
-        company: 'KPMG',
-        role: 'Audit Graduate Programme',
+        company: 'Shoprite',
+        role: 'Retail Graduate Programme',
         year: '2025',
-        category: 'Accounting',
+        category: 'General',
         contributor: 'Anonymous',
         uploadedAt: '2026-05-18',
         questions: [
-          'Tell us about yourself and why you chose accounting.',
-          'Why do you want to work at KPMG?',
+          'Tell us about yourself and why you want to work in retail.',
+          'Why do you want to work at Shoprite?',
           'Describe a time you worked under pressure.',
-          'How would you explain audit to someone with no finance background?'
+          'How would you handle a customer who is unhappy with service?'
         ]
       },
       {
