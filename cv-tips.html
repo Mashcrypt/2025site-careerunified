@@ -71,6 +71,11 @@
     .question-meta span { background: #eff6ff; border: 1px solid #dbeafe; border-radius: 999px; padding: 5px 8px; }
     .question-card ul { padding-left: 20px; color: #374151; }
     .question-card li { margin: 8px 0; }
+    .question-feedback { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #e5efff; }
+    .feedback-btn { border: 1px solid #bfdbfe; border-radius: 999px; background: #f8fbff; color: #1e3a8a; cursor: pointer; font-weight: 800; padding: 8px 11px; transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease; }
+    .feedback-btn:hover { background: #eff6ff; border-color: #2563eb; transform: translateY(-1px); }
+    .feedback-btn.selected { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
+    .feedback-btn.report.selected { background: #991b1b; border-color: #991b1b; }
     .share-panel { margin-top: 28px; padding: 26px; border: 1px solid #dbeafe; border-radius: 20px; background: #fff; }
     .share-form { display: grid; gap: 14px; margin-top: 18px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -265,6 +270,15 @@
       </div>
       <a href="/cv-generator/">Check CV</a>
     </section>
+
+    <form name="interview-question-feedback" method="POST" data-netlify="true" hidden>
+      <input type="hidden" name="form-name" value="interview-question-feedback">
+      <input type="hidden" name="question_id">
+      <input type="hidden" name="company">
+      <input type="hidden" name="role">
+      <input type="hidden" name="feedback">
+      <input type="hidden" name="submitted_at">
+    </form>
   </main>
 
   <footer class="main-footer">
@@ -279,6 +293,7 @@
   <script>
     const sharedQuestions = [
       {
+        id: 'shoprite-retail-graduate-2025',
         company: 'Shoprite',
         role: 'Retail Graduate Programme',
         year: '2025',
@@ -293,6 +308,7 @@
         ]
       },
       {
+        id: 'capitec-software-engineer-2024',
         company: 'Capitec',
         role: 'Software Engineer',
         year: '2024',
@@ -307,6 +323,7 @@
         ]
       },
       {
+        id: 'deloitte-consulting-graduate-2024',
         company: 'Deloitte',
         role: 'Consulting Graduate',
         year: '2024',
@@ -329,6 +346,40 @@
     const contributorName = document.getElementById('contributorName');
     const postAsAnonymous = document.getElementById('postAsAnonymous');
     const interviewUploadedAt = document.getElementById('interviewUploadedAt');
+    const feedbackStorageKey = 'careerUnifiedInterviewQuestionFeedback';
+
+    function getSavedFeedback() {
+      try { return JSON.parse(localStorage.getItem(feedbackStorageKey) || '{}'); }
+      catch { return {}; }
+    }
+
+    function saveFeedback(questionId, feedback) {
+      const saved = getSavedFeedback();
+      saved[questionId] = feedback;
+      localStorage.setItem(feedbackStorageKey, JSON.stringify(saved));
+    }
+
+    function encodeForm(data) {
+      return new URLSearchParams(data).toString();
+    }
+
+    function submitFeedback(item, feedback) {
+      saveFeedback(item.id, feedback);
+      renderSharedQuestions();
+
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm({
+          'form-name': 'interview-question-feedback',
+          question_id: item.id,
+          company: item.company,
+          role: item.role,
+          feedback,
+          submitted_at: new Date().toISOString()
+        })
+      }).catch(() => {});
+    }
 
     function renderSharedQuestions() {
       if (!questionGrid) return;
@@ -341,6 +392,8 @@
         const matchesCategory = category === 'all' || item.category === category;
         return matchesTerm && matchesCategory;
       });
+
+      const savedFeedback = getSavedFeedback();
 
       questionGrid.innerHTML = filtered.length ? filtered.map(item => `
         <article class="question-card">
@@ -355,6 +408,11 @@
           <ul>
             ${item.questions.map(question => `<li>${question}</li>`).join('')}
           </ul>
+          <div class="question-feedback" aria-label="Question feedback">
+            <button class="feedback-btn ${savedFeedback[item.id] === 'helpful' ? 'selected' : ''}" type="button" data-feedback="helpful" data-question-id="${item.id}">Helpful</button>
+            <button class="feedback-btn ${savedFeedback[item.id] === 'not_helpful' ? 'selected' : ''}" type="button" data-feedback="not_helpful" data-question-id="${item.id}">Not helpful</button>
+            <button class="feedback-btn report ${savedFeedback[item.id] === 'report' ? 'selected' : ''}" type="button" data-feedback="report" data-question-id="${item.id}">Report</button>
+          </div>
         </article>
       `).join('') : `
         <article class="question-card">
@@ -366,6 +424,13 @@
 
     questionSearch?.addEventListener('input', renderSharedQuestions);
     questionCategory?.addEventListener('change', renderSharedQuestions);
+    questionGrid?.addEventListener('click', event => {
+      const button = event.target.closest('.feedback-btn');
+      if (!button) return;
+      const item = sharedQuestions.find(question => question.id === button.dataset.questionId);
+      if (!item) return;
+      submitFeedback(item, button.dataset.feedback);
+    });
     postAsAnonymous?.addEventListener('change', () => {
       if (!contributorName) return;
       if (postAsAnonymous.checked) {
