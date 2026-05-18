@@ -4,6 +4,7 @@ User-agent: *
 # Block private/admin pages
 Disallow: /admin.html
 Disallow: /admin-dashboard.html
+Disallow: /interview-questions-admin.html
 Disallow: /recruiter-dashboard.html
 Disallow: /recruiter-apply.html
 Disallow: /account-page.html
@@ -13,8 +14,6 @@ Disallow: /saved-items.html
 Disallow: /billing/
 Disallow: /netlify/
 Disallow: /sanity/
-Disallow: /js/
-Disallow: /css/
 
 # Allow all public content
 Allow: /
