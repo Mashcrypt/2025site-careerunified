@@ -71,11 +71,19 @@
     .question-meta span { background: #eff6ff; border: 1px solid #dbeafe; border-radius: 999px; padding: 5px 8px; }
     .question-card ul { padding-left: 20px; color: #374151; }
     .question-card li { margin: 8px 0; }
-    .question-feedback { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #e5efff; }
-    .feedback-btn { border: 1px solid #bfdbfe; border-radius: 999px; background: #f8fbff; color: #1e3a8a; cursor: pointer; font-weight: 800; padding: 8px 11px; transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease; }
-    .feedback-btn:hover { background: #eff6ff; border-color: #2563eb; transform: translateY(-1px); }
-    .feedback-btn.selected { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
-    .feedback-btn.report.selected { background: #991b1b; border-color: #991b1b; }
+    .question-card-top { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+    .question-card-top h3 { flex: 1; }
+    .question-options { position: relative; flex-shrink: 0; }
+    .options-toggle { width: 38px; height: 38px; border: 1px solid #bfdbfe; border-radius: 999px; background: #f8fbff; color: #1e3a8a; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.18s ease, border-color 0.18s ease; }
+    .options-toggle:hover, .options-toggle[aria-expanded="true"] { background: #eff6ff; border-color: #2563eb; }
+    .options-toggle i { pointer-events: none; }
+    .feedback-menu { position: absolute; top: 44px; right: 0; min-width: 166px; border: 1px solid #dbeafe; border-radius: 14px; background: #fff; box-shadow: 0 18px 36px rgba(30,58,138,0.18); padding: 8px; display: none; z-index: 5; }
+    .feedback-menu.open { display: grid; gap: 4px; }
+    .feedback-btn { border: 0; border-radius: 10px; background: transparent; color: #1e3a8a; cursor: pointer; font-weight: 800; padding: 10px 11px; text-align: left; width: 100%; }
+    .feedback-btn:hover { background: #eff6ff; }
+    .feedback-btn.selected { background: #1e3a8a; color: #fff; }
+    .feedback-btn.report.selected { background: #991b1b; color: #fff; }
+    .feedback-choice { color: #64748b; font-size: 0.85rem; font-weight: 800; margin-top: 14px; }
     .share-panel { margin-top: 28px; padding: 26px; border: 1px solid #dbeafe; border-radius: 20px; background: #fff; }
     .share-form { display: grid; gap: 14px; margin-top: 18px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -397,7 +405,19 @@
 
       questionGrid.innerHTML = filtered.length ? filtered.map(item => `
         <article class="question-card">
-          <h3>${item.company}</h3>
+          <div class="question-card-top">
+            <h3>${item.company}</h3>
+            <div class="question-options">
+              <button class="options-toggle" type="button" aria-label="Question options" aria-expanded="false" data-menu-toggle="${item.id}">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              <div class="feedback-menu" id="feedback-menu-${item.id}">
+                <button class="feedback-btn ${savedFeedback[item.id] === 'helpful' ? 'selected' : ''}" type="button" data-feedback="helpful" data-question-id="${item.id}">Helpful</button>
+                <button class="feedback-btn ${savedFeedback[item.id] === 'not_helpful' ? 'selected' : ''}" type="button" data-feedback="not_helpful" data-question-id="${item.id}">Not helpful</button>
+                <button class="feedback-btn report ${savedFeedback[item.id] === 'report' ? 'selected' : ''}" type="button" data-feedback="report" data-question-id="${item.id}">Report</button>
+              </div>
+            </div>
+          </div>
           <div class="question-meta">
             <span>${item.role}</span>
             <span>${item.year}</span>
@@ -408,11 +428,7 @@
           <ul>
             ${item.questions.map(question => `<li>${question}</li>`).join('')}
           </ul>
-          <div class="question-feedback" aria-label="Question feedback">
-            <button class="feedback-btn ${savedFeedback[item.id] === 'helpful' ? 'selected' : ''}" type="button" data-feedback="helpful" data-question-id="${item.id}">Helpful</button>
-            <button class="feedback-btn ${savedFeedback[item.id] === 'not_helpful' ? 'selected' : ''}" type="button" data-feedback="not_helpful" data-question-id="${item.id}">Not helpful</button>
-            <button class="feedback-btn report ${savedFeedback[item.id] === 'report' ? 'selected' : ''}" type="button" data-feedback="report" data-question-id="${item.id}">Report</button>
-          </div>
+          ${savedFeedback[item.id] ? `<div class="feedback-choice">Feedback: ${savedFeedback[item.id] === 'not_helpful' ? 'Not helpful' : savedFeedback[item.id] === 'report' ? 'Reported' : 'Helpful'}</div>` : ''}
         </article>
       `).join('') : `
         <article class="question-card">
@@ -425,11 +441,29 @@
     questionSearch?.addEventListener('input', renderSharedQuestions);
     questionCategory?.addEventListener('change', renderSharedQuestions);
     questionGrid?.addEventListener('click', event => {
+      const toggle = event.target.closest('.options-toggle');
+      if (toggle) {
+        const menu = document.getElementById(`feedback-menu-${toggle.dataset.menuToggle}`);
+        const isOpen = menu?.classList.contains('open');
+        questionGrid.querySelectorAll('.feedback-menu.open').forEach(openMenu => openMenu.classList.remove('open'));
+        questionGrid.querySelectorAll('.options-toggle[aria-expanded="true"]').forEach(openToggle => openToggle.setAttribute('aria-expanded', 'false'));
+        if (menu && !isOpen) {
+          menu.classList.add('open');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+        return;
+      }
+
       const button = event.target.closest('.feedback-btn');
       if (!button) return;
       const item = sharedQuestions.find(question => question.id === button.dataset.questionId);
       if (!item) return;
       submitFeedback(item, button.dataset.feedback);
+    });
+    document.addEventListener('click', event => {
+      if (event.target.closest('.question-options')) return;
+      questionGrid?.querySelectorAll('.feedback-menu.open').forEach(openMenu => openMenu.classList.remove('open'));
+      questionGrid?.querySelectorAll('.options-toggle[aria-expanded="true"]').forEach(openToggle => openToggle.setAttribute('aria-expanded', 'false'));
     });
     postAsAnonymous?.addEventListener('change', () => {
       if (!contributorName) return;
