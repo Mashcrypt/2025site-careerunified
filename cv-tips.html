@@ -66,6 +66,8 @@
     .share-form { display: grid; gap: 14px; margin-top: 18px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .share-form label { color: #1e3a8a; font-weight: 800; display: grid; gap: 7px; }
+    .anonymous-row { align-items: center; color: #374151; display: flex !important; font-weight: 700 !important; gap: 10px !important; }
+    .anonymous-row input { width: auto; }
     .share-form textarea { min-height: 132px; resize: vertical; }
     .share-form button { justify-self: start; border: 0; border-radius: 999px; padding: 13px 18px; color: #fff; background: #16a34a; font-weight: 800; cursor: pointer; }
     .share-note { color: #64748b; font-size: 0.9rem; }
@@ -177,9 +179,20 @@
 
         <form class="share-form" name="interview-questions" method="POST" data-netlify="true" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="interview-questions">
+          <input type="hidden" name="uploaded_at" id="interviewUploadedAt">
           <p hidden>
             <label>Leave this field empty <input name="bot-field"></label>
           </p>
+          <div class="form-grid">
+            <label>
+              Your name
+              <input id="contributorName" type="text" name="contributor_name" placeholder="Your name or Anonymous" required>
+            </label>
+            <label class="anonymous-row">
+              <input id="postAsAnonymous" type="checkbox" name="post_as_anonymous" value="yes">
+              Post as Anonymous
+            </label>
+          </div>
           <div class="form-grid">
             <label>
               Company
@@ -256,6 +269,8 @@
         role: 'Audit Graduate Programme',
         year: '2025',
         category: 'Accounting',
+        contributor: 'Anonymous',
+        uploadedAt: '2026-05-18',
         questions: [
           'Tell us about yourself and why you chose accounting.',
           'Why do you want to work at KPMG?',
@@ -268,6 +283,8 @@
         role: 'Software Engineer',
         year: '2024',
         category: 'Technology',
+        contributor: 'Anonymous',
+        uploadedAt: '2026-05-18',
         questions: [
           'Explain a technical project you are proud of.',
           'How do you debug a production issue?',
@@ -280,6 +297,8 @@
         role: 'Consulting Graduate',
         year: '2024',
         category: 'General',
+        contributor: 'Anonymous',
+        uploadedAt: '2026-05-18',
         questions: [
           'Tell us about a time you solved a difficult problem.',
           'How do you handle feedback?',
@@ -292,6 +311,10 @@
     const questionGrid = document.getElementById('questionGrid');
     const questionSearch = document.getElementById('questionSearch');
     const questionCategory = document.getElementById('questionCategory');
+    const shareForm = document.querySelector('form[name="interview-questions"]');
+    const contributorName = document.getElementById('contributorName');
+    const postAsAnonymous = document.getElementById('postAsAnonymous');
+    const interviewUploadedAt = document.getElementById('interviewUploadedAt');
 
     function renderSharedQuestions() {
       if (!questionGrid) return;
@@ -312,6 +335,8 @@
             <span>${item.role}</span>
             <span>${item.year}</span>
             <span>${item.category}</span>
+            <span>By ${item.contributor || 'Anonymous'}</span>
+            <span>Uploaded ${item.uploadedAt || 'Recently'}</span>
           </div>
           <ul>
             ${item.questions.map(question => `<li>${question}</li>`).join('')}
@@ -327,6 +352,22 @@
 
     questionSearch?.addEventListener('input', renderSharedQuestions);
     questionCategory?.addEventListener('change', renderSharedQuestions);
+    postAsAnonymous?.addEventListener('change', () => {
+      if (!contributorName) return;
+      if (postAsAnonymous.checked) {
+        contributorName.value = 'Anonymous';
+        contributorName.readOnly = true;
+      } else {
+        contributorName.value = '';
+        contributorName.readOnly = false;
+        contributorName.focus();
+      }
+    });
+    shareForm?.addEventListener('submit', () => {
+      if (postAsAnonymous?.checked && contributorName) contributorName.value = 'Anonymous';
+      if (contributorName && !contributorName.value.trim()) contributorName.value = 'Anonymous';
+      if (interviewUploadedAt) interviewUploadedAt.value = new Date().toISOString();
+    });
     renderSharedQuestions();
   </script>
 </body>
