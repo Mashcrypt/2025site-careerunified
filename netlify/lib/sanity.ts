@@ -67,7 +67,7 @@ export async function getJobBySlug(slug: string) {
  * Matches your schema:
  * - name
  * - provider
- * - faculty
+ * - faculties (new multi-select) / faculty (legacy)
  * - deadline
  * - description
  * - providerLogo (image) => providerLogo.asset->url
@@ -80,6 +80,7 @@ export async function getBursaryBySlug(slug: string) {
   "slug": slug.current,
   provider,
   faculty,
+  faculties,
   deadline,
   description,
   "providerLogoUrl": providerLogo.asset->url,

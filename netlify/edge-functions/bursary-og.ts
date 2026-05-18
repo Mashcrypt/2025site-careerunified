@@ -71,7 +71,10 @@ export default async (request: Request) => {
     const bursaryName = bursary.name || "Bursary Opportunity";
     const providerName = bursary.provider || "Provider";
 
-    const facultyText = bursary.faculty ? ` • ${bursary.faculty}` : "";
+    const bursaryFaculties = Array.isArray(bursary.faculties) && bursary.faculties.length
+      ? bursary.faculties
+      : (bursary.faculty ? [bursary.faculty] : []);
+    const facultyText = bursaryFaculties.length ? ` • ${bursaryFaculties.join(", ")}` : "";
     const deadlineText = bursary.deadline ? ` • Deadline: ${bursary.deadline}` : "";
     const desc = snippet(bursary.description || "", 140);
 

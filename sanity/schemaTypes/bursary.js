@@ -1,4 +1,20 @@
 // /schemas/bursary.js (or bursary.ts if you use TS)
+const FACULTY_OPTIONS = [
+  { title: "Accounting & Finance", value: "Accounting & Finance" },
+  { title: "Arts & Humanities", value: "Arts & Humanities" },
+  { title: "Commerce & Business", value: "Commerce & Business" },
+  { title: "Computer Science & IT", value: "Computer Science & IT" },
+  { title: "Construction & Built Environment", value: "Construction & Built Environment" },
+  { title: "Engineering", value: "Engineering" },
+  { title: "Health & Medical", value: "Health & Medical" },
+  { title: "Law", value: "Law" },
+  { title: "MBA & Postgraduate", value: "MBA & Postgraduate" },
+  { title: "Nursing", value: "Nursing" },
+  { title: "Science", value: "Science" },
+  { title: "Government", value: "Government" },
+  { title: "Student Loan", value: "Student Loan" },
+];
+
 export default {
   name: "bursary",
   title: "Bursary",
@@ -59,28 +75,34 @@ export default {
         "Logo used for bursary sharing preview (recommended: 1200×630 or larger).",
     },
     {
+      name: "faculties",
+      title: "Faculties / Categories",
+      type: "array",
+      options: {
+        list: FACULTY_OPTIONS,
+        layout: "tags",
+      },
+      of: [{ type: "string" }],
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (Array.isArray(value) && value.length) return true;
+          if (context?.document?.faculty) return true;
+          return "Please choose at least one faculty/category.";
+        }),
+      description:
+        "Choose every faculty/category this bursary covers. For example: Engineering and Accounting & Finance.",
+    },
+    {
       name: "faculty",
-      title: "Faculty / Category",
+      title: "Legacy Faculty / Category",
       type: "string",
       options: {
-        list: [
-          { title: "Accounting & Finance", value: "Accounting & Finance" },
-          { title: "Arts & Humanities", value: "Arts & Humanities" },
-          { title: "Commerce & Business", value: "Commerce & Business" },
-          { title: "Computer Science & IT", value: "Computer Science & IT" },
-          { title: "Construction & Built Environment", value: "Construction & Built Environment" },
-          { title: "Engineering", value: "Engineering" },
-          { title: "Health & Medical", value: "Health & Medical" },
-          { title: "Law", value: "Law" },
-          { title: "MBA & Postgraduate", value: "MBA & Postgraduate" },
-          { title: "Nursing", value: "Nursing" },
-          { title: "Science", value: "Science" },
-          { title: "Government", value: "Government" },
-          { title: "Student Loan", value: "Student Loan" },
-        ],
+        list: FACULTY_OPTIONS,
       },
-      validation: (Rule) =>
-        Rule.required().error("Please choose a faculty/category."),
+      hidden: true,
+      readOnly: true,
+      description:
+        "Legacy single-faculty value kept for old bursaries. Use Faculties / Categories for new uploads.",
     },
     {
       name: "description",
@@ -125,12 +147,15 @@ export default {
     select: {
       title: "name",
       subtitle: "provider",
+      faculties: "faculties",
+      legacyFaculty: "faculty",
       media: "providerLogo",
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, subtitle, faculties, legacyFaculty, media }) {
+      const facultyText = Array.isArray(faculties) && faculties.length ? faculties.join(", ") : legacyFaculty;
       return {
         title: title || "Untitled bursary",
-        subtitle: subtitle ? `Provider: ${subtitle}` : "Provider: Not set",
+        subtitle: [subtitle ? `Provider: ${subtitle}` : "Provider: Not set", facultyText].filter(Boolean).join(" | "),
         media,
       };
     },

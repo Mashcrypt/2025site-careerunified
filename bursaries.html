@@ -807,15 +807,32 @@
       return fromQ || fromLS || '';
     }
 
+    function getBursaryFaculties(b) {
+      const values = Array.isArray(b?.faculties) ? b.faculties : [];
+      if (values.length) return values.map(v => safeText(v)).filter(Boolean);
+      const legacy = safeText(b?.faculty);
+      return legacy ? [legacy] : [];
+    }
+
+    function getBursaryFacultyText(b, fallback = 'Not specified') {
+      const values = getBursaryFaculties(b);
+      return values.length ? values.join(', ') : fallback;
+    }
+
+    function bursaryHasFaculty(b, faculty) {
+      if (!faculty || faculty === 'All') return true;
+      return getBursaryFaculties(b).includes(faculty);
+    }
+
     function buildSearchText(b) {
-      return normalizeTerm([safeText(b?.name), safeText(b?.provider), safeText(b?.faculty), safeText(b?.description), safeText(b?.deadline)].join(' | '));
+      return normalizeTerm([safeText(b?.name), safeText(b?.provider), getBursaryFacultyText(b, ''), safeText(b?.description), safeText(b?.deadline)].join(' | '));
     }
 
     function scoreBursary(b, tokens, fullQuery) {
       if (!tokens.length) return 0;
       const name     = normalizeTerm(safeText(b?.name));
       const provider = normalizeTerm(safeText(b?.provider));
-      const faculty  = normalizeTerm(safeText(b?.faculty));
+      const faculty  = normalizeTerm(getBursaryFacultyText(b, ''));
       const desc     = normalizeTerm(safeText(b?.description));
       const hay      = buildSearchText(b);
       let score = 0;
@@ -905,7 +922,8 @@
           removeFromLocalStorage('bursary', bursary._id);
         } else {
           await ref.set({
-            type: 'bursary', name: bursary.name, faculty: bursary.faculty,
+            type: 'bursary', name: bursary.name, faculty: getBursaryFacultyText(bursary, ''),
+            faculties: getBursaryFaculties(bursary),
             provider: bursary.provider, deadline: bursary.deadline,
             applicationLink: extractLink(bursary.applicationLink),
             savedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1070,7 +1088,7 @@
 
     function populateFacultyFilter() {
       facultyFilter.innerHTML = `<option value="All">All Bursaries</option>`;
-      Array.from(new Set(bursaries.map(b => b.faculty).filter(Boolean))).sort().forEach(f => {
+      Array.from(new Set(bursaries.flatMap(getBursaryFaculties))).sort().forEach(f => {
         const opt = document.createElement('option');
         opt.value = opt.textContent = f;
         facultyFilter.appendChild(opt);
@@ -1080,7 +1098,7 @@
     async function fetchBursaries() {
       try {
         bursaries = await window.sanityClient.fetch(`*[_type=="bursary"] | order(_createdAt desc){
-          _id, _createdAt, name, slug, provider, providerLogo, faculty, description, deadline, applicationLink
+          _id, _createdAt, name, slug, provider, providerLogo, faculty, faculties, description, deadline, applicationLink
         }`);
         bursaries = sortRecentBursaries(bursaries);
 
@@ -1118,7 +1136,7 @@
 
     function renderBursaries(filter = 'All') {
       bursaryList.innerHTML = '';
-      const base = sortRecentBursaries(filter === 'All' ? bursaries : bursaries.filter(b => b.faculty === filter));
+      const base = sortRecentBursaries(filter === 'All' ? bursaries : bursaries.filter(b => bursaryHasFaculty(b, filter)));
       const q      = normalizeTerm(bursarySearchInput?.value || '');
       const tokens = tokenize(q);
 
@@ -1161,7 +1179,7 @@
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
           </svg>
           <strong>${safeText(b.name, 'Untitled bursary')}</strong>
-          <p><strong>Faculty:</strong>   ${safeText(b.faculty,   'Not specified')}</p>
+          <p><strong>Faculty:</strong>   ${getBursaryFacultyText(b)}</p>
           <p><strong>Provider:</strong>  ${safeText(b.provider,  'Not specified')}</p>
           <p><strong>Deadline:</strong>  ${safeText(b.deadline,  'Not specified')} ${statusBadge}</p>
           <p id="desc-${index}">${shortDesc || 'Description not provided.'}</p>
@@ -1222,7 +1240,7 @@
           </div>
           <div class="preview-content-wrapper">
             <div class="preview-info">
-              <p><strong>Faculty:</strong>  ${safeText(b.faculty,  'Not specified')}</p>
+              <p><strong>Faculty:</strong>  ${getBursaryFacultyText(b)}</p>
               <p><strong>Deadline:</strong> ${safeText(b.deadline, 'Not specified')}</p>
             </div>
             <div class="description-content">${safeText(b.description, 'Description not provided.')}</div>
