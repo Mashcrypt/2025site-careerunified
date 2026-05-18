@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Interview Questions Admin | Career Unified</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Poppins, sans-serif; color: #111827; background: #f5f8ff; }
+    header { background: #1e3a8a; color: #fff; padding: 28px 22px; }
+    header div { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.3rem); }
+    main { max-width: 1120px; margin: 0 auto; padding: 28px 20px 60px; }
+    .toolbar, .card { background: #fff; border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 18px 38px rgba(30,58,138,0.09); }
+    .toolbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 18px; margin-bottom: 18px; }
+    .status-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    button { border: 0; border-radius: 999px; padding: 10px 14px; font-weight: 800; cursor: pointer; }
+    .tab-btn { color: #1e3a8a; background: #eff6ff; border: 1px solid #bfdbfe; }
+    .tab-btn.active { color: #fff; background: #2563eb; }
+    .signout-btn { background: #fee2e2; color: #991b1b; }
+    .card { padding: 20px; margin-bottom: 16px; }
+    .card h2 { margin: 0 0 8px; color: #1e3a8a; }
+    .meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px; }
+    .meta span { background: #eff6ff; color: #1e3a8a; border-radius: 999px; padding: 6px 9px; font-size: 0.84rem; font-weight: 800; }
+    pre { white-space: pre-wrap; background: #f8fbff; border: 1px solid #dbeafe; border-radius: 14px; padding: 14px; line-height: 1.65; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .approve { color: #fff; background: #16a34a; }
+    .reject { color: #fff; background: #dc2626; }
+    .empty { text-align: center; color: #64748b; padding: 34px; }
+    .login-card { max-width: 440px; margin: 60px auto; padding: 24px; background: #fff; border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 18px 38px rgba(30,58,138,0.09); }
+    .login-card input { width: 100%; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px 14px; margin: 8px 0; font: inherit; }
+    .login-card button { width: 100%; color: #fff; background: #2563eb; margin-top: 8px; }
+    @media (max-width: 720px) { header div, .toolbar { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Interview Questions Admin</h1>
+      <button class="signout-btn" id="signOutBtn" style="display:none;">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="login-card" id="loginCard">
+      <h2>Admin login</h2>
+      <p>Sign in with your Career Unified admin Firebase account.</p>
+      <input id="email" type="email" placeholder="Email">
+      <input id="password" type="password" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <p id="loginStatus"></p>
+    </section>
+
+    <section id="adminPanel" style="display:none;">
+      <div class="toolbar">
+        <div class="status-tabs">
+          <button class="tab-btn active" data-status="pending">Pending</button>
+          <button class="tab-btn" data-status="approved">Approved</button>
+          <button class="tab-btn" data-status="rejected">Rejected</button>
+        </div>
+        <button class="tab-btn" id="refreshBtn">Refresh</button>
+      </div>
+      <div id="submissions" class="empty">Loading submissions...</div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
+      authDomain: "career-unified.firebaseapp.com",
+      projectId: "career-unified",
+      storageBucket: "career-unified.appspot.com",
+      messagingSenderId: "101656817742",
+      appId: "1:101656817742:web:22c9a58a822a714e54931f"
+    };
+
+    const ADMIN_UIDS = ["X3eReX1WGpQSR1svO4JIBFDqFUJ3"];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentStatus = "pending";
+
+    const loginCard = document.getElementById("loginCard");
+    const adminPanel = document.getElementById("adminPanel");
+    const submissions = document.getElementById("submissions");
+    const signOutBtn = document.getElementById("signOutBtn");
+
+    function escapeHtml(value = "") {
+      return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    async function token() {
+      if (!auth.currentUser) throw new Error("Not signed in");
+      return auth.currentUser.getIdToken();
+    }
+
+    async function loadSubmissions() {
+      submissions.className = "empty";
+      submissions.textContent = "Loading submissions...";
+      try {
+        const response = await fetch(`/.netlify/functions/review-interview-question?status=${encodeURIComponent(currentStatus)}`, {
+          headers: { Authorization: `Bearer ${await token()}` }
+        });
+        if (!response.ok) throw new Error(await response.text());
+        const data = await response.json();
+        renderSubmissions(data.submissions || []);
+      } catch (error) {
+        submissions.textContent = "Could not load submissions.";
+        console.error(error);
+      }
+    }
+
+    function renderSubmissions(items) {
+      if (!items.length) {
+        submissions.className = "empty";
+        submissions.textContent = `No ${currentStatus} submissions.`;
+        return;
+      }
+      submissions.className = "";
+      submissions.innerHTML = items.map(item => `
+        <article class="card">
+          <h2>${escapeHtml(item.company || "Company")}</h2>
+          <div class="meta">
+            <span>${escapeHtml(item.role || "Role not specified")}</span>
+            <span>${escapeHtml(item.category || "General")}</span>
+            <span>${escapeHtml(item.interviewYear || "Recent")}</span>
+            <span>By ${escapeHtml(item.contributorName || "Anonymous")}</span>
+            <span>${escapeHtml(item.submittedAt || "")}</span>
+          </div>
+          <pre>${escapeHtml(item.questions || "")}</pre>
+          ${item.preparationTip ? `<pre><strong>Tip:</strong>\n${escapeHtml(item.preparationTip)}</pre>` : ""}
+          ${currentStatus === "pending" ? `
+            <div class="actions">
+              <button class="approve" data-action="approve" data-id="${item.id}">Approve</button>
+              <button class="reject" data-action="reject" data-id="${item.id}">Reject</button>
+            </div>` : ""}
+        </article>
+      `).join("");
+    }
+
+    async function reviewSubmission(id, action) {
+      const response = await fetch("/.netlify/functions/review-interview-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${await token()}` },
+        body: JSON.stringify({ id, action })
+      });
+      if (!response.ok) throw new Error(await response.text());
+      await loadSubmissions();
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch {
+        document.getElementById("loginStatus").textContent = "Login failed.";
+      }
+    });
+
+    signOutBtn.addEventListener("click", () => signOut(auth));
+    document.getElementById("refreshBtn").addEventListener("click", loadSubmissions);
+
+    document.querySelectorAll(".tab-btn[data-status]").forEach(button => {
+      button.addEventListener("click", () => {
+        currentStatus = button.dataset.status;
+        document.querySelectorAll(".tab-btn[data-status]").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        loadSubmissions();
+      });
+    });
+
+    submissions.addEventListener("click", async event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      button.disabled = true;
+      try { await reviewSubmission(button.dataset.id, button.dataset.action); }
+      catch { alert("Review action failed."); button.disabled = false; }
+    });
+
+    onAuthStateChanged(auth, user => {
+      const allowed = user && ADMIN_UIDS.includes(user.uid);
+      loginCard.style.display = allowed ? "none" : "block";
+      adminPanel.style.display = allowed ? "block" : "none";
+      signOutBtn.style.display = user ? "inline-flex" : "none";
+      if (user && !allowed) document.getElementById("loginStatus").textContent = "This account is not an admin.";
+      if (allowed) loadSubmissions();
+    });
+  </script>
+</body>
+</html>

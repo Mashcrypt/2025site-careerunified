@@ -304,7 +304,7 @@
     <p>&copy; 2026 Career Unified. All rights reserved.</p>
   </footer>
   <script>
-    const sharedQuestions = [
+    const fallbackQuestions = [
       {
         id: 'shoprite-retail-graduate-2025',
         company: 'Shoprite',
@@ -352,6 +352,7 @@
       }
     ];
 
+    let sharedQuestions = [...fallbackQuestions];
     const questionGrid = document.getElementById('questionGrid');
     const questionSearch = document.getElementById('questionSearch');
     const questionCategory = document.getElementById('questionCategory');
@@ -375,6 +376,31 @@
 
     function encodeForm(data) {
       return new URLSearchParams(data).toString();
+    }
+
+    function formatUploadedDate(value) {
+      if (!value || value === 'Recently') return 'Recently';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function splitQuestions(value) {
+      return String(value || '')
+        .split(/\r?\n|(?<=\?)\s+/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .slice(0, 8);
+    }
+
+    function escapeHtml(value = '') {
+      return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
     }
 
     function submitFeedback(item, feedback) {
@@ -412,7 +438,7 @@
       questionGrid.innerHTML = filtered.length ? filtered.map(item => `
         <article class="question-card">
           <div class="question-card-top">
-            <h3>${item.company}</h3>
+            <h3>${escapeHtml(item.company)}</h3>
             <div class="question-options">
               <button class="options-toggle" type="button" aria-label="Question options" aria-expanded="false" data-menu-toggle="${item.id}">
                 <i class="fa-solid fa-ellipsis"></i>
@@ -425,15 +451,16 @@
             </div>
           </div>
           <div class="question-meta">
-            <span>${item.role}</span>
-            <span>${item.year}</span>
-            <span>${item.category}</span>
-            <span>By ${item.contributor || 'Anonymous'}</span>
-            <span>Uploaded ${item.uploadedAt || 'Recently'}</span>
+            <span>${escapeHtml(item.role)}</span>
+            <span>${escapeHtml(item.year)}</span>
+            <span>${escapeHtml(item.category)}</span>
+            <span>By ${escapeHtml(item.contributor || 'Anonymous')}</span>
+            <span>Uploaded ${formatUploadedDate(item.uploadedAt)}</span>
           </div>
           <ul>
-            ${item.questions.map(question => `<li>${question}</li>`).join('')}
+            ${item.questions.map(question => `<li>${escapeHtml(question)}</li>`).join('')}
           </ul>
+          ${item.preparationTip ? `<p class="share-note"><strong>Preparation tip:</strong> ${escapeHtml(item.preparationTip)}</p>` : ''}
           ${savedFeedback[item.id] ? `<div class="feedback-choice">Feedback: ${savedFeedback[item.id] === 'not_helpful' ? 'Not helpful' : savedFeedback[item.id] === 'report' ? 'Reported' : 'Helpful'}</div>` : ''}
         </article>
       `).join('') : `
@@ -503,15 +530,38 @@
 
       try {
         const formData = new FormData(shareForm);
-        const response = await fetch('/', {
+        const response = await fetch('/.netlify/functions/submit-interview-question', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: encodeForm(formData)
         });
         if (!response.ok) throw new Error('Interview question form submission failed');
 
+        const submittedCompany = formData.get('company');
+        const submittedRole = formData.get('role');
+        const submittedYear = formData.get('interview_year');
+        const submittedCategory = formData.get('category');
+        const submittedContributor = formData.get('contributor_name');
+        const submittedQuestions = splitQuestions(formData.get('questions'));
+        const submittedTip = String(formData.get('preparation_tip') || '').trim();
+
         shareForm.reset();
         if (contributorName) contributorName.readOnly = false;
+        sharedQuestions = [
+          {
+            id: `local-${Date.now()}`,
+            company: `${submittedCompany} (pending review)`,
+            role: submittedRole || 'Role not specified',
+            year: submittedYear || 'Recent',
+            category: submittedCategory || 'General',
+            contributor: submittedContributor || 'Anonymous',
+            uploadedAt: 'Just now',
+            questions: submittedQuestions,
+            preparationTip: submittedTip
+          },
+          ...sharedQuestions
+        ];
+        renderSharedQuestions();
         setInterviewFormStatus('Thank you. Your interview questions were submitted for review.', 'success');
       } catch (error) {
         setInterviewFormStatus('Something went wrong. Please try submitting again.', 'error');
@@ -522,7 +572,23 @@
         }
       }
     });
+
+    async function loadApprovedQuestions() {
+      try {
+        const response = await fetch('/.netlify/functions/get-interview-questions');
+        if (!response.ok) throw new Error('Could not load approved interview questions');
+        const data = await response.json();
+        if (Array.isArray(data.questions) && data.questions.length) {
+          sharedQuestions = [...data.questions, ...fallbackQuestions];
+          renderSharedQuestions();
+        }
+      } catch (error) {
+        console.warn('Using fallback interview questions', error);
+      }
+    }
+
     renderSharedQuestions();
+    loadApprovedQuestions();
   </script>
 </body>
 </html>
