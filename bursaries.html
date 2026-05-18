@@ -541,6 +541,76 @@
 .footer-socials a:hover {
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
+
+/* Shared premium footer */
+.site-footer {
+  background: #1e3a8a;
+  color: #fff;
+  padding: 54px 20px 34px;
+  text-align: left;
+}
+
+.site-footer > .footer-links {
+  display: none;
+}
+
+.footer-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.15fr) minmax(420px, 1.7fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.footer-alerts h2,
+.footer-column h3 {
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.footer-alerts h2 {
+  font-size: 1.7rem;
+}
+
+.footer-alerts p {
+  color: rgba(255,255,255,0.82);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.footer-alert-form { margin-top: 18px; }
+.footer-alert-form label { display: block; color: #fff; font-weight: 700; margin-bottom: 8px; }
+.footer-alert-row { display: flex; gap: 8px; }
+.footer-alert-row input { min-width: 0; flex: 1; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 12px 14px; background: rgba(255,255,255,0.1); color: #fff; outline: none; }
+.footer-alert-row input::placeholder { color: rgba(255,255,255,0.66); }
+.footer-alert-row input:focus { border-color: #facc15; box-shadow: 0 0 0 3px rgba(250,204,21,0.18); }
+.footer-alert-row button { border: 0; border-radius: 999px; padding: 12px 16px; background: #facc15; color: #1e3a8a; cursor: pointer; font-weight: 800; }
+.footer-alert-note { display: block; margin-top: 10px; color: rgba(255,255,255,0.7); font-size: 0.83rem; }
+.footer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.footer-column h3 { font-size: 0.95rem; letter-spacing: 0.02em; }
+.footer-column a { display: block; color: #facc15; text-decoration: none; font-weight: 650; margin: 9px 0; line-height: 1.35; }
+.footer-column a:hover { text-decoration: underline; }
+.site-footer > .footer-socials { max-width: 1180px; margin: 34px auto 20px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.14); }
+.site-footer > p { text-align: center; color: rgba(255,255,255,0.82); margin: 0; }
+.site-footer .footer-socials { display: flex; justify-content: center; gap: 18px; }
+.site-footer .footer-socials a { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 18px; background: rgba(255,255,255,0.05); backdrop-filter: blur(6px); transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1); position: relative; overflow: hidden; text-decoration: none; }
+.site-footer .footer-socials a::before { content: ""; position: absolute; inset: 0; border-radius: 12px; opacity: 0; transition: opacity 0.35s ease; z-index: 0; }
+.site-footer .footer-socials a i { position: relative; z-index: 1; }
+.site-footer .footer-socials a:hover { transform: translateY(-6px) scale(1.08); border-color: transparent; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+.site-footer .footer-socials a:nth-child(1):hover::before { background: rgba(24, 119, 242, 0.25); }
+.site-footer .footer-socials a:nth-child(2):hover::before { background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7); }
+.site-footer .footer-socials a:nth-child(3):hover::before { background: rgba(0,0,0,0.4); }
+.site-footer .footer-socials a:nth-child(4):hover::before { background: rgba(37, 211, 102, 0.25); }
+.site-footer .footer-socials a:nth-child(5):hover::before { background: rgba(0, 119, 181, 0.25); }
+.site-footer .footer-socials a:hover::before { opacity: 1; }
+.site-footer .footer-socials a:nth-child(1):hover { color: #1877f2; }
+.site-footer .footer-socials a:nth-child(2):hover { color: #ee2a7b; }
+.site-footer .footer-socials a:nth-child(3):hover { color: #fff; }
+.site-footer .footer-socials a:nth-child(4):hover { color: #25d366; }
+.site-footer .footer-socials a:nth-child(5):hover { color: #0077b5; }
+@media (max-width: 980px) { .footer-shell { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .site-footer { padding: 42px 18px 30px; } .footer-grid { grid-template-columns: 1fr; } .footer-alerts h2 { font-size: 1.45rem; } .footer-alert-row { flex-direction: column; } .footer-alert-row button { width: 100%; } }
   </style>
 </head>
 <body>
@@ -639,39 +709,36 @@
   </main>
 
   <!-- FOOTER -->
-<footer class="main-footer">
-  <div class="footer-links">
-    <a href="about-us.html">About Us</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms &amp; Conditions</a>
-    <a href="contact-us.html">Contact Us</a>
+<footer class="main-footer site-footer">
+  <div class="footer-shell">
+    <section class="footer-alerts" aria-label="Job Alerts">
+      <h2>Job Alerts</h2>
+      <p>Get new jobs, bursaries, and career tips sent to your inbox.</p>
+      <form class="footer-alert-form" name="job-alerts" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="job-alerts">
+        <p hidden><label>Leave this field empty <input name="bot-field"></label></p>
+        <label for="footerJobAlertEmail">Email address</label>
+        <div class="footer-alert-row">
+          <input id="footerJobAlertEmail" type="email" name="email" placeholder="you@example.com" required>
+          <button type="submit">Subscribe</button>
+        </div>
+        <span class="footer-alert-note">No spam. Just useful opportunities and preparation tips.</span>
+      </form>
+    </section>
+    <nav class="footer-grid" aria-label="Footer navigation">
+      <div class="footer-column"><h3>Opportunities</h3><a href="jobs.html">Jobs</a><a href="bursaries.html">Bursaries</a><a href="varsity.html">Varsity</a><a href="saved-items.html">Saved Items</a></div>
+      <div class="footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="cv-tips.html">CV Tips</a><a href="cv-tips.html#interview-prep">Interview Prep</a></div>
+      <div class="footer-column"><h3>Company</h3><a href="about-us.html">About Us</a><a href="contact-us.html">Contact Us</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms &amp; Conditions</a></div>
+    </nav>
   </div>
-
-  <!-- SOCIAL ICONS -->
+  <div class="footer-links"><a href="about-us.html">About Us</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms &amp; Conditions</a><a href="contact-us.html">Contact Us</a></div>
   <div class="footer-socials">
-
-    <a href="https://facebook.com/YOUR_PAGE" target="_blank" aria-label="Facebook">
-      <i class="fab fa-facebook-f"></i>
-    </a>
-
-    <a href="https://instagram.com/YOUR_HANDLE" target="_blank" aria-label="Instagram">
-      <i class="fab fa-instagram"></i>
-    </a>
-
-    <a href="https://tiktok.com/@YOUR_HANDLE" target="_blank" aria-label="TikTok">
-      <i class="fab fa-tiktok"></i>
-    </a>
-
-   <a href="https://whatsapp.com/channel/0029Vb7j7C7GJP89qB7k6e3i" target="_blank" aria-label="WhatsApp Channel">
-  <i class="fab fa-whatsapp"></i>
-     </a>
-
-    <a href="https://www.linkedin.com/company/career-unified" target="_blank" aria-label="LinkedIn">
-  <i class="fab fa-linkedin-in"></i>
-   </a>
-
+    <a href="https://facebook.com/YOUR_PAGE" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://instagram.com/YOUR_HANDLE" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://tiktok.com/@YOUR_HANDLE" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://whatsapp.com/channel/0029Vb7j7C7GJP89qB7k6e3i" target="_blank" aria-label="WhatsApp Channel"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.linkedin.com/company/career-unified" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
   </div>
-
   <p>&copy; 2026 Career Unified. All rights reserved.</p>
 </footer>
 
@@ -1268,71 +1335,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
