@@ -80,7 +80,6 @@ export default {
       type: "array",
       options: {
         list: FACULTY_OPTIONS,
-        layout: "tags",
       },
       of: [{ type: "string" }],
       validation: (Rule) =>
