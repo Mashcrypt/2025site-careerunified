@@ -97,6 +97,16 @@
   to = "/cv-tips.html"
   status = 200
 
+[[redirects]]
+  from = "/z83-filler"
+  to = "/z83-filler.html"
+  status = 200
+
+[[redirects]]
+  from = "/z83-filler/"
+  to = "/z83-filler.html"
+  status = 200
+
 # ================================
 # CV GENERATOR (NO REDIRECT LOOPS)
 # ================================
