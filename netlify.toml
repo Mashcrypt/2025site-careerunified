@@ -48,6 +48,12 @@
   to = "/"
   status = 404
 
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+  force = true
+
 # ================================
 # TRAILING SLASH NORMALISATION
 # Prevents duplicate URLs for SEO
