@@ -12,6 +12,8 @@ export async function getJob(jobId: string) {
   salary,
   posted,
   deadline,
+  jobType,
+  applyLink,
   "companyName": company->name,
   "companyLogo": company->logo.asset->url
 }
@@ -43,6 +45,8 @@ export async function getJobBySlug(slug: string) {
   salary,
   posted,
   deadline,
+  jobType,
+  applyLink,
   "companyName": company->name,
   "companyLogo": company->logo.asset->url
 }
