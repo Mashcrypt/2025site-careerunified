@@ -13,6 +13,8 @@ const FACULTY_OPTIONS = [
   { title: "Science", value: "Science" },
   { title: "Government", value: "Government" },
   { title: "Student Loan", value: "Student Loan" },
+  { title: "Supply Chain & Logistics", value: "Supply Chain & Logistics" },
+  { title: "Actuarial Science", value: "Actuarial Science" },
 ];
 
 export default {
