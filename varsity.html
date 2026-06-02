@@ -622,7 +622,7 @@
       try {
         universities = await window.sanityClient.fetch(`
           *[_type=="university"] | order(deadline asc){
-            _id, name, applicationLink, deadline, notes, city, province
+            _id, name, applicationLink, applicationFee, registrationFee, deadline, notes, city, province
           }
         `);
         localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
@@ -676,6 +676,21 @@
       return null;
     }
 
+    function escapeHtml(value) {
+      return (value || '').toString().replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function optionalDetailLine(label, value) {
+      const text = normalize(value);
+      return text ? `<small>${label}: ${escapeHtml(text)}</small>` : '';
+    }
+
     function parseDeadline(d) {
       if (!d) return null;
       const dt = new Date(d);
@@ -705,7 +720,7 @@
       const query = normalizeLower(q);
       if (!query) return list;
       return list.filter(u => {
-        const hay = normalizeLower([u?.name, u?.notes, u?.deadline, u?.city, u?.province].filter(Boolean).join(' | '));
+        const hay = normalizeLower([u?.name, u?.notes, u?.applicationFee, u?.registrationFee, u?.deadline, u?.city, u?.province].filter(Boolean).join(' | '));
         return hay.includes(query);
       });
     }
@@ -760,11 +775,15 @@
         const notesHTML = (uni.notes && uni.notes.toString().trim())
           ? `<small>${uni.notes.toString().trim()}</small>`
           : '';
+        const feesHTML = `
+          ${optionalDetailLine('Application Fee', uni.applicationFee)}
+          ${optionalDetailLine('Registration Fee', uni.registrationFee)}`;
 
         li.innerHTML = `
           ${safeUrl
             ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name || 'University'}</a>`
             : `<span>${uni.name || 'University'}</span>`}
+          ${feesHTML}
           <small>Application Deadline: ${uni.deadline || 'TBA'}</small>
           ${notesHTML}
           ${labelsHTML}`;

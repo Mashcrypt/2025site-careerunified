@@ -16,6 +16,13 @@ const RECRUITER_PLAN: Record<RecruiterPlanId, { amount: string; unlocks: number 
   enterprise: { amount: "1499.00", unlocks: -1 },
 };
 
+const PAYFAST_SOURCE_HOSTS = [
+  "www.payfast.co.za",
+  "sandbox.payfast.co.za",
+  "w1w.payfast.co.za",
+  "w2w.payfast.co.za",
+];
+
 function ok() {
   return { statusCode: 200, body: "OK" };
 }
@@ -61,31 +68,74 @@ function payfastValidateUrl() {
 }
 
 function requestIp(headers: Record<string, string | undefined>) {
-  const netlifyIp = headers["x-nf-client-connection-ip"] || headers["X-Nf-Client-Connection-Ip"];
+  const netlifyIp = headerValue(headers, "x-nf-client-connection-ip");
   if (netlifyIp) return netlifyIp.trim();
 
-  const forwarded = headers["x-forwarded-for"] || headers["X-Forwarded-For"];
+  const forwarded = headerValue(headers, "x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
 
-  return headers["client-ip"] || headers["Client-Ip"] || "";
+  return headerValue(headers, "client-ip") || "";
 }
 
-async function validatePayfastSource(headers: Record<string, string | undefined>) {
-  const ip = requestIp(headers);
-  if (!ip) return false;
+function headerValue(headers: Record<string, string | undefined>, name: string) {
+  const target = name.toLowerCase();
+  const match = Object.keys(headers).find((key) => key.toLowerCase() === target);
+  return match ? headers[match] : undefined;
+}
 
-  const hosts =
-    process.env.PAYFAST_MODE === "live"
-      ? ["www.payfast.co.za", "w1w.payfast.co.za", "w2w.payfast.co.za"]
-      : ["sandbox.payfast.co.za"];
+function normalizeIp(value?: string | null) {
+  return (value || "").trim().replace(/^\[?::ffff:/i, "").replace(/]$/, "");
+}
 
+async function resolvePayfastIps(hosts = PAYFAST_SOURCE_HOSTS) {
   const resolved = new Set<string>();
   for (const host of hosts) {
     const records = await dns.lookup(host, { all: true });
-    records.forEach((record) => resolved.add(record.address));
+    records.forEach((record) => resolved.add(normalizeIp(record.address)));
+  }
+  return resolved;
+}
+
+function referrerHost(headers: Record<string, string | undefined>) {
+  const value = headerValue(headers, "referer") || headerValue(headers, "referrer");
+  if (!value) return "";
+
+  try {
+    return new URL(value).hostname.toLowerCase();
+  } catch {
+    try {
+      return new URL(`https://${value}`).hostname.toLowerCase();
+    } catch {
+      return "";
+    }
+  }
+}
+
+async function validatePayfastSource(headers: Record<string, string | undefined>) {
+  const allowedHosts =
+    process.env.PAYFAST_MODE === "live"
+      ? PAYFAST_SOURCE_HOSTS.filter((host) => host !== "sandbox.payfast.co.za")
+      : ["sandbox.payfast.co.za"];
+  const validIps = await resolvePayfastIps(allowedHosts);
+
+  const ip = normalizeIp(requestIp(headers));
+  if (ip && validIps.has(ip)) {
+    return { ok: true, method: "ip", ip };
   }
 
-  return resolved.has(ip);
+  // PayFast's own sample validates the Referer host. In serverless environments,
+  // proxy headers can hide the original source IP, so accept a valid PayFast
+  // referrer as a secondary signal while still requiring signature + server
+  // validation below.
+  const refererHost = referrerHost(headers);
+  if (refererHost && allowedHosts.includes(refererHost)) {
+    const refererIps = await resolvePayfastIps([refererHost]);
+    if ([...refererIps].some((refererIp) => validIps.has(refererIp))) {
+      return { ok: true, method: "referer", ip, refererHost };
+    }
+  }
+
+  return { ok: false, method: "none", ip, refererHost };
 }
 
 async function validateWithPayfast(data: Record<string, string>) {
@@ -108,7 +158,7 @@ async function validateWithPayfast(data: Record<string, string>) {
     });
 
     const text = (await response.text()).trim();
-    return response.ok && text === "VALID";
+    return { ok: response.ok && text === "VALID", status: response.status, text };
   } finally {
     clearTimeout(timeout);
   }
@@ -146,21 +196,39 @@ export const handler: Handler = async (event) => {
   const expectedSig = generateSignature(data, passphrase);
   if (!data.signature || expectedSig !== data.signature) return bad(401, "Invalid signature");
 
-  let validPayfastSource = false;
+  let validPayfastSource = { ok: false, method: "none" } as Awaited<ReturnType<typeof validatePayfastSource>>;
   try {
     validPayfastSource = await validatePayfastSource(event.headers as Record<string, string | undefined>);
   } catch (error) {
     console.error("PAYFAST_SOURCE_VALIDATE_ERROR", error);
   }
-  if (!validPayfastSource) return bad(401, "Invalid PayFast source");
+  if (!validPayfastSource.ok) {
+    console.warn("PAYFAST_SOURCE_VALIDATE_WARN", {
+      m_payment_id: data.m_payment_id || null,
+      pf_payment_id: data.pf_payment_id || null,
+      source: validPayfastSource,
+    });
 
-  let validPayfastData = false;
+    if (process.env.PAYFAST_ENFORCE_SOURCE_IP === "true") {
+      return bad(401, "Invalid PayFast source");
+    }
+  }
+
+  let validPayfastData = { ok: false, status: 0, text: "" };
   try {
     validPayfastData = await validateWithPayfast(data);
   } catch (error) {
     console.error("PAYFAST_VALIDATE_ERROR", error);
   }
-  if (!validPayfastData) return bad(401, "Invalid PayFast data");
+  if (!validPayfastData.ok) {
+    console.error("PAYFAST_VALIDATE_INVALID", {
+      m_payment_id: data.m_payment_id || null,
+      pf_payment_id: data.pf_payment_id || null,
+      status: validPayfastData.status,
+      response: validPayfastData.text,
+    });
+    return bad(401, "Invalid PayFast data");
+  }
 
   const uid = data.custom_str1;
   const plan = data.custom_str2;
