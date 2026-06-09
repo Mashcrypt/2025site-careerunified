@@ -217,9 +217,9 @@
 # ================================
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["puppeteer-core", "@sparticuz/chromium"]
 
 [functions."export-pdf"]
+  external_node_modules = ["puppeteer-core", "@sparticuz/chromium"]
   memory = 1024
   timeout = 26
 # ================================
