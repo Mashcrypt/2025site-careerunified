@@ -10,6 +10,16 @@ export default {
       validation: Rule => Rule.required()
     },
     {
+      name: 'slug',
+      title: 'University URL',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96
+      },
+      description: 'Generate this when editing a university. Existing records also receive a compatible URL automatically.'
+    },
+    {
       name: 'applicationLink',
       title: 'Application Link',
       type: 'url',

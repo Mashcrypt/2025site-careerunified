@@ -59,46 +59,23 @@ function formatParagraphs(value: unknown) {
     .join("");
 }
 
-function isCrawler(ua: string) {
-  const value = (ua || "").toLowerCase();
-  return [
-    "whatsapp",
-    "facebookexternalhit",
-    "facebot",
-    "twitterbot",
-    "telegrambot",
-    "slackbot",
-    "discordbot",
-    "linkedinbot",
-    "pinterest",
-    "googlebot",
-    "bingbot",
-  ].some((bot) => value.includes(bot));
-}
-
 export default async (request: Request) => {
   try {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
     const slug = parts.length >= 2 ? parts[1] : null;
 
-    if (!slug || slug === "bursary") return fetch(request);
-
-    const redirectTo = `/bursaries.html?slug=${encodeURIComponent(slug)}`;
-    const ua = request.headers.get("user-agent") || "";
-
-    if (!isCrawler(ua)) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          location: redirectTo,
-          "cache-control": "no-store",
-        },
-      });
+    if (!slug || slug === "bursary") {
+      return Response.redirect("https://careerunified.com/bursaries.html", 301);
     }
 
     const bursary = await getBursaryBySlug(slug);
-    if (!bursary) return fetch(request);
+    if (!bursary) {
+      return new Response("Bursary not found", {
+        status: 404,
+        headers: {"content-type": "text/plain; charset=utf-8"},
+      });
+    }
 
     const bursaryName = bursary.name || "Bursary Opportunity";
     const providerName = bursary.provider || "Provider";
@@ -111,6 +88,7 @@ export default async (request: Request) => {
         : [];
     const facultyText = faculties.length ? faculties.join(", ") : "All fields";
     const deadlineDate = normalizeDate(bursary.deadline);
+    const expired = Boolean(deadlineDate && deadlineDate < new Date().toISOString().slice(0, 10));
     const description = stripHtml(bursary.description);
     const metaDescription = `${providerName} - ${facultyText} - Deadline: ${deadlineDate || bursary.deadline || "Not specified"} - ${snippet(description)}`.trim();
     const pageTitle = `${bursaryName} | Career Unified`;
@@ -171,7 +149,7 @@ export default async (request: Request) => {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(metaDescription)}">
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <meta name="robots" content="${expired ? "noindex, follow" : "index, follow, max-snippet:-1, max-image-preview:large"}">
   <link rel="canonical" href="${escapeHtml(shareUrl)}">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="article">
@@ -215,6 +193,7 @@ export default async (request: Request) => {
       <div class="brand"><a href="https://careerunified.com/">Career Unified</a></div>
       <h1>${escapeHtml(bursaryName)}</h1>
       <div class="meta">${escapeHtml(providerName)} - ${escapeHtml(facultyText)}</div>
+      ${expired ? '<div class="meta"><strong>Applications closed</strong></div>' : ""}
     </div>
   </header>
   <main>
@@ -226,7 +205,8 @@ export default async (request: Request) => {
         ${detailRow("Application type", "Bursary / scholarship")}
       </div>
       <div class="actions">
-        <a class="btn green" href="https://careerunified.com/bursaries.html?slug=${encodeURIComponent(slug)}">View bursary details</a>
+        ${!expired && bursary.applicationLink ? `<a class="btn green" href="${escapeHtml(bursary.applicationLink)}" target="_blank" rel="noopener noreferrer">Apply on official website</a>` : ""}
+        <a class="btn light" href="https://careerunified.com/bursaries.html">Browse current bursaries</a>
         <a class="btn blue" href="https://careerunified.com/cv-tips">Application tips</a>
         <a class="btn light" href="https://careerunified.com/cv-generator/">Prepare CV</a>
       </div>

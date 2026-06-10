@@ -183,6 +183,9 @@
     .bursary-card:hover  { background: #f0f7ff; transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .bursary-card.selected { border-left-color: #facc15; background: #fffbeb; }
     .bursary-card strong { font-size: 1.1rem; color: #1e3a8a; display: block; margin-bottom: 6px; padding-right: 40px; }
+    .bursary-title-link { color: inherit; text-decoration: none; }
+    .bursary-title-link:hover strong,
+    .bursary-title-link:focus-visible strong { color: #2563eb; text-decoration: underline; }
     .bursary-card p      { margin: 4px 0; font-size: 0.9rem; color: #6b7280; line-height: 1.5; }
 
     .urgent {
@@ -693,7 +696,9 @@
         </select>
       </div>
 
-      <ul id="bursaryList" aria-label="Bursary listings" aria-live="polite"></ul>
+      <ul id="bursaryList" aria-label="Bursary listings" aria-live="polite">
+        <!-- SSR_BURSARY_LIST -->
+      </ul>
     </div>
 
     <aside class="bursaries-preview" id="bursaryPreview" aria-label="Bursary details">
@@ -1053,6 +1058,7 @@
     }
 
     function injectBursarySchema() {
+      document.querySelector('script[data-server-rendered="true"]')?.remove();
       const schema = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
@@ -1180,7 +1186,9 @@
           <svg class="bursary-heart" viewBox="0 0 24 24" aria-label="Save bursary" role="button" tabindex="0">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
           </svg>
-          <strong>${safeText(b.name, 'Untitled bursary')}</strong>
+          <a class="bursary-title-link" href="${makeShareUrl(b)}">
+            <strong>${safeText(b.name, 'Untitled bursary')}</strong>
+          </a>
           <p><strong>Faculty:</strong>   ${getBursaryFacultyText(b)}</p>
           <p><strong>Provider:</strong>  ${safeText(b.provider,  'Not specified')}</p>
           <p><strong>Deadline:</strong>  ${safeText(b.deadline,  'Not specified')} ${statusBadge}</p>
@@ -1189,6 +1197,7 @@
 
         li.onclick = e => {
           if (e.target.closest('.bursary-heart')) return;
+          if (e.target.closest('.bursary-title-link')) return;
           if (e.target.classList.contains('read-more')) { e.stopPropagation(); toggleDesc(parseInt(e.target.dataset.index, 10)); return; }
           const prev    = selectedIndex;
           selectedIndex = index;

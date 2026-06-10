@@ -1,8 +1,40 @@
 {
   "routes": [
     {
+      "path": "/jobs",
+      "function": "content-listing"
+    },
+    {
+      "path": "/jobs.html",
+      "function": "content-listing"
+    },
+    {
       "path": "/jobs/*",
       "function": "job"
+    },
+    {
+      "path": "/bursaries",
+      "function": "content-listing"
+    },
+    {
+      "path": "/bursaries.html",
+      "function": "content-listing"
+    },
+    {
+      "path": "/bursary/*",
+      "function": "bursary-og"
+    },
+    {
+      "path": "/varsity",
+      "function": "content-listing"
+    },
+    {
+      "path": "/varsity.html",
+      "function": "content-listing"
+    },
+    {
+      "path": "/varsity/*",
+      "function": "varsity"
     }
   ]
 }

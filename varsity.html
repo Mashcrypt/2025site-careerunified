@@ -530,7 +530,9 @@
       <p class="helper-text">"Open / Closed" is calculated from today's date vs the application deadline.</p>
     </div>
 
-    <ul id="varsityList" aria-label="University listings" aria-live="polite"></ul>
+    <ul id="varsityList" aria-label="University listings" aria-live="polite">
+      <!-- SSR_VARSITY_LIST -->
+    </ul>
   </main>
 
   <!-- FOOTER -->
@@ -622,7 +624,7 @@
       try {
         universities = await window.sanityClient.fetch(`
           *[_type=="university"] | order(deadline asc){
-            _id, name, applicationLink, applicationFee, registrationFee, deadline, notes, city, province
+            _id, name, slug, applicationLink, applicationFee, registrationFee, deadline, notes, city, province
           }
         `);
         localStorage.setItem(VARSITY_CACHE, JSON.stringify(universities));
@@ -636,6 +638,7 @@
     }
 
     function injectUniversitySchema() {
+      document.querySelector('script[data-server-rendered="true"]')?.remove();
       const schema = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
@@ -644,7 +647,7 @@
           '@type': 'CollegeOrUniversity',
           'position': index + 1,
           'name': u?.name || 'University',
-          'url': u?.applicationLink || 'https://careerunified.com/varsity.html',
+          'url': `https://careerunified.com/varsity/${encodeURIComponent(getUniversitySlug(u))}`,
           'address': {
             '@type': 'PostalAddress',
             'addressLocality': u?.city || undefined,
@@ -684,6 +687,17 @@
         '"': '&quot;',
         "'": '&#39;'
       }[char]));
+    }
+
+    function slugifyUniversity(value) {
+      return normalizeLower(value)
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function getUniversitySlug(uni) {
+      return uni?.slug?.current || (typeof uni?.slug === 'string' ? uni.slug : '') || slugifyUniversity(uni?.name);
     }
 
     function optionalDetailLine(label, value) {
@@ -759,7 +773,7 @@
         const d      = parseDeadline(uni.deadline);
         const status = getStatus(d);
         const urgent = status === 'open' && isUrgent(d);
-        const safeUrl = safeHttpUrl(uni.applicationLink);
+        const internalUrl = `/varsity/${encodeURIComponent(getUniversitySlug(uni))}`;
 
         const li = document.createElement('li');
         li.className = 'varsity-card';
@@ -780,9 +794,7 @@
           ${optionalDetailLine('Registration Fee', uni.registrationFee)}`;
 
         li.innerHTML = `
-          ${safeUrl
-            ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${uni.name || 'University'}</a>`
-            : `<span>${uni.name || 'University'}</span>`}
+          <a href="${internalUrl}">${uni.name || 'University'}</a>
           ${feesHTML}
           <small>Application Deadline: ${uni.deadline || 'TBA'}</small>
           ${notesHTML}

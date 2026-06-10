@@ -52,28 +52,14 @@ function formatParagraphs(value: unknown) {
     .join("");
 }
 
-function salaryNumber(value: unknown) {
-  const match = String(value ?? "").replace(/,/g, "").match(/\d+(?:\.\d+)?/);
-  if (!match) return null;
-  const number = Number(match[0]);
-  return Number.isFinite(number) ? number : null;
-}
-
-function isCrawler(ua: string) {
-  const value = (ua || "").toLowerCase();
-  return [
-    "whatsapp",
-    "facebookexternalhit",
-    "facebot",
-    "twitterbot",
-    "telegrambot",
-    "slackbot",
-    "discordbot",
-    "linkedinbot",
-    "pinterest",
-    "googlebot",
-    "bingbot",
-  ].some((bot) => value.includes(bot));
+function employmentType(value: unknown) {
+  const normalized = String(value ?? "").toLowerCase();
+  if (normalized.includes("part")) return "PART_TIME";
+  if (normalized.includes("intern") || normalized.includes("graduate")) return "INTERN";
+  if (normalized.includes("temporary")) return "TEMPORARY";
+  if (normalized.includes("contract")) return "CONTRACTOR";
+  if (normalized.includes("full")) return "FULL_TIME";
+  return "OTHER";
 }
 
 export default async (request: Request) => {
@@ -82,97 +68,84 @@ export default async (request: Request) => {
     const parts = url.pathname.split("/").filter(Boolean);
     const slug = parts.length >= 2 ? parts[1] : null;
 
-    if (!slug || slug === "jobs") return fetch(request);
-
-    const redirectTo = `/jobs.html?slug=${encodeURIComponent(slug)}`;
-    const ua = request.headers.get("user-agent") || "";
-
-    if (!isCrawler(ua)) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          location: redirectTo,
-          "cache-control": "no-store",
-        },
-      });
+    if (!slug || slug === "jobs") {
+      return Response.redirect("https://careerunified.com/jobs.html", 301);
     }
 
     const job = await getJobBySlug(slug);
-    if (!job) return fetch(request);
+    if (!job) {
+      return new Response("Job not found", {
+        status: 404,
+        headers: {"content-type": "text/plain; charset=utf-8"},
+      });
+    }
 
     const companyName = job.companyName || "Confidential";
     const jobTitle = job.title || "Job Opportunity";
     const shareUrl = `https://careerunified.com/jobs/${slug}`;
     const image = job.companyLogo || "https://careerunified.com/android-chrome-512x512.png";
     const salaryText = job.salary || "Not specified";
-    const salaryValue = salaryNumber(job.salary);
     const locationText = job.location || "South Africa";
     const postedDate = normalizeDate(job.posted);
     const deadlineDate = normalizeDate(job.deadline);
+    const expired = Boolean(deadlineDate && deadlineDate < new Date().toISOString().slice(0, 10));
     const description = stripHtml(job.description);
     const metaDescription = `${companyName} - ${locationText} - Salary: ${salaryText} - ${snippet(description)}`.trim();
     const pageTitle = `${jobTitle} at ${companyName} | Career Unified`;
 
+    const graph: Array<Record<string, unknown>> = [
+      {
+        "@type": "WebPage",
+        "@id": `${shareUrl}#webpage`,
+        url: shareUrl,
+        name: pageTitle,
+        description: snippet(description),
+        isPartOf: {
+          "@type": "WebSite",
+          name: "Career Unified",
+          url: "https://careerunified.com/",
+        },
+        breadcrumb: {"@id": `${shareUrl}#breadcrumb`},
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${shareUrl}#breadcrumb`,
+        itemListElement: [
+          {"@type": "ListItem", position: 1, name: "Home", item: "https://careerunified.com/"},
+          {"@type": "ListItem", position: 2, name: "Jobs", item: "https://careerunified.com/jobs.html"},
+          {"@type": "ListItem", position: 3, name: jobTitle, item: shareUrl},
+        ],
+      },
+    ];
+
+    if (!expired) {
+      graph.push({
+        "@type": "JobPosting",
+        title: jobTitle,
+        description: description || snippet(description),
+        datePosted: postedDate || undefined,
+        validThrough: deadlineDate ? `${deadlineDate}T23:59:59+02:00` : undefined,
+        employmentType: employmentType(job.jobType),
+        hiringOrganization: {
+          "@type": "Organization",
+          name: companyName,
+          logo: image,
+        },
+        jobLocation: {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: locationText,
+            addressCountry: "ZA",
+          },
+        },
+        url: shareUrl,
+      });
+    }
+
     const schema = {
       "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebPage",
-          "@id": `${shareUrl}#webpage`,
-          url: shareUrl,
-          name: pageTitle,
-          description: snippet(description),
-          isPartOf: {
-            "@type": "WebSite",
-            name: "Career Unified",
-            url: "https://careerunified.com/",
-          },
-          breadcrumb: {"@id": `${shareUrl}#breadcrumb`},
-        },
-        {
-          "@type": "BreadcrumbList",
-          "@id": `${shareUrl}#breadcrumb`,
-          itemListElement: [
-            {"@type": "ListItem", position: 1, name: "Home", item: "https://careerunified.com/"},
-            {"@type": "ListItem", position: 2, name: "Jobs", item: "https://careerunified.com/jobs.html"},
-            {"@type": "ListItem", position: 3, name: jobTitle, item: shareUrl},
-          ],
-        },
-        {
-          "@type": "JobPosting",
-          title: jobTitle,
-          description: description || snippet(description),
-          datePosted: postedDate || undefined,
-          validThrough: deadlineDate ? `${deadlineDate}T23:59:59+02:00` : undefined,
-          employmentType: job.jobType || "FULL_TIME",
-          hiringOrganization: {
-            "@type": "Organization",
-            name: companyName,
-            sameAs: "https://careerunified.com/",
-            logo: image,
-          },
-          jobLocation: {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: locationText,
-              addressCountry: "ZA",
-            },
-          },
-          baseSalary: salaryValue
-            ? {
-                "@type": "MonetaryAmount",
-                currency: "ZAR",
-                value: {
-                  "@type": "QuantitativeValue",
-                  value: salaryValue,
-                  unitText: "MONTH",
-                },
-              }
-            : undefined,
-          url: shareUrl,
-        },
-      ],
+      "@graph": graph,
     };
 
     const html = `<!DOCTYPE html>
@@ -182,7 +155,7 @@ export default async (request: Request) => {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(metaDescription)}">
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <meta name="robots" content="${expired ? "noindex, follow" : "index, follow, max-snippet:-1, max-image-preview:large"}">
   <link rel="canonical" href="${escapeHtml(shareUrl)}">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="website">
@@ -225,6 +198,7 @@ export default async (request: Request) => {
       <div class="brand"><a href="https://careerunified.com/">Career Unified</a></div>
       <h1>${escapeHtml(jobTitle)}</h1>
       <div class="meta">${escapeHtml(companyName)} - ${escapeHtml(locationText)}</div>
+      ${expired ? '<div class="meta"><strong>Applications closed</strong></div>' : ""}
     </div>
   </header>
   <main>
@@ -238,7 +212,8 @@ export default async (request: Request) => {
         ${detailRow("Employment type", job.jobType || "Full-time")}
       </div>
       <div class="actions">
-        <a class="btn green" href="https://careerunified.com/jobs.html?slug=${encodeURIComponent(slug)}">View job details</a>
+        ${!expired && job.applyLink ? `<a class="btn green" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noopener noreferrer">Apply on employer website</a>` : ""}
+        <a class="btn light" href="https://careerunified.com/jobs.html">Browse current jobs</a>
         <a class="btn blue" href="https://careerunified.com/cv-generator/?tab=ai&source=job">Tailor CV</a>
         <a class="btn light" href="https://careerunified.com/z83-filler">Fill Z83</a>
       </div>

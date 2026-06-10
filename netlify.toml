@@ -136,6 +136,14 @@
 # JOBS (Edge Function + SPA)
 # ================================
 [[edge_functions]]
+  function = "content-listing"
+  path = "/jobs"
+
+[[edge_functions]]
+  function = "content-listing"
+  path = "/jobs.html"
+
+[[edge_functions]]
   function = "job"
   path = "/jobs/*"
 
@@ -149,6 +157,14 @@
 # BURSARIES (Edge Function + SPA)
 # ================================
 [[edge_functions]]
+  function = "content-listing"
+  path = "/bursaries"
+
+[[edge_functions]]
+  function = "content-listing"
+  path = "/bursaries.html"
+
+[[edge_functions]]
   function = "bursary-og"
   path = "/bursary/*"
 
@@ -157,6 +173,21 @@
   to = "/bursaries.html"
   status = 200
   force = true
+
+# ================================
+# UNIVERSITIES (Edge Function + SSR)
+# ================================
+[[edge_functions]]
+  function = "content-listing"
+  path = "/varsity"
+
+[[edge_functions]]
+  function = "content-listing"
+  path = "/varsity.html"
+
+[[edge_functions]]
+  function = "varsity"
+  path = "/varsity/*"
 
 # ================================
 # CACHE HEADERS — speeds up SEO

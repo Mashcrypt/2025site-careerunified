@@ -205,6 +205,9 @@
     .job-card:hover        { background: #f8fbff; transform: translateX(4px); box-shadow: 0 10px 22px rgba(30,58,138,0.12); border-color: #bfdbfe; }
     .job-card.selected     { border-left-color: #facc15; background: #fffbeb; border-color: #fde68a; box-shadow: 0 12px 26px rgba(250,204,21,0.18); }
     .job-card h3           { font-size: 1.1rem; color: #1e3a8a; margin-bottom: 8px; padding-right: 80px; }
+    .job-title-link        { color: inherit; text-decoration: none; }
+    .job-title-link:hover h3,
+    .job-title-link:focus-visible h3 { color: #2563eb; text-decoration: underline; }
     .job-card p            { margin: 4px 0; font-size: 0.9rem; color: #6b7280; }
     .job-card strong       { color: #374151; font-weight: 600; }
 
@@ -828,7 +831,9 @@
         </select>
         <button id="sortBtn">Sort by Deadline</button>
       </div>
-      <ul class="jobs-list" id="jobList" aria-label="Job listings" aria-live="polite"></ul>
+      <ul class="jobs-list" id="jobList" aria-label="Job listings" aria-live="polite">
+        <!-- SSR_JOB_LIST -->
+      </ul>
     </div>
 
     <!-- Right: Job Preview -->
@@ -1244,7 +1249,9 @@
           <div class="job-row">
             <img src="${logoUrl || '/fallback-company.png'}" class="company-logo" alt="${job.company?.name || 'Company'} logo" width="80" height="80" loading="lazy">
             <div>
-              <h3>${job.title}</h3>
+              ${job.slug
+                ? `<a class="job-title-link" href="/jobs/${encodeURIComponent(job.slug)}"><h3>${job.title}</h3></a>`
+                : `<h3>${job.title}</h3>`}
               <p>${job.company?.name || 'Confidential'}</p>
               <p>${job.location || 'Not specified'}</p>
             </div>
@@ -1255,6 +1262,7 @@
 
         li.onclick = e => {
           if (e.target.closest('.heart-icon')) return;
+          if (e.target.closest('.job-title-link')) return;
           selectedIndex = index;
           const j = filteredJobs[selectedIndex];
           history.pushState({}, '', `/jobs/${j.slug}`);
@@ -1404,6 +1412,15 @@
     }
 
     function injectJobSchema(job) {
+      const schemaEmploymentType = (() => {
+        const value = safeText(job.jobType).toLowerCase();
+        if (value.includes('part')) return 'PART_TIME';
+        if (value.includes('intern') || value.includes('graduate')) return 'INTERN';
+        if (value.includes('temporary')) return 'TEMPORARY';
+        if (value.includes('contract')) return 'CONTRACTOR';
+        if (value.includes('full')) return 'FULL_TIME';
+        return 'OTHER';
+      })();
       const schema = {
         '@context': 'https://schema.org',
         '@type': 'JobPosting',
@@ -1411,7 +1428,7 @@
         'description': safeText(job.description),
         'datePosted': job.posted || undefined,
         'validThrough': job.deadline || undefined,
-        'employmentType': job.jobType || 'FULL_TIME',
+        'employmentType': schemaEmploymentType,
         'hiringOrganization': {
           '@type': 'Organization',
           'name': job.company?.name || 'Confidential',
@@ -1425,11 +1442,6 @@
             'addressCountry': 'ZA'
           }
         },
-        'baseSalary': job.salary ? {
-          '@type': 'MonetaryAmount',
-          'currency': 'ZAR',
-          'value': { '@type': 'QuantitativeValue', 'value': job.salary, 'unitText': 'MONTH' }
-        } : undefined,
         'url': `https://careerunified.com/jobs/${job.slug}`
       };
 

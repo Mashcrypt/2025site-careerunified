@@ -14,11 +14,21 @@ type SitemapEntry = {
 
 type SanityItem = {
   slug?: string;
+  name?: string;
   _updatedAt?: string;
   _createdAt?: string;
   posted?: string;
   deadline?: string;
 };
+
+function slugify(value?: string) {
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -59,10 +69,14 @@ function staticEntries(): SitemapEntry[] {
   ];
 }
 
-async function fetchSanityItems(type: "job" | "bursary", limit = 2000): Promise<SanityItem[]> {
-  const slugPath = `"slug": slug.current`;
-  const query = `*[_type == "${type}" && defined(slug.current) && (!defined(deadline) || deadline >= "${today()}")] | order(coalesce(_updatedAt, _createdAt) desc)[0...${limit}]{
+async function fetchSanityItems(type: "job" | "bursary" | "university", limit = 2000): Promise<SanityItem[]> {
+  const slugPath = type === "university"
+    ? `"slug": slug.current`
+    : `"slug": coalesce(slug.current, _id)`;
+  const deadlineFilter = type === "university" ? "" : ` && (!defined(deadline) || deadline >= "${today()}")`;
+  const query = `*[_type == "${type}"${deadlineFilter}] | order(coalesce(_updatedAt, _createdAt) desc)[0...${limit}]{
     ${slugPath},
+    name,
     _updatedAt,
     _createdAt,
     posted,
@@ -78,10 +92,13 @@ async function fetchSanityItems(type: "job" | "bursary", limit = 2000): Promise<
   }
 
   const data = await response.json();
-  return Array.isArray(data?.result) ? data.result : [];
+  const items = Array.isArray(data?.result) ? data.result : [];
+  return type === "university"
+    ? items.map((item: SanityItem) => ({...item, slug: item.slug || slugify(item.name)}))
+    : items;
 }
 
-function opportunityEntries(items: SanityItem[], basePath: "jobs" | "bursary", priority: string): SitemapEntry[] {
+function opportunityEntries(items: SanityItem[], basePath: "jobs" | "bursary" | "varsity", priority: string): SitemapEntry[] {
   return items
     .filter((item) => item.slug)
     .map((item) => ({
@@ -124,13 +141,15 @@ export const handler: Handler = async () => {
   const entries = staticEntries();
 
   try {
-    const [jobs, bursaries] = await Promise.all([
+    const [jobs, bursaries, universities] = await Promise.all([
       fetchSanityItems("job"),
       fetchSanityItems("bursary"),
+      fetchSanityItems("university"),
     ]);
 
     entries.push(...opportunityEntries(jobs, "jobs", "0.85"));
     entries.push(...opportunityEntries(bursaries, "bursary", "0.85"));
+    entries.push(...opportunityEntries(universities, "varsity", "0.8"));
   } catch (error) {
     console.error("Dynamic sitemap Sanity fetch failed:", error);
   }

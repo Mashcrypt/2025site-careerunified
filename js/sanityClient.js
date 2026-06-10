@@ -29,12 +29,13 @@ window.sanityClient = {
   // JOB-SAFE QUERY (FIXES [object Object])
   // ===============================
   fetchJobs: async function () {
+    const today = new Date().toISOString().slice(0, 10)
     const query = `
-      *[_type == "job"] | order(posted desc) {
+      *[_type == "job" && (!defined(deadline) || deadline >= "${today}")] | order(posted desc) {
         _id,
         _createdAt,
         title,
-        "slug": slug.current,
+        "slug": coalesce(slug.current, _id),
         description,
         location,
         salary,
