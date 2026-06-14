@@ -1,4 +1,8 @@
-import { getJobBySlug } from "../lib/sanity.ts";
+import {getActiveJobs, getJobBySlug} from "../lib/sanity.ts";
+
+type JobSummary = {
+  slug?: string;
+};
 
 function escapeHtml(value: unknown) {
   return String(value ?? "")
@@ -42,15 +46,28 @@ function detailRow(label: string, value: unknown, className = "") {
   return `<div class="${classes}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not specified")}</strong></div>`;
 }
 
-function formatParagraphs(value: unknown) {
-  const cleaned = stripHtml(value);
-  if (!cleaned) return "<p>Description not provided.</p>";
-  const sentences = cleaned.match(/[^.]+(?:\.|$)/g) || [];
-  const chunks = sentences.length > 1 ? sentences : [cleaned];
-  return chunks
-    .slice(0, 18)
-    .map((part) => `<p>${escapeHtml(part.trim())}</p>`)
-    .join("");
+function formatDescription(value: unknown) {
+  const cleaned = String(value ?? "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "• ")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;/gi, "'")
+    .replace(/[ \t]+•[ \t]+/g, "\n• ")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  return escapeHtml(cleaned || "Description not provided.");
 }
 
 function employmentType(value: unknown) {
@@ -73,7 +90,13 @@ export default async (request: Request) => {
       return Response.redirect("https://careerunified.com/jobs.html", 301);
     }
 
-    const job = await getJobBySlug(slug);
+    const [job, activeJobs] = await Promise.all([
+      getJobBySlug(slug),
+      getActiveJobs().catch((error) => {
+        console.error("adjacent jobs fetch error:", error);
+        return [];
+      }),
+    ]);
     if (!job) {
       return new Response("Job not found", {
         status: 404,
@@ -93,6 +116,35 @@ export default async (request: Request) => {
     const description = stripHtml(job.description);
     const metaDescription = `${companyName} - ${locationText} - Salary: ${salaryText} - ${snippet(description)}`.trim();
     const pageTitle = `${jobTitle} at ${companyName} | Career Unified`;
+    const currentIndex = activeJobs.findIndex((item: JobSummary) => item.slug === slug);
+    const previousJob = currentIndex > 0 ? activeJobs[currentIndex - 1] : null;
+    const nextJob = currentIndex >= 0 && currentIndex < activeJobs.length - 1
+      ? activeJobs[currentIndex + 1]
+      : null;
+    const previousUrl = previousJob?.slug
+      ? `/jobs/${encodeURIComponent(previousJob.slug)}`
+      : "";
+    const nextUrl = nextJob?.slug
+      ? `/jobs/${encodeURIComponent(nextJob.slug)}`
+      : "";
+    const aiTailorPayload = {
+      title: jobTitle,
+      company: companyName,
+      location: locationText,
+      salary: salaryText,
+      closingDate: deadlineDate || job.deadline || "Not specified",
+      description: String(job.description ?? "").trim(),
+      fullText: [
+        `Job Title: ${jobTitle}`,
+        `Company: ${companyName}`,
+        `Location: ${locationText}`,
+        `Salary: ${salaryText}`,
+        `Closing Date: ${deadlineDate || job.deadline || "Not specified"}`,
+        "",
+        "Job Description:",
+        String(job.description ?? "").trim(),
+      ].join("\n"),
+    };
 
     const graph: Array<Record<string, unknown>> = [
       {
@@ -169,9 +221,13 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script type="application/ld+json">${jsonLd(schema)}</script>
   <style>
-    body{margin:0;font-family:Arial,sans-serif;background:#f7f9fc;color:#111827;line-height:1.65}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Poppins",Arial,sans-serif;background:#f7f9fc;color:#111827;line-height:1.65}
     header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:44px 20px}
     main,.inner{max-width:960px;margin:0 auto}
     main{display:flex;flex-direction:column;padding:28px 20px 54px}
@@ -188,12 +244,14 @@ export default async (request: Request) => {
     .detail-row{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fbfdff}
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
     .detail-row strong{display:block;color:#111827}
-    .description p{margin:0 0 14px}
-    .actions{display:flex;flex-wrap:wrap;gap:12px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:12px 16px;font-weight:800;text-decoration:none}
+    .description-content{color:#374151;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+    .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .actions>:only-child{grid-column:1/-1}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
     .btn.green{background:#16a34a;color:#fff}
-    .btn.blue{background:#2563eb;color:#fff}
-    .btn.light{background:#eaf1fb;color:#1e3a8a}
+    .btn.green:hover{background:#15803d}
+    .external-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.3}
+    .swipe-hint{display:none}
     @media(max-width:680px){
       body{background:#f4f7fc}
       header{display:none}
@@ -204,25 +262,30 @@ export default async (request: Request) => {
         background:#fff;
         border:1px solid #dbeafe;
         border-radius:18px;
-        box-shadow:0 16px 38px rgba(30,58,138,.12)
+        box-shadow:0 16px 38px rgba(30,58,138,.12);
+        touch-action:pan-y
       }
       .summary-panel{order:1}
       .description{order:2}
       .actions-panel{order:3}
       .panel{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;margin:0}
       .mobile-preview-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
-      .mobile-preview-header h1{color:#1e3a8a;font-size:1.45rem;line-height:1.3;margin:0}
+      .mobile-preview-header h1{flex:1;min-width:0;color:#1e3a8a;font-size:1.4rem;line-height:1.3;margin:0;overflow-wrap:anywhere}
       .close-preview{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:32px;height:32px;color:#3b82f6;font-size:2rem;line-height:1;text-decoration:none}
       .details{grid-template-columns:1fr}
       .secondary-detail{display:none}
       .detail-row{border-color:#dbeafe;border-radius:14px;padding:16px;background:#f8fbff}
       .detail-row span{text-transform:uppercase;letter-spacing:.04em}
       .description{margin-top:20px;padding:18px;background:#f9fafb;border:1px solid #e5edfb;border-radius:10px}
-      .description h2{font-size:1.2rem;font-weight:400;margin:0 0 10px}
-      .description p{font-size:1rem;line-height:1.75}
+      .description-content{font-size:1rem;line-height:1.75}
       .actions-panel{margin-top:18px}
-      .actions{flex-direction:column}
       .btn{box-sizing:border-box;width:100%}
+      .swipe-hint{display:block;margin:14px 0 0;color:#64748b;font-size:.75rem;text-align:center}
+    }
+    @media(max-width:390px){
+      main{margin:10px;padding:16px}
+      .actions{gap:10px}
+      .btn{padding:14px 8px;font-size:.9rem}
     }
   </style>
 </head>
@@ -251,18 +314,43 @@ export default async (request: Request) => {
       </div>
     </section>
     <section class="panel description">
-      <h2>Job Description</h2>
-      ${formatParagraphs(job.description)}
+      <div class="description-content">${formatDescription(job.description)}</div>
     </section>
     <section class="panel actions-panel">
       <div class="actions">
-        ${!expired && job.applyLink ? `<a class="btn green" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noopener noreferrer">Apply on employer website</a>` : ""}
-        <a class="btn light" href="https://careerunified.com/jobs.html">Browse current jobs</a>
-        <a class="btn blue" href="https://careerunified.com/cv-generator/?tab=ai&source=job">Tailor CV</a>
-        <a class="btn light" href="https://careerunified.com/z83-filler">Fill Z83</a>
+        ${!expired && job.applyLink ? `<a class="btn green" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noopener noreferrer">Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg></a>` : ""}
+        <a class="btn green" id="ai-tailor-link" href="https://careerunified.com/cv-generator/?tab=ai&source=job">AI Tailor CV</a>
       </div>
+      ${(previousUrl || nextUrl) ? '<p class="swipe-hint">Swipe right or left to view another job</p>' : ""}
     </section>
   </main>
+  <script>
+    (() => {
+      const preview = document.getElementById("job-preview");
+      const previousUrl = ${jsonLd(previousUrl || null)};
+      const nextUrl = ${jsonLd(nextUrl || null)};
+      const aiTailorPayload = ${jsonLd(aiTailorPayload)};
+      let startX = 0;
+      let startY = 0;
+
+      document.getElementById("ai-tailor-link")?.addEventListener("click", () => {
+        sessionStorage.setItem("careerUnifiedAITailorJob", JSON.stringify(aiTailorPayload));
+      });
+
+      preview?.addEventListener("touchstart", (event) => {
+        startX = event.changedTouches[0].screenX;
+        startY = event.changedTouches[0].screenY;
+      }, {passive: true});
+
+      preview?.addEventListener("touchend", (event) => {
+        const deltaX = event.changedTouches[0].screenX - startX;
+        const deltaY = event.changedTouches[0].screenY - startY;
+        if (Math.abs(deltaX) <= 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 2) return;
+        const destination = deltaX < 0 ? nextUrl : previousUrl;
+        if (destination) window.location.href = destination;
+      }, {passive: true});
+    })();
+  </script>
 </body>
 </html>`;
 
