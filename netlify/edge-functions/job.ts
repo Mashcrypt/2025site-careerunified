@@ -37,8 +37,9 @@ function jsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
-function detailRow(label: string, value: unknown) {
-  return `<div class="detail-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not specified")}</strong></div>`;
+function detailRow(label: string, value: unknown, className = "") {
+  const classes = ["detail-row", className].filter(Boolean).join(" ");
+  return `<div class="${classes}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not specified")}</strong></div>`;
 }
 
 function formatParagraphs(value: unknown) {
@@ -173,27 +174,53 @@ export default async (request: Request) => {
     body{margin:0;font-family:Arial,sans-serif;background:#f7f9fc;color:#111827;line-height:1.65}
     header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:44px 20px}
     main,.inner{max-width:960px;margin:0 auto}
-    main{padding:28px 20px 54px}
+    main{display:flex;flex-direction:column;padding:28px 20px 54px}
     a{color:#1d4ed8}
     .brand a{color:#fff;text-decoration:none;font-weight:700}
     h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:20px 0 12px}
     .meta{font-size:1.05rem;color:#dbeafe}
     .panel{background:#fff;border:1px solid #dbeafe;border-radius:18px;box-shadow:0 16px 38px rgba(30,58,138,.12);padding:22px;margin:20px 0}
+    .summary-panel{order:1}
+    .actions-panel{order:2}
+    .description{order:3}
+    .mobile-preview-header{display:none}
     .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .detail-row{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fbfdff}
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
     .detail-row strong{display:block;color:#111827}
     .description p{margin:0 0 14px}
-    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+    .actions{display:flex;flex-wrap:wrap;gap:12px}
     .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:12px 16px;font-weight:800;text-decoration:none}
     .btn.green{background:#16a34a;color:#fff}
     .btn.blue{background:#2563eb;color:#fff}
     .btn.light{background:#eaf1fb;color:#1e3a8a}
     @media(max-width:680px){
-      main{display:flex;flex-direction:column}
-      .description{order:-1}
-      .description h2{margin-top:0}
+      body{background:#f4f7fc}
+      header{display:none}
+      main{
+        display:flex;
+        margin:18px;
+        padding:22px;
+        background:#fff;
+        border:1px solid #dbeafe;
+        border-radius:18px;
+        box-shadow:0 16px 38px rgba(30,58,138,.12)
+      }
+      .summary-panel{order:1}
+      .description{order:2}
+      .actions-panel{order:3}
+      .panel{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;margin:0}
+      .mobile-preview-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+      .mobile-preview-header h1{color:#1e3a8a;font-size:1.45rem;line-height:1.3;margin:0}
+      .close-preview{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:32px;height:32px;color:#3b82f6;font-size:2rem;line-height:1;text-decoration:none}
       .details{grid-template-columns:1fr}
+      .secondary-detail{display:none}
+      .detail-row{border-color:#dbeafe;border-radius:14px;padding:16px;background:#f8fbff}
+      .detail-row span{text-transform:uppercase;letter-spacing:.04em}
+      .description{margin-top:20px;padding:18px;background:#f9fafb;border:1px solid #e5edfb;border-radius:10px}
+      .description h2{font-size:1.2rem;font-weight:400;margin:0 0 10px}
+      .description p{font-size:1rem;line-height:1.75}
+      .actions-panel{margin-top:18px}
       .actions{flex-direction:column}
       .btn{box-sizing:border-box;width:100%}
     }
@@ -208,26 +235,32 @@ export default async (request: Request) => {
       ${expired ? '<div class="meta"><strong>Applications closed</strong></div>' : ""}
     </div>
   </header>
-  <main>
-    <section class="panel">
+  <main id="job-preview">
+    <section class="panel summary-panel">
+      <div class="mobile-preview-header">
+        <h1>${escapeHtml(jobTitle)}</h1>
+        <a class="close-preview" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
+      </div>
       <div class="details">
         ${detailRow("Company", companyName)}
         ${detailRow("Location", locationText)}
         ${detailRow("Salary", salaryText)}
         ${detailRow("Closing date", deadlineDate || job.deadline || "Not specified")}
-        ${detailRow("Date posted", postedDate || job.posted || "Not specified")}
-        ${detailRow("Employment type", job.jobType || "Full-time")}
+        ${detailRow("Date posted", postedDate || job.posted || "Not specified", "secondary-detail")}
+        ${detailRow("Employment type", job.jobType || "Full-time", "secondary-detail")}
       </div>
+    </section>
+    <section class="panel description">
+      <h2>Job Description</h2>
+      ${formatParagraphs(job.description)}
+    </section>
+    <section class="panel actions-panel">
       <div class="actions">
         ${!expired && job.applyLink ? `<a class="btn green" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noopener noreferrer">Apply on employer website</a>` : ""}
         <a class="btn light" href="https://careerunified.com/jobs.html">Browse current jobs</a>
         <a class="btn blue" href="https://careerunified.com/cv-generator/?tab=ai&source=job">Tailor CV</a>
         <a class="btn light" href="https://careerunified.com/z83-filler">Fill Z83</a>
       </div>
-    </section>
-    <section class="panel description">
-      <h2>Job Description</h2>
-      ${formatParagraphs(job.description)}
     </section>
   </main>
 </body>
