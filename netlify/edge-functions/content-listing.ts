@@ -1,4 +1,5 @@
-import {getActiveBursaries, getActiveJobs, getUniversities} from "../lib/sanity.ts";
+import {getActiveBursaries, getActiveJobs, getJobBySlug, getUniversities} from "../lib/sanity.ts";
+import {getRecruiterJobBySlug} from "../lib/firestore.ts";
 
 const SITE_URL = "https://careerunified.com";
 
@@ -121,13 +122,45 @@ type EdgeContext = {
 };
 
 export default async (request: Request, context: EdgeContext) => {
+  const requestUrl = new URL(request.url);
+  const pathname = requestUrl.pathname;
+  const legacyJobSlug = requestUrl.searchParams.get("slug")?.trim() || "";
+  let scrollLegacyJobIntoView = false;
+
+  if ((pathname === "/jobs" || pathname === "/jobs.html") && legacyJobSlug) {
+    const [sanityResult, recruiterResult] = await Promise.allSettled([
+      getJobBySlug(legacyJobSlug),
+      getRecruiterJobBySlug(legacyJobSlug),
+    ]);
+    if (sanityResult.status === "rejected") {
+      console.error("legacy Sanity job lookup error:", sanityResult.reason);
+    }
+    if (recruiterResult.status === "rejected") {
+      console.error("legacy recruiter job lookup error:", recruiterResult.reason);
+    }
+
+    const job = sanityResult.status === "fulfilled" && sanityResult.value
+      ? sanityResult.value
+      : recruiterResult.status === "fulfilled"
+      ? recruiterResult.value
+      : null;
+    if (job) {
+      const canonicalSlug = job.slug || legacyJobSlug;
+      return Response.redirect(
+        `${SITE_URL}/jobs/${encodeURIComponent(canonicalSlug)}`,
+        301,
+      );
+    }
+
+    scrollLegacyJobIntoView = true;
+  }
+
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
 
   if (!response.ok || !contentType.includes("text/html")) return response;
 
   try {
-    const pathname = new URL(request.url).pathname;
     let marker = "";
     let listHtml = "";
     let schema: Record<string, unknown> | null = null;
@@ -175,6 +208,32 @@ export default async (request: Request, context: EdgeContext) => {
       "</head>",
       `<script type="application/ld+json" data-server-rendered="true">${jsonLd(schema)}</script>\n</head>`,
     );
+    if (scrollLegacyJobIntoView) {
+      html = html.replace(
+        "</body>",
+        `<script>
+          (() => {
+            if (!window.matchMedia("(max-width: 900px)").matches) return;
+            const preview = document.getElementById("jobPreview");
+            if (!preview) return;
+
+            const showLoadedJob = () => {
+              if (!preview.querySelector(".preview-slide")) return false;
+              preview.scrollIntoView({behavior: "auto", block: "start"});
+              return true;
+            };
+
+            if (showLoadedJob()) return;
+            const observer = new MutationObserver(() => {
+              if (showLoadedJob()) observer.disconnect();
+            });
+            observer.observe(preview, {childList: true, subtree: true});
+            window.setTimeout(() => observer.disconnect(), 15000);
+          })();
+        </script>
+      </body>`,
+      );
+    }
 
     const headers = new Headers(response.headers);
     headers.set("content-type", "text/html; charset=utf-8");

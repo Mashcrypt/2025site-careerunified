@@ -1,7 +1,9 @@
 import {getActiveJobs, getJobBySlug} from "../lib/sanity.ts";
+import {getRecruiterJobs, isActiveRecruiterJob} from "../lib/firestore.ts";
 
 type JobSummary = {
   slug?: string;
+  posted?: string;
 };
 
 function escapeHtml(value: unknown) {
@@ -90,19 +92,35 @@ export default async (request: Request) => {
       return Response.redirect("https://careerunified.com/jobs.html", 301);
     }
 
-    const [job, activeJobs] = await Promise.all([
-      getJobBySlug(slug),
+    const [sanityJob, sanityJobs, recruiterJobs] = await Promise.all([
+      getJobBySlug(slug).catch((error) => {
+        console.error("job lookup error:", error);
+        return null;
+      }),
       getActiveJobs().catch((error) => {
         console.error("adjacent jobs fetch error:", error);
         return [];
       }),
+      getRecruiterJobs().catch((error) => {
+        console.error("recruiter jobs fetch error:", error);
+        return [];
+      }),
     ]);
+    const job = sanityJob ||
+      recruiterJobs.find((item: JobSummary) => item.slug === slug) ||
+      null;
     if (!job) {
       return new Response("Job not found", {
         status: 404,
         headers: {"content-type": "text/plain; charset=utf-8"},
       });
     }
+    const activeJobs = [
+      ...sanityJobs,
+      ...recruiterJobs.filter(isActiveRecruiterJob),
+    ].sort((a: JobSummary, b: JobSummary) =>
+      new Date(b.posted || 0).getTime() - new Date(a.posted || 0).getTime()
+    );
 
     const companyName = job.companyName || "Confidential";
     const jobTitle = job.title || "Job Opportunity";
