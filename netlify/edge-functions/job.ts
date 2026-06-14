@@ -189,7 +189,14 @@ export default async (request: Request) => {
     .btn.green{background:#16a34a;color:#fff}
     .btn.blue{background:#2563eb;color:#fff}
     .btn.light{background:#eaf1fb;color:#1e3a8a}
-    @media(max-width:680px){.details{grid-template-columns:1fr}.actions{flex-direction:column}.btn{width:100%}}
+    @media(max-width:680px){
+      main{display:flex;flex-direction:column}
+      .description{order:-1}
+      .description h2{margin-top:0}
+      .details{grid-template-columns:1fr}
+      .actions{flex-direction:column}
+      .btn{box-sizing:border-box;width:100%}
+    }
   </style>
 </head>
 <body>
