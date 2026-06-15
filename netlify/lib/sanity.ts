@@ -19,7 +19,7 @@ async function querySanity(query: string, params: Record<string, string> = {}) {
   const search = new URLSearchParams({query});
   Object.entries(params).forEach(([key, value]) => search.set(`$${key}`, JSON.stringify(value)));
 
-  const url = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}?${search}`;
+  const url = `https://${PROJECT_ID}.apicdn.sanity.io/v${API_VERSION}/data/query/${DATASET}?${search}`;
   const response = await fetch(url, {headers: {Accept: "application/json"}});
 
   if (!response.ok) {
@@ -58,7 +58,7 @@ export async function getActiveJobs(limit = 200) {
   return querySanity(
     `*[_type == "job" && (!defined(deadline) || deadline >= $today)]
       | order(posted desc)[0...${limit}]{
-        _id, title, "slug": coalesce(slug.current, _id), description, location, salary,
+        _id, title, "slug": coalesce(slug.current, _id), location, salary,
         posted, deadline, jobType, category, "companyName": company->name,
         "companyLogo": company->logo.asset->url
       }`,
@@ -82,8 +82,7 @@ export async function getActiveBursaries(limit = 200) {
     `*[_type == "bursary" && (!defined(deadline) || deadline >= $today)]
       | order(deadline asc)[0...${limit}]{
         _id, name, "slug": coalesce(slug.current, _id), provider, faculty, faculties,
-        deadline, description, applicationLink,
-        "providerLogoUrl": providerLogo.asset->url
+        deadline
       }`,
     {today: today()},
   );

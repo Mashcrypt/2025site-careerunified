@@ -5,7 +5,7 @@ const projectId = 'qjg5raj1'
 const dataset = 'production'
 const apiVersion = '2024-01-01'
 
-const baseUrl = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}`
+const baseUrl = `https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`
 
 window.sanityClient = {
   // ===============================
