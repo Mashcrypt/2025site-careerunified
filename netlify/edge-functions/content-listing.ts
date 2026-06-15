@@ -62,7 +62,7 @@ function renderJobs(jobs: JobSummary[]) {
   return jobs
     .map((job) => {
       const url = `/jobs/${encodeURIComponent(job.slug)}`;
-      return `<li class="job-card">
+      return `<li class="job-card" data-job-url="${url}">
         <div class="job-row">
           <img src="${escapeHtml(job.companyLogo || "/fallback-company.png")}" class="company-logo" alt="${escapeHtml(job.companyName || "Company")} logo" width="80" height="80" loading="lazy">
           <div>

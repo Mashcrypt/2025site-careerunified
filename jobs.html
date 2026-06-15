@@ -1029,6 +1029,16 @@
     });
 
     /* ── HELPERS ── */
+    document.addEventListener('click', e => {
+      if (window.innerWidth > 900 || e.target.closest('.heart-icon, .job-title-link')) return;
+      const card = e.target.closest('.job-card');
+      if (!card || card.dataset.jobData) return;
+      const destination = card.dataset.jobUrl;
+      if (!destination) return;
+      e.preventDefault();
+      window.location.assign(destination);
+    });
+
     function safeText(v, fallback = '') {
       return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
     }
@@ -1236,6 +1246,7 @@
         li.className  = 'job-card';
         li.dataset.id      = job._id;
         li.dataset.jobData = JSON.stringify(job);
+        if (job.slug) li.dataset.jobUrl = `/jobs/${encodeURIComponent(job.slug)}`;
 
         if (index === selectedIndex) li.classList.add('selected');
 
@@ -1262,15 +1273,17 @@
 
         li.onclick = e => {
           if (e.target.closest('.heart-icon')) return;
+          if (window.innerWidth <= 900) {
+            const destination = li.dataset.jobUrl;
+            if (destination) window.location.assign(destination);
+            return;
+          }
           if (e.target.closest('.job-title-link')) return;
           selectedIndex = index;
           const j = filteredJobs[selectedIndex];
           history.pushState({}, '', `/jobs/${j.slug}`);
           showPreview(j, 'left');
           renderJobs();
-          if (window.innerWidth <= 900) {
-            jobPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
         };
 
         jobList.appendChild(li);
