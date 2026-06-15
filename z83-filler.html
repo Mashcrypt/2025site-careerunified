@@ -3,48 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Z83 Form Filler for Government Jobs | Career Unified</title>
-  <meta name="description" content="Fill a Z83 application form online for South African government job applications, preview your details, and print or save as PDF.">
-  <meta name="keywords" content="Z83 form, Z83 form filler, government jobs South Africa, public service application form, Career Unified">
+  <title>Fill and Sign Z83 Form Online | Career Unified</title>
+  <meta name="description" content="Fill and sign the official South African Z83 application form online, then download an application that keeps the original government form layout.">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-  <meta name="author" content="Career Unified">
   <link rel="canonical" href="https://careerunified.com/z83-filler">
-
   <meta property="og:site_name" content="Career Unified">
-  <meta property="og:title" content="Z83 Form Filler for Government Jobs | Career Unified">
-  <meta property="og:description" content="Complete your Z83 details online and print or save a clean application PDF for South African government job applications.">
+  <meta property="og:title" content="Fill and Sign Z83 Form Online | Career Unified">
+  <meta property="og:description" content="Complete the official Z83 layout online and download your signed PDF.">
   <meta property="og:url" content="https://careerunified.com/z83-filler">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://careerunified.com/android-chrome-512x512.png">
   <meta property="og:locale" content="en_ZA">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Z83 Form Filler for Government Jobs | Career Unified">
-  <meta name="twitter:description" content="Fill, preview, and print your Z83 application details online.">
-  <meta name="twitter:image" content="https://careerunified.com/android-chrome-512x512.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#1b60a9">
-  <meta name="msapplication-TileColor" content="#1b60a9">
-  <meta name="msapplication-TileImage" content="/android-chrome-192x192.png">
-
+  <meta name="theme-color" content="#1e3a8a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/z83-filler.css">
 
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+    gtag('config', 'G-2Z934XRVXT', {send_page_view: true});
   </script>
 
   <script type="application/ld+json">
@@ -55,1153 +41,255 @@
     "url": "https://careerunified.com/z83-filler",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
-    "description": "A browser-based Z83 form helper for South African government job applications.",
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "ZAR",
-      "price": "0"
-    }
+    "description": "Fill and sign the official South African Z83 application form in your browser.",
+    "offers": {"@type": "Offer", "priceCurrency": "ZAR", "price": "0"}
   }
   </script>
-
-  <style>
-    :root {
-      --blue: #1e3a8a;
-      --blue-2: #2563eb;
-      --yellow: #facc15;
-      --ink: #111827;
-      --muted: #64748b;
-      --line: #dbeafe;
-      --soft: #f4f8ff;
-      --panel: #ffffff;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --shadow: 0 20px 50px rgba(30, 58, 138, 0.14);
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      color: var(--ink);
-      background: linear-gradient(180deg, #eef5ff 0%, #f8fbff 48%, #ffffff 100%);
-      line-height: 1.55;
-    }
-
-    .main-nav {
-      background: var(--blue);
-      color: #fff;
-      min-height: 88px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 38px;
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
-      position: sticky;
-      top: 0;
-      z-index: 30;
-    }
-    .logo { color: #fff; font-size: 1.5rem; font-weight: 800; text-decoration: none; }
-    .nav-links { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-    .nav-links a { color: #fff; text-decoration: none; font-weight: 700; }
-    .nav-links a:hover, .nav-links a.active { color: var(--yellow); }
-
-    .hero {
-      padding: 78px 24px 58px;
-      color: #fff;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      text-align: center;
-    }
-    .hero-badge {
-      display: inline-flex;
-      gap: 9px;
-      align-items: center;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 800;
-      margin-bottom: 18px;
-    }
-    .hero h1 {
-      max-width: 980px;
-      margin: 0 auto 14px;
-      font-size: clamp(2.2rem, 6vw, 4.4rem);
-      line-height: 1.04;
-    }
-    .hero p {
-      max-width: 780px;
-      margin: 0 auto 24px;
-      color: rgba(255,255,255,0.88);
-      font-size: 1.08rem;
-    }
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .hero-actions a,
-    .hero-actions button {
-      border: 0;
-      border-radius: 999px;
-      padding: 13px 18px;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      font-family: inherit;
-    }
-    .hero-actions .primary { background: var(--yellow); color: var(--blue); }
-    .hero-actions .secondary { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.24); }
-
-    .notice {
-      max-width: 1180px;
-      margin: -26px auto 24px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px 20px;
-      box-shadow: var(--shadow);
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-    .notice i { color: var(--blue-2); margin-top: 4px; }
-    .notice strong { display: block; color: var(--blue); margin-bottom: 3px; }
-    .notice p { margin: 0; color: var(--muted); }
-
-    main {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 20px 64px;
-    }
-    .workspace {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) 390px;
-      gap: 22px;
-      align-items: start;
-    }
-    .form-panel,
-    .preview-panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-    }
-    .form-panel { padding: 22px; }
-    .preview-panel {
-      position: sticky;
-      top: 112px;
-      padding: 18px;
-    }
-    .preview-panel h2,
-    .form-panel h2 {
-      margin: 0 0 8px;
-      color: var(--blue);
-      font-size: 1.4rem;
-    }
-    .preview-panel p,
-    .form-panel > p {
-      margin: 0 0 18px;
-      color: var(--muted);
-    }
-
-    .step-list {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 0 0 22px;
-    }
-    .step-pill {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--blue);
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 0.86rem;
-    }
-    .step-pill.active {
-      background: var(--blue-2);
-      color: #fff;
-      border-color: var(--blue-2);
-    }
-
-    fieldset {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      margin: 0 0 18px;
-      background: linear-gradient(180deg, #fff, #fbfdff);
-    }
-    legend {
-      color: var(--blue);
-      font-weight: 800;
-      padding: 0 8px;
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    label {
-      display: grid;
-      gap: 7px;
-      color: #1f2937;
-      font-weight: 700;
-      font-size: 0.92rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 12px 13px;
-      font: inherit;
-      color: var(--ink);
-      background: #fff;
-      outline: none;
-    }
-    textarea { min-height: 105px; resize: vertical; }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--blue-2);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
-    }
-    .full { grid-column: 1 / -1; }
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      min-height: 48px;
-    }
-    .radio-group label {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-weight: 700;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 11px;
-    }
-    .radio-group input { width: auto; }
-
-    .rows { display: grid; gap: 12px; }
-    .repeat-row {
-      border: 1px dashed #bfdbfe;
-      border-radius: 16px;
-      padding: 14px;
-      background: #fff;
-    }
-    .repeat-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
-    }
-    .small-btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--blue);
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .small-btn.danger { color: var(--danger); }
-
-    .toolbar {
-      position: sticky;
-      bottom: 0;
-      background: rgba(248,251,255,0.94);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 12px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-      z-index: 20;
-    }
-    .action-btn {
-      border: 0;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-    }
-    .action-btn.primary { background: var(--success); color: #fff; }
-    .action-btn.blue { background: var(--blue-2); color: #fff; }
-    .action-btn.light { background: #eaf1fb; color: var(--blue); }
-    .action-btn.danger { background: #fee2e2; color: var(--danger); }
-
-    .progress {
-      height: 10px;
-      background: #e2e8f0;
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 12px 0 16px;
-    }
-    .progress span {
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--blue-2), #7c3aed);
-      transition: width 0.2s ease;
-    }
-    .preview-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      background: #fbfdff;
-      max-height: 58vh;
-      overflow: auto;
-    }
-    .preview-card h3 {
-      margin: 14px 0 8px;
-      color: var(--blue);
-      font-size: 1rem;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 6px;
-    }
-    .preview-card h3:first-child { margin-top: 0; }
-    .preview-line {
-      display: grid;
-      grid-template-columns: 135px minmax(0, 1fr);
-      gap: 8px;
-      padding: 5px 0;
-      font-size: 0.9rem;
-    }
-    .preview-line strong { color: #334155; }
-    .preview-line span { color: #111827; word-break: break-word; }
-    .status {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-top: 12px;
-    }
-
-    .site-footer {
-      background: var(--blue);
-      color: #fff;
-      text-align: center;
-      padding: 34px 20px;
-      margin-top: 40px;
-    }
-    .footer-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; }
-    .footer-links a { color: var(--yellow); text-decoration: none; font-weight: 800; }
-    .footer-links a:hover { text-decoration: underline; }
-
-    .print-area { display: none; }
-
-    @media (max-width: 980px) {
-      .workspace { grid-template-columns: 1fr; }
-      .preview-panel { position: static; }
-      .main-nav { align-items: flex-start; flex-direction: column; gap: 14px; padding: 16px 20px; }
-      .nav-links { gap: 14px; }
-    }
-    @media (max-width: 680px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .hero { padding: 54px 18px 42px; }
-      .notice { margin-left: 16px; margin-right: 16px; }
-      main { padding-left: 14px; padding-right: 14px; }
-      .form-panel { padding: 15px; }
-      fieldset { padding: 14px; }
-      .toolbar { border-radius: 14px; }
-      .action-btn { width: 100%; }
-      .preview-line { grid-template-columns: 1fr; }
-    }
-
-    @media print {
-      @page { margin: 12mm; }
-      body { background: #fff; color: #000; font-family: Arial, sans-serif; }
-      .main-nav, .hero, .notice, .workspace, .site-footer { display: none !important; }
-      .print-area { display: block; }
-      .print-sheet { page-break-after: always; font-size: 10px; }
-      .print-sheet:last-child { page-break-after: auto; }
-      .z83-page-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: 10px; }
-      .z83-initial { min-width: 118px; border-bottom: 1px dotted #000; padding-left: 6px; }
-      .z83-layout { display: grid; grid-template-columns: 32% 68%; gap: 12px; align-items: start; }
-      .z83-notes { font-size: 9px; line-height: 1.28; }
-      .z83-notes h2 { font-size: 10px; margin: 0 0 4px; text-transform: uppercase; }
-      .z83-notes p { margin: 0 0 9px; }
-      .z83-notes ol { margin: 0; padding-left: 15px; }
-      .z83-notes li { margin: 0 0 6px; }
-      .z83-form-title { text-align: center; font-weight: 700; font-size: 13px; margin: 0 0 6px; }
-      .z83-section { margin-bottom: 7px; }
-      .z83-section h2 { margin: 0; background: #e5e7eb; border: 1px solid #000; border-bottom: 0; font-size: 10px; padding: 4px 5px; }
-      .z83-grid { display: grid; grid-template-columns: repeat(12, 1fr); border-left: 1px solid #000; border-top: 1px solid #000; }
-      .z83-cell { min-height: 28px; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 4px; font-size: 9px; overflow-wrap: anywhere; }
-      .z83-cell .label { display: block; font-weight: 700; margin-bottom: 2px; }
-      .z83-cell .value { display: block; min-height: 12px; }
-      .span-2 { grid-column: span 2; }
-      .span-3 { grid-column: span 3; }
-      .span-4 { grid-column: span 4; }
-      .span-5 { grid-column: span 5; }
-      .span-6 { grid-column: span 6; }
-      .span-7 { grid-column: span 7; }
-      .span-8 { grid-column: span 8; }
-      .span-9 { grid-column: span 9; }
-      .span-10 { grid-column: span 10; }
-      .span-12 { grid-column: span 12; }
-      .check-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-      .box { display: inline-flex; width: 13px; height: 13px; border: 1px solid #000; align-items: center; justify-content: center; font-size: 10px; line-height: 1; vertical-align: middle; margin-left: 2px; }
-      .id-boxes { display: flex; gap: 2px; flex-wrap: nowrap; margin-top: 3px; }
-      .id-boxes span { width: 12px; height: 14px; border: 1px solid #000; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; }
-      .z83-table { width: 100%; border-collapse: collapse; font-size: 9px; }
-      .z83-table th, .z83-table td { border: 1px solid #000; padding: 4px; text-align: left; vertical-align: top; height: 24px; }
-      .z83-table th { background: #f3f4f6; font-weight: 700; }
-      .declaration { font-size: 9px; line-height: 1.3; border: 1px solid #000; padding: 6px; }
-      .signature-row { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 22px; font-size: 10px; }
-      .signature-line { border-top: 1px solid #000; padding-top: 5px; }
-    }
-  </style>
 </head>
 <body>
   <nav class="main-nav">
-    <a href="index.html" class="logo">Career Unified</a>
+    <a href="/" class="logo">Career Unified</a>
     <div class="nav-links">
-      <a href="jobs.html">Jobs</a>
-      <a href="bursaries.html">Bursaries</a>
-      <a href="varsity.html">Varsity</a>
+      <a href="/jobs">Jobs</a>
+      <a href="/bursaries">Bursaries</a>
+      <a href="/varsity">Varsity</a>
       <a href="/cv-generator/">Generate CV</a>
-      <a href="/cv-tips">CV Tips</a>
-      <a class="active" href="/z83-filler">Z83 Filler</a>
+      <a href="/z83-filler" class="active">Z83 Filler</a>
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="hero-badge"><i class="fa-solid fa-file-signature"></i> Government job application helper</div>
-    <h1>Fill Your Z83 Form Online</h1>
-    <p>Complete your details once, preview the application, then print or save it as a PDF before applying for South African public service posts.</p>
-    <div class="hero-actions">
-      <a class="primary" href="#z83-form"><i class="fa-solid fa-pen-to-square"></i> Start Filling</a>
-      <button class="secondary" type="button" id="printFromHero"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow"><i class="fa-solid fa-file-signature"></i> Government application tool</p>
+      <h1>Fill and sign your Z83 online</h1>
+      <p>Your answers are written onto the official two-page government form, preserving its original appearance.</p>
     </div>
+    <a class="official-link" href="/assets/z83-template.pdf" target="_blank" rel="noopener">
+      <i class="fa-regular fa-file-pdf"></i> View blank official form
+    </a>
   </header>
 
-  <section class="notice" aria-label="Important note">
-    <i class="fa-solid fa-circle-info"></i>
-    <div>
-      <strong>Review before submitting.</strong>
-      <p>This helper does not submit applications for you and does not replace official instructions from the department. Your draft is saved only in this browser unless you clear it.</p>
-    </div>
-  </section>
+  <div class="privacy-note">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div><strong>Your information stays on this device.</strong> The form is generated inside your browser and is not uploaded to Career Unified.</div>
+  </div>
 
-  <main>
-    <div class="workspace">
-      <section class="form-panel" id="z83-form">
-        <h2>Z83 Details</h2>
-        <p>Fill the sections below. Required application fields are marked clearly, and you can add more education, work history, and reference rows.</p>
-
-        <div class="step-list" aria-label="Z83 sections">
-          <button class="step-pill active" type="button" data-jump="section-post">A Post</button>
-          <button class="step-pill" type="button" data-jump="section-personal">B Personal</button>
-          <button class="step-pill" type="button" data-jump="section-contact">C Contact</button>
-          <button class="step-pill" type="button" data-jump="section-language">D Language</button>
-          <button class="step-pill" type="button" data-jump="section-education">E Education</button>
-          <button class="step-pill" type="button" data-jump="section-work">F Work</button>
-          <button class="step-pill" type="button" data-jump="section-references">G References</button>
-          <button class="step-pill" type="button" data-jump="section-declaration">H Declaration</button>
+  <main class="workspace">
+    <section class="form-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">Application details</p>
+          <h2>Complete the form</h2>
         </div>
+        <span id="completionText">0% complete</span>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 
-        <form id="z83Form">
-          <fieldset id="section-post">
-            <legend>A. The Advertised Post</legend>
-            <div class="form-grid">
-              <label>Position applied for
-                <input name="position" type="text" placeholder="Administrative Officer" required>
-              </label>
-              <label>Department
-                <input name="department" type="text" placeholder="Department of Health" required>
-              </label>
-              <label>Reference number
-                <input name="referenceNumber" type="text" placeholder="As stated in the advert" required>
-              </label>
-              <label>Start date / notice period
-                <input name="startDate" type="text" placeholder="Immediately / 1 month" required>
-              </label>
-            </div>
-          </fieldset>
+      <div class="step-list" aria-label="Z83 sections">
+        <button type="button" data-jump="section-a" class="active">A</button>
+        <button type="button" data-jump="section-b">B</button>
+        <button type="button" data-jump="section-c">C</button>
+        <button type="button" data-jump="section-d">D</button>
+        <button type="button" data-jump="section-e">E</button>
+        <button type="button" data-jump="section-f">F</button>
+        <button type="button" data-jump="section-g">G</button>
+        <button type="button" data-jump="section-signature"><i class="fa-solid fa-signature"></i></button>
+      </div>
 
-          <fieldset id="section-personal">
-            <legend>B. Personal Information</legend>
-            <div class="form-grid">
-              <label>Initials
-                <input name="initials" type="text" placeholder="JD">
-              </label>
-              <label>Surname
-                <input name="surname" type="text" placeholder="Doe" required>
-              </label>
-              <label>Full names
-                <input name="fullNames" type="text" placeholder="John David" required>
-              </label>
-              <label>Date of birth
-                <input name="dateOfBirth" type="date">
-              </label>
-              <label>SA identity number
-                <input name="idNumber" type="text" inputmode="numeric" minlength="13" maxlength="13" placeholder="13 digits">
-              </label>
-              <label>Passport number
-                <input name="passportNumber" type="text" placeholder="If applicable">
-              </label>
-              <label>Race
-                <select name="race">
-                  <option value="">Select</option>
-                  <option>African</option>
-                  <option>Coloured</option>
-                  <option>Indian/Asian</option>
-                  <option>White</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label>Gender
-                <select name="gender">
-                  <option value="">Select</option>
-                  <option>Female</option>
-                  <option>Male</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label>Disability
-                <select name="disability">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>SA citizen
-                <select name="saCitizen">
-                  <option value="">Select</option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </label>
-              <label>Nationality, if not South African
-                <input name="nationality" type="text" placeholder="If applicable">
-              </label>
-              <label>Valid work permit
-                <select name="workPermit">
-                  <option value="">Select</option>
-                  <option>N/A</option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </label>
-              <label>Years private sector experience
-                <input name="privateExperience" type="number" min="0" step="0.5" placeholder="0">
-              </label>
-              <label>Years public sector experience
-                <input name="publicExperience" type="number" min="0" step="0.5" placeholder="0">
-              </label>
-              <label>Professional registration date
-                <input name="registrationDate" type="date">
-              </label>
-              <label>Professional registration number
-                <input name="registrationNumber" type="text" placeholder="N/A">
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset id="section-contact">
-            <legend>C. Contact Information</legend>
-            <div class="form-grid">
-              <label>Preferred language of correspondence
-                <input name="correspondenceLanguage" type="text" placeholder="English">
-              </label>
-              <label>Preferred contact method
-                <select name="contactMethod">
-                  <option value="">Select</option>
-                  <option>Email</option>
-                  <option>Telephone</option>
-                  <option>Post</option>
-                  <option>Fax</option>
-                </select>
-              </label>
-              <label>Email
-                <input name="email" type="email" placeholder="you@example.com">
-              </label>
-              <label>Cellphone
-                <input name="phone" type="tel" placeholder="082 000 0000">
-              </label>
-              <label class="full">Postal / residential address
-                <textarea name="address" placeholder="Enter your full contact address"></textarea>
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset id="section-language">
-            <legend>D. Language Proficiency</legend>
-            <div class="rows" id="languageRows"></div>
-            <button class="small-btn" type="button" data-add-row="language"><i class="fa-solid fa-plus"></i> Add language</button>
-          </fieldset>
-
-          <fieldset id="section-education">
-            <legend>E. Education and Training</legend>
-            <div class="rows" id="educationRows"></div>
-            <button class="small-btn" type="button" data-add-row="education"><i class="fa-solid fa-plus"></i> Add qualification</button>
-          </fieldset>
-
-          <fieldset id="section-work">
-            <legend>F. Work Experience</legend>
-            <div class="rows" id="workRows"></div>
-            <button class="small-btn" type="button" data-add-row="work"><i class="fa-solid fa-plus"></i> Add work experience</button>
-          </fieldset>
-
-          <fieldset id="section-references">
-            <legend>G. References</legend>
-            <div class="rows" id="referenceRows"></div>
-            <button class="small-btn" type="button" data-add-row="reference"><i class="fa-solid fa-plus"></i> Add reference</button>
-          </fieldset>
-
-          <fieldset id="section-declaration">
-            <legend>H. Declarations</legend>
-            <div class="form-grid">
-              <label>Criminal offence conviction or admission of guilt?
-                <select name="criminalConviction">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Pending criminal case?
-                <select name="pendingCriminalCase">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Dismissed for misconduct from Public Service?
-                <select name="dismissedMisconduct">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Pending disciplinary case?
-                <select name="pendingDisciplinary">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Resigned pending disciplinary proceedings?
-                <select name="resignedPendingDisciplinary">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Discharged or retired on ill-health grounds?
-                <select name="illHealthDischarge">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Conducting business with the State?
-                <select name="stateBusiness">
-                  <option value="">Select</option>
-                  <option>No</option>
-                  <option>Yes</option>
-                </select>
-              </label>
-              <label>Will relinquish business interests if employed?
-                <select name="relinquishBusiness">
-                  <option value="">Select</option>
-                  <option>N/A</option>
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </label>
-              <label class="full">Declaration details, if any answer is Yes
-                <textarea name="declarationDetails" placeholder="Provide details where required"></textarea>
-              </label>
-              <label>Applicant name for declaration
-                <input name="declarationName" type="text" placeholder="Full name">
-              </label>
-              <label>Date signed
-                <input name="signatureDate" type="date">
-              </label>
-            </div>
-          </fieldset>
-
-          <div class="toolbar" aria-label="Form actions">
-            <button class="action-btn primary" type="button" id="printBtn"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
-            <button class="action-btn blue" type="button" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i> Save Draft</button>
-            <button class="action-btn light" type="button" id="loadBtn"><i class="fa-solid fa-rotate-left"></i> Load Draft</button>
-            <button class="action-btn danger" type="button" id="clearBtn"><i class="fa-solid fa-trash"></i> Clear Draft</button>
+      <form id="z83Form">
+        <fieldset id="section-a">
+          <legend>A. The Advertised Post</legend>
+          <div class="form-grid">
+            <label>Position applied for <span>*</span><input name="position" required></label>
+            <label>Department <span>*</span><input name="department" required></label>
+            <label>Reference number <span>*</span><input name="referenceNumber" required></label>
+            <label>Start date or notice period <span>*</span><input name="startDate" required></label>
           </div>
-        </form>
-      </section>
+        </fieldset>
 
-      <aside class="preview-panel" aria-label="Z83 preview">
-        <h2>Live Preview</h2>
-        <p>Check your details before printing or saving as PDF.</p>
-        <div class="progress" aria-label="Completion progress"><span id="progressBar"></span></div>
-        <div class="preview-card" id="previewCard"></div>
-        <p class="status" id="saveStatus">Draft autosaves in this browser.</p>
-      </aside>
-    </div>
+        <fieldset id="section-b">
+          <legend>B. Personal Information</legend>
+          <div class="form-grid">
+            <label>Initials <span>*</span><input name="initials" maxlength="8" required></label>
+            <label>Surname <span>*</span><input name="surname" required></label>
+            <label>Full names <span>*</span><input name="fullNames" required></label>
+            <label>Date of birth <input name="dateOfBirth" type="date"></label>
+            <label>SA identity number <input name="idNumber" inputmode="numeric" pattern="[0-9]{13}" maxlength="13"></label>
+            <label>Passport number <input name="passportNumber"></label>
+            <label>Race
+              <select name="race"><option value="">Select</option><option>African</option><option>White</option><option>Coloured</option><option>Indian</option><option>Other</option></select>
+            </label>
+            <label>Gender
+              <select name="gender"><option value="">Select</option><option>Female</option><option>Male</option></select>
+            </label>
+            <label>Do you have a disability?
+              <select name="disability"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+            <label>Are you a South African citizen?
+              <select name="saCitizen"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+            <label>Nationality, if not South African <input name="nationality"></label>
+            <label>Valid work permit, if required
+              <select name="workPermit"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+
+          <div class="question-list">
+            <div class="question" data-detail-for="criminalConviction">
+              <label>Criminal offence conviction or admission of guilt?
+                <select name="criminalConviction"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+              <label class="detail-field">If yes, provide details <textarea name="criminalDetails"></textarea></label>
+            </div>
+            <div class="question" data-detail-for="pendingCriminalCase">
+              <label>Any pending criminal case?
+                <select name="pendingCriminalCase"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+              <label class="detail-field">If yes, provide details <textarea name="pendingCriminalDetails"></textarea></label>
+            </div>
+            <div class="question" data-detail-for="dismissedMisconduct">
+              <label>Dismissed for misconduct from the Public Service?
+                <select name="dismissedMisconduct"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+              <label class="detail-field">If yes, provide details <textarea name="dismissalDetails"></textarea></label>
+            </div>
+            <div class="question" data-detail-for="pendingDisciplinary">
+              <label>Any pending disciplinary case?
+                <select name="pendingDisciplinary"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+              <label class="detail-field">If yes, provide details <textarea name="disciplinaryDetails"></textarea></label>
+            </div>
+            <div class="question">
+              <label>Resigned from a recent job pending disciplinary proceedings?
+                <select name="resignedPendingDisciplinary"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+            </div>
+            <div class="question">
+              <label>Discharged or retired from Public Service on ill-health grounds?
+                <select name="illHealthDischarge"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+            </div>
+            <div class="question" data-detail-for="stateBusiness">
+              <label>Conducting business with the State?
+                <select name="stateBusiness"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+              <label class="detail-field">If yes, provide details <textarea name="stateBusinessDetails"></textarea></label>
+            </div>
+            <div class="question">
+              <label>Will you relinquish those business interests if employed?
+                <select name="relinquishBusiness"><option value="">Select</option><option>No</option><option>Yes</option></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label>Years of private-sector experience <input name="privateExperience" type="number" min="0" step="0.5"></label>
+            <label>Years of public-sector experience <input name="publicExperience" type="number" min="0" step="0.5"></label>
+            <label>Professional registration date <input name="registrationDate" type="date"></label>
+            <label>Professional registration number <input name="registrationNumber"></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="section-c">
+          <legend>C. Contact Details</legend>
+          <div class="form-grid">
+            <label>Preferred language for correspondence <input name="correspondenceLanguage"></label>
+            <label>Preferred contact method
+              <select name="contactMethod"><option value="">Select</option><option>Post</option><option>Email</option><option>Fax</option><option>Telephone</option></select>
+            </label>
+            <label>Email address <input name="email" type="email"></label>
+            <label>Telephone number <input name="phone" type="tel"></label>
+            <label class="full">Postal or residential address <textarea name="address"></textarea></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="section-d">
+          <legend>D. Language Proficiency</legend>
+          <div class="rows" id="languageRows"></div>
+          <button class="add-row" type="button" data-add-row="language"><i class="fa-solid fa-plus"></i> Add language</button>
+        </fieldset>
+
+        <fieldset id="section-e">
+          <legend>E. Formal Qualifications</legend>
+          <div class="rows" id="educationRows"></div>
+          <button class="add-row" type="button" data-add-row="education"><i class="fa-solid fa-plus"></i> Add qualification</button>
+          <label class="standalone">Current study: institution and qualification <input name="currentStudy"></label>
+        </fieldset>
+
+        <fieldset id="section-f">
+          <legend>F. Work Experience</legend>
+          <div class="rows" id="workRows"></div>
+          <button class="add-row" type="button" data-add-row="work"><i class="fa-solid fa-plus"></i> Add employment</button>
+          <div class="form-grid standalone-grid">
+            <label>Any condition preventing Public Service reappointment?
+              <select name="reappointmentCondition"><option value="">Select</option><option>No</option><option>Yes</option></select>
+            </label>
+            <label>If yes, department and nature of condition <textarea name="reappointmentDetails"></textarea></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="section-g">
+          <legend>G. References</legend>
+          <div class="rows" id="referenceRows"></div>
+          <button class="add-row" type="button" data-add-row="reference"><i class="fa-solid fa-plus"></i> Add reference</button>
+        </fieldset>
+
+        <fieldset id="section-signature">
+          <legend>Declaration and Signature</legend>
+          <p class="declaration-copy">I declare that all information provided, including attachments, is complete and correct to the best of my knowledge.</p>
+          <div class="form-grid">
+            <label>Date signed <span>*</span><input name="signatureDate" type="date" required></label>
+            <label>Signature image
+              <input id="signatureUpload" type="file" accept="image/png,image/jpeg,image/webp">
+            </label>
+          </div>
+          <div class="signature-wrap">
+            <div class="signature-heading">
+              <strong>Draw your signature <span>*</span></strong>
+              <button type="button" id="clearSignature"><i class="fa-solid fa-eraser"></i> Clear</button>
+            </div>
+            <canvas id="signatureCanvas" width="760" height="220" aria-label="Draw your signature"></canvas>
+            <p>Use your mouse, finger, or stylus. Uploading an image replaces the drawing.</p>
+          </div>
+        </fieldset>
+
+        <div class="action-bar">
+          <button type="button" class="secondary-btn" id="saveBtn"><i class="fa-regular fa-floppy-disk"></i> Save draft</button>
+          <button type="button" class="secondary-btn danger" id="clearBtn"><i class="fa-regular fa-trash-can"></i> Clear</button>
+          <button type="submit" class="primary-btn" id="generateBtn"><i class="fa-solid fa-download"></i> Generate signed Z83 PDF</button>
+        </div>
+        <p class="form-status" id="formStatus" role="status">Your draft autosaves in this browser.</p>
+      </form>
+    </section>
+
+    <aside class="preview-panel">
+      <div class="preview-heading">
+        <div>
+          <p class="section-kicker">Output preview</p>
+          <h2>Official Z83 layout</h2>
+        </div>
+        <span>2 pages</span>
+      </div>
+      <div class="pdf-placeholder" id="pdfPlaceholder">
+        <i class="fa-regular fa-file-pdf"></i>
+        <strong>Your completed form will appear here</strong>
+        <p>Generate the PDF to check the exact government-form result before using it.</p>
+      </div>
+      <iframe id="pdfPreview" title="Generated Z83 PDF preview"></iframe>
+      <div class="preview-note">
+        <i class="fa-solid fa-circle-info"></i>
+        <p>Review every page before applying. Career Unified does not submit the application to a department.</p>
+      </div>
+    </aside>
   </main>
 
-  <section class="print-area" id="z83PrintArea" aria-hidden="true"></section>
-
   <footer class="site-footer">
-    <div class="footer-links">
-      <a href="jobs.html">Jobs</a>
-      <a href="bursaries.html">Bursaries</a>
-      <a href="/cv-generator/">Generate CV</a>
-      <a href="/cv-tips">CV Tips</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-    </div>
-    <p>&copy; 2026 Career Unified. All rights reserved.</p>
+    <a href="/">Career Unified</a>
+    <div><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact-us">Contact</a></div>
+    <p>&copy; 2026 Career Unified. Not affiliated with the South African government.</p>
   </footer>
 
-  <script>
-    const STORAGE_KEY = 'careerUnifiedZ83Draft';
-    const form = document.getElementById('z83Form');
-    const previewCard = document.getElementById('previewCard');
-    const printArea = document.getElementById('z83PrintArea');
-    const progressBar = document.getElementById('progressBar');
-    const saveStatus = document.getElementById('saveStatus');
-
-    const rowTemplates = {
-      language: () => `
-        <div class="repeat-row" data-row="language">
-          <div class="form-grid">
-            <label>Language<input data-field="language" type="text" placeholder="English"></label>
-            <label>Speak
-              <select data-field="speak"><option value="">Select</option><option>Good</option><option>Fair</option><option>Poor</option></select>
-            </label>
-            <label>Read
-              <select data-field="read"><option value="">Select</option><option>Good</option><option>Fair</option><option>Poor</option></select>
-            </label>
-            <label>Write
-              <select data-field="write"><option value="">Select</option><option>Good</option><option>Fair</option><option>Poor</option></select>
-            </label>
-          </div>
-          <div class="repeat-actions"><button class="small-btn danger" type="button" data-remove-row>Remove</button></div>
-        </div>`,
-      education: () => `
-        <div class="repeat-row" data-row="education">
-          <div class="form-grid">
-            <label>Institution / school<input data-field="institution" type="text" placeholder="Institution name"></label>
-            <label>Qualification<input data-field="qualification" type="text" placeholder="Qualification"></label>
-            <label>Year obtained<input data-field="year" type="text" placeholder="2024"></label>
-            <label>Major subjects<input data-field="subjects" type="text" placeholder="Optional"></label>
-          </div>
-          <div class="repeat-actions"><button class="small-btn danger" type="button" data-remove-row>Remove</button></div>
-        </div>`,
-      work: () => `
-        <div class="repeat-row" data-row="work">
-          <div class="form-grid">
-            <label>Employer<input data-field="employer" type="text" placeholder="Company / department"></label>
-            <label>Post held<input data-field="post" type="text" placeholder="Job title"></label>
-            <label>From<input data-field="from" type="text" placeholder="Jan 2023"></label>
-            <label>To<input data-field="to" type="text" placeholder="Present / Dec 2024"></label>
-            <label class="full">Reason for leaving<textarea data-field="reason" placeholder="Optional"></textarea></label>
-          </div>
-          <div class="repeat-actions"><button class="small-btn danger" type="button" data-remove-row>Remove</button></div>
-        </div>`,
-      reference: () => `
-        <div class="repeat-row" data-row="reference">
-          <div class="form-grid">
-            <label>Name<input data-field="name" type="text" placeholder="Reference name"></label>
-            <label>Relationship<input data-field="relationship" type="text" placeholder="Manager / Lecturer"></label>
-            <label>Telephone<input data-field="telephone" type="tel" placeholder="Contact number"></label>
-            <label>Email<input data-field="email" type="email" placeholder="Optional"></label>
-          </div>
-          <div class="repeat-actions"><button class="small-btn danger" type="button" data-remove-row>Remove</button></div>
-        </div>`
-    };
-
-    const sections = [
-      ['A. Advertised Post', ['position', 'department', 'referenceNumber', 'startDate']],
-      ['B. Personal Information', ['initials', 'surname', 'fullNames', 'dateOfBirth', 'idNumber', 'passportNumber', 'race', 'gender', 'disability', 'saCitizen', 'nationality', 'workPermit', 'privateExperience', 'publicExperience', 'registrationDate', 'registrationNumber']],
-      ['C. Contact Information', ['correspondenceLanguage', 'contactMethod', 'email', 'phone', 'address']],
-      ['H. Declaration', ['criminalConviction', 'pendingCriminalCase', 'dismissedMisconduct', 'pendingDisciplinary', 'resignedPendingDisciplinary', 'illHealthDischarge', 'stateBusiness', 'relinquishBusiness', 'declarationDetails', 'declarationName', 'signatureDate']]
-    ];
-
-    const labels = {
-      position: 'Position',
-      department: 'Department',
-      referenceNumber: 'Reference number',
-      startDate: 'Start / notice',
-      initials: 'Initials',
-      surname: 'Surname',
-      fullNames: 'Full names',
-      dateOfBirth: 'Date of birth',
-      idNumber: 'SA ID number',
-      passportNumber: 'Passport number',
-      race: 'Race',
-      gender: 'Gender',
-      disability: 'Disability',
-      saCitizen: 'SA citizen',
-      nationality: 'Nationality',
-      workPermit: 'Work permit',
-      privateExperience: 'Private sector years',
-      publicExperience: 'Public sector years',
-      registrationDate: 'Registration date',
-      registrationNumber: 'Registration number',
-      correspondenceLanguage: 'Correspondence language',
-      contactMethod: 'Contact method',
-      email: 'Email',
-      phone: 'Cellphone',
-      address: 'Address',
-      criminalConviction: 'Criminal conviction',
-      pendingCriminalCase: 'Pending criminal case',
-      dismissedMisconduct: 'Dismissed for misconduct',
-      pendingDisciplinary: 'Pending disciplinary',
-      resignedPendingDisciplinary: 'Resigned pending discipline',
-      illHealthDischarge: 'Ill-health discharge',
-      stateBusiness: 'State business',
-      relinquishBusiness: 'Relinquish business',
-      declarationDetails: 'Declaration details',
-      declarationName: 'Applicant name',
-      signatureDate: 'Date signed'
-    };
-
-    function escapeHtml(value) {
-      return String(value || '').replace(/[&<>"']/g, char => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-      }[char]));
-    }
-
-    function setStatus(message) {
-      saveStatus.textContent = message;
-    }
-
-    function addRow(type, values = {}) {
-      const target = document.getElementById(`${type}Rows`);
-      target.insertAdjacentHTML('beforeend', rowTemplates[type]());
-      const row = target.lastElementChild;
-      Object.entries(values).forEach(([key, value]) => {
-        const field = row.querySelector(`[data-field="${key}"]`);
-        if (field) field.value = value || '';
-      });
-      return row;
-    }
-
-    function getRows(type) {
-      return Array.from(document.querySelectorAll(`[data-row="${type}"]`)).map(row => {
-        const values = {};
-        row.querySelectorAll('[data-field]').forEach(field => {
-          values[field.dataset.field] = field.value.trim();
-        });
-        return values;
-      }).filter(row => Object.values(row).some(Boolean));
-    }
-
-    function getFormData() {
-      const formData = new FormData(form);
-      const data = {};
-      for (const [key, value] of formData.entries()) data[key] = String(value).trim();
-      data.languages = getRows('language');
-      data.education = getRows('education');
-      data.work = getRows('work');
-      data.references = getRows('reference');
-      data.updatedAt = new Date().toISOString();
-      return data;
-    }
-
-    function setFormData(data) {
-      Object.entries(data || {}).forEach(([key, value]) => {
-        if (Array.isArray(value) || key === 'updatedAt') return;
-        const field = form.elements[key];
-        if (field) field.value = value || '';
-      });
-      ['language', 'education', 'work', 'reference'].forEach(type => {
-        document.getElementById(`${type}Rows`).innerHTML = '';
-      });
-      (data.languages || [{}]).forEach(row => addRow('language', row));
-      (data.education || [{}]).forEach(row => addRow('education', row));
-      (data.work || [{}]).forEach(row => addRow('work', row));
-      (data.references || [{}]).forEach(row => addRow('reference', row));
-      render();
-    }
-
-    function saveDraft(silent = false) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormData()));
-      if (!silent) setStatus(`Draft saved at ${new Date().toLocaleTimeString()}.`);
-    }
-
-    function loadDraft() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        setStatus('No saved draft found in this browser.');
-        return;
-      }
-      try {
-        setFormData(JSON.parse(raw));
-        setStatus('Saved draft loaded.');
-      } catch {
-        setStatus('Saved draft could not be loaded.');
-      }
-    }
-
-    function renderLines(data, keys) {
-      return keys.map(key => `
-        <div class="preview-line">
-          <strong>${escapeHtml(labels[key] || key)}</strong>
-          <span>${escapeHtml(data[key]) || '-'}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderMiniTable(title, rows, columns) {
-      const body = rows.length ? rows.map(row => `
-        <div class="preview-line">
-          <strong>${escapeHtml(row[columns[0][0]]) || '-'}</strong>
-          <span>${columns.slice(1).map(([key, label]) => `${label}: ${escapeHtml(row[key]) || '-'}`).join('<br>')}</span>
-        </div>
-      `).join('') : '<div class="preview-line"><strong>None added</strong><span>-</span></div>';
-      return `<h3>${title}</h3>${body}`;
-    }
-
-    function renderPreview(data) {
-      previewCard.innerHTML = sections.map(([title, keys]) => `
-        <h3>${title}</h3>
-        ${renderLines(data, keys)}
-      `).join('') +
-      renderMiniTable('D. Language Proficiency', data.languages, [['language', 'Language'], ['speak', 'Speak'], ['read', 'Read'], ['write', 'Write']]) +
-      renderMiniTable('E. Education and Training', data.education, [['institution', 'Institution'], ['qualification', 'Qualification'], ['year', 'Year'], ['subjects', 'Subjects']]) +
-      renderMiniTable('F. Work Experience', data.work, [['employer', 'Employer'], ['post', 'Post'], ['from', 'From'], ['to', 'To'], ['reason', 'Reason']]) +
-      renderMiniTable('G. References', data.references, [['name', 'Name'], ['relationship', 'Relationship'], ['telephone', 'Telephone'], ['email', 'Email']]);
-    }
-
-    function z83Cell(label, value, span = 6) {
-      return `<div class="z83-cell span-${span}"><span class="label">${escapeHtml(label)}</span><span class="value">${escapeHtml(value) || '&nbsp;'}</span></div>`;
-    }
-
-    function z83Check(current, option) {
-      return `<span>${escapeHtml(option)} <span class="box">${String(current || '').toLowerCase() === String(option || '').toLowerCase() ? 'X' : ''}</span></span>`;
-    }
-
-    function z83CheckLine(label, current, options, span = 12) {
-      return `<div class="z83-cell span-${span}"><span class="label">${escapeHtml(label)}</span><span class="check-line">${options.map(option => z83Check(current, option)).join('')}</span></div>`;
-    }
-
-    function idBoxes(value, count = 13) {
-      const chars = String(value || '').replace(/\D/g, '').slice(0, count).split('');
-      return `<div class="id-boxes">${Array.from({ length: count }, (_, index) => `<span>${escapeHtml(chars[index] || '')}</span>`).join('')}</div>`;
-    }
-
-    function printTable(rows, columns) {
-      const bodyRows = rows.length ? rows : [{}];
-      return `
-        <table class="z83-table">
-          <thead><tr>${columns.map(col => `<th>${escapeHtml(col[1])}</th>`).join('')}</tr></thead>
-          <tbody>
-            ${bodyRows.map(row => `<tr>${columns.map(([key]) => `<td>${escapeHtml(row[key]) || '&nbsp;'}</td>`).join('')}</tr>`).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    function renderPrint(data) {
-      printArea.innerHTML = `
-        <div class="print-sheet">
-          <div class="z83-page-head">
-            <strong>Z83 (81/971431)</strong>
-            <span>Page 1 of 2 <span class="z83-initial">Initial ${escapeHtml(data.initials || '')}</span></span>
-          </div>
-          <div class="z83-layout">
-            <aside class="z83-notes">
-              <h2>What is the purpose of this form</h2>
-              <p>To assist a government department in selecting a person for an advertised post.</p>
-              <p>This form may be used to identify candidates to be interviewed. You need to fill in all sections of this form completely, accurately and legibly.</p>
-              <h2>Who should complete this form</h2>
-              <p>Only persons wishing to apply for an advertised position in a government department.</p>
-              <h2>Additional information</h2>
-              <p>Candidates who are selected for interviews may be requested to furnish additional certified information required to make a final selection.</p>
-              <h2>Special notes</h2>
-              <ol>
-                <li>All information will be treated with the strictest confidentiality and used to assess suitability, except where required or permitted by law.</li>
-                <li>Passport number is for non-South Africans.</li>
-                <li>Employment equity information is required for compliance purposes.</li>
-                <li>Information is considered only where it directly relates to the post requirements.</li>
-                <li>The department may consider criminal records against the nature of job functions.</li>
-                <li>Submit additional information separately where the space provided is not sufficient.</li>
-                <li>Certified documents may be accepted according to the advert and department requirements.</li>
-              </ol>
-            </aside>
-            <div>
-              <section class="z83-section">
-                <h2>A. THE ADVERTISED POST (All sections of this form are compulsory)</h2>
-                <div class="z83-grid">
-                  ${z83Cell('Position for which you are applying (as advertised)', data.position, 12)}
-                  ${z83Cell('Department where the position was advertised', data.department, 12)}
-                  ${z83Cell('Reference number (as stated in the advert)', data.referenceNumber, 6)}
-                  ${z83Cell('If offered the position, when can you start OR notice period?', data.startDate, 6)}
-                </div>
-              </section>
-
-              <section class="z83-section">
-                <h2>B. PERSONAL INFORMATION</h2>
-                <div class="z83-grid">
-                  ${z83Cell('Surname and full names', [data.surname, data.fullNames].filter(Boolean).join(', '), 12)}
-                  <div class="z83-cell span-4"><span class="label">Date of Birth DD/MM/YY</span><span class="value">${escapeHtml(data.dateOfBirth) || '&nbsp;'}</span></div>
-                  <div class="z83-cell span-8"><span class="label">Identity Number</span>${idBoxes(data.idNumber)}</div>
-                  <div class="z83-cell span-4"><span class="label">Passport number</span><span class="value">${escapeHtml(data.passportNumber) || '&nbsp;'}</span></div>
-                  ${z83CheckLine('Race', data.race, ['African', 'White', 'Coloured', 'Indian/Asian', 'Other'], 8)}
-                  ${z83CheckLine('Gender', data.gender, ['Female', 'Male'], 6)}
-                  ${z83CheckLine('Do you have a disability?', data.disability, ['Yes', 'No'], 6)}
-                  ${z83CheckLine('Are you a South African citizen?', data.saCitizen, ['Yes', 'No'], 6)}
-                  ${z83Cell('If no, what is your nationality?', data.nationality, 6)}
-                  ${z83CheckLine('Do you have a valid work permit? (only if non-South African)', data.workPermit, ['Yes', 'No', 'N/A'], 12)}
-                  ${z83CheckLine('Have you been convicted or found guilty of a criminal offence?', data.criminalConviction, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Do you have any pending criminal case against you?', data.pendingCriminalCase, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Have you ever been dismissed for misconduct from the Public Service?', data.dismissedMisconduct, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Do you have any pending disciplinary case against you?', data.pendingDisciplinary, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Have you resigned from a recent job pending disciplinary proceedings?', data.resignedPendingDisciplinary, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Have you been discharged or retired from the Public Service on ill-health grounds?', data.illHealthDischarge, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('Are you conducting business with the State or a company conducting business with the State?', data.stateBusiness, ['Yes', 'No'], 12)}
-                  ${z83CheckLine('If employed in the Public Service, will you relinquish such business interests?', data.relinquishBusiness, ['Yes', 'No', 'N/A'], 12)}
-                  ${z83Cell('Details for any Yes declaration', data.declarationDetails, 12)}
-                  ${z83Cell('Total number of years private sector experience', data.privateExperience, 6)}
-                  ${z83Cell('Total number of years public sector experience', data.publicExperience, 6)}
-                  ${z83Cell('Professional registration date', data.registrationDate, 6)}
-                  ${z83Cell('Professional registration number', data.registrationNumber, 6)}
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-
-        <div class="print-sheet">
-          <div class="z83-page-head">
-            <strong>Z83 (81/971431)</strong>
-            <span>Page 2 of 2 <span class="z83-initial">Initial ${escapeHtml(data.initials || '')}</span></span>
-          </div>
-          <div class="z83-layout">
-            <aside class="z83-notes">
-              <ol start="8">
-                <li>Each application for employment form must be duly signed and initialed by the applicant. Failure to sign this form may lead to disqualification during the selection process.</li>
-              </ol>
-            </aside>
-            <div>
-              <section class="z83-section">
-                <h2>C. CONTACT DETAILS AND MEDIUM OF COMMUNICATIONS</h2>
-                <div class="z83-grid">
-                  ${z83Cell('Preferred language for correspondence', data.correspondenceLanguage, 12)}
-                  ${z83CheckLine('Method for correspondence', data.contactMethod, ['Post', 'Email', 'Fax', 'Telephone'], 12)}
-                  ${z83Cell('Contact details in terms of the above', [data.email, data.phone, data.address].filter(Boolean).join(' | '), 12)}
-                </div>
-              </section>
-
-              <section class="z83-section">
-                <h2>D. SOUTH AFRICAN OFFICIAL LANGUAGE PROFICIENCY - state good, fair, or poor</h2>
-                ${printTable(data.languages, [['language', 'Languages (specify)'], ['speak', 'Speak'], ['write', 'Write'], ['read', 'Read']])}
-              </section>
-
-              <section class="z83-section">
-                <h2>E. FORMAL QUALIFICATION (from highest to lowest)</h2>
-                ${printTable(data.education, [['institution', 'Name of School/Technical College'], ['qualification', 'Name of qualification obtained'], ['year', 'Year obtained'], ['subjects', 'Major subjects']])}
-              </section>
-
-              <section class="z83-section">
-                <h2>F. WORK EXPERIENCE (Also attach a detailed CV)</h2>
-                ${printTable(data.work, [['employer', 'Employer (including current employer)'], ['post', 'Post held'], ['from', 'From'], ['to', 'To'], ['reason', 'Reason for leaving']])}
-                <div class="z83-grid">
-                  ${z83Cell('If previously employed in the Public Service, is there any condition that prevents re-appointment?', '', 12)}
-                </div>
-              </section>
-
-              <section class="z83-section">
-                <h2>G. REFERENCES</h2>
-                ${printTable(data.references, [['name', 'Name'], ['relationship', 'Relationship to you'], ['telephone', 'Tel. No. (office hours)'], ['email', 'Email']])}
-              </section>
-
-              <section class="z83-section">
-                <h2>DECLARATION</h2>
-                <div class="declaration">
-                  I declare that all the information provided (including any attachments) is complete and correct to the best of my knowledge. I understand that any false information provided will result in my application being disqualified or disciplinary action taken against me if I am appointed.
-                  <div class="signature-row">
-                    <div class="signature-line">Signature: ${escapeHtml(data.declarationName || '')}</div>
-                    <div class="signature-line">Date: ${escapeHtml(data.signatureDate || '')}</div>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateProgress(data) {
-      const required = ['position', 'department', 'referenceNumber', 'startDate', 'surname', 'fullNames', 'email', 'phone'];
-      const complete = required.filter(key => data[key]).length;
-      progressBar.style.width = `${Math.round((complete / required.length) * 100)}%`;
-    }
-
-    function render() {
-      const data = getFormData();
-      renderPreview(data);
-      renderPrint(data);
-      updateProgress(data);
-    }
-
-    document.querySelectorAll('[data-add-row]').forEach(button => {
-      button.addEventListener('click', () => {
-        addRow(button.dataset.addRow);
-        render();
-        saveDraft(true);
-      });
-    });
-
-    document.addEventListener('click', event => {
-      const removeButton = event.target.closest('[data-remove-row]');
-      if (removeButton) {
-        removeButton.closest('.repeat-row').remove();
-        render();
-        saveDraft(true);
-      }
-      const jumpButton = event.target.closest('[data-jump]');
-      if (jumpButton) {
-        document.querySelectorAll('.step-pill').forEach(pill => pill.classList.remove('active'));
-        jumpButton.classList.add('active');
-        document.getElementById(jumpButton.dataset.jump).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-
-    form.addEventListener('input', () => {
-      render();
-      saveDraft(true);
-      setStatus('Draft autosaved in this browser.');
-    });
-
-    document.getElementById('saveBtn').addEventListener('click', () => saveDraft(false));
-    document.getElementById('loadBtn').addEventListener('click', loadDraft);
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      if (!confirm('Clear your saved Z83 draft from this browser?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      form.reset();
-      setFormData({ languages: [{}], education: [{}], work: [{}], references: [{}] });
-      setStatus('Draft cleared.');
-    });
-    document.getElementById('printBtn').addEventListener('click', () => {
-      render();
-      window.print();
-    });
-    document.getElementById('printFromHero').addEventListener('click', () => {
-      render();
-      window.print();
-    });
-
-    setFormData({ languages: [{}], education: [{}], work: [{}], references: [{}] });
-    loadDraft();
-  </script>
+  <script src="/js/vendor/pdf-lib.min.js"></script>
+  <script src="/js/z83-filler.js"></script>
 </body>
 </html>
