@@ -336,7 +336,7 @@ export default async (request: Request) => {
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.7 6.8-4.1"></path><path d="m8.6 13.3 6.8 4.1"></path></svg>
             <span>Share</span>
           </button>
-          <a class="close-preview" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
+          <a class="close-preview" id="close-job" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
         </div>
       </div>
       <div class="details">
@@ -368,6 +368,14 @@ export default async (request: Request) => {
       const shareUrl = ${jsonLd(shareUrl)};
       let startX = 0;
       let startY = 0;
+
+      document.getElementById("close-job")?.addEventListener("click", (event) => {
+        const referrer = document.referrer ? new URL(document.referrer) : null;
+        if (referrer?.origin === window.location.origin && history.length > 1) {
+          event.preventDefault();
+          history.back();
+        }
+      });
 
       document.getElementById("share-job")?.addEventListener("click", async (event) => {
         const button = event.currentTarget;

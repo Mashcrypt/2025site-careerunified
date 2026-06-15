@@ -11,7 +11,7 @@ window.sanityClient = {
   // ===============================
   // RAW FETCH (for any query)
   // ===============================
-  fetch: async function (query) {
+  fetch: async function (query, options = {}) {
     const url = `${baseUrl}?query=${encodeURIComponent(query)}`
 
     try {
@@ -21,6 +21,7 @@ window.sanityClient = {
       return data.result
     } catch (err) {
       console.error('Sanity fetch error:', err)
+      if (options.throwOnError) throw err
       return []
     }
   },
@@ -54,7 +55,7 @@ window.sanityClient = {
       }
     `
 
-    return await this.fetch(query)
+    return await this.fetch(query, { throwOnError: true })
   },
 
   // ===============================

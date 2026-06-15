@@ -950,6 +950,9 @@
     let userId    = null;
     let savedJobs = new Set();
     const BOOKMARK_KEY = 'careerUnifiedBookmarks';
+    const JOBS_CACHE_KEY = 'careerUnifiedJobsCacheV1';
+    const JOBS_VIEW_STATE_KEY = 'careerUnifiedJobsViewStateV1';
+    const JOBS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 
     /* ── SMART SEARCH HANDOFF ── */
     function normalizeSearchTerm(v) {
@@ -990,6 +993,70 @@
     /* ── LOCAL STORAGE HELPERS ── */
     function getBookmarks()       { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]'); }
     function saveBookmarks(list)  { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(list)); }
+
+    function readJobsCache() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(JOBS_CACHE_KEY) || 'null');
+        if (!cached || !Array.isArray(cached.jobs) || !cached.savedAt) return null;
+        if (Date.now() - cached.savedAt > JOBS_CACHE_MAX_AGE) {
+          localStorage.removeItem(JOBS_CACHE_KEY);
+          return null;
+        }
+        const now = Date.now();
+        return cached.jobs.filter(job => {
+          if (!job?.deadline) return true;
+          const deadline = new Date(job.deadline);
+          if (Number.isNaN(deadline.getTime())) return true;
+          deadline.setHours(23, 59, 59, 999);
+          return deadline.getTime() >= now;
+        });
+      } catch {
+        localStorage.removeItem(JOBS_CACHE_KEY);
+        return null;
+      }
+    }
+
+    function writeJobsCache(list) {
+      try {
+        localStorage.setItem(JOBS_CACHE_KEY, JSON.stringify({
+          savedAt: Date.now(),
+          jobs: list
+        }));
+      } catch (error) {
+        console.warn('Jobs cache could not be saved:', error);
+      }
+    }
+
+    function saveJobsViewState() {
+      try {
+        sessionStorage.setItem(JOBS_VIEW_STATE_KEY, JSON.stringify({
+          search: document.getElementById('jobSearch')?.value || '',
+          category: document.getElementById('categoryFilter')?.value || 'all',
+          scrollY: window.scrollY || document.documentElement.scrollTop || 0
+        }));
+      } catch {}
+    }
+
+    function restoreJobsViewState() {
+      try {
+        const state = JSON.parse(sessionStorage.getItem(JOBS_VIEW_STATE_KEY) || 'null');
+        if (!state) return;
+        const search = document.getElementById('jobSearch');
+        const category = document.getElementById('categoryFilter');
+        if (search && typeof state.search === 'string') search.value = state.search;
+        if (category && typeof state.category === 'string') category.value = state.category;
+      } catch {}
+    }
+
+    function restoreJobsScrollPosition() {
+      try {
+        const state = JSON.parse(sessionStorage.getItem(JOBS_VIEW_STATE_KEY) || 'null');
+        if (!state || !Number.isFinite(Number(state.scrollY))) return;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => window.scrollTo({top: Number(state.scrollY), behavior: 'auto'}));
+        });
+      } catch {}
+    }
 
     function addToLocalStorage(type, id) {
       const key = `${type}:${id}`;
@@ -1071,6 +1138,7 @@
       const destination = card.dataset.jobUrl;
       if (!destination) return;
       e.preventDefault();
+      saveJobsViewState();
       window.location.assign(destination);
     });
 
@@ -1223,7 +1291,10 @@
         const list = [];
         snap.forEach(doc => { const n = normalizeRecruiterJob(doc.id, doc.data() || {}); if (n) list.push(n); });
         return list;
-      } catch (e) { console.error('Failed to fetch Firestore jobs:', e); return []; }
+      } catch (e) {
+        console.error('Failed to fetch Firestore jobs:', e);
+        throw e;
+      }
     }
 
     function normalizeRecruiterJob(id, data) {
@@ -1277,26 +1348,47 @@
     }
 
     /* ── LOAD JOBS ── */
-    async function loadJobs() {
+    async function loadJobs({ background = false } = {}) {
       try {
-        const [sanityJobs, recruiterJobs] = await Promise.all([
+        const [sanityResult, recruiterResult] = await Promise.allSettled([
           window.sanityClient.fetchJobs(),
           fetchRecruiterJobs()
         ]);
+        const sanityJobs = sanityResult.status === 'fulfilled' ? sanityResult.value : null;
+        const recruiterJobs = recruiterResult.status === 'fulfilled' ? recruiterResult.value : null;
+
+        if (sanityResult.status === 'rejected') {
+          console.error('Sanity jobs refresh failed:', sanityResult.reason);
+        }
+        if (recruiterResult.status === 'rejected') {
+          console.error('Recruiter jobs refresh failed:', recruiterResult.reason);
+        }
+        if (sanityJobs === null && recruiterJobs === null) {
+          throw new Error('All job sources failed');
+        }
+
         const sanityNormalized = (sanityJobs || []).map(j => ({
           ...j, _source: 'sanity',
           posted: toISODateString(j.posted || j._createdAt) || j.posted || null,
           createdAt: toISODateString(j._createdAt) || null,
           company: j.company?.name ? { ...j.company, name: j.company.name } : j.company
         }));
-        jobs = [...sanityNormalized, ...(recruiterJobs || [])];
-        applyInitialSearchTermToUI();
+        const cachedSanityJobs = jobs.filter(job => job._source === 'sanity');
+        const cachedRecruiterJobs = jobs.filter(job => job._source === 'firestore');
+        jobs = [
+          ...(sanityJobs === null ? cachedSanityJobs : sanityNormalized),
+          ...(recruiterJobs === null ? cachedRecruiterJobs : recruiterJobs)
+        ];
+        writeJobsCache(jobs);
+        if (!background) applyInitialSearchTermToUI();
         renderJobs();
         openFromURL();
       } catch (e) {
         console.error('loadJobs failed:', e);
-        applyInitialSearchTermToUI();
-        renderJobs();
+        if (!background) {
+          applyInitialSearchTermToUI();
+          if (!jobList.querySelector('.job-card')) renderJobs();
+        }
       }
     }
 
@@ -1318,6 +1410,10 @@
           if (tier !== 0) return tier;
           return new Date(b.posted || 0).getTime() - new Date(a.posted || 0).getTime();
         });
+
+      if (currentPreviewJob?.slug) {
+        selectedIndex = filteredJobs.findIndex(job => job.slug === currentPreviewJob.slug);
+      }
 
       jobList.innerHTML = '';
 
@@ -1367,7 +1463,10 @@
           if (e.target.closest('.heart-icon')) return;
           if (window.innerWidth <= 900) {
             const destination = li.dataset.jobUrl;
-            if (destination) window.location.assign(destination);
+            if (destination) {
+              saveJobsViewState();
+              window.location.assign(destination);
+            }
             return;
           }
           if (e.target.closest('.job-title-link')) return;
@@ -1403,7 +1502,7 @@
 
       const parts = window.location.pathname.split('/');
       const slug  = parts[parts.length - 1];
-      if (!slug || slug === 'jobs') return;
+      if (!slug || slug === 'jobs' || slug === 'jobs.html') return;
 
       const inMem2 = findJobInMemoryBySlug(slug);
       if (inMem2) return openJob(inMem2);
@@ -1692,10 +1791,30 @@
       window.addEventListener('load', updateScrollButtons);
     }
 
-    showSkeletons();
-    applyInitialSearchTermToUI();
-    loadJobs();
     showDefaultPreview();
+    restoreJobsViewState();
+    applyInitialSearchTermToUI();
+
+    const cachedJobs = readJobsCache();
+    if (cachedJobs?.length) {
+      jobs = cachedJobs;
+      renderJobs();
+      openFromURL();
+      restoreJobsScrollPosition();
+      loadJobs({background: true});
+    } else {
+      if (!jobList.querySelector('.job-card')) showSkeletons();
+      loadJobs();
+    }
+
+    window.addEventListener('pagehide', saveJobsViewState);
+    window.addEventListener('pageshow', event => {
+      if (!event.persisted) return;
+      restoreJobsViewState();
+      renderJobs();
+      restoreJobsScrollPosition();
+    });
+
     updateScrollButtons();
   </script>
 
