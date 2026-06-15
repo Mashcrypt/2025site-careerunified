@@ -126,13 +126,13 @@ export default async (request: Request, context: EdgeContext) => {
   const pathname = requestUrl.pathname;
   const legacyJobSlug = requestUrl.searchParams.get("slug")?.trim() || "";
   const legacyBursarySlug = requestUrl.searchParams.get("slug")?.trim() || "";
-  const desktopJobView = requestUrl.searchParams.get("view") === "desktop";
+  const desktopView = requestUrl.searchParams.get("view") === "desktop";
   let scrollLegacyJobIntoView = false;
 
   if (
     (pathname === "/jobs" || pathname === "/jobs.html") &&
     legacyJobSlug &&
-    !desktopJobView
+    !desktopView
   ) {
     const [sanityResult, recruiterResult] = await Promise.allSettled([
       getJobBySlug(legacyJobSlug),
@@ -163,7 +163,8 @@ export default async (request: Request, context: EdgeContext) => {
 
   if (
     (pathname === "/bursaries" || pathname === "/bursaries.html") &&
-    legacyBursarySlug
+    legacyBursarySlug &&
+    !desktopView
   ) {
     try {
       const bursary = await getBursaryBySlug(legacyBursarySlug);

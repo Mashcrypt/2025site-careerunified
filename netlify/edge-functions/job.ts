@@ -266,6 +266,9 @@ export default async (request: Request) => {
     .actions-panel{order:2}
     .description{order:3}
     .mobile-preview-header{display:none}
+    .preview-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+    .share-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;color:#1d4ed8;padding:8px 10px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+    .share-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .detail-row{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fbfdff}
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
@@ -328,7 +331,13 @@ export default async (request: Request) => {
     <section class="panel summary-panel">
       <div class="mobile-preview-header">
         <h1>${escapeHtml(jobTitle)}</h1>
-        <a class="close-preview" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
+        <div class="preview-actions">
+          <button class="share-btn" id="share-job" type="button" aria-label="Share job">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.7 6.8-4.1"></path><path d="m8.6 13.3 6.8 4.1"></path></svg>
+            <span>Share</span>
+          </button>
+          <a class="close-preview" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
+        </div>
       </div>
       <div class="details">
         ${detailRow("Company", companyName)}
@@ -356,8 +365,32 @@ export default async (request: Request) => {
       const previousUrl = ${jsonLd(previousUrl || null)};
       const nextUrl = ${jsonLd(nextUrl || null)};
       const aiTailorPayload = ${jsonLd(aiTailorPayload)};
+      const shareUrl = ${jsonLd(shareUrl)};
       let startX = 0;
       let startY = 0;
+
+      document.getElementById("share-job")?.addEventListener("click", async (event) => {
+        const button = event.currentTarget;
+        const label = button.querySelector("span");
+        try {
+          if (navigator.share) {
+            await navigator.share({title: ${jsonLd(jobTitle)}, url: shareUrl});
+          } else {
+            await navigator.clipboard.writeText(shareUrl);
+            if (label) label.textContent = "Copied";
+          }
+        } catch (error) {
+          if (error?.name !== "AbortError") {
+            try {
+              await navigator.clipboard.writeText(shareUrl);
+              if (label) label.textContent = "Copied";
+            } catch {}
+          }
+        }
+        if (label?.textContent === "Copied") {
+          window.setTimeout(() => label.textContent = "Share", 1800);
+        }
+      });
 
       document.getElementById("ai-tailor-link")?.addEventListener("click", () => {
         sessionStorage.setItem("careerUnifiedAITailorJob", JSON.stringify(aiTailorPayload));

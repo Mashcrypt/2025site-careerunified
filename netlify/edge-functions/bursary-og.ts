@@ -205,6 +205,14 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
+  <script>
+    if (window.matchMedia("(min-width: 901px)").matches) {
+      const desktopUrl = new URL("/bursaries.html", window.location.origin);
+      desktopUrl.searchParams.set("slug", ${jsonLd(slug)});
+      desktopUrl.searchParams.set("view", "desktop");
+      window.location.replace(desktopUrl.pathname + desktopUrl.search);
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">

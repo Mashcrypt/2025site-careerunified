@@ -879,6 +879,7 @@
     let bursaries         = [];
     let filteredBursaries = [];
     let selectedIndex     = null;
+    let openedFromURL     = false;
     let userId            = null;
     let savedBursaries    = new Set();
 
@@ -1117,11 +1118,13 @@
         populateFacultyFilter();
         renderBursaries();
 
-        if (__incomingSlug) {
+        if (__incomingSlug && !openedFromURL) {
+          openedFromURL = true;
           const idx = bursaries.findIndex(b => (b?.slug?.current || b?.slug || '').toString() === __incomingSlug);
           if (idx >= 0) {
             selectedIndex = idx;
             showPreview(bursaries[idx], 'left');
+            history.replaceState({}, '', `/bursary/${encodeURIComponent(getSlugValue(bursaries[idx]))}`);
             renderBursaries(facultyFilter.value);
             if (window.innerWidth <= 900) bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
@@ -1197,13 +1200,20 @@
 
         li.onclick = e => {
           if (e.target.closest('.bursary-heart')) return;
-          if (e.target.closest('.bursary-title-link')) return;
           if (e.target.classList.contains('read-more')) { e.stopPropagation(); toggleDesc(parseInt(e.target.dataset.index, 10)); return; }
+          if (window.innerWidth <= 900) {
+            if (!e.target.closest('.bursary-title-link')) {
+              e.preventDefault();
+              window.location.assign(makeShareUrl(b));
+            }
+            return;
+          }
+          if (e.target.closest('.bursary-title-link')) e.preventDefault();
           const prev    = selectedIndex;
           selectedIndex = index;
+          history.pushState({}, '', `/bursary/${encodeURIComponent(getSlugValue(b))}`);
           showPreview(b, prev !== null && index > prev ? 'left' : 'right');
           renderBursaries(filter);
-          if (window.innerWidth <= 900) bursaryPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
         bursaryList.appendChild(li);
@@ -1279,6 +1289,7 @@
 
     function closePreview() {
       selectedIndex = null;
+      history.pushState({}, '', '/bursaries');
       document.title = 'Bursaries & Scholarships in South Africa 2026 | Career Unified';
       const canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) canonical.href = 'https://careerunified.com/bursaries.html';
@@ -1338,6 +1349,7 @@
     function goToNextBursary() {
       if (selectedIndex === null || selectedIndex >= filteredBursaries.length - 1) return;
       selectedIndex++;
+      history.pushState({}, '', `/bursary/${encodeURIComponent(getSlugValue(filteredBursaries[selectedIndex]))}`);
       showPreview(filteredBursaries[selectedIndex], 'left');
       renderBursaries(facultyFilter.value);
     }
@@ -1345,6 +1357,7 @@
     function goToPreviousBursary() {
       if (selectedIndex === null || selectedIndex <= 0) return;
       selectedIndex--;
+      history.pushState({}, '', `/bursary/${encodeURIComponent(getSlugValue(filteredBursaries[selectedIndex]))}`);
       showPreview(filteredBursaries[selectedIndex], 'right');
       renderBursaries(facultyFilter.value);
     }
