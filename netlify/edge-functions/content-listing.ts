@@ -1,4 +1,4 @@
-import {getActiveBursaries, getActiveJobs, getJobBySlug, getUniversities} from "../lib/sanity.ts";
+import {getActiveBursaries, getActiveJobs, getBursaryBySlug, getJobBySlug, getUniversities} from "../lib/sanity.ts";
 import {getRecruiterJobBySlug} from "../lib/firestore.ts";
 
 const SITE_URL = "https://careerunified.com";
@@ -125,6 +125,7 @@ export default async (request: Request, context: EdgeContext) => {
   const requestUrl = new URL(request.url);
   const pathname = requestUrl.pathname;
   const legacyJobSlug = requestUrl.searchParams.get("slug")?.trim() || "";
+  const legacyBursarySlug = requestUrl.searchParams.get("slug")?.trim() || "";
   let scrollLegacyJobIntoView = false;
 
   if ((pathname === "/jobs" || pathname === "/jobs.html") && legacyJobSlug) {
@@ -153,6 +154,24 @@ export default async (request: Request, context: EdgeContext) => {
     }
 
     scrollLegacyJobIntoView = true;
+  }
+
+  if (
+    (pathname === "/bursaries" || pathname === "/bursaries.html") &&
+    legacyBursarySlug
+  ) {
+    try {
+      const bursary = await getBursaryBySlug(legacyBursarySlug);
+      if (bursary) {
+        const canonicalSlug = bursary.slug || legacyBursarySlug;
+        return Response.redirect(
+          `${SITE_URL}/bursary/${encodeURIComponent(canonicalSlug)}`,
+          301,
+        );
+      }
+    } catch (error) {
+      console.error("legacy bursary lookup error:", error);
+    }
   }
 
   const response = await context.next();

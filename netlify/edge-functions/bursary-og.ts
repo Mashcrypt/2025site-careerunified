@@ -1,4 +1,8 @@
-import { getBursaryBySlug } from "../lib/sanity.ts";
+import {getActiveBursaries, getBursaryBySlug} from "../lib/sanity.ts";
+
+type BursarySummary = {
+  slug?: string;
+};
 
 function escapeHtml(value: unknown) {
   return String(value ?? "")
@@ -48,15 +52,28 @@ function detailRow(label: string, value: unknown) {
   return `<div class="detail-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not specified")}</strong></div>`;
 }
 
-function formatParagraphs(value: unknown) {
-  const cleaned = stripHtml(value);
-  if (!cleaned) return "<p>Description not provided.</p>";
-  const sentences = cleaned.match(/[^.]+(?:\.|$)/g) || [];
-  const chunks = sentences.length > 1 ? sentences : [cleaned];
-  return chunks
-    .slice(0, 18)
-    .map((part) => `<p>${escapeHtml(part.trim())}</p>`)
-    .join("");
+function formatDescription(value: unknown) {
+  const cleaned = String(value ?? "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "• ")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;/gi, "'")
+    .replace(/[ \t]+•[ \t]+/g, "\n• ")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  return escapeHtml(cleaned || "Description not provided.");
 }
 
 export default async (request: Request) => {
@@ -69,7 +86,16 @@ export default async (request: Request) => {
       return Response.redirect("https://careerunified.com/bursaries.html", 301);
     }
 
-    const bursary = await getBursaryBySlug(slug);
+    const [bursary, activeBursaries] = await Promise.all([
+      getBursaryBySlug(slug).catch((error) => {
+        console.error("bursary lookup error:", error);
+        return null;
+      }),
+      getActiveBursaries().catch((error) => {
+        console.error("adjacent bursaries fetch error:", error);
+        return [];
+      }),
+    ]);
     if (!bursary) {
       return new Response("Bursary not found", {
         status: 404,
@@ -92,6 +118,22 @@ export default async (request: Request) => {
     const description = stripHtml(bursary.description);
     const metaDescription = `${providerName} - ${facultyText} - Deadline: ${deadlineDate || bursary.deadline || "Not specified"} - ${snippet(description)}`.trim();
     const pageTitle = `${bursaryName} | Career Unified`;
+    const currentIndex = activeBursaries.findIndex(
+      (item: BursarySummary) => item.slug === slug,
+    );
+    const previousBursary = currentIndex > 0
+      ? activeBursaries[currentIndex - 1]
+      : null;
+    const nextBursary = currentIndex >= 0 &&
+        currentIndex < activeBursaries.length - 1
+      ? activeBursaries[currentIndex + 1]
+      : null;
+    const previousUrl = previousBursary?.slug
+      ? `/bursary/${encodeURIComponent(previousBursary.slug)}`
+      : "";
+    const nextUrl = nextBursary?.slug
+      ? `/bursary/${encodeURIComponent(nextBursary.slug)}`
+      : "";
 
     const schema = {
       "@context": "https://schema.org",
@@ -163,28 +205,73 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script type="application/ld+json">${jsonLd(schema)}</script>
   <style>
-    body{margin:0;font-family:Arial,sans-serif;background:#f7f9fc;color:#111827;line-height:1.65}
+    *{box-sizing:border-box}
+    body{position:relative;margin:0;font-family:"Poppins",Arial,sans-serif;background:#f7f9fc;color:#111827;line-height:1.65}
     header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:44px 20px}
     main,.inner{max-width:960px;margin:0 auto}
-    main{padding:28px 20px 54px}
+    main{display:flex;flex-direction:column;padding:28px 20px 54px}
     a{color:#1d4ed8}
     .brand a{color:#fff;text-decoration:none;font-weight:700}
     h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:20px 0 12px}
     .meta{font-size:1.05rem;color:#dbeafe}
     .panel{background:#fff;border:1px solid #dbeafe;border-radius:18px;box-shadow:0 16px 38px rgba(30,58,138,.12);padding:22px;margin:20px 0}
+    .summary-panel{order:1}
+    .description{order:2}
+    .actions-panel{order:3}
+    .mobile-preview-header{display:none}
+    .provider-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .provider-logo{width:48px;height:48px;border-radius:10px;object-fit:contain;border:1px solid #dbeafe;background:#fff}
+    .provider-name{color:#1f2937;font-weight:700}
     .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .detail-row{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fbfdff}
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
     .detail-row strong{display:block;color:#111827}
-    .description p{margin:0 0 14px}
-    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:12px 16px;font-weight:800;text-decoration:none}
+    .description-content{color:#374151;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+    .actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
     .btn.green{background:#16a34a;color:#fff}
-    .btn.blue{background:#2563eb;color:#fff}
-    .btn.light{background:#eaf1fb;color:#1e3a8a}
-    @media(max-width:680px){.details{grid-template-columns:1fr}.actions{flex-direction:column}.btn{width:100%}}
+    .btn.green:hover{background:#15803d}
+    .external-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.3}
+    .swipe-hint{display:none}
+    @media(max-width:680px){
+      body{background:#f4f7fc}
+      header{display:none}
+      main{
+        width:calc(100% - 36px);
+        margin:18px auto;
+        padding:22px;
+        background:#fff;
+        border:1px solid #dbeafe;
+        border-radius:18px;
+        box-shadow:0 16px 38px rgba(30,58,138,.12);
+        touch-action:pan-y
+      }
+      .panel{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;margin:0}
+      .mobile-preview-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:12px;width:100%;margin-bottom:16px}
+      .mobile-preview-header h1{flex:1;min-width:0;color:#1e3a8a;font-size:1.4rem;line-height:1.3;margin:0;overflow-wrap:anywhere}
+      .preview-actions{display:flex;align-items:center;gap:6px}
+      .share-btn{border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;color:#1d4ed8;padding:8px 10px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+      .close-preview{display:inline-flex;align-items:center;justify-content:center;width:28px;height:32px;color:#3b82f6;text-decoration:none}
+      .close-preview svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-width:2.5}
+      .provider-row{margin-bottom:14px}
+      .details{grid-template-columns:1fr}
+      .detail-row{border-color:#dbeafe;border-radius:14px;padding:16px;background:#f8fbff}
+      .detail-row span{text-transform:uppercase;letter-spacing:.04em}
+      .description{margin-top:20px;padding:18px;background:#f9fafb;border:1px solid #e5edfb;border-radius:10px}
+      .description-content{font-size:1rem;line-height:1.75}
+      .actions-panel{margin-top:18px}
+      .btn{width:100%}
+      .swipe-hint{display:block;margin:14px 0 0;color:#64748b;font-size:.75rem;text-align:center}
+    }
+    @media(max-width:390px){
+      main{width:calc(100% - 20px);margin:10px auto;padding:16px}
+      .mobile-preview-header h1{font-size:1.25rem}
+    }
   </style>
 </head>
 <body>
@@ -196,26 +283,76 @@ export default async (request: Request) => {
       ${expired ? '<div class="meta"><strong>Applications closed</strong></div>' : ""}
     </div>
   </header>
-  <main>
-    <section class="panel">
+  <main id="bursary-preview">
+    <section class="panel summary-panel">
+      <div class="mobile-preview-header">
+        <h1>${escapeHtml(bursaryName)}</h1>
+        <div class="preview-actions">
+          <a class="close-preview" href="https://careerunified.com/bursaries.html" aria-label="Close bursary details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
+          <button class="share-btn" id="share-bursary" type="button">Share</button>
+        </div>
+      </div>
+      <div class="provider-row">
+        <img class="provider-logo" src="${escapeHtml(image)}" alt="${escapeHtml(providerName)} logo" width="48" height="48">
+        <div class="provider-name">${escapeHtml(providerName)}</div>
+      </div>
       <div class="details">
-        ${detailRow("Provider", providerName)}
         ${detailRow("Faculty / field", facultyText)}
         ${detailRow("Closing date", deadlineDate || bursary.deadline || "Not specified")}
-        ${detailRow("Application type", "Bursary / scholarship")}
-      </div>
-      <div class="actions">
-        ${!expired && bursary.applicationLink ? `<a class="btn green" href="${escapeHtml(bursary.applicationLink)}" target="_blank" rel="noopener noreferrer">Apply on official website</a>` : ""}
-        <a class="btn light" href="https://careerunified.com/bursaries.html">Browse current bursaries</a>
-        <a class="btn blue" href="https://careerunified.com/cv-tips">Application tips</a>
-        <a class="btn light" href="https://careerunified.com/cv-generator/">Prepare CV</a>
       </div>
     </section>
     <section class="panel description">
-      <h2>Bursary Details</h2>
-      ${formatParagraphs(bursary.description)}
+      <div class="description-content">${formatDescription(bursary.description)}</div>
+    </section>
+    <section class="panel actions-panel">
+      <div class="actions">
+        ${!expired && bursary.applicationLink ? `<a class="btn green" href="${escapeHtml(ensureHttps(bursary.applicationLink))}" target="_blank" rel="noopener noreferrer">Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg></a>` : ""}
+      </div>
+      ${(previousUrl || nextUrl) ? '<p class="swipe-hint">Swipe right or left to view another bursary</p>' : ""}
     </section>
   </main>
+  <script>
+    (() => {
+      const preview = document.getElementById("bursary-preview");
+      const previousUrl = ${jsonLd(previousUrl || null)};
+      const nextUrl = ${jsonLd(nextUrl || null)};
+      const shareUrl = ${jsonLd(shareUrl)};
+      let startX = 0;
+      let startY = 0;
+
+      document.getElementById("share-bursary")?.addEventListener("click", async (event) => {
+        const button = event.currentTarget;
+        try {
+          if (navigator.share) {
+            await navigator.share({title: ${jsonLd(bursaryName)}, url: shareUrl});
+          } else {
+            await navigator.clipboard.writeText(shareUrl);
+            button.textContent = "Copied";
+          }
+        } catch (error) {
+          if (error?.name !== "AbortError") {
+            try {
+              await navigator.clipboard.writeText(shareUrl);
+              button.textContent = "Copied";
+            } catch {}
+          }
+        }
+      });
+
+      preview?.addEventListener("touchstart", (event) => {
+        startX = event.changedTouches[0].screenX;
+        startY = event.changedTouches[0].screenY;
+      }, {passive: true});
+
+      preview?.addEventListener("touchend", (event) => {
+        const deltaX = event.changedTouches[0].screenX - startX;
+        const deltaY = event.changedTouches[0].screenY - startY;
+        if (Math.abs(deltaX) <= 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 2) return;
+        const destination = deltaX < 0 ? nextUrl : previousUrl;
+        if (destination) window.location.href = destination;
+      }, {passive: true});
+    })();
+  </script>
 </body>
 </html>`;
 

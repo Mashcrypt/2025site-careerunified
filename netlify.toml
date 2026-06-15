@@ -168,8 +168,18 @@
   function = "bursary-og"
   path = "/bursary/*"
 
+[[edge_functions]]
+  function = "bursary-og"
+  path = "/bursaries/*"
+
 [[redirects]]
   from = "/bursary/*"
+  to = "/bursaries.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/bursaries/*"
   to = "/bursaries.html"
   status = 200
   force = true
