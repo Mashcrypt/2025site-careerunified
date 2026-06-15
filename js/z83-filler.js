@@ -355,10 +355,9 @@
 
   async function embedSignature(pdfDoc, page) {
     if (!signatureDataUrl) return;
-    const bytes = await fetch(signatureDataUrl).then(response => response.arrayBuffer());
     const image = signatureDataUrl.startsWith('data:image/jpeg')
-      ? await pdfDoc.embedJpg(bytes)
-      : await pdfDoc.embedPng(bytes);
+      ? await pdfDoc.embedJpg(signatureDataUrl)
+      : await pdfDoc.embedPng(signatureDataUrl);
     const scale = Math.min(1, 180 / image.width, 38 / image.height);
     const width = image.width * scale;
     const height = image.height * scale;
