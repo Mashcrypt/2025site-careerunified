@@ -1,5 +1,6 @@
 // /schemas/bursary.js (or bursary.ts if you use TS)
 const FACULTY_OPTIONS = [
+  { title: "Open to All Fields", value: "Open to All Fields" },
   { title: "Accounting & Finance", value: "Accounting & Finance" },
   { title: "Arts & Humanities", value: "Arts & Humanities" },
   { title: "Commerce & Business", value: "Commerce & Business" },
