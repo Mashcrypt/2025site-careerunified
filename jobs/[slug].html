@@ -5,6 +5,13 @@
 <title>{{job.title}} | CareerUnified</title>
 <meta name="description" content="{{job.description}}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-2Z934XRVXT", { send_page_view: true });
+</script>
 
 <style>
 body {
@@ -178,7 +185,9 @@ let currentJob = null
 let currentApplyLink = ""
 
 const query = encodeURIComponent(`*[_type=="job" && slug.current=="${slug}"][0]{
+  _id,
   title,
+  slug,
   description,
   location,
   salary,
@@ -215,6 +224,42 @@ fetch("https://qjg5raj1.api.sanity.io/v2024-01-01/data/query/production?query=" 
 
 const applyButton = document.getElementById("apply")
 const aiTailorButton = document.getElementById("aiTailor")
+
+function trackCroEvent(name, params = {}, callback) {
+  if (typeof window.gtag !== "function") {
+    if (typeof callback === "function") callback()
+    return
+  }
+
+  if (typeof callback !== "function") {
+    window.gtag("event", name, params)
+    return
+  }
+
+  let completed = false
+  const done = () => {
+    if (completed) return
+    completed = true
+    callback()
+  }
+
+  window.gtag("event", name, {
+    ...params,
+    event_callback: done,
+    event_timeout: 700
+  })
+  window.setTimeout(done, 750)
+}
+
+function jobAnalytics(job) {
+  return {
+    job_id: job?._id || undefined,
+    job_title: job?.title || getDisplayedText("title") || undefined,
+    job_company: job?.company || getDisplayedText("company") || undefined,
+    job_source: "sanity_detail",
+    job_slug: job?.slug?.current || slug || undefined
+  }
+}
 
 function openExternalApply() {
   if (currentApplyLink) {
@@ -260,7 +305,17 @@ applyButton.addEventListener("click", openExternalApply)
 aiTailorButton.addEventListener("click", () => {
   if (!currentJob) return
   sessionStorage.setItem("careerUnifiedAITailorJob", JSON.stringify(buildJobDescriptionPayload()))
-  window.location.href = "/cv-generator/?tab=ai&source=job"
+  const analytics = {
+    ...jobAnalytics(currentJob),
+    event_category: "conversion_funnel",
+    funnel_step: "job_to_ai_tailor",
+    placement: "job_detail_page",
+    button_text: "AI Tailor CV"
+  }
+  trackCroEvent("ai_tailor_start", analytics)
+  trackCroEvent("ai_cv_tailor_click", analytics, () => {
+    window.location.href = "/cv-generator/?tab=ai&source=job"
+  })
 })
 </script>
 

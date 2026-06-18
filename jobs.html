@@ -984,9 +984,30 @@
     const JOBS_VIEW_STATE_KEY = 'careerUnifiedJobsViewStateV1';
     const JOBS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 
-    function trackCroEvent(name, params = {}) {
-      if (typeof window.gtag !== 'function') return;
-      window.gtag('event', name, params);
+    function trackCroEvent(name, params = {}, callback) {
+      if (typeof window.gtag !== 'function') {
+        if (typeof callback === 'function') callback();
+        return;
+      }
+
+      if (typeof callback !== 'function') {
+        window.gtag('event', name, params);
+        return;
+      }
+
+      let completed = false;
+      const done = () => {
+        if (completed) return;
+        completed = true;
+        callback();
+      };
+
+      window.gtag('event', name, {
+        ...params,
+        event_callback: done,
+        event_timeout: 700
+      });
+      window.setTimeout(done, 750);
     }
 
     function jobAnalytics(job) {
@@ -1304,9 +1325,18 @@
 
     function openAITailorFromJob() {
       if (!currentPreviewJob) return;
-      trackCroEvent('ai_tailor_start', jobAnalytics(currentPreviewJob));
       sessionStorage.setItem('careerUnifiedAITailorJob', JSON.stringify(buildAITailorJobPayload(currentPreviewJob)));
-      window.location.href = '/cv-generator/?tab=ai&source=job';
+      const analytics = {
+        ...jobAnalytics(currentPreviewJob),
+        event_category: 'conversion_funnel',
+        funnel_step: 'job_to_ai_tailor',
+        placement: openedFromURL ? 'job_deep_link_preview' : 'jobs_preview_panel',
+        button_text: 'AI Tailor CV'
+      };
+      trackCroEvent('ai_tailor_start', analytics);
+      trackCroEvent('ai_cv_tailor_click', analytics, () => {
+        window.location.href = '/cv-generator/?tab=ai&source=job';
+      });
     }
 
     function slugify(str) {
