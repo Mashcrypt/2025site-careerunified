@@ -104,9 +104,19 @@
       padding: 60px 20px 50px;
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .page-hero h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
-    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; }
+    .page-hero h1 { margin: 0; font-size: 2.5rem; font-weight: 700; order: 1; }
+    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; order: 2; }
+    .page-hero .page-hero-proof {
+      margin: 14px auto 0;
+      color: #bfdbfe;
+      font-size: 0.88rem;
+      font-weight: 600;
+      order: 3;
+    }
 
     .jobs-container {
       display: flex;
@@ -186,6 +196,19 @@
       white-space: nowrap;
     }
     .search-filter-container button:hover { background: #1e40af; }
+
+    .job-results-summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: -8px 0 14px;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .job-results-summary strong {
+      color: #1e3a8a;
+    }
 
     .jobs-list {
       list-style: none;
@@ -615,6 +638,7 @@
       .search-filter-container input,
       .search-filter-container select,
       .search-filter-container button { width: 100%; min-width: auto; padding: 14px 16px; font-size: 16px; }
+      .job-results-summary { align-items: flex-start; flex-direction: column; gap: 2px; }
 
       .job-card       { padding: 14px; }
       .job-card h3    { font-size: 1rem; padding-right: 70px; }
@@ -840,6 +864,7 @@
   <!-- PAGE HERO (renamed from <header> to avoid semantic conflict) -->
   <section class="page-hero">
     <h1>Available Jobs in South Africa</h1>
+    <p class="page-hero-proof">Free to browse. Direct application links. No account required to apply.</p>
     <p>Find your next opportunity — updated daily</p>
   </section>
 
@@ -866,6 +891,10 @@
           <option value="freelance">Freelance</option>
         </select>
         <button id="sortBtn">Sort by Deadline</button>
+      </div>
+      <div class="job-results-summary" aria-live="polite">
+        <span><strong id="jobResultCount">0</strong> opportunities found</span>
+        <span>Select a job to see full details</span>
       </div>
       <ul class="jobs-list" id="jobList" aria-label="Job listings" aria-live="polite">
         <!-- SSR_JOB_LIST -->
@@ -946,6 +975,7 @@
     let filteredJobs  = [];
     let openedFromURL = false;
     let currentPreviewJob = null;
+    let searchTrackingTimer = null;
 
     let userId    = null;
     let savedJobs = new Set();
@@ -953,6 +983,20 @@
     const JOBS_CACHE_KEY = 'careerUnifiedJobsCacheV1';
     const JOBS_VIEW_STATE_KEY = 'careerUnifiedJobsViewStateV1';
     const JOBS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+
+    function trackCroEvent(name, params = {}) {
+      if (typeof window.gtag !== 'function') return;
+      window.gtag('event', name, params);
+    }
+
+    function jobAnalytics(job) {
+      return {
+        job_id: job?._id || undefined,
+        job_title: job?.title || undefined,
+        job_company: job?.company?.name || job?.company || undefined,
+        job_source: job?._source || undefined
+      };
+    }
 
     /* ── SMART SEARCH HANDOFF ── */
     function normalizeSearchTerm(v) {
@@ -1098,16 +1142,18 @@
           await ref.delete();
           savedJobs.delete(docId);
           removeFromLocalStorage('job', job._id);
+          trackCroEvent('job_unsave', jobAnalytics(job));
         } else {
           await ref.set({
             type: 'job', title: job.title, company: job.company?.name || job.company || null,
-            deadline: job.deadline || null, location: job.location || null,
+            deadline: getClosingDateLabel(job), deadlineDate: job.deadline || null, location: job.location || null,
             salary: job.salary || null, applyLink: job.applyLink || null,
             slug: job.slug || null,
             savedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           savedJobs.add(docId);
           addToLocalStorage('job', job._id);
+          trackCroEvent('job_save', jobAnalytics(job));
         }
         updateHearts();
       } catch (err) { console.error('Error toggling save:', err); alert('Failed to save job. Please try again.'); }
@@ -1144,6 +1190,15 @@
 
     function safeText(v, fallback = '') {
       return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
+    }
+
+    function getClosingDateLabel(job) {
+      return safeText(job?.deadlineText) || safeText(job?.deadline) || 'Not specified';
+    }
+
+    function getDeadlineSortTime(job) {
+      const date = new Date(job?.deadline || '');
+      return Number.isNaN(date.getTime()) ? Number.MAX_SAFE_INTEGER : date.getTime();
     }
 
     function makeJobShareUrl(job) {
@@ -1208,7 +1263,7 @@
       const company = safeText(job?.company?.name || job?.company, 'Confidential');
       const location = safeText(job?.location, 'Not specified');
       const salary = safeText(job?.salary, 'Not specified');
-      const closingDate = safeText(job?.deadline, 'Not specified');
+      const closingDate = getClosingDateLabel(job);
       const description = safeText(job?.description, 'Description not provided.');
       const fullText = [
         `Job Title: ${title}`,
@@ -1239,12 +1294,17 @@
     function openExternalApply(link) {
       const applyLink = safeText(link, '#');
       if (applyLink && applyLink !== '#') {
+        trackCroEvent('job_apply_click', {
+          ...jobAnalytics(currentPreviewJob),
+          link_url: applyLink
+        });
         window.open(applyLink, '_blank', 'noopener,noreferrer');
       }
     }
 
     function openAITailorFromJob() {
       if (!currentPreviewJob) return;
+      trackCroEvent('ai_tailor_start', jobAnalytics(currentPreviewJob));
       sessionStorage.setItem('careerUnifiedAITailorJob', JSON.stringify(buildAITailorJobPayload(currentPreviewJob)));
       window.location.href = '/cv-generator/?tab=ai&source=job';
     }
@@ -1285,7 +1345,7 @@
 
     /* ── FIRESTORE JOBS ── */
     async function fetchRecruiterJobs() {
-      if (!firebase?.firestore) return [];
+      if (typeof firebase === 'undefined' || !firebase.firestore) return [];
       try {
         const snap = await firebase.firestore().collection('jobs').orderBy('createdAt', 'desc').limit(300).get();
         const list = [];
@@ -1313,6 +1373,7 @@
 
       const deadlineISO = toISODateString(data.deadline || data.applicationDeadline || data.closingDate);
       const deadline    = safeText(data.deadline) || safeText(data.applicationDeadline) || safeText(data.closingDate) || (deadlineISO ? new Date(deadlineISO).toDateString() : '');
+      const deadlineText = safeText(data.deadlineText) || (!deadlineISO ? deadline : '');
 
       const email     = safeText(data.email || data.applyEmail || data.contactEmail);
       const website   = safeText(data.website);
@@ -1327,7 +1388,7 @@
 
       return {
         _id: id, slug, title, description, location, salary: salary || null,
-        deadline: deadline || '', posted: postedISO || null,
+        deadline: deadline || '', deadlineText, posted: postedISO || null,
         jobType: safeText(data.type || data.jobType || data.employmentType, 'FULL_TIME'),
         category, listingTier: listingTier || '', badge: badge || '',
         sponsoredUntil: toISODateString(data.sponsoredUntil) || null,
@@ -1370,6 +1431,7 @@
         const sanityNormalized = (sanityJobs || []).map(j => ({
           ...j, _source: 'sanity',
           posted: toISODateString(j.posted || j._createdAt) || j.posted || null,
+          deadlineText: safeText(j.deadlineText),
           createdAt: toISODateString(j._createdAt) || null,
           company: j.company?.name ? { ...j.company, name: j.company.name } : j.company
         }));
@@ -1416,6 +1478,8 @@
       }
 
       jobList.innerHTML = '';
+      const resultCount = document.getElementById('jobResultCount');
+      if (resultCount) resultCount.textContent = String(filteredJobs.length);
 
       if (filteredJobs.length === 0) {
         jobList.innerHTML = `
@@ -1524,6 +1588,7 @@
     /* ── PREVIEW ── */
     function showPreview(job, direction = 'left') {
       currentPreviewJob = job;
+      trackCroEvent('job_detail_view', jobAnalytics(job));
       const badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : '') || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
 
       jobPreview.innerHTML = `
@@ -1554,7 +1619,7 @@
               <div class="preview-meta-card"><span>Company</span><strong>${job.company?.name || 'Confidential'}</strong></div>
               <div class="preview-meta-card"><span>Location</span><strong>${job.location  || 'Not specified'}</strong></div>
               <div class="preview-meta-card"><span>Salary</span><strong>${job.salary    || 'Not specified'}</strong></div>
-              <div class="preview-meta-card"><span>Closing</span><strong>${job.deadline  || 'Not specified'}</strong></div>
+              <div class="preview-meta-card"><span>Closing</span><strong>${getClosingDateLabel(job)}</strong></div>
             </div>
             <div class="job-desc">${safeText(job.description, 'Description not provided.')}</div>
             <div class="job-action-buttons">
@@ -1645,7 +1710,7 @@
         'title': job.title,
         'description': safeText(job.description),
         'datePosted': job.posted || undefined,
-        'validThrough': job.deadline || undefined,
+        'validThrough': toISODateString(job.deadline) || undefined,
         'employmentType': schemaEmploymentType,
         'hiringOrganization': {
           '@type': 'Organization',
@@ -1684,12 +1749,35 @@
     }
 
     /* ── FILTER HOOKS ── */
-    document.getElementById('jobSearch')?.addEventListener('input', () => renderJobs());
-    document.getElementById('categoryFilter')?.addEventListener('change', () => renderJobs());
+    document.getElementById('jobSearch')?.addEventListener('input', event => {
+      renderJobs();
+      clearTimeout(searchTrackingTimer);
+      searchTrackingTimer = setTimeout(() => {
+        const searchTerm = event.target.value.trim();
+        if (searchTerm) {
+          trackCroEvent('job_search', {
+            search_term: searchTerm,
+            results_count: filteredJobs.length
+          });
+        }
+      }, 800);
+    });
+    document.getElementById('categoryFilter')?.addEventListener('change', event => {
+      renderJobs();
+      trackCroEvent('job_filter', {
+        category: event.target.value,
+        results_count: filteredJobs.length
+      });
+    });
     document.getElementById('sortBtn')?.addEventListener('click', () => {
-      filteredJobs.sort((a, b) => new Date(a.deadline || 0) - new Date(b.deadline || 0));
+      filteredJobs.sort((a, b) => getDeadlineSortTime(a) - getDeadlineSortTime(b));
       jobs = filteredJobs.slice();
       renderJobs();
+      trackCroEvent('job_sort', { sort_by: 'deadline' });
+    });
+
+    document.querySelector('.footer-alert-form')?.addEventListener('submit', () => {
+      trackCroEvent('job_alert_submit', { placement: 'jobs_footer' });
     });
 
     /* ── SKELETON ── */

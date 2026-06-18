@@ -97,12 +97,30 @@ export default {
       name: 'deadline',
       title: 'Closing Date',
       type: 'date',
-      validation: Rule => Rule.required()
+      description: 'Use this only when the advert gives an exact closing date. Leave blank for unspecified or open-ended adverts.'
     },
 
-    /* ===============================
-       MONETISATION / PROMOTION
-    =============================== */
+    {
+      name: 'deadlineText',
+      title: 'Closing Date Text',
+      type: 'string',
+      description: 'Shown to users when there is no exact date, e.g. "Unspecified", "Open until filled", or "Apply as soon as possible".',
+      options: {
+        list: [
+          { title: 'Unspecified', value: 'Unspecified' },
+          { title: 'Open until filled', value: 'Open until filled' },
+          { title: 'Apply as soon as possible', value: 'Apply as soon as possible' },
+          { title: 'Not stated in advert', value: 'Not stated in advert' }
+        ]
+      },
+      validation: Rule =>
+        Rule.custom((value, context) => {
+          if (!context.parent?.deadline && !value) {
+            return 'Add an exact closing date or a closing date text label.'
+          }
+          return true
+        })
+    },
 
     {
       name: 'listingTier',
@@ -146,23 +164,22 @@ export default {
     }
   ],
 
-  /* ===============================
-     SANITY STUDIO PREVIEW (FIXED)
-  =============================== */
-
   preview: {
     select: {
       title: 'title',
       companyName: 'company.name',
+      deadline: 'deadline',
+      deadlineText: 'deadlineText',
       tier: 'listingTier',
       until: 'sponsoredUntil'
     },
 
-    prepare({ title, companyName, tier, until }) {
+    prepare({ title, companyName, deadline, deadlineText, tier, until }) {
       let subtitle = companyName || 'No company'
+      subtitle += ` | Closing: ${deadlineText || deadline || 'Not specified'}`
 
       if (tier && tier !== 'normal') {
-        subtitle += ` • ${tier.toUpperCase()}`
+        subtitle += ` | ${tier.toUpperCase()}`
         if (until) subtitle += ` (until ${until})`
       }
 
@@ -173,6 +190,3 @@ export default {
     }
   }
 }
-
-
-

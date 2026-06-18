@@ -35,7 +35,7 @@ export {slugify};
 export async function getJob(jobId: string) {
   return querySanity(
     `*[_type == "job" && _id == $id][0]{
-      _id, title, description, location, salary, posted, deadline, jobType,
+      _id, title, description, location, salary, posted, deadline, deadlineText, jobType,
       applyLink, "slug": slug.current, "companyName": company->name,
       "companyLogo": company->logo.asset->url
     }`,
@@ -47,7 +47,7 @@ export async function getJobBySlug(slug: string) {
   return querySanity(
     `*[_type == "job" && (slug.current == $slug || _id == $slug)][0]{
       _id, _updatedAt, title, "slug": coalesce(slug.current, _id), description, location,
-      salary, posted, deadline, jobType, applyLink,
+      salary, posted, deadline, deadlineText, jobType, applyLink,
       "companyName": company->name, "companyLogo": company->logo.asset->url
     }`,
     {slug},
@@ -59,7 +59,7 @@ export async function getActiveJobs(limit = 200) {
     `*[_type == "job" && (!defined(deadline) || deadline >= $today)]
       | order(posted desc)[0...${limit}]{
         _id, title, "slug": coalesce(slug.current, _id), location, salary,
-        posted, deadline, jobType, category, "companyName": company->name,
+        posted, deadline, deadlineText, jobType, category, "companyName": company->name,
         "companyLogo": company->logo.asset->url
       }`,
     {today: today()},

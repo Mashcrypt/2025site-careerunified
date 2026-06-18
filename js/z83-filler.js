@@ -2,8 +2,9 @@
   'use strict';
 
   const STORAGE_KEY = 'careerUnifiedZ83DraftV2';
+  const PREFILL_KEY = 'careerUnifiedZ83PrefillV1';
   const TEMPLATE_URL = '/assets/z83-template.pdf';
-  const {PDFDocument, StandardFonts, rgb} = window.PDFLib || {};
+  const {PDFDocument, StandardFonts, rgb, degrees} = window.PDFLib || {};
   const form = document.getElementById('z83Form');
   const status = document.getElementById('formStatus');
   const progressBar = document.getElementById('progressBar');
@@ -11,12 +12,16 @@
   const generateButton = document.getElementById('generateBtn');
   const preview = document.getElementById('pdfPreview');
   const placeholder = document.getElementById('pdfPlaceholder');
+  const cvPrefillPanel = document.getElementById('cvPrefillPanel');
+  const applyCvPrefillButton = document.getElementById('applyCvPrefillBtn');
   const canvas = document.getElementById('signatureCanvas');
   const context = canvas.getContext('2d');
   let drawing = false;
   let signatureDataUrl = '';
   let previewUrl = '';
   let saveTimer = 0;
+  const FORM_INK = rgb ? rgb(0.02, 0.025, 0.035) : undefined;
+  const CHECK_INK = rgb ? rgb(0, 0, 0) : undefined;
 
   const rowTemplates = {
     language: () => row('language', `
@@ -206,6 +211,81 @@
     return String(value || '').replace(/\s+/g, ' ').trim();
   }
 
+  function rowHasValue(row) {
+    return !!row && typeof row === 'object' && Object.values(row).some(value => clean(value));
+  }
+
+  function hasValue(value) {
+    if (Array.isArray(value)) return value.some(rowHasValue);
+    return clean(value).length > 0;
+  }
+
+  function readCvPrefill() {
+    try {
+      const raw = sessionStorage.getItem(PREFILL_KEY);
+      if (!raw) return null;
+      const payload = JSON.parse(raw);
+      const data = payload?.data && typeof payload.data === 'object' ? payload.data : payload;
+      return data && typeof data === 'object' ? data : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function mergeRows(currentRows, incomingRows, limit) {
+    const current = Array.isArray(currentRows) ? currentRows.filter(rowHasValue) : [];
+    if (current.length) return current.slice(0, limit);
+    return Array.isArray(incomingRows) ? incomingRows.filter(rowHasValue).slice(0, limit) : [];
+  }
+
+  function mergeCvPrefill(current, incoming) {
+    const next = {...current};
+    Object.entries(incoming).forEach(([key, value]) => {
+      if (['languages', 'education', 'work', 'references', 'signatureDataUrl'].includes(key)) return;
+      if (!hasValue(next[key]) && hasValue(value)) next[key] = value;
+    });
+
+    next.languages = mergeRows(current.languages, incoming.languages, 5);
+    next.education = mergeRows(current.education, incoming.education, 4);
+    next.work = mergeRows(current.work, incoming.work, 3);
+    next.references = mergeRows(current.references, incoming.references, 3);
+    return next;
+  }
+
+  function applyCvPrefill(showMessage = true) {
+    const cvData = readCvPrefill();
+    if (!cvData) {
+      setStatus('No CV details were found. Open the CV generator and choose Prefill Z83 again.', 'error');
+      return false;
+    }
+
+    const merged = mergeCvPrefill(getData(), cvData);
+    setData(merged);
+    saveDraft(false);
+    sessionStorage.removeItem(PREFILL_KEY);
+    if (cvPrefillPanel) cvPrefillPanel.hidden = true;
+    if (showMessage) {
+      setStatus('Your CV details were added. Review names, dates, declarations, and signature before downloading.', 'success');
+    }
+    return true;
+  }
+
+  function initCvPrefill() {
+    const cvData = readCvPrefill();
+    if (!cvData) return;
+
+    if (cvPrefillPanel) cvPrefillPanel.hidden = false;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('prefill') === 'cv') {
+      applyCvPrefill(true);
+      params.delete('prefill');
+      const query = params.toString();
+      window.history.replaceState({}, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
+    } else {
+      setStatus('CV details are ready. Choose "Use my CV details" to prefill this Z83.');
+    }
+  }
+
   function splitDate(value) {
     const match = clean(value).match(/(\d{1,2})\D+(\d{2,4})/);
     if (!match) return ['', ''];
@@ -234,6 +314,14 @@
     return lines;
   }
 
+  function naturalOffset(seed, amount = 0.45) {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+    }
+    return (((Math.abs(hash) % 1000) / 1000) - 0.5) * amount;
+  }
+
   function drawText(page, font, value, x, y, options = {}) {
     const text = clean(value);
     if (!text) return;
@@ -242,7 +330,15 @@
     const maxLines = options.maxLines || 2;
     const lineHeight = options.lineHeight || size + 1;
     wrapText(text, font, size, maxWidth, maxLines).forEach((line, index) => {
-      page.drawText(line, {x, y: y - index * lineHeight, size, font, color: rgb(0, 0, 0)});
+      const seed = `${line}:${x}:${y}:${index}`;
+      page.drawText(line, {
+        x: x + naturalOffset(seed, 0.35),
+        y: y - index * lineHeight + naturalOffset(`${seed}:y`, 0.45),
+        size: size + naturalOffset(`${seed}:s`, 0.18),
+        font,
+        color: FORM_INK,
+        rotate: degrees(naturalOffset(`${seed}:r`, 0.45))
+      });
     });
   }
 
@@ -250,16 +346,25 @@
     const text = clean(value);
     if (!text) return;
     const textWidth = font.widthOfTextAtSize(text, size);
-    page.drawText(text, {x: centerX - Math.min(textWidth, width) / 2, y, size, font, color: rgb(0, 0, 0)});
+    const seed = `${text}:${centerX}:${y}`;
+    page.drawText(text, {
+      x: centerX - Math.min(textWidth, width) / 2 + naturalOffset(seed, 0.25),
+      y: y + naturalOffset(`${seed}:y`, 0.35),
+      size: size + naturalOffset(`${seed}:s`, 0.12),
+      font,
+      color: FORM_INK,
+      rotate: degrees(naturalOffset(`${seed}:r`, 0.3))
+    });
   }
 
   function mark(page, value, expected, x, y) {
     if (clean(value).toLowerCase() !== expected.toLowerCase()) return;
-    page.drawText('X', {x, y, size: 9, font: page.__font, color: rgb(0, 0, 0)});
+    page.drawText('X', {x, y, size: 9, font: page.__markFont || page.__font, color: CHECK_INK});
   }
 
-  function fillPageOne(page, font, data) {
+  function fillPageOne(page, font, markFont, data) {
     page.__font = font;
+    page.__markFont = markFont;
     drawText(page, font, data.position, 242, 636, {maxWidth: 155, maxLines: 3});
     drawText(page, font, data.department, 408, 636, {maxWidth: 164, maxLines: 3});
     drawText(page, font, data.referenceNumber, 242, 578, {maxWidth: 155});
@@ -305,8 +410,9 @@
     drawText(page, font, data.initials, 548, 24, {maxWidth: 48, size: 8});
   }
 
-  function fillPageTwo(page, font, data) {
+  function fillPageTwo(page, font, markFont, data) {
     page.__font = font;
+    page.__markFont = markFont;
     drawText(page, font, data.correspondenceLanguage, 471, 696, {maxWidth: 98});
     [['Post', 350], ['Email', 420], ['Fax', 489], ['Telephone', 557]].forEach(([value, x]) => mark(page, data.contactMethod, value, x, 673));
     const contact = [data.address, data.email, data.phone].filter(Boolean).join(' | ');
@@ -371,10 +477,11 @@
       return response.arrayBuffer();
     });
     const pdfDoc = await PDFDocument.load(templateBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const font = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    const markFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const [pageOne, pageTwo] = pdfDoc.getPages();
-    fillPageOne(pageOne, font, data);
-    fillPageTwo(pageTwo, font, data);
+    fillPageOne(pageOne, font, markFont, data);
+    fillPageTwo(pageTwo, font, markFont, data);
     await embedSignature(pdfDoc, pageTwo);
     pdfDoc.setTitle('Completed Z83 Application Form');
     pdfDoc.setAuthor('Career Unified browser-based Z83 filler');
@@ -461,6 +568,7 @@
 
   document.getElementById('clearSignature').addEventListener('click', clearSignature);
   document.getElementById('saveBtn').addEventListener('click', () => saveDraft(true));
+  applyCvPrefillButton?.addEventListener('click', () => applyCvPrefill(true));
   document.getElementById('clearBtn').addEventListener('click', () => {
     if (!window.confirm('Clear all Z83 answers and the signature saved on this device?')) return;
     localStorage.removeItem(STORAGE_KEY);
@@ -506,4 +614,5 @@
   });
 
   loadDraft();
+  initCvPrefill();
 })();

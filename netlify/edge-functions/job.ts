@@ -39,6 +39,10 @@ function normalizeDate(value: unknown) {
   return date.toISOString().slice(0, 10);
 }
 
+function closingDateLabel(job: Record<string, unknown>, normalizedDate = "") {
+  return String(job.deadlineText || normalizedDate || job.deadline || "Not specified").trim();
+}
+
 function jsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
@@ -130,6 +134,7 @@ export default async (request: Request) => {
     const locationText = job.location || "South Africa";
     const postedDate = normalizeDate(job.posted);
     const deadlineDate = normalizeDate(job.deadline);
+    const deadlineLabel = closingDateLabel(job, deadlineDate);
     const expired = Boolean(deadlineDate && deadlineDate < new Date().toISOString().slice(0, 10));
     const description = stripHtml(job.description);
     const metaDescription = `${companyName} - ${locationText} - Salary: ${salaryText} - ${snippet(description)}`.trim();
@@ -150,14 +155,14 @@ export default async (request: Request) => {
       company: companyName,
       location: locationText,
       salary: salaryText,
-      closingDate: deadlineDate || job.deadline || "Not specified",
+      closingDate: deadlineLabel,
       description: String(job.description ?? "").trim(),
       fullText: [
         `Job Title: ${jobTitle}`,
         `Company: ${companyName}`,
         `Location: ${locationText}`,
         `Salary: ${salaryText}`,
-        `Closing Date: ${deadlineDate || job.deadline || "Not specified"}`,
+        `Closing Date: ${deadlineLabel}`,
         "",
         "Job Description:",
         String(job.description ?? "").trim(),
@@ -343,7 +348,7 @@ export default async (request: Request) => {
         ${detailRow("Company", companyName)}
         ${detailRow("Location", locationText)}
         ${detailRow("Salary", salaryText)}
-        ${detailRow("Closing date", deadlineDate || job.deadline || "Not specified")}
+        ${detailRow("Closing date", deadlineLabel)}
         ${detailRow("Date posted", postedDate || job.posted || "Not specified", "secondary-detail")}
         ${detailRow("Employment type", job.jobType || "Full-time", "secondary-detail")}
       </div>

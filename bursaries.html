@@ -1016,7 +1016,7 @@
     async function copyToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text);
-        showToast('Link copied ✓');
+        showToast('Link copied');
       } catch {
         const ta = document.createElement('textarea');
         ta.value = text;
@@ -1024,7 +1024,7 @@
         ta.select();
         document.execCommand('copy');
         ta.remove();
-        showToast('Link copied ✓');
+        showToast('Link copied');
       }
     }
 

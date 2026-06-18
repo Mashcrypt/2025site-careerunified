@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback, type ReactNode } from 'react';
 import {
+  ArrowRight,
   FileText,
   Wand2,
   Eye,
@@ -12,6 +13,8 @@ import {
   CreditCard,
   CheckCircle2,
   Crown,
+  Signature,
+  X,
 } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
@@ -56,6 +59,8 @@ import { southAfricanSampleData } from './utils/sample-data';
 import { getFirebaseAuth } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
+const CV_GUIDE_STORAGE_KEY = 'careerUnifiedCvGuideDismissedV1';
+const Z83_PREFILL_STORAGE_KEY = 'careerUnifiedZ83PrefillV1';
 
 type PremiumTemplateId =
   | 'ats-pro'
@@ -114,6 +119,136 @@ const PLAN_OPTIONS: Array<{
 ];
 
 const TEMPLATE_CANVAS_WIDTH = 816;
+
+const MONTH_LOOKUP: Record<string, string> = {
+  jan: '01',
+  january: '01',
+  feb: '02',
+  february: '02',
+  mar: '03',
+  march: '03',
+  apr: '04',
+  april: '04',
+  may: '05',
+  jun: '06',
+  june: '06',
+  jul: '07',
+  july: '07',
+  aug: '08',
+  august: '08',
+  sep: '09',
+  september: '09',
+  oct: '10',
+  october: '10',
+  nov: '11',
+  november: '11',
+  dec: '12',
+  december: '12',
+};
+
+function cleanTextValue(value: unknown) {
+  return String(value ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function splitCvFullName(fullName: string) {
+  const parts = cleanTextValue(fullName).split(/\s+/).filter(Boolean);
+  const initials = parts
+    .map((part) => part.replace(/[^a-z0-9]/gi, '').charAt(0))
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 8);
+
+  if (parts.length <= 1) {
+    return { initials, surname: '', fullNames: parts[0] || '' };
+  }
+
+  const surname = parts[parts.length - 1];
+  return {
+    initials,
+    surname,
+    fullNames: parts.slice(0, -1).join(' '),
+  };
+}
+
+function extractYear(value: unknown) {
+  return cleanTextValue(value).match(/\b(19|20)\d{2}\b/)?.[0] || '';
+}
+
+function toZ83MonthYear(value: unknown) {
+  const text = cleanTextValue(value);
+  if (!text || /present|current/i.test(text)) return '';
+
+  const numeric = text.match(/\b(0?[1-9]|1[0-2])[\s/.-]+((?:19|20)\d{2})\b/);
+  if (numeric) return `${numeric[1].padStart(2, '0')}/${numeric[2]}`;
+
+  const monthName = text.match(
+    /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/i
+  )?.[1]?.toLowerCase();
+  const year = extractYear(text);
+
+  if (monthName && year) return `${MONTH_LOOKUP[monthName.slice(0, 3)] || MONTH_LOOKUP[monthName]}/${year}`;
+  return '';
+}
+
+function hasRealCvDetails(data: ResumeData) {
+  const personal = data.personalInfo || {};
+  const sample = southAfricanSampleData.personalInfo;
+  const fullName = cleanTextValue(personal.fullName);
+  const email = cleanTextValue(personal.email);
+  const phone = cleanTextValue(personal.phone);
+
+  const stillLooksLikeSample =
+    fullName === sample.fullName &&
+    email === sample.email &&
+    phone === sample.phone;
+
+  if (stillLooksLikeSample) return false;
+
+  return Boolean(
+    fullName ||
+      email ||
+      phone ||
+      cleanTextValue(personal.location) ||
+      data.education?.length ||
+      data.experience?.length
+  );
+}
+
+function buildZ83PrefillFromResume(data: ResumeData) {
+  const personal = data.personalInfo || {};
+  const name = splitCvFullName(personal.fullName);
+  const email = cleanTextValue(personal.email);
+  const phone = cleanTextValue(personal.phone);
+
+  return {
+    initials: name.initials,
+    surname: name.surname,
+    fullNames: name.fullNames,
+    email,
+    phone,
+    address: cleanTextValue(personal.location),
+    contactMethod: email ? 'Email' : phone ? 'Telephone' : '',
+    education: (data.education || [])
+      .slice(0, 4)
+      .map((item) => ({
+        institution: cleanTextValue(item.institution),
+        qualification: cleanTextValue(item.degree),
+        year: extractYear(item.graduationDate),
+      }))
+      .filter((item) => item.institution || item.qualification || item.year),
+    work: (data.experience || [])
+      .slice(0, 3)
+      .map((item) => ({
+        employer: cleanTextValue(item.company),
+        post: cleanTextValue(item.position),
+        from: toZ83MonthYear(item.startDate),
+        to: item.current ? '' : toZ83MonthYear(item.endDate),
+        reason: '',
+      }))
+      .filter((item) => item.employer || item.post || item.from || item.to),
+  };
+}
 
 function TemplatePreviewFrame({ children }: { children: ReactNode }) {
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -204,6 +339,10 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
+  const [showFirstTimeGuide, setShowFirstTimeGuide] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.localStorage.getItem(CV_GUIDE_STORAGE_KEY) !== '1';
+  });
   const [initialAIJobDescription] = useState(() => {
     if (typeof window === 'undefined') return '';
 
@@ -506,6 +645,37 @@ export default function App() {
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
   }, []);
 
+  const dismissFirstTimeGuide = useCallback(() => {
+    setShowFirstTimeGuide(false);
+
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CV_GUIDE_STORAGE_KEY, '1');
+  }, []);
+
+  const handleUseCvForZ83 = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    if (!hasRealCvDetails(resumeData)) {
+      alert('Import your CV or replace the sample details first, then use those details for your Z83.');
+      handleTabChange('import');
+      return;
+    }
+
+    try {
+      const payload = {
+        source: 'cv-generator',
+        version: 1,
+        createdAt: new Date().toISOString(),
+        data: buildZ83PrefillFromResume(resumeData),
+      };
+
+      window.sessionStorage.setItem(Z83_PREFILL_STORAGE_KEY, JSON.stringify(payload));
+      window.location.href = '/z83-filler?prefill=cv';
+    } catch {
+      alert('Your browser could not prepare the Z83 prefill. Please try again after refreshing the page.');
+    }
+  }, [handleTabChange, resumeData]);
+
   // Instant PDF download via Netlify Function (no print dialog)
   // Requires Netlify function at: /.netlify/functions/export-pdf
   const handleExport = useCallback(async () => {
@@ -674,6 +844,49 @@ export default function App() {
   const applicationsUsed = billing?.used ?? 0;
   const limitLabel = formatLimit(billing?.limit);
   const usageLabel = `${applicationsUsed} / ${limitLabel}`;
+  const cvGuideSteps = [
+    {
+      title: 'Import your CV',
+      description: 'Upload a PDF or DOCX CV, or paste LinkedIn text so the builder starts with your real details.',
+      cta: 'Import CV',
+      tab: 'import',
+      icon: Upload,
+    },
+    {
+      title: 'Choose template',
+      description: 'Pick an ATS-safe layout that matches the job level and industry you are applying for.',
+      cta: 'View templates',
+      tab: 'templates',
+      icon: Palette,
+    },
+    {
+      title: 'Add details',
+      description: 'Clean up your profile, experience, education, skills, projects, and certificates.',
+      cta: 'Edit CV',
+      tab: 'build',
+      icon: FileText,
+    },
+    {
+      title: 'Paste the job post',
+      description: 'Drop the job requirements into AI Tailor so your CV speaks to that exact role.',
+      cta: 'AI Tailor',
+      tab: 'ai',
+      icon: Wand2,
+    },
+    {
+      title: 'Check and download',
+      description: 'Review ATS feedback, then download a polished PDF that is ready to send.',
+      cta: 'Check score',
+      tab: 'analytics',
+      icon: Download,
+    },
+  ] satisfies Array<{
+    title: string;
+    description: string;
+    cta: string;
+    tab: AppTab;
+    icon: typeof Upload;
+  }>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
@@ -757,6 +970,77 @@ export default function App() {
         <div className="mb-6">
           <SmartTips data={resumeData} />
         </div>
+
+        {showFirstTimeGuide ? (
+          <section className="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-950 px-4 py-4 text-white sm:px-5">
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-sky-100">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+                  First-time CV workflow
+                </div>
+                <h2 className="text-lg font-semibold sm:text-xl">Build once, tailor for every application</h2>
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+                  Start with your existing CV, improve the content, paste a job post, tailor with AI, then download the final PDF.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={dismissFirstTimeGuide}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/15 bg-white/10 text-slate-100 transition hover:bg-white/20"
+                aria-label="Hide first-time guide"
+                title="Hide guide"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
+              {cvGuideSteps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <button
+                    key={step.title}
+                    type="button"
+                    onClick={() => handleTabChange(step.tab)}
+                    className="group flex min-h-[172px] flex-col rounded-lg border border-slate-200 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-sky-50 text-blue-700">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <span className="text-xs font-bold uppercase tracking-wide text-slate-400">Step {index + 1}</span>
+                    </div>
+                    <h3 className="mt-4 text-sm font-semibold text-slate-950">{step.title}</h3>
+                    <p className="mt-2 flex-1 text-xs leading-5 text-slate-600">{step.description}</p>
+                    <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-blue-700">
+                      {step.cta}
+                      <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mx-4 mb-4 flex flex-col gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-emerald-700 shadow-sm">
+                  <Signature className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-950">Applying for a government post?</h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-700">
+                    Send your CV names, contact details, education, and work history into the Z83 filler, then review the official form before signing.
+                  </p>
+                </div>
+              </div>
+              <Button type="button" onClick={handleUseCvForZ83} className="shrink-0 bg-emerald-700 hover:bg-emerald-800">
+                <Signature className="mr-2 h-4 w-4" />
+                Use my CV details to prefill Z83
+              </Button>
+            </div>
+          </section>
+        ) : null}
 
         <Card className="mb-6 border-blue-100 bg-white/95 shadow-sm">
           <CardContent className="p-4">
@@ -1016,6 +1300,16 @@ export default function App() {
                 </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
+                  <Button
+                    type="button"
+                    onClick={handleUseCvForZ83}
+                    className="bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50"
+                    variant="outline"
+                  >
+                    <Signature className="h-4 w-4 mr-2" />
+                    Prefill Z83
+                  </Button>
+
                   <Button
                     onClick={handleExport}
                     disabled={isPrinting}

@@ -45,6 +45,7 @@ window.sanityClient = {
         jobType,
         posted,
         deadline,
+        deadlineText,
         listingTier,
         sponsoredUntil,
 
@@ -76,6 +77,7 @@ window.sanityClient = {
         jobType,
         posted,
         deadline,
+        deadlineText,
         listingTier,
         sponsoredUntil,
 
