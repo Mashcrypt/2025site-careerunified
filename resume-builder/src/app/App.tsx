@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback, type ReactNode } from 'react';
+import type { User } from 'firebase/auth';
+import { collection, doc as firestoreDoc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { getBlob, ref as storageObjectRef } from 'firebase/storage';
 import {
   ArrowRight,
   FileText,
@@ -33,10 +36,10 @@ import {
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
 import { ATSScore } from './components/ats-score';
-import { ResumeVersions } from './components/resume-versions';
+import { RESUME_VERSIONS_STORAGE_KEY, ResumeVersions } from './components/resume-versions';
 import { ThemeCustomizer } from './components/theme-customizer';
 import { SmartTips } from './components/smart-tips';
-import { ImportData } from './components/import-data';
+import { ImportData, parseResumeText } from './components/import-data';
 
 import { ModernTemplate } from './components/templates/modern-template';
 import { ProfessionalTemplate } from './components/templates/professional-template';
@@ -56,7 +59,7 @@ import type { ResumeData, TemplateType } from './types/resume';
 import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
 
-import { getFirebaseAuth } from './utils/firebaseClient';
+import { getFirebaseAuth, getFirebaseDb, getFirebaseStorage } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
 const CV_GUIDE_STORAGE_KEY = 'careerUnifiedCvGuideDismissedV1';
@@ -90,6 +93,23 @@ type BillingStatus = {
   pendingPayfastPaymentId?: string | null;
 };
 
+type ProfileCvImportStatus = 'idle' | 'checking' | 'loaded' | 'not_found' | 'unsupported' | 'error';
+
+type ProfileCvReference = {
+  cvURL: string;
+  cvFileName: string;
+  cvFilePath?: string;
+};
+
+type ResumeVersionStored = {
+  id: string;
+  name: string;
+  data: ResumeData;
+  createdAt: string;
+  updatedAt: string;
+  isFavorite: boolean;
+};
+
 const PLAN_OPTIONS: Array<{
   id: PlanId;
   name: string;
@@ -119,6 +139,7 @@ const PLAN_OPTIONS: Array<{
 ];
 
 const TEMPLATE_CANVAS_WIDTH = 816;
+const PROFILE_CV_VERSION_ID = 'profile-cv-import';
 
 const MONTH_LOOKUP: Record<string, string> = {
   jan: '01',
@@ -213,6 +234,172 @@ function hasRealCvDetails(data: ResumeData) {
       data.education?.length ||
       data.experience?.length
   );
+}
+
+function structuredCloneSafe<T>(value: T): T {
+  if (typeof globalThis.structuredClone === 'function') return globalThis.structuredClone(value);
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function extractFileNameFromCvUrl(cvURL: string) {
+  try {
+    const url = new URL(cvURL);
+    const storageObject = url.pathname.split('/o/')[1];
+    const decodedPath = decodeURIComponent((storageObject || url.pathname.split('/').pop() || '').split('?')[0]);
+    return decodedPath.split('/').pop() || '';
+  } catch {
+    return '';
+  }
+}
+
+function buildProfileCvReference(data: Record<string, any> | undefined): ProfileCvReference | null {
+  const cvURL = cleanTextValue(data?.cvURL || data?.cvUrl);
+  if (!cvURL) return null;
+
+  const cvFileName =
+    cleanTextValue(data?.cvFileName) ||
+    extractFileNameFromCvUrl(cvURL) ||
+    'Profile CV';
+
+  return {
+    cvURL,
+    cvFileName,
+    cvFilePath: cleanTextValue(data?.cvFilePath) || undefined,
+  };
+}
+
+async function getLatestProfileCvReference(user: User): Promise<ProfileCvReference | null> {
+  const db = getFirebaseDb();
+
+  try {
+    const orderedSnapshot = await getDocs(
+      query(collection(db, 'cvs'), where('userId', '==', user.uid), orderBy('uploadedAt', 'desc'), limit(1))
+    );
+    const latest = orderedSnapshot.docs[0]?.data();
+    const fromCvs = buildProfileCvReference(latest);
+    if (fromCvs) return fromCvs;
+  } catch {
+    try {
+      const unorderedSnapshot = await getDocs(query(collection(db, 'cvs'), where('userId', '==', user.uid), limit(10)));
+      const candidates = unorderedSnapshot.docs
+        .map((docSnap) => buildProfileCvReference(docSnap.data()))
+        .filter(Boolean) as ProfileCvReference[];
+      if (candidates[0]) return candidates[0];
+    } catch {
+      // Older accounts may only have users/{uid}.cvUrl, so continue to that fallback.
+    }
+  }
+
+  const userSnapshot = await getDoc(firestoreDoc(db, 'users', user.uid));
+  if (!userSnapshot.exists()) return null;
+
+  return buildProfileCvReference(userSnapshot.data());
+}
+
+function inferResumeMimeType(fileName: string, fallback = '') {
+  if (fallback && fallback !== 'application/octet-stream') return fallback;
+  if (/\.pdf$/i.test(fileName)) return 'application/pdf';
+  if (/\.docx$/i.test(fileName)) {
+    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  }
+  return fallback;
+}
+
+function isSupportedResumeImportFile(fileName: string, mimeType: string) {
+  return (
+    mimeType === 'application/pdf' ||
+    mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    /\.pdf$|\.docx$/i.test(fileName)
+  );
+}
+
+async function downloadProfileCvBlob(profileCv: ProfileCvReference) {
+  let lastError: unknown = null;
+
+  try {
+    const response = await fetch(profileCv.cvURL);
+    if (response.ok) return response.blob();
+    lastError = new Error(`Profile CV download failed (${response.status}).`);
+  } catch (error) {
+    lastError = error;
+  }
+
+  if (profileCv.cvFilePath) {
+    return getBlob(storageObjectRef(getFirebaseStorage(), profileCv.cvFilePath));
+  }
+
+  throw lastError instanceof Error ? lastError : new Error('Could not download the profile CV.');
+}
+
+async function extractProfileCvText(profileCv: ProfileCvReference, token?: string) {
+  const blob = await downloadProfileCvBlob(profileCv);
+  const mimeType = inferResumeMimeType(profileCv.cvFileName, blob.type);
+
+  if (!isSupportedResumeImportFile(profileCv.cvFileName, mimeType)) {
+    const error = new Error('Profile CV import supports PDF or DOCX files. Upload a PDF or DOCX CV to your profile to auto-fill the builder.');
+    (error as Error & { code?: string }).code = 'unsupported_file';
+    throw error;
+  }
+
+  const formData = new FormData();
+  formData.append('file', new File([blob], profileCv.cvFileName, { type: mimeType }));
+
+  const response = await fetch('/.netlify/functions/extract-resume-text', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: formData,
+  });
+
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(payload?.error || payload?.message || 'Could not read the saved profile CV.');
+  }
+
+  if (!payload?.text || typeof payload.text !== 'string') {
+    throw new Error('Could not extract readable text from the saved profile CV.');
+  }
+
+  return payload.text;
+}
+
+function getProfileCvVersionName(fileName: string) {
+  const cleaned = cleanTextValue(fileName)
+    .replace(/\.(pdf|docx?)$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .slice(0, 64);
+
+  return cleaned ? `Profile CV: ${cleaned}` : 'Profile CV import';
+}
+
+function saveProfileCvImportVersion(data: ResumeData, fileName: string) {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    const now = new Date().toISOString();
+    const raw = window.localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as ResumeVersionStored[]) : [];
+    const versions = Array.isArray(parsed) ? parsed : [];
+    const existing = versions.find((version) => version?.id === PROFILE_CV_VERSION_ID);
+    const withoutProfileImport = versions.filter((version) => version?.id !== PROFILE_CV_VERSION_ID);
+
+    const profileVersion: ResumeVersionStored = {
+      id: PROFILE_CV_VERSION_ID,
+      name: getProfileCvVersionName(fileName),
+      data: structuredCloneSafe(data),
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+      isFavorite: existing?.isFavorite ?? true,
+    };
+
+    window.localStorage.setItem(
+      RESUME_VERSIONS_STORAGE_KEY,
+      JSON.stringify([profileVersion, ...withoutProfileImport])
+    );
+
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function buildZ83PrefillFromResume(data: ResumeData) {
@@ -336,9 +523,15 @@ function getInitialTabFromUrl(): AppTab {
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialData);
+  const resumeDataRef = useRef<ResumeData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
+  const [profileCvImport, setProfileCvImport] = useState<{
+    status: ProfileCvImportStatus;
+    message: string;
+  }>({ status: 'idle', message: '' });
+  const [resumeVersionsRefreshKey, setResumeVersionsRefreshKey] = useState(0);
   const [showFirstTimeGuide, setShowFirstTimeGuide] = useState(() => {
     if (typeof window === 'undefined') return true;
     return window.localStorage.getItem(CV_GUIDE_STORAGE_KEY) !== '1';
@@ -381,6 +574,11 @@ export default function App() {
 
   const previewRef = useRef<HTMLDivElement | null>(null);
   const previewWrapRef = useRef<HTMLDivElement | null>(null);
+  const profileCvImportAttemptedRef = useRef(false);
+
+  useEffect(() => {
+    resumeDataRef.current = resumeData;
+  }, [resumeData]);
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -436,6 +634,70 @@ export default function App() {
     window.addEventListener('resize', compute);
     return () => window.removeEventListener('resize', compute);
   }, [isMobile]);
+
+  const loadProfileCvForUser = useCallback(async (user: User) => {
+    if (profileCvImportAttemptedRef.current) return;
+    if (hasRealCvDetails(resumeDataRef.current)) return;
+
+    profileCvImportAttemptedRef.current = true;
+    setProfileCvImport({
+      status: 'checking',
+      message: 'Checking your profile for a saved CV.',
+    });
+
+    try {
+      const profileCv = await getLatestProfileCvReference(user);
+      if (!profileCv) {
+        setProfileCvImport({ status: 'not_found', message: '' });
+        return;
+      }
+
+      const token = await user.getIdToken();
+      const text = await extractProfileCvText(profileCv, token);
+      const parsed = parseResumeText(text);
+
+      if (!hasRealCvDetails(parsed)) {
+        throw new Error('We found your profile CV, but could not extract enough usable details from it.');
+      }
+
+      setResumeData(parsed);
+
+      const savedVersion = saveProfileCvImportVersion(parsed, profileCv.cvFileName);
+      if (savedVersion) setResumeVersionsRefreshKey((value) => value + 1);
+
+      setProfileCvImport({
+        status: 'loaded',
+        message: savedVersion
+          ? 'Loaded your saved profile CV into the builder and saved it under Versions.'
+          : 'Loaded your saved profile CV into the builder.',
+      });
+    } catch (error: any) {
+      const unsupported = error?.code === 'unsupported_file';
+      setProfileCvImport({
+        status: unsupported ? 'unsupported' : 'error',
+        message:
+          error?.message ||
+          'We found a saved profile CV, but could not import it automatically. You can still upload a PDF or DOCX from the Import tab.',
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured()) return;
+
+    try {
+      const auth = getFirebaseAuth();
+      if (auth.currentUser) void loadProfileCvForUser(auth.currentUser);
+
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) void loadProfileCvForUser(user);
+      });
+
+      return () => unsubscribe();
+    } catch {
+      return;
+    }
+  }, [loadProfileCvForUser]);
 
   const loadBillingStatus = useCallback(async () => {
     setIsLoadingBilling(true);
@@ -887,6 +1149,29 @@ export default function App() {
     tab: AppTab;
     icon: typeof Upload;
   }>;
+  const showProfileCvImportNotice =
+    profileCvImport.status === 'checking' ||
+    profileCvImport.status === 'loaded' ||
+    profileCvImport.status === 'unsupported' ||
+    profileCvImport.status === 'error';
+  const profileCvNoticeTitle =
+    profileCvImport.status === 'checking'
+      ? 'Looking for your saved profile CV'
+      : profileCvImport.status === 'loaded'
+      ? 'Profile CV loaded'
+      : 'Profile CV could not be imported';
+  const profileCvNoticeClass =
+    profileCvImport.status === 'loaded'
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+      : profileCvImport.status === 'checking'
+      ? 'border-blue-200 bg-blue-50 text-blue-900'
+      : 'border-amber-200 bg-amber-50 text-amber-950';
+  const profileCvIconClass =
+    profileCvImport.status === 'loaded'
+      ? 'bg-white text-emerald-700'
+      : profileCvImport.status === 'checking'
+      ? 'bg-white text-blue-700'
+      : 'bg-white text-amber-700';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
@@ -970,6 +1255,38 @@ export default function App() {
         <div className="mb-6">
           <SmartTips data={resumeData} />
         </div>
+
+        {showProfileCvImportNotice ? (
+          <section className={`mb-6 rounded-lg border p-4 shadow-sm ${profileCvNoticeClass}`}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md shadow-sm ${profileCvIconClass}`}>
+                  {profileCvImport.status === 'loaded' ? (
+                    <CheckCircle2 className="h-5 w-5" />
+                  ) : profileCvImport.status === 'checking' ? (
+                    <FileText className="h-5 w-5 animate-pulse" />
+                  ) : (
+                    <X className="h-5 w-5" />
+                  )}
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold">{profileCvNoticeTitle}</h2>
+                  <p className="mt-1 text-sm leading-6 opacity-90">{profileCvImport.message}</p>
+                </div>
+              </div>
+
+              {profileCvImport.status === 'loaded' ? (
+                <Button type="button" variant="outline" onClick={() => handleTabChange('versions')} className="shrink-0 bg-white/80">
+                  View Versions
+                </Button>
+              ) : profileCvImport.status !== 'checking' ? (
+                <Button type="button" variant="outline" onClick={() => handleTabChange('import')} className="shrink-0 bg-white/80">
+                  Import CV
+                </Button>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
 
         {showFirstTimeGuide ? (
           <section className="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -1283,7 +1600,11 @@ export default function App() {
               <TabsContent value="versions" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4">
-                    <ResumeVersions currentData={resumeData} onLoadVersion={setResumeData} />
+                    <ResumeVersions
+                      currentData={resumeData}
+                      onLoadVersion={setResumeData}
+                      refreshKey={resumeVersionsRefreshKey}
+                    />
                   </div>
                 </ScrollArea>
               </TabsContent>

@@ -64,7 +64,7 @@ function parseLinkedInText(raw: string): ResumeData {
    - Used for extracted PDF/DOCX text
    - Best-effort section parsing into ResumeData
    =============================== */
-function parseResumeText(raw: string): ResumeData {
+export function parseResumeText(raw: string): ResumeData {
   const data = emptyResume()
 
   const text = raw

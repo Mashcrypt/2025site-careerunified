@@ -36,9 +36,10 @@ interface ResumeVersionUI {
 interface ResumeVersionsProps {
   currentData: ResumeData;
   onLoadVersion: (data: ResumeData) => void;
+  refreshKey?: number;
 }
 
-const STORAGE_KEY = 'careerunified_resume_versions_v1';
+export const RESUME_VERSIONS_STORAGE_KEY = 'careerunified_resume_versions_v1';
 
 function toStored(v: ResumeVersionUI): ResumeVersionStored {
   return {
@@ -76,7 +77,7 @@ function safeParseVersions(raw: string | null): ResumeVersionUI[] {
 function saveVersionsToStorage(versions: ResumeVersionUI[]) {
   try {
     const payload = versions.map(toStored);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(RESUME_VERSIONS_STORAGE_KEY, JSON.stringify(payload));
   } catch {
     // ignore storage errors (quota/private mode)
   }
@@ -90,14 +91,14 @@ function formatDate(date: Date) {
   }).format(date);
 }
 
-export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsProps) {
+export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: ResumeVersionsProps) {
   const [versions, setVersions] = useState<ResumeVersionUI[]>([]);
   const [newVersionName, setNewVersionName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Load from localStorage once
   useEffect(() => {
-    const loaded = safeParseVersions(localStorage.getItem(STORAGE_KEY));
+    const loaded = safeParseVersions(localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY));
 
     // Seed only if nothing saved yet (first run)
     if (loaded.length === 0) {
@@ -126,7 +127,7 @@ export function ResumeVersions({ currentData, onLoadVersion }: ResumeVersionsPro
 
     setVersions(loaded);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshKey]);
 
   // Persist whenever versions change
   useEffect(() => {
