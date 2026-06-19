@@ -20,8 +20,13 @@
   let signatureDataUrl = '';
   let previewUrl = '';
   let saveTimer = 0;
-  const FORM_INK = rgb ? rgb(0.02, 0.025, 0.035) : undefined;
+  const FORM_INK = rgb ? rgb(0, 0, 0) : undefined;
   const CHECK_INK = rgb ? rgb(0, 0, 0) : undefined;
+  const PEN_STROKES = [
+    [0, 0],
+    [0.12, 0.02],
+    [-0.05, -0.08]
+  ];
 
   const rowTemplates = {
     language: () => row('language', `
@@ -322,39 +327,54 @@
     return (((Math.abs(hash) % 1000) / 1000) - 0.5) * amount;
   }
 
-  function drawText(page, font, value, x, y, options = {}) {
-    const text = clean(value);
-    if (!text) return;
-    const size = options.size || 7.2;
-    const maxWidth = options.maxWidth || 150;
-    const maxLines = options.maxLines || 2;
-    const lineHeight = options.lineHeight || size + 1;
-    wrapText(text, font, size, maxWidth, maxLines).forEach((line, index) => {
-      const seed = `${line}:${x}:${y}:${index}`;
+  function drawPenLine(page, font, line, x, y, size, seed, options = {}) {
+    const jitter = options.steady ? 0 : 1;
+    const baseX = x + naturalOffset(seed, 0.28 * jitter);
+    const baseY = y + naturalOffset(`${seed}:y`, 0.34 * jitter);
+    const inkSize = size + naturalOffset(`${seed}:s`, 0.12 * jitter);
+    const rotation = degrees(naturalOffset(`${seed}:r`, 0.28 * jitter));
+    const strokes = options.singleStroke ? [[0, 0]] : PEN_STROKES;
+
+    strokes.forEach(([dx, dy]) => {
       page.drawText(line, {
-        x: x + naturalOffset(seed, 0.35),
-        y: y - index * lineHeight + naturalOffset(`${seed}:y`, 0.45),
-        size: size + naturalOffset(`${seed}:s`, 0.18),
+        x: baseX + dx,
+        y: baseY + dy,
+        size: inkSize,
         font,
         color: FORM_INK,
-        rotate: degrees(naturalOffset(`${seed}:r`, 0.45))
+        rotate: rotation
       });
     });
   }
 
-  function drawCentered(page, font, value, centerX, y, width, size = 7.2) {
+  function drawText(page, font, value, x, y, options = {}) {
+    const text = clean(value);
+    if (!text) return;
+    const size = options.size || 7.8;
+    const maxWidth = options.maxWidth || 150;
+    const maxLines = options.maxLines || 2;
+    const lineHeight = options.lineHeight || size + 1.2;
+    wrapText(text, font, size, maxWidth, maxLines).forEach((line, index) => {
+      const seed = `${line}:${x}:${y}:${index}`;
+      drawPenLine(page, font, line, x, y - index * lineHeight, size, seed, options);
+    });
+  }
+
+  function drawCentered(page, font, value, centerX, y, width, size = 7.8, options = {}) {
     const text = clean(value);
     if (!text) return;
     const textWidth = font.widthOfTextAtSize(text, size);
     const seed = `${text}:${centerX}:${y}`;
-    page.drawText(text, {
-      x: centerX - Math.min(textWidth, width) / 2 + naturalOffset(seed, 0.25),
-      y: y + naturalOffset(`${seed}:y`, 0.35),
-      size: size + naturalOffset(`${seed}:s`, 0.12),
+    drawPenLine(
+      page,
       font,
-      color: FORM_INK,
-      rotate: degrees(naturalOffset(`${seed}:r`, 0.3))
-    });
+      text,
+      centerX - Math.min(textWidth, width) / 2,
+      y,
+      size,
+      seed,
+      options
+    );
   }
 
   function mark(page, value, expected, x, y) {
@@ -455,7 +475,7 @@
       drawText(page, font, item.relationship, 234, referenceYs[index], {maxWidth: 140, size: 6.7});
       drawText(page, font, item.telephone, 384, referenceYs[index], {maxWidth: 185, size: 6.7});
     });
-    drawText(page, font, formatDate(data.signatureDate), 439, 80, {maxWidth: 100, size: 8});
+    drawText(page, font, formatDate(data.signatureDate), 352, 87, {maxWidth: 90, size: 8.4, steady: true});
     drawText(page, font, data.initials, 548, 24, {maxWidth: 48, size: 8});
   }
 
