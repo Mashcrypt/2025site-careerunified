@@ -36,7 +36,11 @@ import {
 import { ResumeBuilder } from './components/resume-builder';
 import { AITailor } from './components/ai-tailor';
 import { ATSScore } from './components/ats-score';
-import { RESUME_VERSIONS_STORAGE_KEY, ResumeVersions } from './components/resume-versions';
+import {
+  RESUME_VERSIONS_STORAGE_KEY,
+  ResumeVersions,
+  sanitizeResumeVersionData,
+} from './components/resume-versions';
 import { ThemeCustomizer } from './components/theme-customizer';
 import { SmartTips } from './components/smart-tips';
 import { ImportData, parseResumeText } from './components/import-data';
@@ -378,14 +382,19 @@ function saveProfileCvImportVersion(data: ResumeData, fileName: string) {
     const now = new Date().toISOString();
     const raw = window.localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY);
     const parsed = raw ? (JSON.parse(raw) as ResumeVersionStored[]) : [];
-    const versions = Array.isArray(parsed) ? parsed : [];
+    const versions = Array.isArray(parsed)
+      ? parsed.map((version) => ({
+          ...version,
+          data: sanitizeResumeVersionData(version.data),
+        }))
+      : [];
     const existing = versions.find((version) => version?.id === PROFILE_CV_VERSION_ID);
     const withoutProfileImport = versions.filter((version) => version?.id !== PROFILE_CV_VERSION_ID);
 
     const profileVersion: ResumeVersionStored = {
       id: PROFILE_CV_VERSION_ID,
       name: getProfileCvVersionName(fileName),
-      data: structuredCloneSafe(data),
+      data: sanitizeResumeVersionData(data),
       createdAt: existing?.createdAt || now,
       updatedAt: now,
       isFavorite: existing?.isFavorite ?? true,

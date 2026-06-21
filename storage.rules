@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isRecruiter() {
+      return signedIn() && request.auth.token.recruiter == true;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && (request.auth.token.admin == true || request.auth.uid in ['X3eReX1WGpQSR1svO4JIBFDqFUJ3']);
+    }
+
+    match /cvs/{userId}/{fileName} {
+      allow create: if false;
+      allow read, delete: if isOwner(userId) || isRecruiter() || isAdmin();
+      allow update: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

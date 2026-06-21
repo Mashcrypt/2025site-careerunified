@@ -41,11 +41,63 @@ interface ResumeVersionsProps {
 
 export const RESUME_VERSIONS_STORAGE_KEY = 'careerunified_resume_versions_v1';
 
+const PROMPT_INJECTION_PATTERNS = [
+  /ignore\s+(?:all\s+)?previous\s+instructions?/gi,
+  /disregard\s+(?:all\s+)?previous\s+instructions?/gi,
+  /forget\s+(?:all\s+)?previous\s+instructions?/gi,
+  /override\s+(?:the\s+)?(?:system|developer)\s+(?:prompt|message|instructions?)/gi,
+  /reveal\s+(?:the\s+)?(?:system|developer)\s+(?:prompt|message|instructions?)/gi,
+  /print\s+(?:the\s+)?(?:system|developer)\s+(?:prompt|message|instructions?)/gi,
+  /do\s+not\s+follow\s+(?:the\s+)?(?:system|developer)\s+(?:prompt|message|instructions?)/gi,
+  /prompt\s*injection/gi,
+  /jailbreak/gi,
+];
+
+function sanitizeResumeString(value: string) {
+  let sanitized = value
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<\?(?:php)?[\s\S]*?\?>/gi, '')
+    .replace(/<[^>]+>/g, '');
+
+  for (const pattern of PROMPT_INJECTION_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+
+  return sanitized.trim();
+}
+
+export function sanitizeResumeVersionData(data: ResumeData): ResumeData {
+  const clone = structuredCloneSafe(data);
+  const personalInfo = Object.fromEntries(
+    Object.entries(clone.personalInfo || {}).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? sanitizeResumeString(value) : value,
+    ])
+  ) as ResumeData['personalInfo'];
+
+  return {
+    ...clone,
+    personalInfo,
+    experience: (clone.experience || []).map((item) => ({
+      ...item,
+      description: sanitizeResumeString(item.description || ''),
+    })),
+    skills: (clone.skills || []).map((skill) => sanitizeResumeString(skill)),
+    certifications: (clone.certifications || []).map((certification) =>
+      sanitizeResumeString(certification)
+    ),
+    projects: (clone.projects || []).map((project) => ({
+      ...project,
+      description: sanitizeResumeString(project.description || ''),
+    })),
+  };
+}
+
 function toStored(v: ResumeVersionUI): ResumeVersionStored {
   return {
     id: v.id,
     name: v.name,
-    data: v.data,
+    data: sanitizeResumeVersionData(v.data),
     createdAt: v.createdAt.toISOString(),
     updatedAt: v.updatedAt.toISOString(),
     isFavorite: v.isFavorite,
@@ -56,7 +108,7 @@ function fromStored(v: ResumeVersionStored): ResumeVersionUI {
   return {
     id: v.id,
     name: v.name,
-    data: v.data,
+    data: sanitizeResumeVersionData(v.data),
     createdAt: new Date(v.createdAt),
     updatedAt: new Date(v.updatedAt),
     isFavorite: v.isFavorite,
@@ -106,7 +158,7 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
         {
           id: 'seed-1',
           name: 'Software Engineer - Tech Corp',
-          data: { ...currentData },
+          data: sanitizeResumeVersionData(currentData),
           createdAt: new Date(),
           updatedAt: new Date(),
           isFavorite: true,
@@ -114,7 +166,7 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
         {
           id: 'seed-2',
           name: 'Full Stack Developer - Startup',
-          data: { ...currentData },
+          data: sanitizeResumeVersionData(currentData),
           createdAt: new Date(),
           updatedAt: new Date(),
           isFavorite: false,
@@ -150,7 +202,7 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
     const newVersion: ResumeVersionUI = {
       id: `${Date.now()}`,
       name,
-      data: structuredCloneSafe(currentData),
+      data: sanitizeResumeVersionData(currentData),
       createdAt: now,
       updatedAt: now,
       isFavorite: false,
@@ -177,7 +229,7 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
       ...version,
       id: `${Date.now()}`,
       name: `${version.name} (Copy)`,
-      data: structuredCloneSafe(version.data),
+      data: sanitizeResumeVersionData(version.data),
       createdAt: now,
       updatedAt: now,
       isFavorite: false,
@@ -190,7 +242,7 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
     setVersions((prev) =>
       prev.map((v) => (v.id === version.id ? { ...v, updatedAt: new Date() } : v))
     );
-    onLoadVersion(structuredCloneSafe(version.data));
+    onLoadVersion(sanitizeResumeVersionData(version.data));
   };
 
   return (

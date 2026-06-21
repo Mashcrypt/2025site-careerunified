@@ -16,25 +16,25 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^5.24.0",
     "@sparticuz/chromium": "^123.0.1",
     "busboy": "^1.6.0",
-    "firebase-admin": "^13.8.0",
+    "firebase-admin": "^14.0.0",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
     "puppeteer-core": "^22.15.0",
     "react": "^19.1",
     "react-dom": "^19.1",
-    "sanity": "^5.24.0",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "@netlify/functions": "^5.2.0",
     "@sanity/eslint-config-studio": "^6.0.0",
+    "@sanity/vision": "^6.1.0",
     "@types/busboy": "^1.5.4",
     "@types/react": "^19.1",
     "eslint": "^9.28",
     "prettier": "^3.5",
+    "sanity": "^6.1.0",
     "typescript": "^5.8"
   },
   "prettier": {
@@ -47,6 +47,7 @@
     "@tootallnate/once": "^3.0.1",
     "js-yaml": "^3.14.2",
     "retry-request": "^8.0.2",
-    "teeny-request": "^10.1.2"
+    "teeny-request": "^10.1.2",
+    "uuid": "^11.1.1"
   }
 }

@@ -1,8 +1,11 @@
 // netlify/functions/_firebaseAdmin.ts
-import admin from "firebase-admin";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { FieldValue, getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
-export function getAdmin() {
-  if (!admin.apps.length) {
+function ensureApp() {
+  if (!getApps().length) {
     if (
       !process.env.FIREBASE_PROJECT_ID ||
       !process.env.FIREBASE_CLIENT_EMAIL ||
@@ -13,16 +16,36 @@ export function getAdmin() {
       );
     }
 
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
       }),
     });
   }
+}
 
-  return admin;
+const firestore = Object.assign(() => {
+  ensureApp();
+  return getFirestore();
+}, { FieldValue, Timestamp });
+
+const adminCompat = {
+  auth() {
+    ensureApp();
+    return getAuth();
+  },
+  firestore,
+  storage() {
+    ensureApp();
+    return getStorage();
+  },
+};
+
+export function getAdmin() {
+  ensureApp();
+  return adminCompat;
 }
 
 export function getDb() {

@@ -1,0 +1,82 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isRecruiter() {
+      return signedIn() && request.auth.token.recruiter == true;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && (request.auth.token.admin == true || request.auth.uid in ['X3eReX1WGpQSR1svO4JIBFDqFUJ3']);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isRecruiter() || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+
+      match /saved/{savedId} {
+        allow read, create, update, delete: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    match /cvs/{cvId} {
+      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isRecruiter() || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow create: if isRecruiter()
+        && request.resource.data.recruiterId == request.auth.uid;
+      allow update: if isAdmin()
+        || (isRecruiter()
+          && resource.data.recruiterId == request.auth.uid
+          && request.resource.data.recruiterId == request.auth.uid);
+      allow delete: if isAdmin()
+        || (isRecruiter() && resource.data.recruiterId == request.auth.uid);
+    }
+
+    match /recruiters/{recruiterId} {
+      allow read: if isOwner(recruiterId) || isAdmin();
+      allow create, update: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /recruiterApplications/{applicationId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /payfastPayments/{paymentId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if isAdmin();
+    }
+
+    match /rateLimits/{id} {
+      allow read, write: if false;
+    }
+
+    match /interviewQuestions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

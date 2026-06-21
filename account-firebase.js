@@ -3,7 +3,6 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -132,6 +131,56 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
     }
+function safeTextValue(value, fallback = '', maxLength = 500) {
+    const text = String(value ?? fallback ?? '')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<\?(?:php)?[\s\S]*?\?>/gi, '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/[\u0000-\u001f\u007f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, maxLength);
+    return text || fallback;
+}
+
+function escapeHtml(value) {
+    return safeTextValue(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value) {
+    return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function safeCvUrl(value) {
+    try {
+        const url = new URL(String(value || ''));
+        return ['https:', 'http:'].includes(url.protocol) ? url.href : '';
+    } catch {
+        return '';
+    }
+}
+
+function attachCvActionHandlers(container) {
+    container.querySelectorAll('[data-cv-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const action = button.dataset.cvAction;
+            const url = button.dataset.cvUrl || '';
+            const name = button.dataset.cvName || 'CV Document';
+            const docId = button.dataset.cvId || '';
+            const path = button.dataset.cvPath || '';
+
+            if (action === 'view') window.viewCV(url, name);
+            if (action === 'download') window.downloadCV(url, name);
+            if (action === 'delete') window.deleteCV(docId, path);
+        });
+    });
+}
+
 // Load user's uploaded CVs
 async function loadUserCVs() {
     if (!currentUser) return;
@@ -172,6 +221,11 @@ async function loadUserCVs() {
         querySnapshot.forEach((doc) => {
             const cvData = doc.data();
             const uploadDate = cvData.uploadedAt ? new Date(cvData.uploadedAt).toLocaleDateString() : 'Unknown date';
+            const cvFileName = safeTextValue(cvData.cvFileName, 'CV Document', 160);
+            const cvUrl = safeCvUrl(cvData.cvURL);
+            const cvPath = safeTextValue(cvData.cvFilePath, '', 500);
+            const cvStatus = cvData.status === 'active' ? 'active' : 'inactive';
+            const cvViews = Number.isFinite(Number(cvData.viewCount)) ? Number(cvData.viewCount) : 0;
             
             cvsHTML += `
                 <div class="cv-item">
@@ -181,25 +235,25 @@ async function loadUserCVs() {
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                 <polyline points="14 2 14 8 20 8"></polyline>
                             </svg>
-                            ${cvData.cvFileName || 'CV Document'}
+                            ${escapeHtml(cvFileName)}
                         </div>
                         <div class="cv-meta">
-                            <span> Uploaded: ${uploadDate}</span>
-                            <span> Views: ${cvData.viewCount || 0}</span>
-                            <span style="color: ${cvData.status === 'active' ? '#16a34a' : '#6b7280'};">
-                                ● ${cvData.status === 'active' ? 'Active' : 'Inactive'}
+                            <span> Uploaded: ${escapeHtml(uploadDate)}</span>
+                            <span> Views: ${cvViews}</span>
+                            <span style="color: ${cvStatus === 'active' ? '#16a34a' : '#6b7280'};">
+                                &bull; ${cvStatus === 'active' ? 'Active' : 'Inactive'}
                             </span>
                         </div>
                     </div>
                     <div class="cv-actions">
-                        <button class="cv-btn cv-btn-view" onclick="viewCV('${cvData.cvURL}', '${cvData.cvFileName}')">
+                        <button class="cv-btn cv-btn-view" data-cv-action="view" data-cv-url="${escapeAttr(cvUrl)}" data-cv-name="${escapeAttr(cvFileName)}">
                             <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
                             View
                         </button>
-                        <button class="cv-btn cv-btn-download" onclick="downloadCV('${cvData.cvURL}', '${cvData.cvFileName}')">
+                        <button class="cv-btn cv-btn-download" data-cv-action="download" data-cv-url="${escapeAttr(cvUrl)}" data-cv-name="${escapeAttr(cvFileName)}">
                             <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -207,7 +261,7 @@ async function loadUserCVs() {
                             </svg>
                             Download
                         </button>
-                        <button class="cv-btn cv-btn-delete" onclick="deleteCV('${doc.id}', '${cvData.cvFilePath}')">
+                        <button class="cv-btn cv-btn-delete" data-cv-action="delete" data-cv-id="${escapeAttr(doc.id)}" data-cv-path="${escapeAttr(cvPath)}">
                             <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -220,6 +274,7 @@ async function loadUserCVs() {
         });
 
         uploadedSection.innerHTML = cvsHTML;
+        attachCvActionHandlers(uploadedSection);
 
     } catch (error) {
         console.error('Error loading CVs:', error);
@@ -233,6 +288,12 @@ async function loadUserCVs() {
 
 // View CV function
 window.viewCV = function(cvURL, fileName) {
+    const safeUrl = safeCvUrl(cvURL);
+    if (!safeUrl) {
+        alert('This CV link is invalid.');
+        return;
+    }
+
     // Create modal if it doesn't exist
     let modal = document.getElementById('cvPreviewModal');
     if (!modal) {
@@ -242,20 +303,20 @@ window.viewCV = function(cvURL, fileName) {
         modal.innerHTML = `
             <div class="cv-modal-content">
                 <div class="cv-modal-header">
-                    <h3>${fileName}</h3>
+                    <h3></h3>
                     <button class="cv-modal-close" onclick="closeCV()">×</button>
                 </div>
                 <div class="cv-modal-body">
-                    <iframe src="${cvURL}"></iframe>
+                    <iframe sandbox="allow-downloads allow-same-origin" referrerpolicy="no-referrer"></iframe>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
-    } else {
-        modal.querySelector('.cv-modal-header h3').textContent = fileName;
-        modal.querySelector('iframe').src = cvURL;
     }
-    
+
+    modal.querySelector('.cv-modal-header h3').textContent = safeTextValue(fileName, 'CV Document', 160);
+    modal.querySelector('iframe').src = safeUrl;
+
     modal.classList.add('active');
 };
 
@@ -269,10 +330,17 @@ window.closeCV = function() {
 
 // Download CV function
 window.downloadCV = function(cvURL, fileName) {
+    const safeUrl = safeCvUrl(cvURL);
+    if (!safeUrl) {
+        alert('This CV link is invalid.');
+        return;
+    }
+
     const link = document.createElement('a');
-    link.href = cvURL;
-    link.download = fileName;
+    link.href = safeUrl;
+    link.download = safeTextValue(fileName, 'CV Document', 160);
     link.target = '_blank';
+    link.rel = 'noopener noreferrer';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -290,6 +358,10 @@ window.deleteCV = async function(docId, filePath) {
         const { getStorage, ref: storageRef, deleteObject } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js');
         
         const storage = getStorage(app);
+
+        if (!filePath || !filePath.startsWith(`cvs/${currentUser.uid}/`)) {
+            throw new Error('Invalid CV path.');
+        }
 
         // Delete from Storage
         const fileRef = storageRef(storage, filePath);
@@ -577,12 +649,11 @@ if (cvInput) {
 
         const allowedTypes = [
             "application/pdf",
-            "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         ];
 
         if (!allowedTypes.includes(cvFile.type)) {
-            alert("Only PDF, DOC, and DOCX files are allowed");
+            alert("Only PDF and DOCX files are allowed");
             e.target.value = "";
             return;
         }
@@ -603,43 +674,22 @@ if (cvInput) {
         }
 
         try {
-            // Import storage functions at the top of your script if not already imported
-            const { getStorage, ref: storageRef, uploadBytesResumable, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js');
-            const storage = getStorage(app);
-            
-            const filePath = `cvs/${user.uid}/${Date.now()}_${cvFile.name}`;
-            const fileRef = storageRef(storage, filePath);
+            const token = await user.getIdToken();
+            const formData = new FormData();
+            formData.append("file", cvFile);
 
-            const uploadTask = uploadBytesResumable(fileRef, cvFile);
-
-            await new Promise((resolve, reject) => {
-                uploadTask.on(
-                    "state_changed",
-                    (snap) => {
-                        if (label) {
-                            const percent = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-                            label.textContent = `Uploading... ${percent}%`;
-                        }
-                    },
-                    reject,
-                    resolve
-                );
+            const response = await fetch("/.netlify/functions/upload-profile-cv", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
             });
 
-            const cvURL = await getDownloadURL(fileRef);
-
-            await setDoc(doc(db, "cvs", `${user.uid}_${Date.now()}`), {
-                userId: user.uid,
-                userEmail: user.email,
-                fullName: profileData.name || user.displayName || "Anonymous User",
-                cvURL,
-                cvFileName: cvFile.name,
-                cvFilePath: filePath,
-                uploadedAt: new Date().toISOString(),
-                status: "active",
-                viewCount: 0,
-                unlocked: false
-            });
+            const result = await response.json().catch(() => null);
+            if (!response.ok) {
+                throw new Error(result?.error || "CV upload failed. Please try again.");
+            }
 
             alert("✅ CV uploaded successfully!");
     e.target.value = "";
