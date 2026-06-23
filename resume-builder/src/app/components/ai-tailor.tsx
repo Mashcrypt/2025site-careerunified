@@ -18,9 +18,10 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import type { ResumeData } from '../types/resume';
+import { doc as firestoreDoc, getDoc } from 'firebase/firestore';
 
 // ✅ Use your initialized Firebase client helper
-import { getFirebaseAuth } from '../utils/firebaseClient';
+import { getFirebaseAuth, getFirebaseDb } from '../utils/firebaseClient';
 
 interface AITailorProps {
   data: ResumeData;
@@ -59,6 +60,64 @@ type BillingStatus = {
   pendingCreditPack?: string | null;
   pendingCreditPayfastPaymentId?: string | null;
 };
+
+const FREE_TASTE_LIMIT = 3;
+
+function billingPlanLimit(plan: string) {
+  if (plan === 'starter') return 15;
+  if (plan === 'job_seeker') return 40;
+  if (plan === 'career_pro') return null;
+  return 0;
+}
+
+function billingTimestampToDate(value: any): Date | null {
+  if (!value) return null;
+  if (typeof value.toDate === 'function') return value.toDate();
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value.seconds === 'number') return new Date(value.seconds * 1000);
+  return null;
+}
+
+function billingFreeUsageCount(user: Record<string, any>, countField: string, legacyField: string) {
+  const count = Number(user[countField] || 0);
+  if (Number.isFinite(count) && count > 0) return count;
+  return Boolean(user[legacyField]) ? 1 : 0;
+}
+
+function billingStatusFromUserDoc(user: Record<string, any>): BillingStatus {
+  const storedPlan = (user.plan as BillingStatus['plan']) || 'free';
+  const storedStatus = (user.subscriptionStatus as string) || (storedPlan === 'free' ? 'inactive' : 'active');
+  const periodEnd = billingTimestampToDate(user.subscriptionCurrentPeriodEnd);
+  const isExpiredPaidPlan =
+    storedPlan !== 'free' &&
+    storedStatus === 'active' &&
+    (!periodEnd || periodEnd.getTime() <= Date.now());
+  const plan = isExpiredPaidPlan ? 'free' : storedPlan;
+  const subscriptionStatus = isExpiredPaidPlan ? 'past_due' : storedStatus;
+  const freeResumeTailorsUsed = billingFreeUsageCount(user, 'freeResumeTailorsUsed', 'freeResumeUsed');
+  const freeCoverLettersUsed = billingFreeUsageCount(user, 'freeCoverLettersUsed', 'freeCoverUsed');
+
+  return {
+    plan,
+    subscriptionStatus,
+    used: Number(user.applicationsUsedThisMonth || 0),
+    limit: billingPlanLimit(plan),
+    freeResumeUsed: freeResumeTailorsUsed >= FREE_TASTE_LIMIT,
+    freeCoverUsed: freeCoverLettersUsed >= FREE_TASTE_LIMIT,
+    freeResumeTailorsUsed,
+    freeCoverLettersUsed,
+    freeResumeLimit: FREE_TASTE_LIMIT,
+    freeCoverLetterLimit: FREE_TASTE_LIMIT,
+    aiTailorCredits: Math.max(0, Number(user.aiTailorCredits || 0)),
+    pendingPlan: (user.pendingPlan as string) || null,
+    pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
+    pendingCreditPack: (user.pendingCreditPack as string) || null,
+    pendingCreditPayfastPaymentId: (user.pendingCreditPayfastPaymentId as string) || null,
+  };
+}
 
 function isFirebaseConfigured() {
   // Vite exposes env vars at build time. If these are missing on Netlify,
@@ -253,22 +312,24 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
 
       const token = await auth.currentUser.getIdToken();
 
+      const loadFirestoreFallback = async () => {
+        const db = getFirebaseDb();
+        const userSnap = await getDoc(firestoreDoc(db, 'users', auth.currentUser!.uid));
+        if (!userSnap.exists()) return null;
+        const fallback = billingStatusFromUserDoc(userSnap.data() || {});
+        setBilling(fallback);
+        return fallback;
+      };
+
       const res = await fetch('/.netlify/functions/get-billing-status', {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const payload = await res.json().catch(() => null);
-      if (res.status === 409 && payload?.pendingPayment) {
-        void loadBillingStatus();
-        setErrorMsg(
-          payload?.error ||
-            'Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.'
-        );
-        return;
-      }
-
       if (!res.ok) {
+        const fallback = await loadFirestoreFallback().catch(() => null);
+        if (fallback) return fallback;
         setErrorMsg('Could not verify billing status. Please refresh or login again.');
         return null;
       }
@@ -277,6 +338,20 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
       setBilling(nextBilling);
       return nextBilling;
     } catch {
+      try {
+        const auth = getFirebaseAuth();
+        if (auth.currentUser) {
+          const db = getFirebaseDb();
+          const userSnap = await getDoc(firestoreDoc(db, 'users', auth.currentUser.uid));
+          if (userSnap.exists()) {
+            const fallback = billingStatusFromUserDoc(userSnap.data() || {});
+            setBilling(fallback);
+            return fallback;
+          }
+        }
+      } catch {
+        // Keep the generic billing error below if both server and Firestore fallback fail.
+      }
       setErrorMsg('Could not verify billing status. Please refresh or login again.');
       return null;
     } finally {

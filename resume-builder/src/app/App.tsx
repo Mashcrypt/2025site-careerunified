@@ -120,6 +120,64 @@ type ProfileCvReference = {
   cvFilePath?: string;
 };
 
+const FREE_TASTE_LIMIT = 3;
+
+function billingPlanLimit(plan: string) {
+  if (plan === 'starter') return 15;
+  if (plan === 'job_seeker') return 40;
+  if (plan === 'career_pro') return null;
+  return 0;
+}
+
+function billingTimestampToDate(value: any): Date | null {
+  if (!value) return null;
+  if (typeof value.toDate === 'function') return value.toDate();
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value.seconds === 'number') return new Date(value.seconds * 1000);
+  return null;
+}
+
+function billingFreeUsageCount(user: Record<string, any>, countField: string, legacyField: string) {
+  const count = Number(user[countField] || 0);
+  if (Number.isFinite(count) && count > 0) return count;
+  return Boolean(user[legacyField]) ? 1 : 0;
+}
+
+function billingStatusFromUserDoc(user: Record<string, any>): BillingStatus {
+  const storedPlan = (user.plan as BillingStatus['plan']) || 'free';
+  const storedStatus = (user.subscriptionStatus as string) || (storedPlan === 'free' ? 'inactive' : 'active');
+  const periodEnd = billingTimestampToDate(user.subscriptionCurrentPeriodEnd);
+  const isExpiredPaidPlan =
+    storedPlan !== 'free' &&
+    storedStatus === 'active' &&
+    (!periodEnd || periodEnd.getTime() <= Date.now());
+  const plan = isExpiredPaidPlan ? 'free' : storedPlan;
+  const subscriptionStatus = isExpiredPaidPlan ? 'past_due' : storedStatus;
+  const freeResumeTailorsUsed = billingFreeUsageCount(user, 'freeResumeTailorsUsed', 'freeResumeUsed');
+  const freeCoverLettersUsed = billingFreeUsageCount(user, 'freeCoverLettersUsed', 'freeCoverUsed');
+
+  return {
+    plan,
+    subscriptionStatus,
+    used: Number(user.applicationsUsedThisMonth || 0),
+    limit: billingPlanLimit(plan),
+    freeResumeUsed: freeResumeTailorsUsed >= FREE_TASTE_LIMIT,
+    freeCoverUsed: freeCoverLettersUsed >= FREE_TASTE_LIMIT,
+    freeResumeTailorsUsed,
+    freeCoverLettersUsed,
+    freeResumeLimit: FREE_TASTE_LIMIT,
+    freeCoverLetterLimit: FREE_TASTE_LIMIT,
+    aiTailorCredits: Math.max(0, Number(user.aiTailorCredits || 0)),
+    pendingPlan: (user.pendingPlan as string) || null,
+    pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
+    pendingCreditPack: (user.pendingCreditPack as string) || null,
+    pendingCreditPayfastPaymentId: (user.pendingCreditPayfastPaymentId as string) || null,
+  };
+}
+
 type ResumeVersionStored = {
   id: string;
   name: string;
@@ -788,6 +846,15 @@ export default function App() {
         return fallback;
       }
 
+      const loadFirestoreFallback = async () => {
+        const db = getFirebaseDb();
+        const userSnap = await getDoc(firestoreDoc(db, 'users', auth.currentUser!.uid));
+        if (!userSnap.exists()) return null;
+        const fallback = billingStatusFromUserDoc(userSnap.data() || {});
+        setBilling(fallback);
+        return fallback;
+      };
+
       const token = await auth.currentUser.getIdToken();
       const res = await fetch('/.netlify/functions/get-billing-status', {
         method: 'GET',
@@ -796,6 +863,8 @@ export default function App() {
 
       const payload = await res.json().catch(() => null);
       if (!res.ok) {
+        const fallback = await loadFirestoreFallback().catch(() => null);
+        if (fallback) return fallback;
         setBillingError('Could not verify billing status. Please refresh or login again.');
         return null;
       }
@@ -804,6 +873,20 @@ export default function App() {
       setBilling(nextBilling);
       return nextBilling;
     } catch (e: any) {
+      try {
+        const auth = getFirebaseAuth();
+        if (auth.currentUser) {
+          const db = getFirebaseDb();
+          const userSnap = await getDoc(firestoreDoc(db, 'users', auth.currentUser.uid));
+          if (userSnap.exists()) {
+            const fallback = billingStatusFromUserDoc(userSnap.data() || {});
+            setBilling(fallback);
+            return fallback;
+          }
+        }
+      } catch {
+        // Keep the generic billing error below if both server and Firestore fallback fail.
+      }
       setBillingError('Could not verify billing status. Please refresh or login again.');
       return null;
     } finally {
