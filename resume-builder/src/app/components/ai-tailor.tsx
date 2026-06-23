@@ -53,8 +53,11 @@ type BillingStatus = {
   freeCoverLettersUsed?: number;
   freeResumeLimit?: number;
   freeCoverLetterLimit?: number;
+  aiTailorCredits?: number;
   pendingPlan?: string | null;
   pendingPayfastPaymentId?: string | null;
+  pendingCreditPack?: string | null;
+  pendingCreditPayfastPaymentId?: string | null;
 };
 
 function isFirebaseConfigured() {
@@ -205,7 +208,7 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
 
     try {
       if (!isFirebaseConfigured()) {
-        setBilling({
+        const fallback: BillingStatus = {
           plan: 'free',
           subscriptionStatus: 'inactive',
           used: 0,
@@ -218,14 +221,17 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
           freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
-        });
-        return;
+          pendingCreditPack: null,
+          pendingCreditPayfastPaymentId: null,
+        };
+        setBilling(fallback);
+        return fallback;
       }
 
       const auth = getFirebaseAuth();
 
       if (!auth.currentUser) {
-        setBilling({
+        const fallback: BillingStatus = {
           plan: 'free',
           subscriptionStatus: 'inactive',
           used: 0,
@@ -238,8 +244,11 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
           freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
-        });
-        return;
+          pendingCreditPack: null,
+          pendingCreditPayfastPaymentId: null,
+        };
+        setBilling(fallback);
+        return fallback;
       }
 
       const token = await auth.currentUser.getIdToken();
@@ -250,14 +259,26 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
       });
 
       const payload = await res.json().catch(() => null);
-      if (!res.ok) {
-        setErrorMsg('Could not verify billing status. Please refresh or login again.');
+      if (res.status === 409 && payload?.pendingPayment) {
+        void loadBillingStatus();
+        setErrorMsg(
+          payload?.error ||
+            'Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.'
+        );
         return;
       }
 
-      setBilling(payload as BillingStatus);
+      if (!res.ok) {
+        setErrorMsg('Could not verify billing status. Please refresh or login again.');
+        return null;
+      }
+
+      const nextBilling = payload as BillingStatus;
+      setBilling(nextBilling);
+      return nextBilling;
     } catch {
       setErrorMsg('Could not verify billing status. Please refresh or login again.');
+      return null;
     } finally {
       setIsLoadingBilling(false);
     }
@@ -283,9 +304,31 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname || '';
-    if (path.includes('/billing/success')) {
-      loadBillingStatus();
-    }
+    if (!path.includes('/billing/success')) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isCreditReturn = params.get('product') === 'credits';
+    let cancelled = false;
+    let timeoutId: number | undefined;
+    let attempts = 0;
+
+    const refreshUntilSettled = async () => {
+      attempts += 1;
+      const nextBilling = await loadBillingStatus();
+      if (cancelled || !isCreditReturn) return;
+
+      const stillPending = Boolean(nextBilling?.pendingCreditPayfastPaymentId || nextBilling?.pendingCreditPack);
+      if (stillPending && attempts < 16) {
+        timeoutId = window.setTimeout(refreshUntilSettled, 3000);
+      }
+    };
+
+    void refreshUntilSettled();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
   }, [loadBillingStatus]);
 
   const planLabel = useMemo(() => {
@@ -302,6 +345,14 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
     const isPaid = billing.plan !== 'free' && billing.subscriptionStatus === 'active';
 
     if (!isPaid) {
+      if ((billing.aiTailorCredits || 0) > 0) {
+        return `${billing.aiTailorCredits} once-off AI tailors available`;
+      }
+
+      if (billing.pendingCreditPayfastPaymentId || billing.pendingCreditPack) {
+        return 'AI Tailor credits are being verified by PayFast';
+      }
+
       const resumeLimit = billing.freeResumeLimit ?? 3;
       const coverLimit = billing.freeCoverLetterLimit ?? 3;
       const resumeUsed = billing.freeResumeTailorsUsed ?? (billing.freeResumeUsed ? 1 : 0);

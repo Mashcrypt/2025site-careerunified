@@ -184,7 +184,7 @@ export const handler: Handler = async (event) => {
     const fields: Record<string, string> = {
       merchant_id: process.env.PAYFAST_MERCHANT_ID!,
       merchant_key: process.env.PAYFAST_MERCHANT_KEY!,
-      return_url: `${siteUrl}/billing/success?product=credits`,
+      return_url: `${siteUrl}/billing/success?product=credits&payment_id=${encodeURIComponent(m_payment_id)}`,
       cancel_url: `${siteUrl}/cv-generator/`,
       notify_url: `${siteUrl}/.netlify/functions/payfast-itn`,
       name_first: nameFirst,

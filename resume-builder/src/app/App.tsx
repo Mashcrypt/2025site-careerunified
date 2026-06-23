@@ -99,6 +99,8 @@ type BillingStatus = {
   aiTailorCredits?: number;
   pendingPlan?: string | null;
   pendingPayfastPaymentId?: string | null;
+  pendingCreditPack?: string | null;
+  pendingCreditPayfastPaymentId?: string | null;
 };
 
 type BillingHistoryRecord = {
@@ -744,7 +746,7 @@ export default function App() {
 
     try {
       if (!isFirebaseConfigured()) {
-        setBilling({
+        const fallback: BillingStatus = {
           plan: 'free',
           subscriptionStatus: 'inactive',
           used: 0,
@@ -757,13 +759,16 @@ export default function App() {
           freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
-        });
-        return;
+          pendingCreditPack: null,
+          pendingCreditPayfastPaymentId: null,
+        };
+        setBilling(fallback);
+        return fallback;
       }
 
       const auth = getFirebaseAuth();
       if (!auth.currentUser) {
-        setBilling({
+        const fallback: BillingStatus = {
           plan: 'free',
           subscriptionStatus: 'inactive',
           used: 0,
@@ -776,8 +781,11 @@ export default function App() {
           freeCoverLetterLimit: 3,
           pendingPlan: null,
           pendingPayfastPaymentId: null,
-        });
-        return;
+          pendingCreditPack: null,
+          pendingCreditPayfastPaymentId: null,
+        };
+        setBilling(fallback);
+        return fallback;
       }
 
       const token = await auth.currentUser.getIdToken();
@@ -789,12 +797,15 @@ export default function App() {
       const payload = await res.json().catch(() => null);
       if (!res.ok) {
         setBillingError('Could not verify billing status. Please refresh or login again.');
-        return;
+        return null;
       }
 
-      setBilling(payload as BillingStatus);
+      const nextBilling = payload as BillingStatus;
+      setBilling(nextBilling);
+      return nextBilling;
     } catch (e: any) {
       setBillingError('Could not verify billing status. Please refresh or login again.');
+      return null;
     } finally {
       setIsLoadingBilling(false);
     }
@@ -857,9 +868,31 @@ export default function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname || '';
-    if (path.includes('/billing/success')) {
-      loadBillingStatus();
-    }
+    if (!path.includes('/billing/success')) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isCreditReturn = params.get('product') === 'credits';
+    let cancelled = false;
+    let timeoutId: number | undefined;
+    let attempts = 0;
+
+    const refreshUntilSettled = async () => {
+      attempts += 1;
+      const nextBilling = await loadBillingStatus();
+      if (cancelled || !isCreditReturn) return;
+
+      const stillPending = Boolean(nextBilling?.pendingCreditPayfastPaymentId || nextBilling?.pendingCreditPack);
+      if (stillPending && attempts < 16) {
+        timeoutId = window.setTimeout(refreshUntilSettled, 3000);
+      }
+    };
+
+    void refreshUntilSettled();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
   }, [loadBillingStatus]);
 
   useEffect(() => {

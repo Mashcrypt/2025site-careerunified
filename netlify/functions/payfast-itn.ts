@@ -390,6 +390,7 @@ export const handler: Handler = async (event) => {
         uid,
         pack: plan,
         creditsAdded: AI_CREDIT_PACK_QUANTITY,
+        item_name: data.item_name || null,
         amount_gross,
         payment_status,
         pf_payment_id: data.pf_payment_id || null,

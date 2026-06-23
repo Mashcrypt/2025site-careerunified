@@ -117,6 +117,8 @@ export const handler: Handler = async (event) => {
       aiTailorCredits,
       pendingPlan: (user.pendingPlan as string) || null,
       pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
+      pendingCreditPack: (user.pendingCreditPack as string) || null,
+      pendingCreditPayfastPaymentId: (user.pendingCreditPayfastPaymentId as string) || null,
       subscriptionCurrentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,
     },
     baseHeaders

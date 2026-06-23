@@ -388,6 +388,7 @@ export const handler: Handler = async (event) => {
   const freeResumeTailorsUsed = freeUsageCount(user, "freeResumeTailorsUsed", "freeResumeUsed");
   const freeCoverLettersUsed = freeUsageCount(user, "freeCoverLettersUsed", "freeCoverUsed");
   const aiTailorCredits = Math.max(0, Number(user.aiTailorCredits || 0));
+  const hasPendingCreditPayment = Boolean(user.pendingCreditPayfastPaymentId || user.pendingCreditPack);
 
   const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
@@ -403,6 +404,16 @@ export const handler: Handler = async (event) => {
       usageBucket = "free_cover";
     } else if (aiTailorCredits > 0) {
       usageBucket = "credit";
+    } else if (hasPendingCreditPayment) {
+      return json(
+        409,
+        {
+          error:
+            "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.",
+          pendingPayment: true,
+        },
+        baseHeaders
+      );
     } else if (mode === "tailor") {
       return json(402, { error: "Free resume tailor limit reached. Please upgrade.", upgrade_url }, baseHeaders);
     } else {
@@ -413,6 +424,16 @@ export const handler: Handler = async (event) => {
       usageBucket = "monthly";
     } else if (aiTailorCredits > 0) {
       usageBucket = "credit";
+    } else if (hasPendingCreditPayment) {
+      return json(
+        409,
+        {
+          error:
+            "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.",
+          pendingPayment: true,
+        },
+        baseHeaders
+      );
     } else {
       return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", upgrade_url }, baseHeaders);
     }
