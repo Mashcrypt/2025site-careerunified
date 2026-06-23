@@ -5,10 +5,14 @@ import { getAdmin } from "./_firebaseAdmin";
 
 type PlanId = "starter" | "job_seeker" | "career_pro";
 const PLAN_AMOUNT: Record<PlanId, string> = {
-  starter: "29.00",
-  job_seeker: "69.00",
-  career_pro: "149.00",
+  starter: "28.99",
+  job_seeker: "49.00",
+  career_pro: "99.00",
 };
+const AI_CREDIT_PRODUCT = "careerunified-ai-credits";
+const AI_CREDIT_PACK_ID = "ai_tailor_10";
+const AI_CREDIT_PACK_AMOUNT = 19.00;
+const AI_CREDIT_PACK_QUANTITY = 10;
 type RecruiterPlanId = "starter" | "pro" | "enterprise";
 const RECRUITER_PLAN: Record<RecruiterPlanId, { amount: string; unlocks: number }> = {
   starter: { amount: "299.00", unlocks: 50 },
@@ -45,6 +49,9 @@ function isValidPlan(plan: any): plan is PlanId {
 }
 function isRecruiterPlan(plan: any): plan is RecruiterPlanId {
   return plan === "starter" || plan === "pro" || plan === "enterprise";
+}
+function isAiCreditPack(value: any): value is typeof AI_CREDIT_PACK_ID {
+  return value === AI_CREDIT_PACK_ID;
 }
 function generateSignature(fields: Record<string, string>, passphrase?: string) {
   const cleaned: Record<string, string> = { ...fields };
@@ -239,10 +246,14 @@ export const handler: Handler = async (event) => {
   if (!uid) return ok();
 
   const isRecruiterPayment = product === "careerunified-recruiter";
+  const isAiCreditPayment = product === AI_CREDIT_PRODUCT;
+  if (isAiCreditPayment && !isAiCreditPack(plan)) return ok();
   if (isRecruiterPayment && !isRecruiterPlan(plan)) return ok();
-  if (!isRecruiterPayment && !isValidPlan(plan)) return ok();
+  if (!isRecruiterPayment && !isAiCreditPayment && !isValidPlan(plan)) return ok();
 
-  const expectedAmount = Number(isRecruiterPayment ? RECRUITER_PLAN[plan as RecruiterPlanId].amount : PLAN_AMOUNT[plan as PlanId]);
+  const expectedAmount = isAiCreditPayment
+    ? AI_CREDIT_PACK_AMOUNT
+    : Number(isRecruiterPayment ? RECRUITER_PLAN[plan as RecruiterPlanId].amount : PLAN_AMOUNT[plan as PlanId]);
   if (!Number.isFinite(amount_gross) || Math.abs(amount_gross - expectedAmount) > 0.01) {
     return bad(400, "Amount mismatch");
   }
@@ -256,6 +267,17 @@ export const handler: Handler = async (event) => {
   if (payment_status !== "COMPLETE") {
     const status = payment_status === "CANCELLED" ? "cancelled" : "past_due";
     const targetRef = isRecruiterPayment ? db.doc(`recruiters/${uid}`) : db.doc(`users/${uid}`);
+    if (isAiCreditPayment) {
+      await targetRef.set(
+        {
+          pendingCreditLastFailedStatus: payment_status || null,
+          pendingCreditLastFailedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return ok();
+    }
     await targetRef.set(
       {
         subscriptionStatus: status,
@@ -329,6 +351,55 @@ export const handler: Handler = async (event) => {
   }
 
   const userRef = db.doc(`users/${uid}`);
+
+  if (isAiCreditPayment) {
+    await db.runTransaction(async (tx) => {
+      const existing = await tx.get(paymentRef);
+      if (existing.exists) return;
+
+      tx.set(
+        userRef,
+        {
+          aiTailorCredits: admin.firestore.FieldValue.increment(AI_CREDIT_PACK_QUANTITY),
+          totalAiTailorCreditsPurchased: admin.firestore.FieldValue.increment(AI_CREDIT_PACK_QUANTITY),
+          pendingCreditPack: admin.firestore.FieldValue.delete(),
+          pendingCreditQuantity: admin.firestore.FieldValue.delete(),
+          pendingCreditPayfastPaymentId: admin.firestore.FieldValue.delete(),
+          pendingCreditCreatedAt: admin.firestore.FieldValue.delete(),
+          lastCreditPaymentRef: data.m_payment_id || data.pf_payment_id || null,
+          lastCreditPaymentVerifiedAt: new Date().toISOString(),
+          payfastCredits: {
+            payment_id: data.pf_payment_id || null,
+            m_payment_id: data.m_payment_id || null,
+            item_name: data.item_name || null,
+            amount_gross,
+            payment_status,
+            custom_str1: uid,
+            custom_str2: plan,
+            custom_str3: product,
+            creditsAdded: AI_CREDIT_PACK_QUANTITY,
+            receivedAt: new Date().toISOString(),
+          },
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      tx.set(paymentRef, {
+        product,
+        uid,
+        pack: plan,
+        creditsAdded: AI_CREDIT_PACK_QUANTITY,
+        amount_gross,
+        payment_status,
+        pf_payment_id: data.pf_payment_id || null,
+        m_payment_id: data.m_payment_id || null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    return ok();
+  }
 
   await db.runTransaction(async (tx) => {
     const existing = await tx.get(paymentRef);

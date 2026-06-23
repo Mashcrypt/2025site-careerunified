@@ -51,20 +51,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .page-header h1 { margin: 4px 0 8px; max-width: 800px; font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1.1; letter-spacing: 0; }
 .page-header p { margin: 0; max-width: 750px; color: var(--muted); }
 .eyebrow, .section-kicker { color: var(--blue) !important; text-transform: uppercase; font-size: .76rem; font-weight: 800; }
-.official-link {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 14px;
-  border: 1px solid var(--line);
-  color: var(--navy);
-  text-decoration: none;
-  font-weight: 700;
-  background: var(--soft);
-  border-radius: 6px;
-}
-
 .privacy-note {
   width: min(1380px, calc(100% - 36px));
   margin: 20px auto 0;
@@ -151,18 +137,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .panel-heading span, .preview-heading > span { color: var(--muted); font-size: .86rem; font-weight: 700; }
 .progress { height: 7px; margin: 15px 0 18px; overflow: hidden; background: #e7ecf4; }
 .progress span { display: block; width: 0; height: 100%; background: var(--success); transition: width .2s ease; }
-
-.step-list { display: grid; grid-template-columns: repeat(8, 1fr); gap: 7px; margin-bottom: 22px; }
-.step-list button {
-  height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  color: var(--navy);
-  background: var(--soft);
-  font-weight: 800;
-  cursor: pointer;
-}
-.step-list button:hover, .step-list button.active { color: var(--white); border-color: var(--blue); background: var(--blue); }
 
 fieldset { margin: 0 0 18px; padding: 20px; border: 1px solid var(--line); border-radius: 7px; }
 legend { padding: 0 8px; color: var(--navy); font-weight: 800; }

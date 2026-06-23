@@ -597,7 +597,13 @@
 
 <!-- MAIN -->
 <main class="container">
-  <h2 class="section-title">Recent Job Openings</h2>
+  <div class="section-heading-row">
+    <div>
+      <p class="section-kicker">Start applying</p>
+      <h2 class="section-title">Recent Job Openings</h2>
+    </div>
+    <a href="jobs.html" class="section-link" data-cro-event="recent_jobs_view_all">View all jobs <span aria-hidden="true">&rarr;</span></a>
+  </div>
   <div class="job-cards" id="homeJobList"></div>
 </main>
 
@@ -805,6 +811,25 @@
 <script src="js/sanityClient.js"></script>
 
 <script>
+function trackCroEvent(name, params = {}) {
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('event', name, params);
+}
+
+document.addEventListener('click', event => {
+  const target = event.target.closest('[data-cro-event]');
+  if (!target) return;
+  trackCroEvent(target.dataset.croEvent, {
+    link_url: target.href || undefined,
+    job_title: target.dataset.jobTitle || undefined,
+    job_company: target.dataset.jobCompany || undefined
+  });
+});
+
+document.querySelector('.footer-alert-form')?.addEventListener('submit', () => {
+  trackCroEvent('job_alert_submit', { placement: 'homepage_footer' });
+});
+
 /* ===============================
    CACHE HELPERS
 ================================ */
@@ -900,6 +925,9 @@ function renderJobsUI(jobs) {
     const card = document.createElement('a');
     card.href = "jobs.html?slug=" + encodeURIComponent(jobSlug);
     card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
+    card.dataset.croEvent = 'home_job_open';
+    card.dataset.jobTitle = job.title || '';
+    card.dataset.jobCompany = companyName || 'Confidential';
     card.style.textDecoration = "none";
     card.style.color = "inherit";
 
@@ -915,6 +943,7 @@ function renderJobsUI(jobs) {
         Posted: ${job.posted} • Closing: ${job.deadline}
         ${isUrgent ? '<span class="urgent">Urgent</span>' : ''}
       </p>
+      <span class="job-card-action">View job details <span aria-hidden="true">&rarr;</span></span>
     `;
 
     homeJobList.appendChild(card);
@@ -1094,6 +1123,7 @@ async function performSearch() {
   const term = normalizeQuery(raw);
 
   if (!term) return alert("Please enter a keyword");
+  trackCroEvent('site_search', { search_term: term, placement: 'homepage_hero' });
 
   const uniAlias = isAliasUniversity(term);
 

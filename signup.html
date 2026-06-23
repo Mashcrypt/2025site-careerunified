@@ -7,6 +7,13 @@
 
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
+</script>
 
 <style>
 /* =========================================================
@@ -597,6 +604,14 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+function trackSignup(method) {
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('event', 'sign_up', {
+    method,
+    account_role: selectedRole
+  });
+}
+
 /* ================= DOM ELEMENTS ================= */
 const fullNameInput = document.getElementById('fullName');
 const emailInput = document.getElementById('email');
@@ -759,6 +774,7 @@ signupBtn.onclick = async () => {
       createdAt: serverTimestamp()
     });
 
+    trackSignup('email');
     showSuccess("Account created successfully! Redirecting...");
     
     setTimeout(() => {
@@ -798,6 +814,7 @@ googleBtn.onclick = async () => {
       createdAt: serverTimestamp()
     }, { merge: true });
 
+    trackSignup('google');
     showSuccess("Account created successfully! Redirecting...");
     
     setTimeout(() => {

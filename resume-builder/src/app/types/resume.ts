@@ -18,6 +18,7 @@ export interface ResumeData {
   skills: string[];
   projects?: Project[];
   certifications?: string[];
+  additionalSections?: AdditionalSection[];
 }
 
 export interface Experience {
@@ -48,6 +49,12 @@ export interface Project {
   link?: string;
 }
 
+export interface AdditionalSection {
+  id: string;
+  title: string;
+  items: string[];
+}
+
 export type TemplateType =
   | 'modern'
   | 'professional'
@@ -74,4 +81,5 @@ export const EMPTY_RESUME: ResumeData = {
   skills: [],
   projects: [],
   certifications: [],
+  additionalSections: [],
 };

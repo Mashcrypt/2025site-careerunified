@@ -11,15 +11,17 @@ const firebaseConfig = {
   appId: "1:101656817742:web:22c9a58a822a714e54931f"
 };
 
-// Initialize Firebase only once
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+if (typeof firebase !== "undefined") {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
-// Make services available globally
-window.auth = firebase.auth();
-window.db = firebase.firestore();
-window.storage = firebase.storage();
+  window.auth = firebase.auth();
+  window.db = firebase.firestore();
+  window.storage = firebase.storage();
+} else {
+  console.warn("Firebase SDK did not load; account and saved-item features are unavailable.");
+}
 
 console.log("🔥 Firebase initialized");
 

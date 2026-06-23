@@ -3,7 +3,6 @@ import type { User } from 'firebase/auth';
 import { collection, doc as firestoreDoc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { getBlob, ref as storageObjectRef } from 'firebase/storage';
 import {
-  ArrowRight,
   FileText,
   Wand2,
   Eye,
@@ -16,7 +15,11 @@ import {
   CreditCard,
   CheckCircle2,
   Crown,
+  Gift,
+  Layers,
+  Layout,
   Signature,
+  Sparkles,
   X,
 } from 'lucide-react';
 
@@ -27,6 +30,7 @@ import { ScrollArea } from './components/ui/scroll-area';
 import { Badge } from './components/ui/badge';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -66,7 +70,6 @@ import { southAfricanSampleData } from './utils/sample-data';
 import { getFirebaseAuth, getFirebaseDb, getFirebaseStorage } from './utils/firebaseClient';
 
 const initialData: ResumeData = southAfricanSampleData;
-const CV_GUIDE_STORAGE_KEY = 'careerUnifiedCvGuideDismissedV1';
 const Z83_PREFILL_STORAGE_KEY = 'careerUnifiedZ83PrefillV1';
 
 type PremiumTemplateId =
@@ -93,11 +96,21 @@ type BillingStatus = {
   freeCoverLettersUsed?: number;
   freeResumeLimit?: number;
   freeCoverLetterLimit?: number;
+  aiTailorCredits?: number;
   pendingPlan?: string | null;
   pendingPayfastPaymentId?: string | null;
 };
 
-type ProfileCvImportStatus = 'idle' | 'checking' | 'loaded' | 'not_found' | 'unsupported' | 'error';
+type BillingHistoryRecord = {
+  id: string;
+  date: string | null;
+  plan: string;
+  amount: string;
+  status: string;
+  paymentId: string;
+  itemName: string;
+  product: string;
+};
 
 type ProfileCvReference = {
   cvURL: string;
@@ -120,25 +133,27 @@ const PLAN_OPTIONS: Array<{
   price: string;
   benefits: string[];
   badge?: string;
+  featured?: boolean;
 }> = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 'R29/month',
-    benefits: ['15 applications per month', 'AI Tailor access', 'Premium AI templates'],
+    price: 'R28,99/month',
+    benefits: ['15 AI tailors/month', 'Cover letters', 'Premium templates'],
   },
   {
     id: 'job_seeker',
-    name: 'Job Seeker',
-    price: 'R69/month',
-    benefits: ['40 applications per month', 'AI CV and cover letter help', 'Best for active job search'],
+    name: 'Job Hunter',
+    price: 'R49/month',
+    benefits: ['40 AI tailors/month', 'Cover letters', 'Saved CV versions', 'Enough for a full month of job hunting'],
+    badge: 'Most popular',
+    featured: true,
   },
   {
     id: 'career_pro',
     name: 'Career Pro',
-    price: 'R149/month',
-    benefits: ['Unlimited applications', 'Full AI template access', 'Built for ongoing career growth'],
-    badge: 'Best value',
+    price: 'R99/month',
+    benefits: ['Unlimited AI tailors', 'All templates', 'Multiple CV versions', 'Priority new features'],
   },
 ];
 
@@ -411,6 +426,45 @@ function saveProfileCvImportVersion(data: ResumeData, fileName: string) {
   }
 }
 
+function AdditionalSectionsPreview({
+  data,
+  includeCertifications,
+}: {
+  data: ResumeData;
+  includeCertifications: boolean;
+}) {
+  const importedSections = (data.additionalSections || []).filter(
+    (section) => section.title.trim() && section.items.some((item) => item.trim())
+  );
+  const sections = [
+    ...(includeCertifications && data.certifications?.length
+      ? [{ id: 'certifications', title: 'Certifications and Licences', items: data.certifications }]
+      : []),
+    ...importedSections,
+  ];
+  if (!sections.length) return null;
+
+  return (
+    <div className="bg-white px-12 pb-12 pt-2 text-gray-900">
+      {sections.map((section) => (
+        <section key={section.id} className="mb-6 break-inside-avoid last:mb-0">
+          <h2 className="mb-2 border-b border-gray-300 pb-1 text-base font-semibold uppercase">
+            {section.title}
+          </h2>
+          <ul className="space-y-1 text-sm leading-relaxed">
+            {section.items.filter(Boolean).map((item, index) => (
+              <li key={`${section.id}-${index}`} className="flex gap-2">
+                <span aria-hidden="true">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 function buildZ83PrefillFromResume(data: ResumeData) {
   const personal = data.personalInfo || {};
   const name = splitCvFullName(personal.fullName);
@@ -536,15 +590,7 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
-  const [profileCvImport, setProfileCvImport] = useState<{
-    status: ProfileCvImportStatus;
-    message: string;
-  }>({ status: 'idle', message: '' });
   const [resumeVersionsRefreshKey, setResumeVersionsRefreshKey] = useState(0);
-  const [showFirstTimeGuide, setShowFirstTimeGuide] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return window.localStorage.getItem(CV_GUIDE_STORAGE_KEY) !== '1';
-  });
   const [initialAIJobDescription] = useState(() => {
     if (typeof window === 'undefined') return '';
 
@@ -571,6 +617,10 @@ export default function App() {
   const [isLoadingBilling, setIsLoadingBilling] = useState(false);
   const [billingError, setBillingError] = useState<string>('');
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [billingHistory, setBillingHistory] = useState<BillingHistoryRecord[]>([]);
+  const [isLoadingBillingHistory, setIsLoadingBillingHistory] = useState(false);
+  const [billingHistoryError, setBillingHistoryError] = useState('');
+  const [showAllBillingHistory, setShowAllBillingHistory] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
 
   const hasAIPlan = useMemo(() => {
@@ -649,17 +699,10 @@ export default function App() {
     if (hasRealCvDetails(resumeDataRef.current)) return;
 
     profileCvImportAttemptedRef.current = true;
-    setProfileCvImport({
-      status: 'checking',
-      message: 'Checking your profile for a saved CV.',
-    });
 
     try {
       const profileCv = await getLatestProfileCvReference(user);
-      if (!profileCv) {
-        setProfileCvImport({ status: 'not_found', message: '' });
-        return;
-      }
+      if (!profileCv) return;
 
       const token = await user.getIdToken();
       const text = await extractProfileCvText(profileCv, token);
@@ -673,21 +716,8 @@ export default function App() {
 
       const savedVersion = saveProfileCvImportVersion(parsed, profileCv.cvFileName);
       if (savedVersion) setResumeVersionsRefreshKey((value) => value + 1);
-
-      setProfileCvImport({
-        status: 'loaded',
-        message: savedVersion
-          ? 'Loaded your saved profile CV into the builder and saved it under Versions.'
-          : 'Loaded your saved profile CV into the builder.',
-      });
-    } catch (error: any) {
-      const unsupported = error?.code === 'unsupported_file';
-      setProfileCvImport({
-        status: unsupported ? 'unsupported' : 'error',
-        message:
-          error?.message ||
-          'We found a saved profile CV, but could not import it automatically. You can still upload a PDF or DOCX from the Import tab.',
-      });
+    } catch {
+      return;
     }
   }, []);
 
@@ -770,6 +800,44 @@ export default function App() {
     }
   }, []);
 
+  const loadBillingHistory = useCallback(async () => {
+    setIsLoadingBillingHistory(true);
+    setBillingHistoryError('');
+
+    try {
+      if (!isFirebaseConfigured()) {
+        setBillingHistory([]);
+        return;
+      }
+
+      const auth = getFirebaseAuth();
+      if (!auth.currentUser) {
+        setBillingHistory([]);
+        return;
+      }
+
+      const token = await auth.currentUser.getIdToken();
+      const response = await fetch('/.netlify/functions/get-billing-history', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        setBillingHistoryError('Billing history could not be loaded.');
+        setBillingHistory([]);
+        return;
+      }
+
+      setBillingHistory(Array.isArray(payload?.records) ? payload.records : []);
+    } catch {
+      setBillingHistoryError('Billing history could not be loaded.');
+      setBillingHistory([]);
+    } finally {
+      setIsLoadingBillingHistory(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadBillingStatus();
 
@@ -793,6 +861,12 @@ export default function App() {
       loadBillingStatus();
     }
   }, [loadBillingStatus]);
+
+  useEffect(() => {
+    if (!showManageSubscriptionModal) return;
+    setShowAllBillingHistory(false);
+    void loadBillingHistory();
+  }, [loadBillingHistory, showManageSubscriptionModal]);
 
   const fileSafeName = useMemo(() => {
     const raw = (resumeData?.personalInfo?.fullName || 'CareerUnified-Resume').trim();
@@ -822,7 +896,8 @@ export default function App() {
 
   const renderTemplate = () => {
     const props = { data: resumeData, colorTheme: selectedColor };
-    switch (selectedTemplate) {
+    const template = (() => {
+      switch (selectedTemplate) {
       case 'modern': return <ModernTemplate {...props} />;
       case 'professional': return <ProfessionalTemplate data={resumeData} />;
       case 'creative': return <CreativeTemplate data={resumeData} />;
@@ -837,7 +912,22 @@ export default function App() {
       case 'engineering-blueprint': return <EngineeringBlueprintTemplate data={resumeData} colorTheme={selectedColor} />;
 
       default: return <ModernTemplate {...props} />;
-    }
+      }
+    })();
+
+    return (
+      <>
+        {template}
+        <AdditionalSectionsPreview
+          data={resumeData}
+          includeCertifications={
+            selectedTemplate !== 'law-brief' &&
+            selectedTemplate !== 'commerce-analyst' &&
+            selectedTemplate !== 'engineering-blueprint'
+          }
+        />
+      </>
+    );
   };
 
   const renderTemplateThumbnail = (id: AnyTemplateId) => {
@@ -914,13 +1004,6 @@ export default function App() {
     const url = new URL(window.location.href);
     url.searchParams.set('tab', nextTab);
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  }, []);
-
-  const dismissFirstTimeGuide = useCallback(() => {
-    setShowFirstTimeGuide(false);
-
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem(CV_GUIDE_STORAGE_KEY, '1');
   }, []);
 
   const handleUseCvForZ83 = useCallback(() => {
@@ -1100,6 +1183,108 @@ export default function App() {
     }
   };
 
+  const startAiCreditPayment = async () => {
+    setIsRedirecting(true);
+    setBillingError('');
+
+    try {
+      if (!isFirebaseConfigured()) {
+        setBillingError('Firebase is not configured on this deployment.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      const auth = getFirebaseAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        setBillingError('Please login to buy AI Tailor credits.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      const token = await user.getIdToken();
+
+      const res = await fetch('/.netlify/functions/create-ai-credit-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ pack: 'ai_tailor_10' }),
+      });
+
+      const payload = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
+        const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
+        setBillingError(details ? `${error} ${details}` : error);
+        setIsRedirecting(false);
+        return;
+      }
+
+      const paymentUrl = payload?.payment_url as string | undefined;
+      const fields = payload?.fields as Record<string, string> | undefined;
+      if (!paymentUrl || !fields) {
+        setBillingError('Could not start PayFast checkout. Please try again.');
+        setIsRedirecting(false);
+        return;
+      }
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = paymentUrl;
+      form.style.display = 'none';
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (e: any) {
+      setBillingError('Could not start PayFast checkout. Please try again.');
+      setIsRedirecting(false);
+    }
+  };
+
+  const downloadBillingReceipt = async (record: BillingHistoryRecord) => {
+    const { jsPDF } = await import('jspdf');
+    const receipt = new jsPDF({ unit: 'mm', format: 'a4' });
+    const paymentDate = record.date
+      ? new Date(record.date).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })
+      : 'Not available';
+
+    receipt.setFont('helvetica', 'bold');
+    receipt.setFontSize(20);
+    receipt.text('Career Unified', 20, 24);
+    receipt.setFontSize(15);
+    receipt.text('Payment receipt', 20, 36);
+
+    receipt.setDrawColor(220, 225, 232);
+    receipt.line(20, 43, 190, 43);
+
+    receipt.setFont('helvetica', 'normal');
+    receipt.setFontSize(11);
+    receipt.text(`Payment date: ${paymentDate}`, 20, 56);
+    receipt.text(`Product: ${record.plan}`, 20, 66);
+    receipt.text(`Amount paid: R${record.amount}`, 20, 76);
+    receipt.text(`Status: Paid`, 20, 86);
+    receipt.text(`Payment reference: ${record.paymentId}`, 20, 96);
+    receipt.text('Payment processed securely via PayFast.', 20, 112);
+
+    receipt.setFontSize(9);
+    receipt.setTextColor(100, 110, 125);
+    receipt.text('Keep this receipt for your records.', 20, 126);
+
+    const safeReference = record.paymentId.replace(/[^a-z0-9_-]/gi, '-').slice(0, 50) || record.id;
+    receipt.save(`Career-Unified-receipt-${safeReference}.pdf`);
+  };
+
   const finalScale = Math.min(1, fitScale * previewScale);
 
   //  EDIT #2: Mobile max zoom = 100% (same as desktop)
@@ -1115,73 +1300,47 @@ export default function App() {
   const applicationsUsed = billing?.used ?? 0;
   const limitLabel = formatLimit(billing?.limit);
   const usageLabel = `${applicationsUsed} / ${limitLabel}`;
-  const cvGuideSteps = [
+  const managePlanName = billing?.plan === 'job_seeker' ? 'Job Hunter' : planName;
+  const managePlan = PLAN_OPTIONS.find((plan) => plan.id === billing?.plan);
+  const managePlanPrice = managePlan?.price ?? 'R0/month';
+  const [managePlanAmount] = managePlanPrice.split('/');
+  const managePlanBillingAmount = managePlanAmount.replace(/[^\d,]/g, '').replace(',', '.') || '0';
+  const nextBillingDate = new Date();
+  nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+  const nextBillingLabel = nextBillingDate.toLocaleDateString('en-ZA', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const remainingApplications =
+    typeof billing?.limit === 'number' ? Math.max(0, billing.limit - applicationsUsed) : null;
+  const usageProgress =
+    typeof billing?.limit === 'number' && billing.limit > 0
+      ? Math.min(100, Math.max(0, (applicationsUsed / billing.limit) * 100))
+      : 100;
+  const managePlanFeatures = [
     {
-      title: 'Import your CV',
-      description: 'Upload a PDF or DOCX CV, or paste LinkedIn text so the builder starts with your real details.',
-      cta: 'Import CV',
-      tab: 'import',
-      icon: Upload,
+      label: 'AI tailoring',
+      value: billing?.limit === null ? 'Unlimited' : `${limitLabel}/month`,
+      icon: Sparkles,
     },
     {
-      title: 'Choose template',
-      description: 'Pick an ATS-safe layout that matches the job level and industry you are applying for.',
-      cta: 'View templates',
-      tab: 'templates',
-      icon: Palette,
-    },
-    {
-      title: 'Add details',
-      description: 'Clean up your profile, experience, education, skills, projects, and certificates.',
-      cta: 'Edit CV',
-      tab: 'build',
+      label: 'Cover letters',
+      value: 'Included',
       icon: FileText,
     },
     {
-      title: 'Paste the job post',
-      description: 'Drop the job requirements into AI Tailor so your CV speaks to that exact role.',
-      cta: 'AI Tailor',
-      tab: 'ai',
-      icon: Wand2,
+      label: 'Saved versions',
+      value: billing?.plan === 'starter' ? 'Basic' : 'Included',
+      icon: Layers,
     },
     {
-      title: 'Check and download',
-      description: 'Review ATS feedback, then download a polished PDF that is ready to send.',
-      cta: 'Check score',
-      tab: 'analytics',
-      icon: Download,
+      label: 'Premium templates',
+      value: billing?.plan === 'free' ? 'Upgrade' : 'Included',
+      icon: Layout,
     },
-  ] satisfies Array<{
-    title: string;
-    description: string;
-    cta: string;
-    tab: AppTab;
-    icon: typeof Upload;
-  }>;
-  const showProfileCvImportNotice =
-    profileCvImport.status === 'checking' ||
-    profileCvImport.status === 'loaded' ||
-    profileCvImport.status === 'unsupported' ||
-    profileCvImport.status === 'error';
-  const profileCvNoticeTitle =
-    profileCvImport.status === 'checking'
-      ? 'Looking for your saved profile CV'
-      : profileCvImport.status === 'loaded'
-      ? 'Profile CV loaded'
-      : 'Profile CV could not be imported';
-  const profileCvNoticeClass =
-    profileCvImport.status === 'loaded'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-      : profileCvImport.status === 'checking'
-      ? 'border-blue-200 bg-blue-50 text-blue-900'
-      : 'border-amber-200 bg-amber-50 text-amber-950';
-  const profileCvIconClass =
-    profileCvImport.status === 'loaded'
-      ? 'bg-white text-emerald-700'
-      : profileCvImport.status === 'checking'
-      ? 'bg-white text-blue-700'
-      : 'bg-white text-amber-700';
-
+  ];
+  const visibleBillingHistory = showAllBillingHistory ? billingHistory : billingHistory.slice(0, 3);
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-sky-50/50 to-slate-50">
       {/* NAVIGATION (matched to varsity page structure/classes) */}
@@ -1265,108 +1424,25 @@ export default function App() {
           <SmartTips data={resumeData} />
         </div>
 
-        {showProfileCvImportNotice ? (
-          <section className={`mb-6 rounded-lg border p-4 shadow-sm ${profileCvNoticeClass}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-start gap-3">
-                <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md shadow-sm ${profileCvIconClass}`}>
-                  {profileCvImport.status === 'loaded' ? (
-                    <CheckCircle2 className="h-5 w-5" />
-                  ) : profileCvImport.status === 'checking' ? (
-                    <FileText className="h-5 w-5 animate-pulse" />
-                  ) : (
-                    <X className="h-5 w-5" />
-                  )}
-                </span>
-                <div className="min-w-0">
-                  <h2 className="text-sm font-semibold">{profileCvNoticeTitle}</h2>
-                  <p className="mt-1 text-sm leading-6 opacity-90">{profileCvImport.message}</p>
-                </div>
-              </div>
-
-              {profileCvImport.status === 'loaded' ? (
-                <Button type="button" variant="outline" onClick={() => handleTabChange('versions')} className="shrink-0 bg-white/80">
-                  View Versions
-                </Button>
-              ) : profileCvImport.status !== 'checking' ? (
-                <Button type="button" variant="outline" onClick={() => handleTabChange('import')} className="shrink-0 bg-white/80">
-                  Import CV
-                </Button>
-              ) : null}
-            </div>
-          </section>
-        ) : null}
-
-        {showFirstTimeGuide ? (
-          <section className="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-950 px-4 py-4 text-white sm:px-5">
-              <div className="min-w-0 flex-1">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-sky-100">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
-                  First-time CV workflow
-                </div>
-                <h2 className="text-lg font-semibold sm:text-xl">Build once, tailor for every application</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
-                  Start with your existing CV, improve the content, paste a job post, tailor with AI, then download the final PDF.
+        <section className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-emerald-700 shadow-sm">
+                <Signature className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-950">Applying for a government post?</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-700">
+                  Send your CV names, contact details, education, and work history into the Z83 filler, then review the official form before signing.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={dismissFirstTimeGuide}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/15 bg-white/10 text-slate-100 transition hover:bg-white/20"
-                aria-label="Hide first-time guide"
-                title="Hide guide"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
-
-            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
-              {cvGuideSteps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <button
-                    key={step.title}
-                    type="button"
-                    onClick={() => handleTabChange(step.tab)}
-                    className="group flex min-h-[172px] flex-col rounded-lg border border-slate-200 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-sky-50 text-blue-700">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <span className="text-xs font-bold uppercase tracking-wide text-slate-400">Step {index + 1}</span>
-                    </div>
-                    <h3 className="mt-4 text-sm font-semibold text-slate-950">{step.title}</h3>
-                    <p className="mt-2 flex-1 text-xs leading-5 text-slate-600">{step.description}</p>
-                    <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-blue-700">
-                      {step.cta}
-                      <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mx-4 mb-4 flex flex-col gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-emerald-700 shadow-sm">
-                  <Signature className="h-5 w-5" />
-                </span>
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-950">Applying for a government post?</h3>
-                  <p className="mt-1 text-sm leading-6 text-slate-700">
-                    Send your CV names, contact details, education, and work history into the Z83 filler, then review the official form before signing.
-                  </p>
-                </div>
-              </div>
-              <Button type="button" onClick={handleUseCvForZ83} className="shrink-0 bg-emerald-700 hover:bg-emerald-800">
-                <Signature className="mr-2 h-4 w-4" />
-                Use my CV details to prefill Z83
-              </Button>
-            </div>
-          </section>
-        ) : null}
+            <Button type="button" onClick={handleUseCvForZ83} className="shrink-0 bg-emerald-700 hover:bg-emerald-800">
+              <Signature className="mr-2 h-4 w-4" />
+              Use my CV details to prefill Z83
+            </Button>
+          </div>
+        </section>
 
         <Card className="mb-6 border-blue-100 bg-white/95 shadow-sm">
           <CardContent className="p-4">
@@ -1718,61 +1794,113 @@ export default function App() {
 
       {/* Upgrade Modal */}
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] w-[min(96vw,980px)] max-w-[980px] overflow-y-auto p-5 sm:p-6">
-          <DialogHeader className="pr-8">
-            <DialogTitle>Choose your AI CV plan</DialogTitle>
-            <DialogDescription>
-              Secure monthly billing via PayFast
+        <DialogContent className="z-[10000] max-h-[calc(100dvh-1rem)] !w-[min(94vw,1040px)] !max-w-[1040px] overflow-y-auto rounded-lg p-5 shadow-none sm:!max-w-[1040px] sm:p-7">
+          <DialogHeader className="pr-8 text-left">
+            <DialogTitle className="text-[18px] font-medium leading-tight text-foreground">
+              Unlock AI CV tailoring
+            </DialogTitle>
+            <DialogDescription className="text-[13px] text-muted-foreground">
+              Join 500+ SA job seekers already landing interviews
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-5 text-sm text-slate-700">
+          <div className="flex flex-col gap-5">
             {billingError ? (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-700 text-xs">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs leading-5 text-red-700">
                 {billingError}
               </div>
             ) : null}
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              {PLAN_OPTIONS.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative flex min-h-[260px] flex-col rounded-lg border bg-white p-5 shadow-sm ${
-                    plan.id === 'career_pro' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'
-                  }`}
-                >
-                  {plan.badge ? (
-                    <Badge className="absolute right-4 top-4 bg-blue-600 text-white hover:bg-blue-600">
-                      {plan.badge}
-                    </Badge>
-                  ) : null}
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">{plan.name}</h3>
-                    <div className="mt-2 text-2xl font-bold text-slate-950">{plan.price}</div>
-                    <ul className="mt-4 space-y-2 text-sm text-slate-600">
+            <div className="grid grid-cols-1 gap-4 min-[760px]:grid-cols-3">
+              {PLAN_OPTIONS.map((plan) => {
+                const [amount, period = 'month'] = plan.price.split('/');
+                return (
+                  <div
+                    key={plan.id}
+                    className={`relative flex min-h-[330px] flex-col rounded-lg bg-background p-5 max-[759px]:p-4 ${
+                      plan.featured
+                        ? 'order-none border-2 border-[#185FA5]'
+                        : 'border border-border'
+                    }`}
+                  >
+                    {plan.badge ? (
+                      <Badge className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-md bg-[#185FA5] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#185FA5]">
+                        {plan.badge}
+                      </Badge>
+                    ) : null}
+                    <div className="flex flex-1 flex-col">
+                      <h3 className="text-[15px] font-medium text-foreground">{plan.name}</h3>
+                      <div className="mt-2 flex items-baseline gap-1">
+                        <span className="text-[28px] font-semibold tracking-normal text-foreground">{amount}</span>
+                        <span className="text-[12px] font-medium text-muted-foreground">/{period}</span>
+                      </div>
+                      <ul className="mt-5 flex-1 space-y-3 text-[13px] text-foreground">
                       {plan.benefits.map((benefit) => (
-                        <li key={benefit} className="flex gap-2">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                        <li key={benefit} className="flex gap-2 leading-5">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#185FA5]" />
                           <span>{benefit}</span>
                         </li>
                       ))}
-                    </ul>
-                  </div>
+                      </ul>
+                    </div>
 
-                  <Button
-                    className="mt-5 h-auto min-h-10 w-full whitespace-normal px-4 py-2 text-center leading-snug"
-                    disabled={isRedirecting}
-                    onClick={() => startSubscription(plan.id)}
-                  >
-                    {isRedirecting ? 'Starting checkout...' : 'Choose Plan'}
-                  </Button>
-                </div>
-              ))}
+                    <Button
+                      variant={plan.featured ? 'default' : 'outline'}
+                      className={`mt-6 min-h-[44px] w-full ${
+                        plan.featured
+                          ? 'bg-[#185FA5] text-white hover:bg-[#0C447C]'
+                          : 'border-border bg-background text-foreground hover:bg-accent'
+                      }`}
+                      disabled={isRedirecting}
+                      onClick={() => startSubscription(plan.id)}
+                    >
+                      {isRedirecting ? 'Starting checkout...' : 'Choose plan'}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
 
-            <Button variant="outline" className="w-full" onClick={() => setShowUpgradeModal(false)}>
-              Not now
-            </Button>
+            <div className="flex items-center justify-between gap-5 rounded-lg border border-[#185FA5] bg-[#E6F1FB] p-5 max-[759px]:order-[-1] max-[759px]:flex-col max-[759px]:items-stretch">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[13px] font-medium text-[#0C447C]">
+                    Not ready to subscribe? Get 10 AI tailors for R19
+                  </p>
+                  <Badge className="rounded-md bg-[#185FA5] px-2 py-0.5 text-[11px] font-medium text-white hover:bg-[#185FA5]">
+                    Best value start
+                  </Badge>
+                </div>
+                <p className="mt-1 text-[12px] text-[#185FA5]">
+                  No subscription · no expiry · use them whenever you need
+                </p>
+              </div>
+
+              <Button
+                type="button"
+                className="min-h-[44px] shrink-0 bg-[#185FA5] px-6 text-white hover:bg-[#0C447C] max-[759px]:mt-1 max-[759px]:w-full"
+                disabled={isRedirecting}
+                onClick={startAiCreditPayment}
+              >
+                {isRedirecting ? 'Starting checkout...' : 'Grab this deal'}
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <p className="text-center text-[11px] text-muted-foreground">
+                secure billing via PayFast · cancel anytime
+              </p>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <button
+              type="button"
+              className="mx-auto block min-h-[44px] cursor-pointer text-center text-[12px] text-muted-foreground hover:text-foreground"
+              onClick={() => setShowUpgradeModal(false)}
+            >
+              Not now — I'll apply with my current CV
+            </button>
 
             {import.meta.env.DEV ? (
               <Button
@@ -1804,29 +1932,210 @@ export default function App() {
       </Dialog>
 
       <Dialog open={showManageSubscriptionModal} onOpenChange={setShowManageSubscriptionModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Manage subscription</DialogTitle>
-            <DialogDescription>
-              {formatPlanName(billing?.plan)} plan
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 text-sm text-slate-700">
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-medium text-emerald-800">
-              Subscription active
+        <DialogContent className="z-[10000] !top-2 max-h-[calc(100dvh-1rem)] w-[92vw] max-w-[620px] !translate-y-0 gap-0 overflow-y-auto rounded-[var(--radius-lg)] border-[0.5px] border-[var(--border)] p-0 shadow-none sm:max-w-[620px] [&>button:last-child]:hidden">
+          <DialogHeader className="flex-row items-start justify-between gap-4 border-b-[0.5px] border-[var(--border)] bg-background px-5 py-4 text-left max-[479px]:px-4">
+            <div>
+              <DialogTitle className="text-[17px] font-medium leading-tight text-foreground">
+                Manage subscription
+              </DialogTitle>
+              <DialogDescription className="mt-1 text-[12px] text-muted-foreground">
+                Review your plan, usage, and billing options
+              </DialogDescription>
             </div>
-            <p>
-              Subscription management is handled securely through PayFast. Contact support if you need to cancel,
-              pause, or change your plan.
+            <DialogClose asChild>
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                aria-label="Close manage subscription"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </DialogClose>
+          </DialogHeader>
+
+          <div className="bg-[#185FA5] px-5 pb-5 pt-6 text-white max-[479px]:px-4 max-[479px]:pb-4 max-[479px]:pt-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-white/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.06em] text-[#E6F1FB]">
+                  <Crown className="h-3.5 w-3.5" />
+                  {managePlanName} plan
+                </div>
+                <div className="mt-3 text-[24px] font-medium leading-tight text-white">
+                  {managePlanAmount} <span className="text-[15px] font-normal text-[#E6F1FB]">/ month</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-[12px] text-[#E6F1FB]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C0DD97]" />
+                  Active · renews {nextBillingLabel}
+                </div>
+              </div>
+
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-[var(--radius-md)] bg-white/15 p-3.5 max-[479px]:p-3">
+                <div className="text-[11px] text-[#E6F1FB] max-[479px]:text-[10px]">AI tailors used</div>
+                <div className="mt-1 flex items-end gap-1 text-white">
+                  <span className="text-[26px] font-medium leading-none max-[479px]:text-[25px]">
+                    {applicationsUsed}
+                  </span>
+                  <span className="pb-0.5 text-[13px] font-normal text-[#E6F1FB] max-[479px]:text-[12px]">
+                    of {limitLabel}
+                  </span>
+                </div>
+                <div className="mt-3 h-[3px] rounded-full bg-white/25">
+                  <div className="h-full rounded-full bg-white" style={{ width: `${usageProgress}%` }} />
+                </div>
+                <div className="mt-2 text-[11px] text-[#E6F1FB] max-[479px]:text-[10px]">
+                  {remainingApplications === null ? 'Unlimited remaining' : `${remainingApplications} remaining`}
+                </div>
+              </div>
+
+              <div className="rounded-[var(--radius-md)] bg-white/15 p-3.5 max-[479px]:p-3">
+                <div className="text-[11px] text-[#E6F1FB] max-[479px]:text-[10px]">Next billing</div>
+                <div className="mt-2 text-[18px] font-medium leading-tight text-white max-[479px]:text-[17px]">
+                  {nextBillingLabel}
+                </div>
+                <div className="mt-2 text-[11px] text-[#E6F1FB] max-[479px]:text-[10px]">
+                  R{managePlanBillingAmount} via PayFast
+                </div>
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#E6F1FB] max-[479px]:text-[10px]">
+                  <Lock className="h-3.5 w-3.5" />
+                  Secure billing
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 bg-background p-5 max-[479px]:p-4">
+            <section className="space-y-2.5">
+              <div className="text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                Your plan includes
+              </div>
+              <div className="rounded-[var(--radius-lg)] border-[0.5px] border-[var(--border)]">
+                {managePlanFeatures.map((feature, index) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div
+                      key={feature.label}
+                      className={`flex items-center gap-3 px-3.5 py-3 text-[13px] ${
+                        index === managePlanFeatures.length - 1 ? '' : 'border-b-[0.5px] border-[var(--border)]'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0 text-[#185FA5]" />
+                      <span className="min-w-0 flex-1 text-foreground">{feature.label}</span>
+                      <span className="shrink-0 text-muted-foreground">{feature.value}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="space-y-2.5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                  Billing history
+                </div>
+                {billingHistory.length > 3 ? (
+                  <button
+                    type="button"
+                    className="text-[12px] font-medium text-[#185FA5]"
+                    onClick={() => setShowAllBillingHistory((value) => !value)}
+                  >
+                    {showAllBillingHistory ? 'Show less' : 'View all'}
+                  </button>
+                ) : null}
+              </div>
+              <div className="rounded-[var(--radius-lg)] border-[0.5px] border-[var(--border)]">
+                {isLoadingBillingHistory ? (
+                  <div className="px-3.5 py-3 text-[12px] text-muted-foreground">Loading billing history...</div>
+                ) : billingHistoryError ? (
+                  <div className="px-3.5 py-3 text-[12px] text-red-600">{billingHistoryError}</div>
+                ) : visibleBillingHistory.length > 0 ? (
+                  visibleBillingHistory.map((row, index) => (
+                    <div
+                      key={row.id}
+                      className={`grid grid-cols-[1fr_1fr_auto_auto_auto] items-center gap-2 px-3.5 py-3 ${
+                        index === visibleBillingHistory.length - 1 ? '' : 'border-b-[0.5px] border-[var(--border)]'
+                      }`}
+                    >
+                      <span className="min-w-0 truncate text-[12px] text-muted-foreground">
+                        {row.date
+                          ? new Date(row.date).toLocaleDateString('en-ZA', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                            })
+                          : 'Date unavailable'}
+                      </span>
+                      <span className="min-w-0 truncate text-[12px] text-foreground">{row.plan}</span>
+                      <span className="text-[12px] text-foreground">R{row.amount}</span>
+                      <span className="rounded-[var(--radius-md)] bg-[#EAF3DE] px-2 py-1 text-[11px] font-medium text-[#3B6D11]">
+                        Paid
+                      </span>
+                      <button
+                        type="button"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[#185FA5] hover:bg-[#E6F1FB]"
+                        onClick={() => void downloadBillingReceipt(row)}
+                        aria-label={`Download receipt for ${row.plan}`}
+                        title="Download receipt"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3.5 py-3 text-[12px] text-muted-foreground">
+                    Billing history will appear after your first successful PayFast payment.
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border-[0.5px] border-[#378ADD] bg-[#E6F1FB] p-3.5 max-[479px]:flex-col max-[479px]:items-stretch">
+              <div className="flex min-w-0 gap-3">
+                <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#0C447C]" />
+                <div>
+                  <div className="text-[12px] font-medium text-[#0C447C]">Need a boost? 10 AI tailors for R19</div>
+                  <div className="mt-1 text-[11px] text-[#185FA5]">One-time · no subscription · no expiry</div>
+                </div>
+              </div>
+              <Button
+                type="button"
+                className="min-h-[44px] shrink-0 bg-[#185FA5] px-4 text-[12px] font-medium text-[#E6F1FB] hover:bg-[#0C447C] max-[479px]:w-full"
+                disabled={isRedirecting}
+                onClick={startAiCreditPayment}
+              >
+                {isRedirecting ? 'Starting...' : 'Get deal'}
+              </Button>
+            </section>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                className="min-h-[44px] bg-[#185FA5] text-[13px] font-medium text-white hover:bg-[#0C447C]"
+                onClick={() => {
+                  setShowManageSubscriptionModal(false);
+                  setShowUpgradeModal(true);
+                }}
+              >
+                Upgrade plan
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-[44px] border-[0.5px] border-[var(--border)] bg-transparent text-[13px] font-medium text-foreground hover:bg-accent"
+                onClick={() => setShowManageSubscriptionModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+
+            <p className="text-center text-[11px] text-muted-foreground">
+              To cancel or pause your plan contact{' '}
+              <a className="font-medium text-[#185FA5]" href="mailto:support@careerunified.com">
+                support
+              </a>
             </p>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => setShowManageSubscriptionModal(false)}
-            >
-              Close
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

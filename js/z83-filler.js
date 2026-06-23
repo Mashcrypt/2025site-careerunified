@@ -3,8 +3,11 @@
 
   const STORAGE_KEY = 'careerUnifiedZ83DraftV2';
   const PREFILL_KEY = 'careerUnifiedZ83PrefillV1';
-  const TEMPLATE_URL = '/assets/z83-template.pdf';
-  const {PDFDocument, StandardFonts, rgb, degrees} = window.PDFLib || {};
+  const ASSET_VERSION = '20260622-flat';
+  const TEMPLATE_URL = `/assets/z83-template.pdf?v=${ASSET_VERSION}`;
+  const FIELD_MAP_URL = `/assets/z83-field-map.json?v=${ASSET_VERSION}`;
+  const HAND_FONT_URL = `/assets/fonts/Kalam-Regular.ttf?v=${ASSET_VERSION}`;
+  const {PDFDocument, PDFName, rgb} = window.PDFLib || {};
   const form = document.getElementById('z83Form');
   const status = document.getElementById('formStatus');
   const progressBar = document.getElementById('progressBar');
@@ -20,13 +23,6 @@
   let signatureDataUrl = '';
   let previewUrl = '';
   let saveTimer = 0;
-  const FORM_INK = rgb ? rgb(0, 0, 0) : undefined;
-  const CHECK_INK = rgb ? rgb(0, 0, 0) : undefined;
-  const PEN_STROKES = [
-    [0, 0],
-    [0.12, 0.02],
-    [-0.05, -0.08]
-  ];
 
   const rowTemplates = {
     language: () => row('language', `
@@ -291,192 +287,174 @@
     }
   }
 
-  function splitDate(value) {
-    const match = clean(value).match(/(\d{1,2})\D+(\d{2,4})/);
-    if (!match) return ['', ''];
-    return [match[1].padStart(2, '0'), match[2].slice(-2)];
+  function splitMonthYear(value) {
+    const text = clean(value);
+    if (!text) return ['', ''];
+    if (/present/i.test(text)) return ['', 'Present'];
+    const iso = text.match(/^(\d{4})-(\d{2})(?:-\d{2})?$/);
+    if (iso) return [String(Number(iso[2])), iso[1].slice(-2)];
+    const shortDate = text.match(/(\d{1,2})\D+(\d{2,4})/);
+    if (!shortDate) return ['', text];
+    return [String(Number(shortDate[1])), shortDate[2].slice(-2)];
   }
 
-  function wrapText(text, font, size, maxWidth, maxLines = 2) {
-    const words = clean(text).split(' ').filter(Boolean);
-    const lines = [];
-    let line = '';
-    words.forEach(word => {
-      const candidate = line ? `${line} ${word}` : word;
-      if (font.widthOfTextAtSize(candidate, size) <= maxWidth) {
-        line = candidate;
-      } else {
-        if (line) lines.push(line);
-        line = word;
-      }
-    });
-    if (line) lines.push(line);
-    if (lines.length > maxLines) {
-      const clipped = lines.slice(0, maxLines);
-      clipped[maxLines - 1] = `${clipped[maxLines - 1].replace(/[.\s]+$/, '')}...`;
-      return clipped;
+  function fieldOptions(field) {
+    try {
+      return typeof field.getOptions === 'function' ? field.getOptions() : [];
+    } catch {
+      return [];
     }
-    return lines;
   }
 
-  function naturalOffset(seed, amount = 0.45) {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-      hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
-    }
-    return (((Math.abs(hash) % 1000) / 1000) - 0.5) * amount;
-  }
-
-  function drawPenLine(page, font, line, x, y, size, seed, options = {}) {
-    const jitter = options.steady ? 0 : 1;
-    const baseX = x + naturalOffset(seed, 0.28 * jitter);
-    const baseY = y + naturalOffset(`${seed}:y`, 0.34 * jitter);
-    const inkSize = size + naturalOffset(`${seed}:s`, 0.12 * jitter);
-    const rotation = degrees(naturalOffset(`${seed}:r`, 0.28 * jitter));
-    const strokes = options.singleStroke ? [[0, 0]] : PEN_STROKES;
-
-    strokes.forEach(([dx, dy]) => {
-      page.drawText(line, {
-        x: baseX + dx,
-        y: baseY + dy,
-        size: inkSize,
-        font,
-        color: FORM_INK,
-        rotate: rotation
-      });
-    });
-  }
-
-  function drawText(page, font, value, x, y, options = {}) {
+  function setTextField(pdfForm, name, value) {
     const text = clean(value);
     if (!text) return;
-    const size = options.size || 7.8;
-    const maxWidth = options.maxWidth || 150;
-    const maxLines = options.maxLines || 2;
-    const lineHeight = options.lineHeight || size + 1.2;
-    wrapText(text, font, size, maxWidth, maxLines).forEach((line, index) => {
-      const seed = `${line}:${x}:${y}:${index}`;
-      drawPenLine(page, font, line, x, y - index * lineHeight, size, seed, options);
-    });
+    try {
+      pdfForm.getTextField(name).setText(text);
+    } catch {
+      // Template field names can vary between Z83 PDF versions.
+    }
   }
 
-  function drawCentered(page, font, value, centerX, y, width, size = 7.8, options = {}) {
-    const text = clean(value);
-    if (!text) return;
-    const textWidth = font.widthOfTextAtSize(text, size);
-    const seed = `${text}:${centerX}:${y}`;
-    drawPenLine(
-      page,
-      font,
-      text,
-      centerX - Math.min(textWidth, width) / 2,
-      y,
-      size,
-      seed,
-      options
+  function selectRadio(pdfForm, name, value, valueMap = {}) {
+    const selected = clean(value);
+    if (!selected) return;
+    try {
+      const field = pdfForm.getRadioGroup(name);
+      const options = fieldOptions(field);
+      const mapped = valueMap[selected] || valueMap[selected.toLowerCase()] || selected;
+      field.select(options.includes(selected) ? selected : mapped);
+    } catch {
+      // Template field names can vary between Z83 PDF versions.
+    }
+  }
+
+  function selectDropdown(pdfForm, name, value) {
+    const selected = clean(value);
+    if (!selected) return;
+    try {
+      const field = pdfForm.getDropdown(name);
+      const options = fieldOptions(field);
+      const match = options.find(option => option.toLowerCase() === selected.toLowerCase());
+      field.select(match || selected);
+    } catch {
+      // Template field names can vary between Z83 PDF versions.
+    }
+  }
+
+  function setCheckbox(pdfForm, name, checked) {
+    try {
+      const field = pdfForm.getCheckBox(name);
+      if (checked) field.check();
+      else field.uncheck();
+    } catch {
+      // Template field names can vary between Z83 PDF versions.
+    }
+  }
+
+  function selectYesNo(pdfForm, groupName, value) {
+    const selected = clean(value);
+    if (selected !== 'Yes' && selected !== 'No') return;
+    selectRadio(pdfForm, groupName, selected, {Yes: 'Choice6', No: 'Choice7'});
+  }
+
+  function fillZ83Fields(pdfForm, data) {
+    const raceValues = {
+      African: 'Choice1',
+      White: 'Choice2',
+      Coloured: 'Choice3',
+      Indian: 'Choice4',
+      Other: 'Choice5',
+    };
+    const genderValues = {Female: 'Choice6', Male: 'Choice7'};
+    const contactValues = {Post: 'Choice1', Email: 'Choice2', Fax: 'Choice3', Telephone: 'Choice4'};
+
+    setTextField(pdfForm, 'Position for which you are applying as advertised', data.position);
+    setTextField(pdfForm, 'Department where the position was advertised', data.department);
+    setTextField(pdfForm, 'Reference number as stated in the advert', data.referenceNumber);
+    setTextField(
+      pdfForm,
+      'If you are offered the position when can you start OR how much notice must you serve with your current employer',
+      data.startDate
     );
-  }
 
-  function mark(page, value, expected, x, y) {
-    if (clean(value).toLowerCase() !== expected.toLowerCase()) return;
-    page.drawText('X', {x, y, size: 9, font: page.__markFont || page.__font, color: CHECK_INK});
-  }
+    setTextField(pdfForm, 'Surname and Full names', [data.surname, data.fullNames].filter(Boolean).join(', '));
+    setTextField(pdfForm, 'DDMMYY', formatDate(data.dateOfBirth));
+    setTextField(pdfForm, 'Identity Number', data.idNumber);
+    setTextField(pdfForm, 'Passport2 number', data.passportNumber);
+    selectRadio(pdfForm, 'Group2', data.race, raceValues);
 
-  function fillPageOne(page, font, markFont, data) {
-    page.__font = font;
-    page.__markFont = markFont;
-    drawText(page, font, data.position, 242, 636, {maxWidth: 155, maxLines: 3});
-    drawText(page, font, data.department, 408, 636, {maxWidth: 164, maxLines: 3});
-    drawText(page, font, data.referenceNumber, 242, 578, {maxWidth: 155});
-    drawText(page, font, data.startDate, 408, 578, {maxWidth: 164, maxLines: 3});
-    drawText(page, font, [data.surname, data.fullNames].filter(Boolean).join(', '), 350, 505, {maxWidth: 221});
-    drawText(page, font, formatDate(data.dateOfBirth), 286, 466, {maxWidth: 60});
+    [
+      ['Group4', 'disability'],
+      ['Group5', 'saCitizen'],
+      ['Group6', 'workPermit'],
+      ['Group7', 'criminalConviction'],
+      ['Group8', 'pendingCriminalCase'],
+      ['Group9', 'dismissedMisconduct'],
+      ['Group10', 'pendingDisciplinary'],
+      ['Group11', 'resignedPendingDisciplinary'],
+      ['Group12', 'illHealthDischarge'],
+      ['Group13', 'stateBusiness'],
+      ['Group14', 'relinquishBusiness'],
+    ].forEach(([groupName, key]) => selectYesNo(pdfForm, groupName, data[key]));
+    selectRadio(pdfForm, 'Group3', data.gender, genderValues);
 
-    clean(data.idNumber).replace(/\D/g, '').slice(0, 13).split('').forEach((digit, index) => {
-      drawCentered(page, font, digit, 413 + index * 13.15, 479, 11, 7);
-    });
-    drawText(page, font, data.passportNumber, 405, 458, {maxWidth: 165});
+    setTextField(pdfForm, 'Text5', data.criminalDetails);
+    setTextField(pdfForm, 'Text6', data.pendingCriminalDetails);
+    setTextField(pdfForm, 'Text7', data.dismissalDetails);
+    setTextField(pdfForm, 'Text8', data.disciplinaryDetails);
+    setTextField(pdfForm, 'Text9', data.stateBusinessDetails);
+    setTextField(pdfForm, 'Text10', data.privateExperience);
+    setTextField(pdfForm, 'Text11', data.publicExperience);
+    setTextField(pdfForm, 'Text12', formatDate(data.registrationDate));
+    setTextField(pdfForm, 'Text14', data.registrationNumber);
+    setTextField(pdfForm, 'Text15', data.nationality);
+    setTextField(pdfForm, 'Text16', data.initials);
 
-    [['African', 304], ['White', 369], ['Coloured', 436], ['Indian', 506], ['Other', 559]].forEach(([value, x]) => mark(page, data.race, value, x, 450));
-    [['Female', 503], ['Male', 558]].forEach(([value, x]) => mark(page, data.gender, value, x, 435));
-    [['Yes', 503], ['No', 558]].forEach(([value, x]) => mark(page, data.disability, value, x, 419));
-    [['Yes', 503], ['No', 558]].forEach(([value, x]) => mark(page, data.saCitizen, value, x, 404));
-    drawText(page, font, data.nationality, 470, 389, {maxWidth: 100});
-    [['Yes', 503], ['No', 558]].forEach(([value, x]) => mark(page, data.workPermit, value, x, 373));
+    setTextField(pdfForm, 'Preferred language for correspondence', data.correspondenceLanguage);
+    setTextField(pdfForm, 'Contact details in terms of the above', [data.address, data.email, data.phone].filter(Boolean).join('\n'));
+    selectRadio(pdfForm, 'Group16', data.contactMethod, contactValues);
 
-    const questions = [
-      ['criminalConviction', 357],
-      ['pendingCriminalCase', 327],
-      ['dismissedMisconduct', 296],
-      ['pendingDisciplinary', 265],
-      ['resignedPendingDisciplinary', 234],
-      ['illHealthDischarge', 204],
-      ['stateBusiness', 174],
-      ['relinquishBusiness', 137]
-    ];
-    questions.forEach(([key, y]) => {
-      mark(page, data[key], 'Yes', 503, y);
-      mark(page, data[key], 'No', 558, y);
-    });
-    drawText(page, font, data.criminalDetails, 244, 343, {maxWidth: 325, size: 6.4});
-    drawText(page, font, data.pendingCriminalDetails, 244, 312, {maxWidth: 325, size: 6.4});
-    drawText(page, font, data.dismissalDetails, 244, 281, {maxWidth: 325, size: 6.4});
-    drawText(page, font, data.disciplinaryDetails, 244, 250, {maxWidth: 325, size: 6.4});
-    drawText(page, font, data.stateBusinessDetails, 244, 161, {maxWidth: 325, size: 6.2});
-    drawCentered(page, font, data.privateExperience, 510, 111, 45);
-    drawCentered(page, font, data.publicExperience, 558, 111, 45);
-    drawCentered(page, font, formatDate(data.registrationDate), 510, 80, 45, 6.5);
-    drawCentered(page, font, data.registrationNumber, 558, 80, 45, 6.5);
-    drawText(page, font, data.initials, 548, 24, {maxWidth: 48, size: 8});
-  }
-
-  function fillPageTwo(page, font, markFont, data) {
-    page.__font = font;
-    page.__markFont = markFont;
-    drawText(page, font, data.correspondenceLanguage, 471, 696, {maxWidth: 98});
-    [['Post', 350], ['Email', 420], ['Fax', 489], ['Telephone', 557]].forEach(([value, x]) => mark(page, data.contactMethod, value, x, 673));
-    const contact = [data.address, data.email, data.phone].filter(Boolean).join(' | ');
-    drawText(page, font, contact, 330, 643, {maxWidth: 242, maxLines: 5, size: 7, lineHeight: 8});
-
-    const languageXs = [245, 317, 389, 461, 534];
-    data.languages.slice(0, 5).forEach((item, index) => {
-      drawCentered(page, font, item.language, languageXs[index], 572, 67, 6.7);
-      drawCentered(page, font, item.speak, languageXs[index], 552, 67, 6.7);
-      drawCentered(page, font, item.readWrite, languageXs[index], 533, 67, 6.7);
+    const languageFields = ['Languages specifyRow1', 'Languages specifyRow1_2', 'Languages specifyRow1_3', 'Languages specifyRow1_4', 'Languages specifyRow1_5'];
+    (data.languages || []).slice(0, 5).forEach((item, index) => {
+      setTextField(pdfForm, languageFields[index], item.language);
+      selectDropdown(pdfForm, `Dropdown3.0.${index}`, item.speak);
+      selectDropdown(pdfForm, `Dropdown3.1.${index}`, item.readWrite);
     });
 
-    const educationYs = [474, 455, 436, 417];
-    data.education.slice(0, 4).forEach((item, index) => {
-      drawText(page, font, item.institution, 84, educationYs[index], {maxWidth: 180, size: 6.7, maxLines: 2});
-      drawText(page, font, item.qualification, 270, educationYs[index], {maxWidth: 173, size: 6.7, maxLines: 2});
-      drawCentered(page, font, item.year, 520, educationYs[index], 120, 6.7);
+    (data.education || []).slice(0, 4).forEach((item, index) => {
+      const row = index + 1;
+      setTextField(pdfForm, `Name of SchoolTechnical CollegeRow${row}`, item.institution);
+      setTextField(pdfForm, `Name of qualification obtainedRow${row}`, item.qualification);
+      setTextField(pdfForm, `Year obtainedRow${row}`, item.year);
     });
-    drawText(page, font, data.currentStudy, 206, 391, {maxWidth: 365, size: 6.7});
+    setTextField(pdfForm, 'Current study institution and qualification', data.currentStudy);
 
-    const workYs = [332, 312, 292];
-    data.work.slice(0, 3).forEach((item, index) => {
-      const [fromMonth, fromYear] = splitDate(item.from);
-      const [toMonth, toYear] = splitDate(item.to);
-      drawText(page, font, item.employer, 84, workYs[index], {maxWidth: 132, size: 6.3, maxLines: 2});
-      drawText(page, font, item.post, 222, workYs[index], {maxWidth: 84, size: 6.3, maxLines: 2});
-      drawCentered(page, font, fromMonth, 325, workYs[index], 26, 6.3);
-      drawCentered(page, font, fromYear, 355, workYs[index], 29, 6.3);
-      drawCentered(page, font, toMonth, 385, workYs[index], 26, 6.3);
-      drawCentered(page, font, toYear, 417, workYs[index], 29, 6.3);
-      drawText(page, font, item.reason, 442, workYs[index], {maxWidth: 129, size: 6.3, maxLines: 2});
+    (data.work || []).slice(0, 3).forEach((item, index) => {
+      const row = index + 1;
+      setTextField(pdfForm, `Employer including current employerRow${row}`, item.employer);
+      setTextField(pdfForm, `Post heldRow${row}`, item.post);
+      const [fromMonth, fromYear] = splitMonthYear(item.fromYear || item.from);
+      const [toMonth, toYear] = splitMonthYear(item.toYear || item.to);
+      selectDropdown(pdfForm, `Dropdown1.${index}.0`, fromMonth);
+      selectDropdown(pdfForm, `Dropdown1.${index}.1`, toMonth);
+      setTextField(pdfForm, `YYRow${row}`, fromYear);
+      setTextField(pdfForm, `YYRow${row}_2`, toYear);
+      setTextField(pdfForm, `Reason for leavingRow${row}`, item.reason);
     });
-    mark(page, data.reappointmentCondition, 'Yes', 460, 267);
-    mark(page, data.reappointmentCondition, 'No', 501, 267);
-    drawText(page, font, data.reappointmentDetails, 375, 248, {maxWidth: 196, size: 6.4, maxLines: 2});
+    setTextField(
+      pdfForm,
+      'If yes Provide the name of the previous employing department and indicate the nature of the condition',
+      data.reappointmentDetails
+    );
 
-    const referenceYs = [194, 176, 158];
-    data.references.slice(0, 3).forEach((item, index) => {
-      drawText(page, font, item.name, 84, referenceYs[index], {maxWidth: 140, size: 6.7});
-      drawText(page, font, item.relationship, 234, referenceYs[index], {maxWidth: 140, size: 6.7});
-      drawText(page, font, item.telephone, 384, referenceYs[index], {maxWidth: 185, size: 6.7});
+    (data.references || []).slice(0, 3).forEach((item, index) => {
+      const row = index + 1;
+      setTextField(pdfForm, `NameRow${row}`, item.name);
+      setTextField(pdfForm, `Relationship to youRow${row}`, item.relationship);
+      setTextField(pdfForm, `Tel No office hoursRow${row}`, item.telephone);
     });
-    drawText(page, font, formatDate(data.signatureDate), 352, 87, {maxWidth: 90, size: 8.4, steady: true});
-    drawText(page, font, data.initials, 548, 24, {maxWidth: 48, size: 8});
+    setTextField(pdfForm, 'Date', formatDate(data.signatureDate));
   }
 
   async function embedSignature(pdfDoc, page) {
@@ -497,12 +475,271 @@
       return response.arrayBuffer();
     });
     const pdfDoc = await PDFDocument.load(templateBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
-    const markFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const [pageOne, pageTwo] = pdfDoc.getPages();
-    fillPageOne(pageOne, font, markFont, data);
-    fillPageTwo(pageTwo, font, markFont, data);
+    const pdfForm = pdfDoc.getForm();
+    const [, pageTwo] = pdfDoc.getPages();
+    fillZ83Fields(pdfForm, data);
     await embedSignature(pdfDoc, pageTwo);
+    pdfForm.flatten();
+    pdfDoc.setTitle('Completed Z83 Application Form');
+    pdfDoc.setAuthor('Career Unified browser-based Z83 filler');
+    pdfDoc.setSubject('South African government application for employment');
+    return pdfDoc.save();
+  }
+
+  async function generateMappedPdf(data) {
+    if (!PDFDocument || !rgb || !window.fontkit) {
+      throw new Error('The PDF generator did not load. Refresh the page and try again.');
+    }
+
+    const [templateResponse, fontResponse, fieldMapResponse] = await Promise.all([
+      fetch(TEMPLATE_URL, {cache: 'force-cache'}),
+      fetch(HAND_FONT_URL, {cache: 'force-cache'}),
+      fetch(FIELD_MAP_URL, {cache: 'force-cache'}),
+    ]);
+    if (!templateResponse.ok || !fontResponse.ok || !fieldMapResponse.ok) {
+      throw new Error('The official Z83 template resources could not be loaded.');
+    }
+
+    const [templateBytes, fontBytes, sourceFields] = await Promise.all([
+      templateResponse.arrayBuffer(),
+      fontResponse.arrayBuffer(),
+      fieldMapResponse.json(),
+    ]);
+    if (!Array.isArray(sourceFields)) throw new Error('The Z83 field map is invalid.');
+
+    const fields = sourceFields.map(field => ({...field}));
+    const expandCells = (name, count) => {
+      const index = fields.findIndex(field => field.n === name);
+      if (index < 0) return;
+      const base = fields[index];
+      const cellWidth = Math.floor(base.w / count);
+      const cells = Array.from({length: count}, (_, cellIndex) => ({
+        t: 'txt',
+        p: base.p,
+        n: `${name}_${cellIndex + 1}`,
+        x: base.x + cellIndex * cellWidth,
+        y: base.y,
+        w: cellIndex === count - 1 ? base.w - cellIndex * cellWidth : cellWidth,
+        h: base.h,
+      }));
+      fields.splice(index, 1, ...cells);
+    };
+    expandCells('b_id', 13);
+    expandCells('b_passport', 13);
+
+    const getPosition = name => fields.find(field => field.n === name);
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    if (PDFName && pdfDoc.catalog.get(PDFName.of('AcroForm'))) {
+      throw new Error('The cached Z83 template is outdated. Refresh the page and try again.');
+    }
+    pdfDoc.registerFontkit(window.fontkit);
+    const handFont = await pdfDoc.embedFont(fontBytes, {
+      subset: false,
+      features: {liga: false, dlig: false, clig: false},
+    });
+    const pages = pdfDoc.getPages();
+    const black = rgb(0, 0, 0);
+
+    const wrapMappedText = (value, size, maxWidth) => {
+      const words = clean(value).split(' ').filter(Boolean);
+      const lines = [];
+      let line = '';
+      words.forEach(word => {
+        const candidate = line ? `${line} ${word}` : word;
+        if (!line || handFont.widthOfTextAtSize(candidate, size) <= maxWidth) {
+          line = candidate;
+        } else {
+          lines.push(line);
+          line = word;
+        }
+      });
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    const clipMappedText = (value, size, maxWidth) => {
+      const text = clean(value);
+      if (handFont.widthOfTextAtSize(text, size) <= maxWidth) return text;
+      let clipped = text;
+      while (clipped.length > 1 && handFont.widthOfTextAtSize(`${clipped}...`, size) > maxWidth) {
+        clipped = clipped.slice(0, -1);
+      }
+      return clipped ? `${clipped.trimEnd()}...` : '';
+    };
+
+    const drawMappedText = (name, value, options = {}) => {
+      const text = clean(value);
+      if (!text) return;
+      const position = getPosition(name);
+      if (!position || !pages[position.p]) return;
+
+      const page = pages[position.p];
+      const maxWidth = Math.max(2, position.w - 4);
+      const maxHeight = Math.max(2, position.h - 2);
+      const requestedSize = options.size || (position.h <= 8 ? 6 : 8);
+      const minimumSize = options.minSize || 5.5;
+      let fontSize = requestedSize;
+      let lines = options.multiline ? wrapMappedText(text, fontSize, maxWidth) : [text];
+
+      const fits = () => {
+        const lineHeight = options.lineHeight || fontSize + 2;
+        const widest = Math.max(...lines.map(line => handFont.widthOfTextAtSize(line, fontSize)), 0);
+        return widest <= maxWidth && lines.length * lineHeight <= maxHeight + 2;
+      };
+      while (fontSize > minimumSize && !fits()) {
+        fontSize = Math.max(minimumSize, fontSize - 0.25);
+        lines = options.multiline ? wrapMappedText(text, fontSize, maxWidth) : [text];
+      }
+      if (!options.multiline) lines = [clipMappedText(text, fontSize, maxWidth)];
+
+      const marginBottom = options.marginBottom || 0;
+      const offsetX = options.offsetX || 0;
+      const lineHeight = options.lineHeight || fontSize + 2;
+      const startY = position.y + position.h - fontSize - marginBottom;
+
+      lines.forEach((line, index) => {
+        if (!line) return;
+        let drawX = position.x + 2 + offsetX;
+        const textWidth = handFont.widthOfTextAtSize(line, fontSize);
+        if (options.center) drawX = position.x + (position.w - textWidth) / 2 + offsetX;
+        if (options.alignRight) drawX = position.x + position.w - textWidth - 2 + offsetX;
+        const drawY = options.multiline
+          ? startY - index * lineHeight
+          : position.y + marginBottom + (position.h - fontSize) / 2;
+        page.drawText(line, {x: drawX, y: drawY, size: fontSize, font: handFont, color: black});
+      });
+    };
+
+    const setMappedCheck = name => {
+      const position = getPosition(name);
+      if (!position || !pages[position.p]) return;
+      pages[position.p].drawText('X', {
+        x: position.x,
+        y: position.y,
+        size: (position.s || 7) + 5,
+        font: handFont,
+        color: black,
+      });
+    };
+    const setYesNo = (prefix, value) => {
+      const answer = clean(value).toLowerCase();
+      if (answer === 'yes' || answer === 'no') setMappedCheck(`${prefix}_${answer}`);
+    };
+
+    drawMappedText('a_position', data.position, {size: 10, center: true, multiline: true, lineHeight: 10});
+    drawMappedText('a_department', data.department, {size: 10, center: true, multiline: true, lineHeight: 10});
+    drawMappedText('a_reference', data.referenceNumber, {size: 10, center: true, multiline: true, lineHeight: 10});
+    drawMappedText('a_start_date', data.startDate, {size: 10, center: true, marginBottom: 1});
+
+    drawMappedText('initial_p1', data.initials, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('initial_p2', data.initials, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('b_surname_row1', data.surname, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('b_surname_row2', data.fullNames, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('b_dob', formatDate(data.dateOfBirth), {size: 10, center: true, marginBottom: 1});
+
+    const drawDigits = (prefix, value, count) => {
+      const digits = clean(value);
+      for (let index = 0; index < count; index += 1) {
+        if (!digits[index]) continue;
+        const offsetX = index >= 3 && index <= 11 ? 6 : 3;
+        drawMappedText(`${prefix}_${index + 1}`, digits[index], {size: 10, center: true, marginBottom: 1, offsetX});
+      }
+    };
+    drawDigits('b_id', data.idNumber, 13);
+    drawDigits('b_passport', data.passportNumber, 13);
+
+    const race = clean(data.race).toLowerCase();
+    if (['african', 'white', 'coloured', 'indian', 'other'].includes(race)) setMappedCheck(`race_${race}`);
+    const gender = clean(data.gender).toLowerCase();
+    if (gender === 'female' || gender === 'male') setMappedCheck(`gender_${gender}`);
+    setYesNo('disability', data.disability);
+    setYesNo('sa_citizen', data.saCitizen);
+    setYesNo('work_permit', data.workPermit);
+    setYesNo('criminal', data.criminalConviction);
+    setYesNo('pending_crim', data.pendingCriminalCase);
+    setYesNo('dismissed', data.dismissedMisconduct);
+    setYesNo('pending_disc', data.pendingDisciplinary);
+    setYesNo('resigned', data.resignedPendingDisciplinary);
+    setYesNo('discharged', data.illHealthDischarge);
+    setYesNo('biz_state', data.stateBusiness);
+    setYesNo('relinquish', data.relinquishBusiness);
+    drawMappedText('b_nationality', data.nationality, {size: 10, center: true, marginBottom: 1});
+
+    drawMappedText('criminal_dtl', data.criminalDetails, {size: 8, alignRight: true, marginBottom: 1});
+    drawMappedText('pending_crim_dtl', data.pendingCriminalDetails, {size: 8, alignRight: true, marginBottom: 1});
+    drawMappedText('dismissed_dtl', data.dismissalDetails, {size: 8, alignRight: true, marginBottom: 1});
+    drawMappedText('pending_disc_dtl', data.disciplinaryDetails, {size: 8, alignRight: true, marginBottom: 1});
+    drawMappedText('biz_dtl', data.stateBusinessDetails, {size: 8, alignRight: true, marginBottom: 1});
+    drawMappedText('exp_private', data.privateExperience, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('exp_public', data.publicExperience, {size: 10, center: true, marginBottom: 1});
+    drawMappedText('reg_date', formatDate(data.registrationDate), {size: 8, center: true, marginBottom: 1});
+    drawMappedText('reg_no', data.registrationNumber, {size: 8, center: true, marginBottom: 1});
+
+    drawMappedText('c_language', data.correspondenceLanguage, {size: 10, center: true, marginBottom: 1});
+    const contactMethod = clean(data.contactMethod).toLowerCase();
+    const contactMap = {post: 'method_post', email: 'method_email', fax: 'method_fax', telephone: 'method_tel'};
+    if (contactMap[contactMethod]) setMappedCheck(contactMap[contactMethod]);
+    drawMappedText('c_contact', [data.address, data.email, data.phone].filter(Boolean).join(' | '), {
+      size: 10,
+      center: true,
+      marginBottom: 1,
+      multiline: true,
+    });
+
+    (data.languages || []).filter(rowHasValue).slice(0, 5).forEach((item, index) => {
+      const column = index + 1;
+      drawMappedText(`lang${column}_name`, item.language, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`lang${column}_speak`, item.speak, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`lang${column}_write`, item.readWrite, {size: 10, center: true, marginBottom: 1});
+    });
+
+    (data.education || []).filter(rowHasValue).slice(0, 4).forEach((item, index) => {
+      const row = index + 1;
+      drawMappedText(`qual${row}_school`, item.institution, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`qual${row}_qual`, item.qualification, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`qual${row}_year`, item.year, {size: 10, center: true, marginBottom: 1});
+    });
+    drawMappedText('current_study', data.currentStudy, {size: 10, center: true, marginBottom: 1});
+
+    (data.work || []).filter(rowHasValue).slice(0, 3).forEach((item, index) => {
+      const row = index + 1;
+      const [fromMonth, fromYear] = splitMonthYear(item.fromYear || item.from);
+      const [toMonth, toYear] = splitMonthYear(item.toYear || item.to);
+      drawMappedText(`work${row}_employer`, item.employer, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_post`, item.post, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_from_mm`, fromMonth, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_from_yy`, fromYear, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_to_mm`, toMonth, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_to_yy`, toYear, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`work${row}_reason`, item.reason, {size: 10, center: true, marginBottom: 1});
+    });
+    setYesNo('pub_reappoint', data.reappointmentCondition);
+    drawMappedText('pub_reappoint_dtl', data.reappointmentDetails, {size: 8, alignRight: true, marginBottom: -3});
+
+    (data.references || []).filter(rowHasValue).slice(0, 3).forEach((item, index) => {
+      const row = index + 1;
+      drawMappedText(`ref${row}_name`, item.name, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`ref${row}_rel`, item.relationship, {size: 10, center: true, marginBottom: 1});
+      drawMappedText(`ref${row}_tel`, item.telephone, {size: 10, center: true, marginBottom: 1});
+    });
+    drawMappedText('date', formatDate(data.signatureDate), {size: 10, center: true, marginBottom: 1});
+
+    if (signatureDataUrl) {
+      const signature = signatureDataUrl.startsWith('data:image/jpeg')
+        ? await pdfDoc.embedJpg(signatureDataUrl)
+        : await pdfDoc.embedPng(signatureDataUrl);
+      const position = getPosition('signature');
+      if (position && pages[position.p]) {
+        const dimensions = signature.scaleToFit(position.w, position.h);
+        pages[position.p].drawImage(signature, {
+          x: position.x + (position.w - dimensions.width) / 2,
+          y: position.y + (position.h - dimensions.height) / 2,
+          width: dimensions.width,
+          height: dimensions.height,
+        });
+      }
+    }
+
     pdfDoc.setTitle('Completed Z83 Application Form');
     pdfDoc.setAuthor('Career Unified browser-based Z83 filler');
     pdfDoc.setSubject('South African government application for employment');
@@ -537,7 +774,7 @@
     setStatus('Writing your details onto the official Z83 form...');
     try {
       const data = getData();
-      const bytes = await generatePdf(data);
+      const bytes = await generateMappedPdf(data);
       downloadPdf(bytes, data);
       saveDraft(false);
       setStatus('Your signed Z83 PDF is ready. Review both pages before applying.', 'success');
@@ -615,12 +852,6 @@
       remove.closest('.repeat-row').remove();
       updateProgress();
       scheduleSave();
-    }
-    const jump = event.target.closest('[data-jump]');
-    if (jump) {
-      document.querySelectorAll('[data-jump]').forEach(button => button.classList.remove('active'));
-      jump.classList.add('active');
-      document.getElementById(jump.dataset.jump).scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   });
   form.addEventListener('input', () => {

@@ -99,6 +99,7 @@ export const handler: Handler = async (event) => {
   const freeCoverLettersUsed = freeUsageCount(user, "freeCoverLettersUsed", "freeCoverUsed");
   const freeResumeUsed = freeResumeTailorsUsed >= FREE_TASTE_LIMIT;
   const freeCoverUsed = freeCoverLettersUsed >= FREE_TASTE_LIMIT;
+  const aiTailorCredits = Math.max(0, Number(user.aiTailorCredits || 0));
 
   return json(
     200,
@@ -113,6 +114,7 @@ export const handler: Handler = async (event) => {
       freeCoverLettersUsed,
       freeResumeLimit: FREE_TASTE_LIMIT,
       freeCoverLetterLimit: FREE_TASTE_LIMIT,
+      aiTailorCredits,
       pendingPlan: (user.pendingPlan as string) || null,
       pendingPayfastPaymentId: (user.pendingPayfastPaymentId as string) || null,
       subscriptionCurrentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,

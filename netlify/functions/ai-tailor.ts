@@ -39,6 +39,11 @@ type ResumeData = {
     link?: string;
   }>;
   certifications?: string[];
+  additionalSections?: Array<{
+    id: string;
+    title: string;
+    items: string[];
+  }>;
 };
 
 type TailorMode = "tailor" | "cover_letter";
@@ -159,6 +164,7 @@ Rules:
 - Improve clarity and action verbs ONLY if it can be inferred from existing text.
 - Keep ResumeData structure identical.
 - Maintain all IDs as-is.
+- Preserve every additionalSections entry, title, item and ID. Do not remove imported information.
 
 ${AI_TAILOR_SECURITY_RULES}
 `.trim();
@@ -381,22 +387,33 @@ export const handler: Handler = async (event) => {
 
   const freeResumeTailorsUsed = freeUsageCount(user, "freeResumeTailorsUsed", "freeResumeUsed");
   const freeCoverLettersUsed = freeUsageCount(user, "freeCoverLettersUsed", "freeCoverUsed");
+  const aiTailorCredits = Math.max(0, Number(user.aiTailorCredits || 0));
 
   const isPaid = plan !== "free" && subscriptionStatus === "active";
   const limit = planLimit(plan);
+  let usageBucket: "free_resume" | "free_cover" | "monthly" | "credit" = "credit";
 
   const upgrade_url = (user.checkoutUrl as string) || (process.env.UPGRADE_URL as string) || null;
 
   // Gate access
   if (!isPaid) {
-    if (mode === "tailor" && freeResumeTailorsUsed >= FREE_TASTE_LIMIT) {
+    if (mode === "tailor" && freeResumeTailorsUsed < FREE_TASTE_LIMIT) {
+      usageBucket = "free_resume";
+    } else if (mode === "cover_letter" && freeCoverLettersUsed < FREE_TASTE_LIMIT) {
+      usageBucket = "free_cover";
+    } else if (aiTailorCredits > 0) {
+      usageBucket = "credit";
+    } else if (mode === "tailor") {
       return json(402, { error: "Free resume tailor limit reached. Please upgrade.", upgrade_url }, baseHeaders);
-    }
-    if (mode === "cover_letter" && freeCoverLettersUsed >= FREE_TASTE_LIMIT) {
+    } else {
       return json(402, { error: "Free cover letter limit reached. Please upgrade.", upgrade_url }, baseHeaders);
     }
   } else {
-    if (used >= limit) {
+    if (used < limit) {
+      usageBucket = "monthly";
+    } else if (aiTailorCredits > 0) {
+      usageBucket = "credit";
+    } else {
       return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", upgrade_url }, baseHeaders);
     }
   }
@@ -460,7 +477,7 @@ export const handler: Handler = async (event) => {
     }
 
     // Usage update
-    if (!isPaid) {
+    if (usageBucket === "free_cover") {
       await userRef.set(
         {
           freeCoverLettersUsed: admin.firestore.FieldValue.increment(1),
@@ -469,10 +486,19 @@ export const handler: Handler = async (event) => {
         },
         { merge: true }
       );
-    } else {
+    } else if (usageBucket === "monthly") {
       await userRef.set(
         {
           applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } else {
+      await userRef.set(
+        {
+          aiTailorCredits: admin.firestore.FieldValue.increment(-1),
+          aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true }
@@ -502,7 +528,7 @@ export const handler: Handler = async (event) => {
   }
 
   // Usage update
-  if (!isPaid) {
+  if (usageBucket === "free_resume") {
     await userRef.set(
       {
         freeResumeTailorsUsed: admin.firestore.FieldValue.increment(1),
@@ -511,10 +537,19 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
-  } else {
+  } else if (usageBucket === "monthly") {
     await userRef.set(
       {
         applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } else {
+    await userRef.set(
+      {
+        aiTailorCredits: admin.firestore.FieldValue.increment(-1),
+        aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }

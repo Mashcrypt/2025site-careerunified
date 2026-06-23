@@ -3,13 +3,10 @@ import crypto from "crypto";
 import { getAdmin } from "./_firebaseAdmin";
 import { checkRateLimit } from "./_rateLimit";
 
-type PlanId = "starter" | "job_seeker" | "career_pro";
-
-const PLAN_AMOUNT: Record<PlanId, string> = {
-  starter: "28.99",
-  job_seeker: "49.00",
-  career_pro: "99.00",
-};
+const CREDIT_PACK_ID = "ai_tailor_10" as const;
+const CREDIT_PACK_AMOUNT = "19.00";
+const CREDIT_PACK_QUANTITY = 10;
+const CREDIT_PRODUCT = "careerunified-ai-credits";
 
 const REQUIRED_ENV = [
   "PAYFAST_MERCHANT_ID",
@@ -35,11 +32,6 @@ const PAYFAST_FIELD_ORDER = [
   "custom_str1",
   "custom_str2",
   "custom_str3",
-  "subscription_type",
-  "billing_date",
-  "recurring_amount",
-  "frequency",
-  "cycles",
 ] as const;
 
 function corsHeaders(origin?: string) {
@@ -63,22 +55,6 @@ function json(statusCode: number, body: any, headers?: Record<string, string>) {
   };
 }
 
-function decodeBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
-  if (!eventBody) return "";
-  if (!isBase64Encoded) return eventBody;
-  return Buffer.from(eventBody, "base64").toString("utf8");
-}
-
-function parseJsonBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
-  const rawBody = decodeBody(eventBody, isBase64Encoded);
-  if (!rawBody.trim()) return {};
-  return JSON.parse(rawBody);
-}
-
-function isPlanId(plan: unknown): plan is PlanId {
-  return plan === "starter" || plan === "job_seeker" || plan === "career_pro";
-}
-
 function encodePayfastValue(value: string) {
   return encodeURIComponent(value.trim()).replace(/%20/g, "+");
 }
@@ -96,6 +72,18 @@ function generateSignature(fields: Record<string, string>, passphrase?: string) 
     : payload;
 
   return crypto.createHash("md5").update(withPassphrase).digest("hex");
+}
+
+function decodeBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
+  if (!eventBody) return "";
+  if (!isBase64Encoded) return eventBody;
+  return Buffer.from(eventBody, "base64").toString("utf8");
+}
+
+function parseJsonBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
+  const rawBody = decodeBody(eventBody, isBase64Encoded);
+  if (!rawBody.trim()) return {};
+  return JSON.parse(rawBody);
 }
 
 function firstNameFrom(value?: string | null) {
@@ -128,29 +116,16 @@ export const handler: Handler = async (event) => {
 
     const missingEnv = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
     if (missingEnv.length > 0) {
-      return json(
-        500,
-        {
-          error: "Missing required environment variables.",
-          missing: missingEnv,
-        },
-        baseHeaders
-      );
+      return json(500, { error: "Missing required environment variables.", missing: missingEnv }, baseHeaders);
     }
 
     const modeError = validatePayfastMode(baseHeaders);
     if (modeError) return modeError;
 
-    let body: any;
     try {
-      body = parseJsonBody(event.body, event.isBase64Encoded);
+      parseJsonBody(event.body, event.isBase64Encoded);
     } catch {
       return json(400, { error: "Invalid JSON body" }, baseHeaders);
-    }
-
-    const plan = body?.plan;
-    if (!isPlanId(plan)) {
-      return json(400, { error: "Invalid plan. Use starter | job_seeker | career_pro." }, baseHeaders);
     }
 
     const authHeader = event.headers.authorization || event.headers.Authorization;
@@ -178,7 +153,7 @@ export const handler: Handler = async (event) => {
 
     const rateLimit = await checkRateLimit({
       admin,
-      action: "cv-subscription-checkout",
+      action: "ai-credit-checkout",
       identifier: uid,
       limit: 5,
       windowSeconds: 10 * 60,
@@ -204,36 +179,32 @@ export const handler: Handler = async (event) => {
       "Customer";
 
     const siteUrl = process.env.SITE_URL!.replace(/\/+$/, "");
-    const amount = PLAN_AMOUNT[plan];
-    const m_payment_id = `sub_${uid}_${Date.now()}`;
+    const m_payment_id = `credits_${uid}_${Date.now()}`;
 
     const fields: Record<string, string> = {
       merchant_id: process.env.PAYFAST_MERCHANT_ID!,
       merchant_key: process.env.PAYFAST_MERCHANT_KEY!,
-      return_url: `${siteUrl}/billing/success`,
+      return_url: `${siteUrl}/billing/success?product=credits`,
       cancel_url: `${siteUrl}/cv-generator/`,
       notify_url: `${siteUrl}/.netlify/functions/payfast-itn`,
       name_first: nameFirst,
       email_address: email,
       m_payment_id,
-      amount,
-      item_name: `Career Unified ${formatPlanName(plan)} subscription`,
+      amount: CREDIT_PACK_AMOUNT,
+      item_name: `Career Unified ${CREDIT_PACK_QUANTITY} AI Tailors`,
       custom_str1: uid,
-      custom_str2: plan,
-      custom_str3: "careerunified-ai",
-      subscription_type: "1",
-      recurring_amount: amount,
-      frequency: "3",
-      cycles: "0",
+      custom_str2: CREDIT_PACK_ID,
+      custom_str3: CREDIT_PRODUCT,
     };
 
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
     await userRef.set(
       {
-        pendingPlan: plan,
-        pendingPayfastPaymentId: m_payment_id,
-        pendingCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        pendingCreditPack: CREDIT_PACK_ID,
+        pendingCreditQuantity: CREDIT_PACK_QUANTITY,
+        pendingCreditPayfastPaymentId: m_payment_id,
+        pendingCreditCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
@@ -245,18 +216,8 @@ export const handler: Handler = async (event) => {
         : "https://sandbox.payfast.co.za/eng/process";
 
     return json(200, { payment_url, fields }, baseHeaders);
-  } catch (error: any) {
-    console.error("CREATE_SUBSCRIPTION_ERROR", error);
-    return json(
-      500,
-      { error: "Could not start PayFast checkout." },
-      baseHeaders
-    );
+  } catch (error) {
+    console.error("CREATE_AI_CREDIT_PAYMENT_ERROR", error);
+    return json(500, { error: "Could not start PayFast checkout." }, baseHeaders);
   }
 };
-
-function formatPlanName(plan: PlanId) {
-  if (plan === "starter") return "Starter";
-  if (plan === "job_seeker") return "Job Seeker";
-  return "Career Pro";
-}

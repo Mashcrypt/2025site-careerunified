@@ -317,6 +317,20 @@
       overscroll-behavior: contain;
     }
 
+    .bursaries-preview .description-content .description-link {
+      color: #2563eb;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .bursaries-preview .description-content .description-link:hover,
+    .bursaries-preview .description-content .description-link:focus-visible {
+      color: #1d4ed8;
+    }
+
     .apply-btn {
       display: block;
       background: #16a34a;
@@ -738,7 +752,7 @@
     </section>
     <nav class="footer-grid" aria-label="Footer navigation">
       <div class="footer-column"><h3>Opportunities</h3><a href="jobs.html">Jobs</a><a href="bursaries.html">Bursaries</a><a href="varsity.html">Varsity</a><a href="saved-items.html">Saved Items</a></div>
-      <div class="footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/cv-tips">CV Tips</a><a href="/cv-tips#interview-prep">Interview Prep</a></div>
+      <div class="footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/cv-tips">CV Tips</a><a href="/cv-tips#interview-prep">Interview Prep</a><a href="/z83-filler">Z83 Filler</a></div>
       <div class="footer-column"><h3>Company</h3><a href="about-us.html">About Us</a><a href="contact-us.html">Contact Us</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms &amp; Conditions</a></div>
     </nav>
   </div>
@@ -963,6 +977,43 @@
     }
 
     function safeText(v, fallback = '') { return (typeof v === 'string' && v.trim()) ? v.trim() : fallback; }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderDescriptionLink(url, label) {
+      const safeUrl = escapeHtml(url);
+      const safeLabel = escapeHtml(safeText(label, url));
+      return `<a class="description-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
+    }
+
+    function formatDescriptionHtml(value, fallback = 'Description not provided.') {
+      const text = safeText(value, fallback);
+      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\bhttps?:\/\/[^\s<>"']+/gi;
+      let output = '';
+      let lastIndex = 0;
+
+      text.replace(linkPattern, (match, label, markdownUrl, offset) => {
+        const url = markdownUrl || match;
+        const punctuation = markdownUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
+        const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+
+        output += escapeHtml(text.slice(lastIndex, offset));
+        output += renderDescriptionLink(cleanUrl, markdownUrl ? label.trim() : cleanUrl);
+        output += escapeHtml(punctuation);
+        lastIndex = offset + match.length;
+        return match;
+      });
+
+      output += escapeHtml(text.slice(lastIndex));
+      return output;
+    }
 
     function parseDateValue(value) {
       if (!value) return null;
@@ -1268,7 +1319,7 @@
               <p><strong>Faculty:</strong>  ${getBursaryFacultyText(b)}</p>
               <p><strong>Deadline:</strong> ${safeText(b.deadline, 'Not specified')}</p>
             </div>
-            <div class="description-content">${safeText(b.description, 'Description not provided.')}</div>
+            <div class="description-content">${formatDescriptionHtml(b.description)}</div>
             ${safeUrl
               ? `<a href="${safeUrl}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Now</a>`
               : `<p class="no-link-msg">No application link provided</p>`}

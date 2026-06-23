@@ -90,6 +90,11 @@ export function sanitizeResumeVersionData(data: ResumeData): ResumeData {
       ...project,
       description: sanitizeResumeString(project.description || ''),
     })),
+    additionalSections: (clone.additionalSections || []).map((section) => ({
+      ...section,
+      title: sanitizeResumeString(section.title || ''),
+      items: (section.items || []).map((item) => sanitizeResumeString(item)),
+    })),
   };
 }
 

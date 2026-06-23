@@ -6,7 +6,7 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
-import type { ResumeData, Experience, Education, Project } from '../types/resume';
+import type { ResumeData, Experience, Education, Project, AdditionalSection } from '../types/resume';
 import { EMPTY_RESUME } from '../types/resume';
 
 interface ResumeBuilderProps {
@@ -111,6 +111,38 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
 
   const updateSkills = (value: string) => {
     onChange({ ...data, skills: value.split(',').map((s) => s.trim()).filter(Boolean) });
+  };
+
+  const updateCertifications = (value: string) => {
+    onChange({
+      ...data,
+      certifications: value.split('\n').map((item) => item.trim()).filter(Boolean),
+    });
+  };
+
+  const addAdditionalSection = () => {
+    const section: AdditionalSection = {
+      id: `section-${Date.now()}`,
+      title: 'Additional Information',
+      items: [],
+    };
+    onChange({ ...data, additionalSections: [...(data.additionalSections || []), section] });
+  };
+
+  const updateAdditionalSection = (id: string, updates: Partial<AdditionalSection>) => {
+    onChange({
+      ...data,
+      additionalSections: (data.additionalSections || []).map((section) =>
+        section.id === id ? { ...section, ...updates } : section
+      ),
+    });
+  };
+
+  const deleteAdditionalSection = (id: string) => {
+    onChange({
+      ...data,
+      additionalSections: (data.additionalSections || []).filter((section) => section.id !== id),
+    });
   };
 
   const handleClearTemplate = () => {
@@ -225,6 +257,21 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
               rows={4}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Certifications and Licences</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Label>One certification per line</Label>
+          <Textarea
+            value={(data.certifications || []).join('\n')}
+            onChange={(e) => updateCertifications(e.target.value)}
+            placeholder={'Project Management Certificate\nCode B Driver\'s Licence'}
+            rows={3}
+          />
         </CardContent>
       </Card>
 
@@ -481,6 +528,58 @@ export function ResumeBuilder({ data, onChange }: ResumeBuilderProps) {
                       )
                     }
                     placeholder="React, Node.js, MongoDB"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Additional Sections</CardTitle>
+            <p className="mt-1 text-sm text-gray-500">
+              Imported languages, awards, memberships, volunteering, references and other CV details.
+            </p>
+          </div>
+          <Button onClick={addAdditionalSection} size="sm" type="button">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Section
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {(data.additionalSections || []).map((section, index) => (
+            <div key={section.id}>
+              {index > 0 && <Separator className="mb-6" />}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <Label>Section title</Label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    onClick={() => deleteAdditionalSection(section.id)}
+                    aria-label="Delete additional section"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Input
+                  value={section.title}
+                  onChange={(e) => updateAdditionalSection(section.id, { title: e.target.value })}
+                  placeholder="Languages, Awards, Volunteering..."
+                />
+                <div>
+                  <Label>Details (one item per line)</Label>
+                  <Textarea
+                    value={section.items.join('\n')}
+                    onChange={(e) => updateAdditionalSection(section.id, {
+                      items: e.target.value.split('\n').map((item) => item.trim()).filter(Boolean),
+                    })}
+                    placeholder={'English - Fluent\nSetswana - Native'}
+                    rows={4}
                   />
                 </div>
               </div>

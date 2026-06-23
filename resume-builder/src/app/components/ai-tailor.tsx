@@ -374,7 +374,12 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
         }
 
         setSuggestions(typed.suggestions);
-        setTailoredData(typed.tailoredData);
+        setTailoredData({
+          ...typed.tailoredData,
+          additionalSections: typed.tailoredData.additionalSections?.length
+            ? typed.tailoredData.additionalSections
+            : data.additionalSections,
+        });
       }
 
       await loadBillingStatus();

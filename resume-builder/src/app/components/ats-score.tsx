@@ -219,6 +219,7 @@ function composeResumeText(data: ResumeData) {
     ...data.education.flatMap((item) => [item.degree, item.institution, item.location, item.graduationDate]),
     ...(data.projects || []).flatMap((item) => [item.name, item.description, item.technologies.join(' ')]),
     ...(data.certifications || []),
+    ...(data.additionalSections || []).flatMap((section) => [section.title, ...section.items]),
   ]
     .filter(Boolean)
     .join(' ');

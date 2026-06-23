@@ -64,9 +64,6 @@
       <h1>Fill and sign your Z83 online</h1>
       <p>Your answers are written onto the official two-page government form, preserving its original appearance.</p>
     </div>
-    <a class="official-link" href="/assets/z83-template.pdf" target="_blank" rel="noopener">
-      <i class="fa-regular fa-file-pdf"></i> View blank official form
-    </a>
   </header>
 
   <div class="privacy-note">
@@ -93,17 +90,6 @@
         <span id="completionText">0% complete</span>
       </div>
       <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
-
-      <div class="step-list" aria-label="Z83 sections">
-        <button type="button" data-jump="section-a" class="active">A</button>
-        <button type="button" data-jump="section-b">B</button>
-        <button type="button" data-jump="section-c">C</button>
-        <button type="button" data-jump="section-d">D</button>
-        <button type="button" data-jump="section-e">E</button>
-        <button type="button" data-jump="section-f">F</button>
-        <button type="button" data-jump="section-g">G</button>
-        <button type="button" data-jump="section-signature"><i class="fa-solid fa-signature"></i></button>
-      </div>
 
       <form id="z83Form">
         <fieldset id="section-a">
@@ -299,6 +285,7 @@
   </footer>
 
   <script src="/js/vendor/pdf-lib.min.js"></script>
-  <script src="/js/z83-filler.js"></script>
+  <script src="/js/vendor/fontkit.umd.min.js"></script>
+  <script src="/js/z83-filler.js?v=20260622-flat"></script>
 </body>
 </html>

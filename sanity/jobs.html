@@ -173,6 +173,25 @@ footer {
   text-decoration: none;
 }
 
+.job-desc {
+  white-space: pre-line;
+  margin-top: 12px;
+}
+
+.job-desc .description-link {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.job-desc .description-link:hover,
+.job-desc .description-link:focus-visible {
+  color: #1d4ed8;
+}
+
 /* SCROLL BUTTONS */
 .scroll-btn {
   position: fixed;
@@ -258,6 +277,47 @@ let views = {};
 
 let selectedIndex = null;
 
+function safeText(value, fallback = '') {
+  return (typeof value === 'string' && value.trim()) ? value.trim() : fallback;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderDescriptionLink(url, label) {
+  const safeUrl = escapeHtml(url);
+  const safeLabel = escapeHtml(safeText(label, url));
+  return `<a class="description-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
+}
+
+function formatDescriptionHtml(value, fallback = 'Description not provided.') {
+  const text = safeText(value, fallback);
+  const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\bhttps?:\/\/[^\s<>"']+/gi;
+  let output = '';
+  let lastIndex = 0;
+
+  text.replace(linkPattern, (match, label, markdownUrl, offset) => {
+    const url = markdownUrl || match;
+    const punctuation = markdownUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
+    const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+
+    output += escapeHtml(text.slice(lastIndex, offset));
+    output += renderDescriptionLink(cleanUrl, markdownUrl ? label.trim() : cleanUrl);
+    output += escapeHtml(punctuation);
+    lastIndex = offset + match.length;
+    return match;
+  });
+
+  output += escapeHtml(text.slice(lastIndex));
+  return output;
+}
+
 // Fetch jobs from Sanity
 async function fetchJobs() {
   const query = `*[_type == "job"] | order(deadline asc){
@@ -319,8 +379,8 @@ function showPreview(job) {
       <p><strong>Location:</strong> ${job.location}</p>
       <p><strong>Salary:</strong> ${job.salary}</p>
       <p><strong>Posted:</strong> ${job.posted} | <strong>Closing:</strong> ${job.deadline}</p>
-      <div style="white-space:pre-line;margin-top:12px;">${job.description}</div>
-      <a class="apply-btn" href="${job.applyLink}" target="_blank">Apply Now</a>
+      <div class="job-desc">${formatDescriptionHtml(job.description)}</div>
+      <a class="apply-btn" href="${job.applyLink}" target="_blank" rel="noopener noreferrer">Apply Now</a>
     </div>
   `;
 }
