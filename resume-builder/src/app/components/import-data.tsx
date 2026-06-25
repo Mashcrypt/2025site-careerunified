@@ -7,6 +7,7 @@ import { Textarea } from './ui/textarea'
 import type { ResumeData } from '../types/resume'
 import { motion } from 'motion/react'
 import { getFirebaseAuth } from '../utils/firebaseClient'
+import { autoSaveImportedCV } from './resume-versions'
 
 interface ImportDataProps {
   onImport: (data: ResumeData) => void
@@ -31,46 +32,6 @@ function emptyResume(): ResumeData {
     certifications: [],
     additionalSections: [],
   }
-}
-
-const EMAIL_PATTERN = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
-const LINKEDIN_PATTERN = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/[^\s]+/gi
-const WEBSITE_PATTERN =
-  /(?:https?:\/\/|www\.)[a-z0-9.-]+\.[a-z]{2,}(?:\/[^\s]*)?|\b[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+(?::\d+)?(?:\/[^\s]*)?/gi
-
-const EMAIL_PROVIDER_HOSTS = new Set([
-  'gmail.com',
-  'googlemail.com',
-  'hotmail.com',
-  'live.com',
-  'outlook.com',
-  'icloud.com',
-  'me.com',
-  'proton.me',
-  'protonmail.com',
-  'yahoo.com',
-  'yahoo.co.za',
-])
-
-function findWebsite(text: string): string {
-  const withoutContactDetails = text
-    .replace(EMAIL_PATTERN, ' ')
-    .replace(LINKEDIN_PATTERN, ' ')
-
-  const candidates = withoutContactDetails.match(WEBSITE_PATTERN) || []
-  return candidates
-    .map((candidate) => candidate.replace(/[),.;:\]}>'"]+$/g, ''))
-    .find((candidate) => {
-      if (/\.(?:pdf|docx?)(?:$|[?#])/i.test(candidate)) return false
-
-      try {
-        const url = new URL(/^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`)
-        const host = url.hostname.toLowerCase().replace(/^www\./, '')
-        return host !== 'linkedin.com' && !host.endsWith('.linkedin.com') && !EMAIL_PROVIDER_HOSTS.has(host)
-      } catch {
-        return false
-      }
-    }) || ''
 }
 
 /* ===============================
@@ -101,7 +62,7 @@ function parseLinkedInText(raw: string): ResumeData {
 }
 
 /* ===============================
-   CV / Resume Text Parser (NEW)
+   CV / Resume Text Parser
    - Used for extracted PDF/DOCX text
    - Best-effort section parsing into ResumeData
    =============================== */
@@ -128,12 +89,12 @@ export function parseResumeText(raw: string): ResumeData {
     joined.match(/(\b0\d{2}\s?\d{3}\s?\d{4}\b)/)?.[0] ||
     ''
   const linkedin = joined.match(/(https?:\/\/)?(www\.)?linkedin\.com\/[^\s]+/i)?.[0] || ''
-  const website = findWebsite(joined)
+  const website = joined.match(/(https?:\/\/)?(www\.)?[a-z0-9.-]+\.[a-z]{2,}(\/[^\s]*)?/i)?.[0] || ''
 
   if (email) data.personalInfo.email = email
   if (phone) data.personalInfo.phone = phone
   if (linkedin) data.personalInfo.linkedin = linkedin
-  if (website) data.personalInfo.website = website
+  if (website && !/linkedin\.com/i.test(website) && !/@/.test(website)) data.personalInfo.website = website
 
   // ---- name + location guess
   const isBadNameLine = (s: string) =>
@@ -154,52 +115,22 @@ export function parseResumeText(raw: string): ResumeData {
   }
 
   // ---- section splitting
-  type CoreSection = 'summary' | 'experience' | 'education' | 'skills' | 'projects' | 'certifications' | 'other'
+  type Section = 'summary' | 'experience' | 'education' | 'skills' | 'projects' | 'certifications' | 'other'
 
-  const normalizeHeading = (line: string) => line
-    .replace(/^\s*(?:\d+[.)]|[ivx]+[.)])\s*/i, '')
-    .replace(/[:\s]+$/, '')
-    .replace(/\s+/g, ' ')
-    .trim()
+  const headerOf = (line: string): Section | null => {
+    const h = line.toLowerCase()
+    const is = (keywords: string[]) => keywords.some((k) => h === k || h.includes(k))
 
-  const coreHeadingAliases: Array<[CoreSection, string[]]> = [
-    ['summary', ['professional summary', 'career summary', 'executive summary', 'personal profile', 'profile', 'summary', 'about me', 'objective', 'career objective']],
-    ['experience', ['professional experience', 'work experience', 'employment experience', 'employment history', 'career history', 'work history', 'experience']],
-    ['education', ['education and training', 'academic background', 'academic qualifications', 'educational qualifications', 'qualifications', 'education']],
-    ['skills', ['technical skills', 'professional skills', 'core competencies', 'key competencies', 'areas of expertise', 'competencies', 'skills']],
-    ['projects', ['selected projects', 'personal projects', 'academic projects', 'project experience', 'projects']],
-    ['certifications', ['certifications and licences', 'certifications and licenses', 'professional certifications', 'certificates', 'certifications', 'licenses', 'licences']],
-  ]
-
-  const additionalHeadingAliases: Array<[string, string[]]> = [
-    ['Languages', ['language proficiency', 'language skills', 'languages']],
-    ['Awards and Achievements', ['awards and achievements', 'honours and awards', 'honors and awards', 'achievements', 'accomplishments', 'awards', 'honours', 'honors']],
-    ['Courses and Training', ['courses and training', 'training and development', 'professional development', 'short courses', 'relevant coursework', 'courses', 'training']],
-    ['Volunteer Experience', ['community involvement', 'community service', 'voluntary work', 'volunteer experience', 'volunteering']],
-    ['Professional Memberships', ['professional affiliations', 'professional associations', 'memberships', 'affiliations']],
-    ['Publications', ['research and publications', 'papers and publications', 'publications', 'research']],
-    ['References', ['professional references', 'referees', 'references']],
-    ['Interests', ['interests and activities', 'extracurricular activities', 'hobbies and interests', 'activities', 'interests', 'hobbies']],
-    ['Leadership', ['leadership experience', 'leadership and involvement', 'leadership']],
-  ]
-
-  const findKnownHeading = (line: string) => {
-    const heading = normalizeHeading(line).toLowerCase()
-    const core = coreHeadingAliases.find(([, aliases]) => aliases.includes(heading))
-    if (core) return {key: core[0], title: ''}
-    const additional = additionalHeadingAliases.find(([, aliases]) => aliases.includes(heading))
-    if (additional) return {key: `additional:${additional[0]}`, title: additional[0]}
+    if (is(['professional summary', 'summary', 'profile', 'about'])) return 'summary'
+    if (is(['experience', 'work experience', 'employment', 'employment history'])) return 'experience'
+    if (is(['education', 'academic', 'qualification', 'qualifications'])) return 'education'
+    if (is(['skills', 'technical skills', 'core skills', 'competencies'])) return 'skills'
+    if (is(['projects', 'project experience'])) return 'projects'
+    if (is(['certifications', 'licenses', 'licences', 'certificates'])) return 'certifications'
     return null
   }
 
-  const looksLikeCustomHeading = (line: string, index: number) => {
-    const heading = normalizeHeading(line)
-    if (index < 2 || !heading || heading.length > 55 || heading.split(/\s+/).length > 7) return false
-    if (/@|https?:|www\.|\d{3,}|[.!?]$/.test(heading)) return false
-    return /:$/.test(line.trim()) || (heading === heading.toUpperCase() && /[A-Z]/.test(heading))
-  }
-
-  const buckets: Record<CoreSection, string[]> = {
+  const buckets: Record<Section, string[]> = {
     summary: [],
     experience: [],
     education: [],
@@ -209,30 +140,14 @@ export function parseResumeText(raw: string): ResumeData {
     other: [],
   }
 
-  const additionalBuckets = new Map<string, string[]>()
-  let current = 'other'
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index]
-    const knownHeading = findKnownHeading(line)
-    if (knownHeading) {
-      current = knownHeading.key
-      if (knownHeading.title && !additionalBuckets.has(knownHeading.title)) {
-        additionalBuckets.set(knownHeading.title, [])
-      }
+  let current: Section = 'other'
+  for (const line of lines) {
+    const h = headerOf(line)
+    if (h) {
+      current = h
       continue
     }
-    if (looksLikeCustomHeading(line, index)) {
-      const title = normalizeHeading(line)
-      current = `additional:${title}`
-      if (!additionalBuckets.has(title)) additionalBuckets.set(title, [])
-      continue
-    }
-    if (current.startsWith('additional:')) {
-      const title = current.slice('additional:'.length)
-      additionalBuckets.get(title)?.push(line)
-    } else {
-      buckets[current as CoreSection].push(line)
-    }
+    buckets[current].push(line)
   }
 
   // ---- summary
@@ -279,16 +194,11 @@ export function parseResumeText(raw: string): ResumeData {
 
     data.education = blocks
       .map((b, idx) => {
-        const institution = b.find((line) =>
-          /(university|college|institute|school|academy|tvet|technik)/i.test(line)
-        ) || b[0] || ''
-        const degree = b.find((line) =>
-          line !== institution && /(degree|diploma|certificate|bachelor|master|doctor|phd|matric|national senior certificate|n[1-6]\b)/i.test(line)
-        ) || b.find((line) => line !== institution && !/\b(?:19|20)\d{2}\b/.test(line)) || ''
-        const graduationDate = b.join(' ').match(/(20\d{2}|19\d{2}|present)/i)?.[0] || ''
-        const location = b.find((line) =>
-          line !== institution && line !== degree && line.includes(',') && line.length <= 60
-        ) || ''
+        const institution = b[0] || ''
+        const degree = b[1] || ''
+        const rest = b.slice(2).join(' ')
+        const graduationDate = rest.match(/(20\d{2}|19\d{2}|present)/i)?.[0] || ''
+        const location = rest.includes(',') && rest.length <= 60 ? rest : ''
         return {
           id: `edu-${Date.now()}-${idx}`,
           institution,
@@ -315,21 +225,8 @@ export function parseResumeText(raw: string): ResumeData {
     const looksLikeRoleLine = (s: string) =>
       s.length <= 80 && !/@|linkedin\.com|http/i.test(s) && !looksLikeDateRange(s)
 
-    const isBulletLine = (line: string) => /^[•·▪\-*]/.test(line.trim())
-    for (let index = 0; index < expLines.length; index += 1) {
-      const l = expLines[index]
-      const next = expLines[index + 1] || ''
-      const afterNext = expLines[index + 2] || ''
-      const blockHasDates = block.some((line) => looksLikeDateRange(line))
-      const nextLinesLookLikeEntry =
-        looksLikeDateRange(next) ||
-        (looksLikeRoleLine(next) && looksLikeDateRange(afterNext))
-      const startNew =
-        block.length >= 3 &&
-        blockHasDates &&
-        looksLikeRoleLine(l) &&
-        !isBulletLine(l) &&
-        nextLinesLookLikeEntry
+    for (const l of expLines) {
+      const startNew = block.length >= 3 && looksLikeRoleLine(l)
       if (startNew) {
         entries.push(block)
         block = [l]
@@ -401,31 +298,6 @@ export function parseResumeText(raw: string): ResumeData {
     })
   }
 
-  const cleanSectionItems = (items: string[]) => Array.from(new Set(
-    items
-      .map((item) => item.replace(/^[•·▪\-*]+\s*/, '').replace(/\s+/g, ' ').trim())
-      .filter(Boolean)
-  ))
-
-  const unclassifiedItems = cleanSectionItems(buckets.other).filter((item) => {
-    const normalized = item.toLowerCase()
-    if (data.personalInfo.fullName && normalized === data.personalInfo.fullName.toLowerCase()) return false
-    if (data.personalInfo.email && normalized.includes(data.personalInfo.email.toLowerCase())) return false
-    if (data.personalInfo.phone && normalized.includes(data.personalInfo.phone.toLowerCase())) return false
-    if (data.personalInfo.linkedin && normalized.includes(data.personalInfo.linkedin.toLowerCase())) return false
-    if (data.personalInfo.website && normalized.includes(data.personalInfo.website.toLowerCase())) return false
-    return true
-  })
-  if (unclassifiedItems.length) additionalBuckets.set('Additional Information', unclassifiedItems)
-
-  data.additionalSections = Array.from(additionalBuckets.entries())
-    .map(([title, items], index) => ({
-      id: `section-${Date.now()}-${index}`,
-      title,
-      items: cleanSectionItems(items),
-    }))
-    .filter((section) => section.items.length > 0)
-
   // ---- fallback name from email
   if (!data.personalInfo.fullName && data.personalInfo.email) {
     const nameGuess = data.personalInfo.email.split('@')[0]?.replace(/[._-]+/g, ' ')
@@ -455,6 +327,28 @@ export function ImportData({ onImport }: ImportDataProps) {
     setErrorMsg('')
   }
 
+  const normalizeResumeImport = async (rawText: string, parsedDraft: ResumeData, token?: string) => {
+    try {
+      const res = await fetch('/.netlify/functions/normalize-resume-import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          rawText,
+          parsedDraft,
+        }),
+      })
+
+      const payload = await res.json().catch(() => null)
+      if (!res.ok || !payload?.resumeData) return parsedDraft
+      return payload.resumeData as ResumeData
+    } catch {
+      return parsedDraft
+    }
+  }
+
   const handleLinkedInPasteImport = async () => {
     if (!canImportLinkedIn) return
 
@@ -465,6 +359,7 @@ export function ImportData({ onImport }: ImportDataProps) {
       await new Promise((r) => setTimeout(r, 250))
       const parsed = parseLinkedInText(linkedInText)
       onImport(parsed)
+      autoSaveImportedCV(parsed)
       setImportSuccess(true)
       setLinkedInText('')
       setTimeout(() => setImportSuccess(false), 2500)
@@ -521,9 +416,15 @@ export function ImportData({ onImport }: ImportDataProps) {
         return
       }
 
-      // ✅ Use CV parser (NOT the LinkedIn parser)
-      const parsed = parseResumeText(payload.text)
+      // Step 1: regex parser gives us a draft quickly
+      const regexDraft = parseResumeText(payload.text)
+
+      // Step 2: AI normalizer fixes misplaced fields, missing education/skills, summary
+      // Falls back to regexDraft automatically if AI fails
+      const parsed = await normalizeResumeImport(payload.text, regexDraft, token)
+
       onImport(parsed)
+      autoSaveImportedCV(parsed) // silently save to versions for auto-restore on next visit
 
       setImportSuccess(true)
       setFile(null)
@@ -546,7 +447,6 @@ export function ImportData({ onImport }: ImportDataProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          {/* ✅ Make icon BLUE to match UX */}
           <Upload className="h-5 w-5 text-blue-600" />
           <CardTitle>Import Resume</CardTitle>
         </div>
@@ -588,7 +488,7 @@ export function ImportData({ onImport }: ImportDataProps) {
                   </li>
                 </ol>
                 <p className="mt-2 text-xs text-blue-700">
-                  This does not connect to LinkedIn — you’re importing text you provide.
+                  This does not connect to LinkedIn — you're importing text you provide.
                 </p>
               </div>
             </div>
@@ -608,10 +508,9 @@ export function ImportData({ onImport }: ImportDataProps) {
           {/* Upload CV */}
           <TabsContent value="upload" className="space-y-4 mt-4">
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-              Upload your existing CV (PDF or DOCX). We’ll extract the text and fill your resume fields for AI Tailor.
+              Upload your existing CV (PDF or DOCX). We'll extract the text and fill your resume fields for AI Tailor.
             </div>
 
-            {/* Styled picker */}
             <div className="rounded-lg border border-gray-200 bg-white p-4">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="flex-1">
@@ -660,7 +559,6 @@ export function ImportData({ onImport }: ImportDataProps) {
           </TabsContent>
         </Tabs>
 
-        {/* ✅ Single main action button (prevents “demo-looking” disabled button confusion) */}
         <Button
           onClick={onClick}
           disabled={!canClick || isImporting}
@@ -669,7 +567,7 @@ export function ImportData({ onImport }: ImportDataProps) {
           {isImporting ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Importing...
+              Reading your CV with AI...
             </>
           ) : importSuccess ? (
             <>
@@ -684,7 +582,6 @@ export function ImportData({ onImport }: ImportDataProps) {
           )}
         </Button>
 
-        {/* Alerts */}
         {errorMsg && (
           <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
             <div className="flex items-start gap-2">
@@ -700,7 +597,9 @@ export function ImportData({ onImport }: ImportDataProps) {
             animate={{ opacity: 1, scale: 1 }}
             className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg"
           >
-            <p className="text-sm text-green-800">Resume imported successfully. You can now use AI Tailor.</p>
+            <p className="text-sm text-green-800">
+              CV imported and saved to your Versions — no need to re-import next time.
+            </p>
           </motion.div>
         )}
       </CardContent>

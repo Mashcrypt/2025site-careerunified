@@ -645,7 +645,35 @@ function getInitialTabFromUrl(): AppTab {
 }
 
 export default function App() {
-  const [resumeData, setResumeData] = useState<ResumeData>(initialData);
+
+    const [resumeData, setResumeData] = useState<ResumeData>(() => {
+     try {
+    const raw = localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY)
+    if (!raw) return initialData
+
+    const versions = JSON.parse(raw) as Array<{
+      id: string
+      name: string
+      data: ResumeData
+      updatedAt: string
+      isFavorite: boolean
+    }>
+
+    if (!Array.isArray(versions) || versions.length === 0) return initialData
+
+    // Restore most recent auto-import if it exists
+    const autoImported = versions
+      .filter((v) => v.id?.startsWith('import-'))
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0]
+
+    if (autoImported?.data?.personalInfo) return autoImported.data
+
+    return initialData
+     } catch {
+      return initialData
+       }
+       });
+  
   const resumeDataRef = useRef<ResumeData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<AnyTemplateId>('modern');
   const [selectedColor, setSelectedColor] = useState('blue');

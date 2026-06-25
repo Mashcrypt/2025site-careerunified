@@ -14,6 +14,7 @@
   const completionText = document.getElementById('completionText');
   const generateButton = document.getElementById('generateBtn');
   const preview = document.getElementById('pdfPreview');
+  const previewOpenLink = document.getElementById('pdfOpenLink');
   const placeholder = document.getElementById('pdfPlaceholder');
   const cvPrefillPanel = document.getElementById('cvPrefillPanel');
   const applyCvPrefillButton = document.getElementById('applyCvPrefillBtn');
@@ -22,6 +23,7 @@
   let drawing = false;
   let signatureDataUrl = '';
   let previewUrl = '';
+  let downloadUrl = '';
   let saveTimer = 0;
 
   const rowTemplates = {
@@ -748,16 +750,34 @@
 
   function downloadPdf(bytes, data) {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (downloadUrl) URL.revokeObjectURL(downloadUrl);
     const blob = new Blob([bytes], {type: 'application/pdf'});
     previewUrl = URL.createObjectURL(blob);
-    preview.src = `${previewUrl}#view=FitH`;
+    downloadUrl = URL.createObjectURL(blob);
+    preview.src = 'about:blank';
+    preview.removeAttribute('srcdoc');
     preview.style.display = 'block';
     placeholder.style.display = 'none';
+    if (previewOpenLink) {
+      previewOpenLink.href = previewUrl;
+      previewOpenLink.hidden = false;
+    }
+    window.setTimeout(() => {
+      preview.src = `${previewUrl}#view=FitH`;
+    }, 0);
     const link = document.createElement('a');
     const surname = clean(data.surname).replace(/[^a-z0-9]+/gi, '-') || 'Application';
-    link.href = previewUrl;
+    link.href = downloadUrl;
     link.download = `Z83-${surname}.pdf`;
+    document.body.appendChild(link);
     link.click();
+    link.remove();
+    window.setTimeout(() => {
+      if (downloadUrl) {
+        URL.revokeObjectURL(downloadUrl);
+        downloadUrl = '';
+      }
+    }, 30000);
   }
 
   async function handleSubmit(event) {
@@ -862,6 +882,7 @@
   form.addEventListener('submit', handleSubmit);
   window.addEventListener('beforeunload', () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (downloadUrl) URL.revokeObjectURL(downloadUrl);
   });
 
   loadDraft();

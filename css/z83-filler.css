@@ -217,6 +217,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .pdf-placeholder strong { color: var(--ink); }
 .pdf-placeholder p { max-width: 350px; }
 #pdfPreview { display: none; }
+.preview-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--blue);
+  font-size: .86rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.preview-open-link[hidden] { display: none; }
+.preview-open-link:hover { text-decoration: underline; }
 .preview-note { display: flex; gap: 10px; margin-top: 13px; color: var(--muted); font-size: .8rem; }
 .preview-note p { margin: 0; }
 .preview-note i { margin-top: 3px; color: var(--blue); }

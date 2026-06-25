@@ -140,6 +140,40 @@ function saveVersionsToStorage(versions: ResumeVersionUI[]) {
   }
 }
 
+// Called automatically after a successful CV import.
+// Silently saves the imported CV so users never need to re-import on the same device.
+export function autoSaveImportedCV(data: ResumeData): void {
+  try {
+    const raw = localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY);
+    const existing: ResumeVersionStored[] = raw ? JSON.parse(raw) : [];
+    const validExisting = Array.isArray(existing) ? existing : [];
+
+    const personName = data.personalInfo?.fullName?.trim() || '';
+    const name = personName
+      ? `${personName} — Imported ${new Date().toLocaleDateString('en-ZA')}`
+      : `Imported CV — ${new Date().toLocaleDateString('en-ZA')}`;
+
+    const now = new Date().toISOString();
+    const newVersion: ResumeVersionStored = {
+      id: `import-${Date.now()}`,
+      name,
+      data: sanitizeResumeVersionData(data),
+      createdAt: now,
+      updatedAt: now,
+      isFavorite: false,
+    };
+
+    // Remove previous auto-imports for the same person to avoid duplicates
+    const filtered = validExisting.filter(
+      (v) => !(v.id?.startsWith('import-') && v.name?.startsWith(personName || 'Imported CV'))
+    );
+
+    localStorage.setItem(RESUME_VERSIONS_STORAGE_KEY, JSON.stringify([newVersion, ...filtered]));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -253,7 +287,6 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
   return (
     <Card>
       <CardHeader>
-        {/* ✅ MOBILE FIX: header wraps + button stays visible */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-blue-600" />
@@ -322,7 +355,6 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
               >
                 <Card className="hover:shadow-md transition-shadow border-blue-100">
                   <CardContent className="p-4">
-                    {/* ✅ MOBILE FIX: stack layout on small screens */}
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -340,7 +372,6 @@ export function ResumeVersions({ currentData, onLoadVersion, refreshKey = 0 }: R
                         </div>
                       </div>
 
-                      {/* ✅ MOBILE FIX: actions WRAP instead of overflowing off screen */}
                       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                         <Button
                           variant="ghost"
