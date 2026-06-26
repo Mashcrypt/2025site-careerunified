@@ -77,18 +77,11 @@ function extractJsonBlock(text: string): string | null {
   return null;
 }
 
-/**
- * Best-effort repair when the model returns extra text.
- * - Removes leading/trailing non-JSON
- * - Removes trailing commas
- */
 function repairJson(text: string): string | null {
   const block = extractJsonBlock(text) ?? text.trim();
   if (!block) return null;
 
   let cleaned = block;
-
-  // Remove trailing commas before } or ]
   cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
 
   if (!cleaned.startsWith("{") || !cleaned.endsWith("}")) return null;
@@ -188,7 +181,7 @@ function planLimit(plan: string) {
   if (plan === "starter") return 15;
   if (plan === "job_seeker") return 40;
   if (plan === "career_pro") return Number.POSITIVE_INFINITY;
-  return 0; // free
+  return 0;
 }
 
 const FREE_TASTE_LIMIT = 3;
@@ -211,7 +204,6 @@ function timestampToDate(value: any): Date | null {
 }
 
 function corsHeaders(origin?: string) {
-  // Set ALLOWED_ORIGIN=https://careerunified.com (or https://www.careerunified.com) in Netlify env to lock it down
   const allowed = process.env.ALLOWED_ORIGIN || "*";
   return {
     "Access-Control-Allow-Origin":
@@ -259,12 +251,44 @@ function validateResumeShape(data: any): data is ResumeData {
   );
 }
 
-/**
- * ✅ FIXED Gemini call:
- * - Uses systemInstruction instead of role:"system" in contents
- * - Avoids responseMimeType (breaks some models)
- * - Reads raw error body so your 500 includes the real Gemini error
- */
+// ─── NEW: Groq (primary) ──────────────────────────────────────────────────────
+async function callGroq(params: {
+  systemRules: string;
+  userPrompt: string;
+  temperature: number;
+  maxOutputTokens: number;
+  apiKey: string;
+}) {
+  const { systemRules, userPrompt, temperature, maxOutputTokens, apiKey } = params;
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemRules },
+        { role: "user", content: userPrompt },
+      ],
+      temperature,
+      max_tokens: maxOutputTokens,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`Groq request failed (${res.status}): ${raw}`);
+
+  const data = safeJsonParse<any>(raw);
+  const text = data?.choices?.[0]?.message?.content || "";
+  if (!text) throw new Error("Groq returned empty content");
+  return text;
+}
+
+// ─── Gemini (fallback) ────────────────────────────────────────────────────────
 async function callGemini(params: {
   endpoint: string;
   systemRules: string;
@@ -283,7 +307,6 @@ async function callGemini(params: {
     generationConfig: {
       temperature,
       maxOutputTokens,
-      // responseMimeType: "application/json", // ❗disable for compatibility
     },
   };
 
@@ -310,7 +333,6 @@ export const handler: Handler = async (event) => {
   const origin = event.headers.origin || event.headers.Origin;
   const baseHeaders = corsHeaders(origin);
 
-  // Preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: baseHeaders, body: "" };
   }
@@ -322,14 +344,12 @@ export const handler: Handler = async (event) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return json(500, { error: "Missing GEMINI_API_KEY" }, baseHeaders);
 
-  // Auth header
   const authHeader = event.headers.authorization || event.headers.Authorization;
   const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
 
   const admin = getAdmin();
 
-  // Verify token
   let uid: string;
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
@@ -356,7 +376,6 @@ export const handler: Handler = async (event) => {
     );
   }
 
-  // Body
   const rawBody = decodeBody(event.body, event.isBase64Encoded);
   const body = safeJsonParse<TailorRequestBody>(rawBody);
   const mode = normalizeMode(body?.mode);
@@ -369,7 +388,6 @@ export const handler: Handler = async (event) => {
     return json(400, { error: "resumeData shape is invalid." }, baseHeaders);
   }
 
-  // Billing state
   const userRef = admin.firestore().doc(`users/${uid}`);
   const userSnap = await userRef.get();
   const user = userSnap.data() || {};
@@ -396,7 +414,6 @@ export const handler: Handler = async (event) => {
 
   const upgrade_url = (user.checkoutUrl as string) || (process.env.UPGRADE_URL as string) || null;
 
-  // Gate access
   if (!isPaid) {
     if (mode === "tailor" && freeResumeTailorsUsed < FREE_TASTE_LIMIT) {
       usageBucket = "free_resume";
@@ -405,15 +422,7 @@ export const handler: Handler = async (event) => {
     } else if (aiTailorCredits > 0) {
       usageBucket = "credit";
     } else if (hasPendingCreditPayment) {
-      return json(
-        409,
-        {
-          error:
-            "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.",
-          pendingPayment: true,
-        },
-        baseHeaders
-      );
+      return json(409, { error: "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.", pendingPayment: true }, baseHeaders);
     } else if (mode === "tailor") {
       return json(402, { error: "Free resume tailor limit reached. Please upgrade.", upgrade_url }, baseHeaders);
     } else {
@@ -425,105 +434,85 @@ export const handler: Handler = async (event) => {
     } else if (aiTailorCredits > 0) {
       usageBucket = "credit";
     } else if (hasPendingCreditPayment) {
-      return json(
-        409,
-        {
-          error:
-            "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.",
-          pendingPayment: true,
-        },
-        baseHeaders
-      );
+      return json(409, { error: "Your AI Tailor credit payment is still being verified by PayFast. Please wait a moment and try again.", pendingPayment: true }, baseHeaders);
     } else {
       return json(402, { error: "Monthly limit reached. Upgrade your plan to continue.", upgrade_url }, baseHeaders);
     }
   }
 
-  // Gemini endpoint
-  // If this model ever fails due to availability, switch to gemini-1.5-flash
-  const endpoint =
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const geminiEndpoint =
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const { systemRules, userPrompt } = buildPrompts(mode, body.resumeData, body.jobDescription);
 
-  // Call Gemini with retry/fallback
+  // 1️⃣ Try Groq first — fast and reliable
   let text = "";
-  try {
-    text = await callGemini({
-      endpoint,
-      systemRules,
-      userPrompt,
-      temperature: 0.2,
-      maxOutputTokens: 1700,
-    });
-  } catch (e1: any) {
+  if (groqApiKey) {
     try {
-      text = await callGemini({
-        endpoint,
+      text = await callGroq({
         systemRules,
         userPrompt,
-        temperature: 0.1,
+        temperature: 0.2,
         maxOutputTokens: 1700,
+        apiKey: groqApiKey,
       });
-    } catch (e2: any) {
-      return json(
-        500,
-        { error: "Gemini request failed.", details: String(e2?.message || e2) },
-        baseHeaders
-      );
+    } catch (e: any) {
+      console.error("Groq failed, falling back to Gemini:", e?.message);
     }
   }
 
-  // Parse
+  // 2️⃣ Fall back to Gemini if Groq fails or key not set
+  if (!text) {
+    try {
+      text = await callGemini({
+        endpoint: geminiEndpoint,
+        systemRules,
+        userPrompt,
+        temperature: 0.2,
+        maxOutputTokens: 1700,
+      });
+    } catch (e1: any) {
+      try {
+        text = await callGemini({
+          endpoint: geminiEndpoint,
+          systemRules,
+          userPrompt,
+          temperature: 0.1,
+          maxOutputTokens: 1700,
+        });
+      } catch (e2: any) {
+        return json(
+          500,
+          { error: "AI request failed. Please try again.", details: String(e2?.message || e2) },
+          baseHeaders
+        );
+      }
+    }
+  }
+
   const jsonCandidate = extractJsonBlock(text) ?? text.trim();
   let parsed = safeJsonParse<any>(jsonCandidate);
 
-  // Repair fallback if needed
   if (!parsed) {
     const repaired = repairJson(text);
     if (repaired) parsed = safeJsonParse<any>(repaired);
   }
 
-  // Validate + update usage ONLY after success
   if (mode === "cover_letter") {
     const typed = parsed as CoverLetterResponse;
 
     if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
-      return json(
-        500,
-        { error: "Could not parse Gemini JSON response (cover_letter).", raw: text.slice(0, 4000) },
-        baseHeaders
-      );
+      return json(500, { error: "Could not parse AI JSON response (cover_letter).", raw: text.slice(0, 4000) }, baseHeaders);
     }
 
-    // Usage update
     if (usageBucket === "free_cover") {
-      await userRef.set(
-        {
-          freeCoverLettersUsed: admin.firestore.FieldValue.increment(1),
-          freeCoverUsed: true,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      await userRef.set({ freeCoverLettersUsed: admin.firestore.FieldValue.increment(1), freeCoverUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
     } else if (usageBucket === "monthly") {
-      await userRef.set(
-        {
-          applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      await userRef.set({ applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1), updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
     } else {
-      await userRef.set(
-        {
-          aiTailorCredits: admin.firestore.FieldValue.increment(-1),
-          aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      await userRef.set({ aiTailorCredits: admin.firestore.FieldValue.increment(-1), aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1), updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
     }
 
     return json(200, typed, baseHeaders);
@@ -532,49 +521,19 @@ export const handler: Handler = async (event) => {
   const typed = parsed as TailorResponse;
 
   if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
-    return json(
-      500,
-      { error: "Could not parse Gemini JSON response (tailor).", raw: text.slice(0, 4000) },
-      baseHeaders
-    );
+    return json(500, { error: "Could not parse AI JSON response (tailor).", raw: text.slice(0, 4000) }, baseHeaders);
   }
 
-  // Extra safety: ensure we didn’t lose structure
   if (!validateResumeShape(typed.tailoredData)) {
-    return json(
-      500,
-      { error: "Gemini returned invalid tailoredData shape.", raw: text.slice(0, 4000) },
-      baseHeaders
-    );
+    return json(500, { error: "AI returned invalid tailoredData shape.", raw: text.slice(0, 4000) }, baseHeaders);
   }
 
-  // Usage update
   if (usageBucket === "free_resume") {
-    await userRef.set(
-      {
-        freeResumeTailorsUsed: admin.firestore.FieldValue.increment(1),
-        freeResumeUsed: true,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
+    await userRef.set({ freeResumeTailorsUsed: admin.firestore.FieldValue.increment(1), freeResumeUsed: true, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
   } else if (usageBucket === "monthly") {
-    await userRef.set(
-      {
-        applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
+    await userRef.set({ applicationsUsedThisMonth: admin.firestore.FieldValue.increment(1), updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
   } else {
-    await userRef.set(
-      {
-        aiTailorCredits: admin.firestore.FieldValue.increment(-1),
-        aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
+    await userRef.set({ aiTailorCredits: admin.firestore.FieldValue.increment(-1), aiTailorCreditsUsed: admin.firestore.FieldValue.increment(1), updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
   }
 
   return json(200, typed, baseHeaders);
