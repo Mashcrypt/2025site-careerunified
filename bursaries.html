@@ -990,22 +990,31 @@
     function renderDescriptionLink(url, label) {
       const safeUrl = escapeHtml(url);
       const safeLabel = escapeHtml(safeText(label, url));
-      return `<a class="description-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
+      let isInternal = false;
+      try {
+        const parsedUrl = new URL(url, window.location.origin);
+        isInternal = parsedUrl.origin === window.location.origin;
+      } catch {
+        isInternal = false;
+      }
+      const targetAttrs = isInternal ? '' : ' target="_blank" rel="noopener noreferrer"';
+      return `<a class="description-link" href="${safeUrl}"${targetAttrs}>${safeLabel}</a>`;
     }
 
     function formatDescriptionHtml(value, fallback = 'Description not provided.') {
       const text = safeText(value, fallback);
-      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\bhttps?:\/\/[^\s<>"']+/gi;
+      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\((https?:\/\/[^\s<>"')]+)\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
       let output = '';
       let lastIndex = 0;
 
-      text.replace(linkPattern, (match, label, markdownUrl, offset) => {
-        const url = markdownUrl || match;
-        const punctuation = markdownUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
+      text.replace(linkPattern, (match, label, markdownUrl, reversedUrl, reversedLabel, offset) => {
+        const url = markdownUrl || reversedUrl || match;
+        const punctuation = markdownUrl || reversedUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
         const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+        const linkLabel = markdownUrl ? label.trim() : reversedUrl ? reversedLabel.trim() : cleanUrl;
 
         output += escapeHtml(text.slice(lastIndex, offset));
-        output += renderDescriptionLink(cleanUrl, markdownUrl ? label.trim() : cleanUrl);
+        output += renderDescriptionLink(cleanUrl, linkLabel);
         output += escapeHtml(punctuation);
         lastIndex = offset + match.length;
         return match;
@@ -1388,12 +1397,14 @@
     let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', e => {
       if (!e.target.closest('#bursaryPreview')) return;
+      if (e.target.closest('.description-link')) return;
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     document.addEventListener('touchend', e => {
       if (!e.target.closest('#bursaryPreview')) return;
+      if (e.target.closest('.description-link')) return;
       const dx = e.changedTouches[0].screenX - touchStartX;
       const dy = e.changedTouches[0].screenY - touchStartY;
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {

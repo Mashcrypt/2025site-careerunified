@@ -427,6 +427,32 @@
       color: #1d4ed8;
     }
 
+    @media (min-width: 901px) {
+      .jobs-preview h2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: clamp(1.45rem, 1.8vw, 1.75rem);
+        line-height: 1.22;
+      }
+
+      .preview-header {
+        margin-bottom: 12px;
+      }
+
+      .preview-info-grid {
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .jobs-preview .job-desc {
+        flex: 1 1 240px;
+        min-height: 220px;
+        max-height: clamp(220px, 30vh, 360px);
+      }
+    }
+
     .job-action-buttons {
       display: flex;
       gap: 12px;
@@ -1213,7 +1239,7 @@
 
     /* ── HELPERS ── */
     document.addEventListener('click', e => {
-      if (window.innerWidth > 900 || e.target.closest('.heart-icon, .job-title-link')) return;
+      if (window.innerWidth > 900 || e.target.closest('.heart-icon, .job-title-link, .description-link')) return;
       const card = e.target.closest('.job-card');
       if (!card || card.dataset.jobData) return;
       const destination = card.dataset.jobUrl;
@@ -1239,22 +1265,31 @@
     function renderDescriptionLink(url, label) {
       const safeUrl = escapeHtml(url);
       const safeLabel = escapeHtml(safeText(label, url));
-      return `<a class="description-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
+      let isInternal = false;
+      try {
+        const parsedUrl = new URL(url, window.location.origin);
+        isInternal = parsedUrl.origin === window.location.origin;
+      } catch {
+        isInternal = false;
+      }
+      const targetAttrs = isInternal ? '' : ' target="_blank" rel="noopener noreferrer"';
+      return `<a class="description-link" href="${safeUrl}"${targetAttrs}>${safeLabel}</a>`;
     }
 
     function formatDescriptionHtml(value, fallback = 'Description not provided.') {
       const text = safeText(value, fallback);
-      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\bhttps?:\/\/[^\s<>"']+/gi;
+      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\((https?:\/\/[^\s<>"')]+)\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
       let output = '';
       let lastIndex = 0;
 
-      text.replace(linkPattern, (match, label, markdownUrl, offset) => {
-        const url = markdownUrl || match;
-        const punctuation = markdownUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
+      text.replace(linkPattern, (match, label, markdownUrl, reversedUrl, reversedLabel, offset) => {
+        const url = markdownUrl || reversedUrl || match;
+        const punctuation = markdownUrl || reversedUrl ? '' : (url.match(/[).,!?;:]+$/)?.[0] || '');
         const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+        const linkLabel = markdownUrl ? label.trim() : reversedUrl ? reversedLabel.trim() : cleanUrl;
 
         output += escapeHtml(text.slice(lastIndex, offset));
-        output += renderDescriptionLink(cleanUrl, markdownUrl ? label.trim() : cleanUrl);
+        output += renderDescriptionLink(cleanUrl, linkLabel);
         output += escapeHtml(punctuation);
         lastIndex = offset + match.length;
         return match;
@@ -1605,7 +1640,7 @@
           </div>`;
 
         li.onclick = e => {
-          if (e.target.closest('.heart-icon')) return;
+          if (e.target.closest('.heart-icon, .description-link')) return;
           if (window.innerWidth <= 900) {
             const destination = li.dataset.jobUrl;
             if (destination) {
@@ -1876,6 +1911,7 @@
     document.addEventListener('touchstart', e => {
       const preview = e.target.closest('#jobPreview');
       if (!preview) return;
+      if (e.target.closest('.description-link')) return;
       startX = e.changedTouches[0].screenX;
       startY = e.changedTouches[0].screenY;
     }, { passive: true });
@@ -1883,6 +1919,7 @@
     document.addEventListener('touchend', e => {
       const preview = e.target.closest('#jobPreview');
       if (!preview) return;
+      if (e.target.closest('.description-link')) return;
       const dx = e.changedTouches[0].screenX - startX;
       const dy = e.changedTouches[0].screenY - startY;
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
