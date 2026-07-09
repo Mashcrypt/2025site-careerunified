@@ -49,6 +49,7 @@ function slugify(value: unknown) {
   return text(value)
     .toLowerCase()
     .replace(/&/g, "and")
+    .replace(/[-_]+/g, " ")
     .replace(/\bapply\s+now\b/g, "")
     .replace(/\bclosing\s+soon\b/g, "")
     .replace(/\bor\s+apply\b/g, "")

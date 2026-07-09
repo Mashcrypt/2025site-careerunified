@@ -23,6 +23,7 @@ export default {
             .toLowerCase()
             .trim()
             .replace(/&/g, 'and')
+            .replace(/[-_]+/g, ' ')
             .replace(/\bapply\s+now\b/g, '')
             .replace(/\bclosing\s+soon\b/g, '')
             .replace(/\bor\s+apply\b/g, '')
