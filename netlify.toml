@@ -56,44 +56,102 @@
   status = 200
   force = true
 
+[[edge_functions]]
+  function = "home"
+  path = "/"
+
 # ================================
 # TRAILING SLASH NORMALISATION
 # Prevents duplicate URLs for SEO
 # ================================
 [[redirects]]
   from = "/jobs/"
-  to = "/jobs.html"
+  to = "/jobs"
   status = 301
 
 [[redirects]]
   from = "/bursaries/"
-  to = "/bursaries.html"
+  to = "/bursaries"
   status = 301
 
 [[redirects]]
   from = "/varsity/"
-  to = "/varsity.html"
+  to = "/varsity"
   status = 301
 
 [[redirects]]
   from = "/about-us/"
-  to = "/about-us.html"
+  to = "/about-us"
   status = 301
 
 [[redirects]]
   from = "/contact-us/"
-  to = "/contact-us.html"
+  to = "/contact-us"
   status = 301
 
 [[redirects]]
   from = "/privacy/"
-  to = "/privacy.html"
+  to = "/privacy"
   status = 301
 
 [[redirects]]
   from = "/terms/"
-  to = "/terms.html"
+  to = "/terms"
   status = 301
+
+[[redirects]]
+  from = "/jobs.html"
+  to = "/jobs"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bursaries.html"
+  to = "/bursaries"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/varsity.html"
+  to = "/varsity"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/about-us.html"
+  to = "/about-us"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/contact-us.html"
+  to = "/contact-us"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy.html"
+  to = "/privacy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/terms.html"
+  to = "/terms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cv-tips.html"
+  to = "/cv-tips"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/z83-filler.html"
+  to = "/z83-filler"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/cv-tips"
@@ -113,6 +171,26 @@
 [[redirects]]
   from = "/z83-filler/"
   to = "/z83-filler.html"
+  status = 200
+
+[[redirects]]
+  from = "/about-us"
+  to = "/about-us.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact-us"
+  to = "/contact-us.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
   status = 200
 
 # ================================
@@ -142,10 +220,6 @@
   path = "/jobs"
 
 [[edge_functions]]
-  function = "content-listing"
-  path = "/jobs.html"
-
-[[edge_functions]]
   function = "job"
   path = "/jobs/*"
 
@@ -161,10 +235,6 @@
 [[edge_functions]]
   function = "content-listing"
   path = "/bursaries"
-
-[[edge_functions]]
-  function = "content-listing"
-  path = "/bursaries.html"
 
 [[edge_functions]]
   function = "bursary-og"
@@ -192,10 +262,6 @@
 [[edge_functions]]
   function = "content-listing"
   path = "/varsity"
-
-[[edge_functions]]
-  function = "content-listing"
-  path = "/varsity.html"
 
 [[edge_functions]]
   function = "varsity"

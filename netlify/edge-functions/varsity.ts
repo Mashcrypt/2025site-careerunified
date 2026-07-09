@@ -31,7 +31,7 @@ export default async (request: Request) => {
     const slug = parts.length >= 2 ? parts[1] : "";
 
     if (!slug || slug === "varsity") {
-      return Response.redirect("https://careerunified.com/varsity.html", 301);
+      return Response.redirect("https://careerunified.com/varsity", 301);
     }
 
     const university = await getUniversityBySlug(slug);
@@ -84,7 +84,7 @@ export default async (request: Request) => {
           "@type": "BreadcrumbList",
           itemListElement: [
             {"@type": "ListItem", position: 1, name: "Home", item: "https://careerunified.com/"},
-            {"@type": "ListItem", position: 2, name: "Universities", item: "https://careerunified.com/varsity.html"},
+            {"@type": "ListItem", position: 2, name: "Universities", item: "https://careerunified.com/varsity"},
             {"@type": "ListItem", position: 3, name, item: shareUrl},
           ],
         },
@@ -147,7 +147,7 @@ export default async (request: Request) => {
       </div>
       <div class="actions">
         ${university.applicationLink ? `<a class="btn green" href="${escapeHtml(university.applicationLink)}" target="_blank" rel="noopener noreferrer">Visit official application page</a>` : ""}
-        <a class="btn light" href="https://careerunified.com/varsity.html">Browse all universities</a>
+        <a class="btn light" href="https://careerunified.com/varsity">Browse all universities</a>
       </div>
     </section>
     ${university.notes ? `<section class="panel"><h2>Application information</h2><p>${escapeHtml(university.notes)}</p></section>` : ""}

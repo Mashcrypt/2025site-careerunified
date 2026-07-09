@@ -1490,14 +1490,14 @@ export default function App() {
       {/* NAVIGATION (matched to varsity page structure/classes) */}
       <nav className="main-nav">
         {/* DESKTOP VIEW */}
-        <a href="/index.html" className="logo desktop-nav">
+        <a href="/" className="logo desktop-nav">
           Career Unified
         </a>
 
         <div className="nav-links desktop-nav">
-          <a href="/jobs.html">Jobs</a>
-          <a href="/bursaries.html">Bursaries</a>
-          <a href="/varsity.html">Varsity</a>
+          <a href="/jobs">Jobs</a>
+          <a href="/bursaries">Bursaries</a>
+          <a href="/varsity">Varsity</a>
           <a href="/cv-generator/">Generate CV</a>
           <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
           <a href="/recruiter-apply.html">Apply as Recruiter</a>
@@ -1521,7 +1521,7 @@ export default function App() {
 
         {/* MOBILE VIEW */}
         <div className="mobile-nav">
-          <a href="/index.html" className="mobile-logo">
+          <a href="/" className="mobile-logo">
             Career Unified
           </a>
 
@@ -1552,9 +1552,9 @@ export default function App() {
 
       {/* MOBILE SLIDE MENU */}
       <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
-        <a href="/jobs.html">Jobs</a>
-        <a href="/bursaries.html">Bursaries</a>
-        <a href="/varsity.html">Varsity</a>
+        <a href="/jobs">Jobs</a>
+        <a href="/bursaries">Bursaries</a>
+        <a href="/varsity">Varsity</a>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
         <a href="/recruiter-apply.html">Apply as Recruiter</a>

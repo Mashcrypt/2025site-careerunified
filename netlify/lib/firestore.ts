@@ -49,6 +49,12 @@ function slugify(value: unknown) {
   return text(value)
     .toLowerCase()
     .replace(/&/g, "and")
+    .replace(/\bapply\s+now\b/g, "")
+    .replace(/\bclosing\s+soon\b/g, "")
+    .replace(/\bor\s+apply\b/g, "")
+    .replace(/\bapply\b$/g, "")
+    .replace(/speciliast/g, "specialist")
+    .replace(/machanical/g, "mechanical")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }

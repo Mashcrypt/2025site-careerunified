@@ -93,7 +93,7 @@ export default async (request: Request) => {
     const slug = parts.length >= 2 ? parts[1] : null;
 
     if (!slug || slug === "jobs") {
-      return Response.redirect("https://careerunified.com/jobs.html", 301);
+      return Response.redirect("https://careerunified.com/jobs", 301);
     }
 
     const [sanityJob, sanityJobs, recruiterJobs] = await Promise.all([
@@ -188,7 +188,7 @@ export default async (request: Request) => {
         "@id": `${shareUrl}#breadcrumb`,
         itemListElement: [
           {"@type": "ListItem", position: 1, name: "Home", item: "https://careerunified.com/"},
-          {"@type": "ListItem", position: 2, name: "Jobs", item: "https://careerunified.com/jobs.html"},
+          {"@type": "ListItem", position: 2, name: "Jobs", item: "https://careerunified.com/jobs"},
           {"@type": "ListItem", position: 3, name: jobTitle, item: shareUrl},
         ],
       },
@@ -244,14 +244,6 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
-  <script>
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      const desktopUrl = new URL("/jobs.html", window.location.origin);
-      desktopUrl.searchParams.set("slug", ${jsonLd(slug)});
-      desktopUrl.searchParams.set("view", "desktop");
-      window.location.replace(desktopUrl.pathname + desktopUrl.search);
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -341,7 +333,7 @@ export default async (request: Request) => {
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.7 6.8-4.1"></path><path d="m8.6 13.3 6.8 4.1"></path></svg>
             <span>Share</span>
           </button>
-          <a class="close-preview" id="close-job" href="https://careerunified.com/jobs.html" aria-label="Close job details">&times;</a>
+          <a class="close-preview" id="close-job" href="https://careerunified.com/jobs" aria-label="Close job details">&times;</a>
         </div>
       </div>
       <div class="details">

@@ -1,11 +1,11 @@
 {
   "routes": [
     {
-      "path": "/jobs",
-      "function": "content-listing"
+      "path": "/",
+      "function": "home"
     },
     {
-      "path": "/jobs.html",
+      "path": "/jobs",
       "function": "content-listing"
     },
     {
@@ -14,10 +14,6 @@
     },
     {
       "path": "/bursaries",
-      "function": "content-listing"
-    },
-    {
-      "path": "/bursaries.html",
       "function": "content-listing"
     },
     {
@@ -30,10 +26,6 @@
     },
     {
       "path": "/varsity",
-      "function": "content-listing"
-    },
-    {
-      "path": "/varsity.html",
       "function": "content-listing"
     },
     {

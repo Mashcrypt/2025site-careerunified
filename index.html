@@ -50,7 +50,7 @@
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer support",
-      "url": "https://careerunified.com/contact-us.html"
+      "url": "https://careerunified.com/contact-us"
     },
     "sameAs": []
   }
@@ -68,7 +68,7 @@
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://careerunified.com/jobs.html?q={search_term_string}"
+        "urlTemplate": "https://careerunified.com/jobs?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }
@@ -87,7 +87,7 @@
         "url": "https://careerunified.com/",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://careerunified.com/jobs.html?q={search_term_string}",
+          "target": "https://careerunified.com/jobs?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       },
@@ -96,21 +96,21 @@
         "position": 1,
         "name": "Available Jobs",
         "description": "Browse and apply for the latest job listings in South Africa.",
-        "url": "https://careerunified.com/jobs.html"
+        "url": "https://careerunified.com/jobs"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Bursaries",
         "description": "Find bursaries, scholarships, and funding opportunities for South African students.",
-        "url": "https://careerunified.com/bursaries.html"
+        "url": "https://careerunified.com/bursaries"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": "Varsity",
         "description": "View all South African universities, application deadlines, and requirements.",
-        "url": "https://careerunified.com/varsity.html"
+        "url": "https://careerunified.com/varsity"
       },
       {
         "@type": "ListItem",
@@ -131,14 +131,14 @@
         "position": 6,
         "name": "About Us",
         "description": "Learn about Career Unified and our mission to connect South Africans with opportunities.",
-        "url": "https://careerunified.com/about-us.html"
+        "url": "https://careerunified.com/about-us"
       },
       {
         "@type": "ListItem",
         "position": 7,
         "name": "Contact Us",
         "description": "Get in touch with the Career Unified team.",
-        "url": "https://careerunified.com/contact-us.html"
+        "url": "https://careerunified.com/contact-us"
       }
     ]
   }
@@ -503,12 +503,12 @@
 <nav class="main-nav">
 
   <!-- DESKTOP VIEW -->
-  <a href="index.html" class="logo desktop-nav">Career Unified</a>
+  <a href="/" class="logo desktop-nav">Career Unified</a>
 
   <div class="nav-links desktop-nav">
-    <a href="jobs.html">Jobs</a>
-    <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsity</a>
+    <a href="/jobs">Jobs</a>
+    <a href="/bursaries">Bursaries</a>
+    <a href="/varsity">Varsity</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/cv-tips">CV Tips</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
@@ -527,7 +527,7 @@
 
   <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <a href="index.html" class="mobile-logo">Career Unified</a>
+    <a href="/" class="mobile-logo">Career Unified</a>
 
     <div class="mobile-nav-right">
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
@@ -551,9 +551,9 @@
 
 <!-- MOBILE SLIDE MENU -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="jobs.html">Jobs</a>
-  <a href="bursaries.html">Bursaries</a>
-  <a href="varsity.html">Varsity</a>
+  <a href="/jobs">Jobs</a>
+  <a href="/bursaries">Bursaries</a>
+  <a href="/varsity">Varsity</a>
   <a href="/cv-generator/">Generate CV</a>
   <a href="/cv-tips">CV Tips</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
@@ -566,7 +566,7 @@
 
 <!-- HERO -->
 <header class="hero">
-  <h1>Career Unified</h1>
+  <h1>Career Unified - Jobs, Bursaries and CV Tools for South African Students and Graduates</h1>
   <p class="slogan">One click from your dream</p>
 
   <form class="hero-search" onsubmit="performSearch(); return false;" role="search" aria-label="Search jobs, bursaries and universities">
@@ -602,7 +602,7 @@
       <p class="section-kicker">Start applying</p>
       <h2 class="section-title">Recent Job Openings</h2>
     </div>
-    <a href="jobs.html" class="section-link" data-cro-event="recent_jobs_view_all">View all jobs <span aria-hidden="true">&rarr;</span></a>
+    <a href="/jobs" class="section-link" data-cro-event="recent_jobs_view_all">View all jobs <span aria-hidden="true">&rarr;</span></a>
   </div>
   <div class="job-cards" id="homeJobList"></div>
 </main>
@@ -669,7 +669,7 @@
     Career Unified uses browser storage (cookies & localStorage) to improve your experience,
     remember preferences, and analyse site usage.
     By continuing to use this site, you agree to this.
-    <a href="privacy.html">Learn more</a>
+    <a href="/privacy">Learn more</a>
   </p>
   <button id="acceptCookies">Accept</button>
 </div>
@@ -745,9 +745,9 @@
     <nav class="footer-grid" aria-label="Footer navigation">
       <div class="footer-column">
         <h3>Opportunities</h3>
-        <a href="jobs.html">Jobs</a>
-        <a href="bursaries.html">Bursaries</a>
-        <a href="varsity.html">Varsity</a>
+        <a href="/jobs">Jobs</a>
+        <a href="/bursaries">Bursaries</a>
+        <a href="/varsity">Varsity</a>
         <a href="saved-items.html">Saved Items</a>
       </div>
       <div class="footer-column">
@@ -760,34 +760,22 @@
       </div>
       <div class="footer-column">
         <h3>Company</h3>
-        <a href="about-us.html">About Us</a>
-        <a href="contact-us.html">Contact Us</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="/about-us">About Us</a>
+        <a href="/contact-us">Contact Us</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
       </div>
     </nav>
   </div>
 
   <div class="footer-links">
-    <a href="about-us.html">About Us</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms & Conditions</a>
-    <a href="contact-us.html">Contact Us</a>
+    <a href="/about-us">About Us</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms & Conditions</a>
+    <a href="/contact-us">Contact Us</a>
   </div>
 
   <div class="footer-socials">
-
-  <a href="https://facebook.com/YOUR_PAGE" target="_blank" aria-label="Facebook">
-    <i class="fab fa-facebook-f"></i>
-  </a>
-
-  <a href="https://instagram.com/YOUR_HANDLE" target="_blank" aria-label="Instagram">
-    <i class="fab fa-instagram"></i>
-  </a>
-
-  <a href="https://tiktok.com/@YOUR_HANDLE" target="_blank" aria-label="TikTok">
-    <i class="fab fa-tiktok"></i>
-  </a>
 
   <a href="https://whatsapp.com/channel/0029Vb7j7C7GJP89qB7k6e3i" target="_blank" aria-label="WhatsApp Channel">
   <i class="fab fa-whatsapp"></i>
@@ -923,7 +911,7 @@ function renderJobsUI(jobs) {
     const jobSlug = (typeof job.slug === 'string' && job.slug.trim()) ? job.slug.trim() : '';
 
     const card = document.createElement('a');
-    card.href = "jobs.html?slug=" + encodeURIComponent(jobSlug);
+    card.href = jobSlug ? "/jobs/" + encodeURIComponent(jobSlug) : "/jobs";
     card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
     card.dataset.croEvent = 'home_job_open';
     card.dataset.jobTitle = job.title || '';
@@ -1053,14 +1041,14 @@ function redirectTo(target, term) {
   const q = encodeURIComponent(term);
   if (target === "jobs") {
     localStorage.setItem("homeSearchTerm", term);
-    window.location.href = "jobs.html?q=" + q;
+    window.location.href = "/jobs?q=" + q;
     return;
   }
   localStorage.setItem("globalSearchTerm", term);
-  if (target === "bursaries") { window.location.href = "bursaries.html?q=" + q; return; }
-  if (target === "varsity") { window.location.href = "varsity.html?q=" + q; return; }
+  if (target === "bursaries") { window.location.href = "/bursaries?q=" + q; return; }
+  if (target === "varsity") { window.location.href = "/varsity?q=" + q; return; }
   localStorage.setItem("homeSearchTerm", term);
-  window.location.href = "jobs.html?q=" + q;
+  window.location.href = "/jobs?q=" + q;
 }
 
 function decideBestTarget(scores) {
@@ -1132,7 +1120,7 @@ async function performSearch() {
 
   if (!counts) {
     localStorage.setItem("homeSearchTerm", term);
-    window.location.href = "jobs.html";
+    window.location.href = "/jobs";
     return;
   }
 
@@ -1146,7 +1134,7 @@ async function performSearch() {
 
   if (total === 0) {
     localStorage.setItem("homeSearchTerm", term);
-    window.location.href = "jobs.html";
+    window.location.href = "/jobs";
     return;
   }
 

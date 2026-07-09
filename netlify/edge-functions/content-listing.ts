@@ -188,12 +188,14 @@ export default async (request: Request, context: EdgeContext) => {
   try {
     let marker = "";
     let listHtml = "";
+    let resultCount = 0;
     let schema: Record<string, unknown> | null = null;
 
     if (pathname === "/jobs" || pathname === "/jobs.html") {
       const jobs = await getActiveJobs();
       marker = "<!-- SSR_JOB_LIST -->";
       listHtml = renderJobs(jobs);
+      resultCount = jobs.length;
       schema = itemListSchema(
         "Active jobs in South Africa",
         jobs.map((job: JobSummary) => ({
@@ -205,6 +207,7 @@ export default async (request: Request, context: EdgeContext) => {
       const bursaries = await getActiveBursaries();
       marker = "<!-- SSR_BURSARY_LIST -->";
       listHtml = renderBursaries(bursaries);
+      resultCount = bursaries.length;
       schema = itemListSchema(
         "Active bursaries in South Africa",
         bursaries.map((bursary: BursarySummary) => ({
@@ -216,6 +219,7 @@ export default async (request: Request, context: EdgeContext) => {
       const universities = await getUniversities();
       marker = "<!-- SSR_VARSITY_LIST -->";
       listHtml = renderUniversities(universities);
+      resultCount = universities.length;
       schema = itemListSchema(
         "South African university applications",
         universities.map((university: UniversitySummary) => ({
@@ -228,6 +232,17 @@ export default async (request: Request, context: EdgeContext) => {
     }
 
     let html = await response.clone().text();
+    if (pathname === "/jobs" || pathname === "/jobs.html") {
+      html = html.replace(
+        '<strong id="jobResultCount">0</strong> opportunities found',
+        `<strong id="jobResultCount">${resultCount}</strong> opportunities found`,
+      );
+    } else if (pathname === "/bursaries" || pathname === "/bursaries.html") {
+      html = html.replace(
+        '<p class="search-hint"></p>',
+        `<p class="search-hint"><strong id="bursaryResultCount">${resultCount}</strong> bursaries found</p>`,
+      );
+    }
     html = html.replace(marker, listHtml);
     html = html.replace(
       "</head>",

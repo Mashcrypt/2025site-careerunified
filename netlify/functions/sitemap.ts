@@ -4,6 +4,7 @@ const SITE_URL = "https://careerunified.com";
 const PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || "qjg5raj1";
 const DATASET = process.env.VITE_SANITY_DATASET || "production";
 const API_VERSION = "2023-10-01";
+const STATIC_LASTMOD = "2026-07-09";
 
 type SitemapEntry = {
   loc: string;
@@ -53,19 +54,18 @@ function sanityUrl(query: string) {
 }
 
 function staticEntries(): SitemapEntry[] {
-  const now = today();
   return [
-    {loc: `${SITE_URL}/`, lastmod: now, changefreq: "weekly", priority: "1.0"},
-    {loc: `${SITE_URL}/jobs.html`, lastmod: now, changefreq: "daily", priority: "0.9"},
-    {loc: `${SITE_URL}/bursaries.html`, lastmod: now, changefreq: "daily", priority: "0.9"},
-    {loc: `${SITE_URL}/varsity.html`, lastmod: now, changefreq: "weekly", priority: "0.85"},
-    {loc: `${SITE_URL}/cv-tips`, lastmod: now, changefreq: "weekly", priority: "0.85"},
-    {loc: `${SITE_URL}/cv-generator/`, lastmod: now, changefreq: "monthly", priority: "0.8"},
-    {loc: `${SITE_URL}/z83-filler`, lastmod: now, changefreq: "monthly", priority: "0.8"},
-    {loc: `${SITE_URL}/about-us.html`, lastmod: now, changefreq: "monthly", priority: "0.6"},
-    {loc: `${SITE_URL}/contact-us.html`, lastmod: now, changefreq: "monthly", priority: "0.5"},
-    {loc: `${SITE_URL}/privacy.html`, lastmod: now, changefreq: "yearly", priority: "0.3"},
-    {loc: `${SITE_URL}/terms.html`, lastmod: now, changefreq: "yearly", priority: "0.3"},
+    {loc: `${SITE_URL}/`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "1.0"},
+    {loc: `${SITE_URL}/jobs`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
+    {loc: `${SITE_URL}/bursaries`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
+    {loc: `${SITE_URL}/varsity`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
+    {loc: `${SITE_URL}/cv-tips`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
+    {loc: `${SITE_URL}/cv-generator/`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
+    {loc: `${SITE_URL}/z83-filler`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
+    {loc: `${SITE_URL}/about-us`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.6"},
+    {loc: `${SITE_URL}/contact-us`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.5"},
+    {loc: `${SITE_URL}/privacy`, lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3"},
+    {loc: `${SITE_URL}/terms`, lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3"},
   ];
 }
 

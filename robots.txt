@@ -3,14 +3,25 @@ User-agent: *
 
 # Block private/admin pages
 Disallow: /admin.html
+Disallow: /admin
 Disallow: /admin-dashboard.html
+Disallow: /admin-dashboard
 Disallow: /interview-questions-admin.html
+Disallow: /interview-questions-admin
 Disallow: /recruiter-dashboard.html
+Disallow: /recruiter-dashboard
 Disallow: /recruiter-apply.html
+Disallow: /recruiter-apply
 Disallow: /account-page.html
+Disallow: /account-page
 Disallow: /login.html
+Disallow: /login
 Disallow: /signup.html
+Disallow: /signup
 Disallow: /saved-items.html
+Disallow: /saved-items
+Disallow: /jobs.html?
+Disallow: /bursaries.html?
 Disallow: /billing/
 Disallow: /netlify/
 Disallow: /sanity/

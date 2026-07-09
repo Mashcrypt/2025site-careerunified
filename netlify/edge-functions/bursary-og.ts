@@ -83,7 +83,7 @@ export default async (request: Request) => {
     const slug = parts.length >= 2 ? parts[1] : null;
 
     if (!slug || slug === "bursary") {
-      return Response.redirect("https://careerunified.com/bursaries.html", 301);
+      return Response.redirect("https://careerunified.com/bursaries", 301);
     }
 
     const [bursary, activeBursaries] = await Promise.all([
@@ -156,7 +156,7 @@ export default async (request: Request) => {
           "@id": `${shareUrl}#breadcrumb`,
           itemListElement: [
             {"@type": "ListItem", position: 1, name: "Home", item: "https://careerunified.com/"},
-            {"@type": "ListItem", position: 2, name: "Bursaries", item: "https://careerunified.com/bursaries.html"},
+            {"@type": "ListItem", position: 2, name: "Bursaries", item: "https://careerunified.com/bursaries"},
             {"@type": "ListItem", position: 3, name: bursaryName, item: shareUrl},
           ],
         },
@@ -205,14 +205,6 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
-  <script>
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      const desktopUrl = new URL("/bursaries.html", window.location.origin);
-      desktopUrl.searchParams.set("slug", ${jsonLd(slug)});
-      desktopUrl.searchParams.set("view", "desktop");
-      window.location.replace(desktopUrl.pathname + desktopUrl.search);
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -296,7 +288,7 @@ export default async (request: Request) => {
       <div class="mobile-preview-header">
         <h1>${escapeHtml(bursaryName)}</h1>
         <div class="preview-actions">
-          <a class="close-preview" href="https://careerunified.com/bursaries.html" aria-label="Close bursary details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
+          <a class="close-preview" href="https://careerunified.com/bursaries" aria-label="Close bursary details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
           <button class="share-btn" id="share-bursary" type="button">Share</button>
         </div>
       </div>
