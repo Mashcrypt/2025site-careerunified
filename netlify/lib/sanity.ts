@@ -15,6 +15,7 @@ function slugify(value: unknown) {
     .replace(/\bclosing\s+soon\b/g, "")
     .replace(/\bor\s+apply\b/g, "")
     .replace(/\bapply\b$/g, "")
+    .replace(/\bor\b/g, "")
     .replace(/speciliast/g, "specialist")
     .replace(/machanical/g, "mechanical")
     .replace(/[^a-z0-9]+/g, "-")
@@ -46,6 +47,9 @@ function legacyJobSlugs(slug: string) {
   const values = new Set([slug]);
   values.add(slug.replace(/specialist/g, "speciliast"));
   values.add(slug.replace(/mechanical/g, "machanical"));
+  values.add(`${slug}-closing-soon`);
+  values.add(`${slug}-apply-now`);
+  values.add(`${slug}-or-apply-now`);
   return Array.from(values).filter(Boolean);
 }
 
@@ -77,15 +81,29 @@ export async function getJob(jobId: string) {
 }
 
 export async function getJobBySlug(slug: string) {
+  const cleanSlug = cleanJobSlug(slug);
   const job = await querySanity(
     `*[_type == "job" && (slug.current in $slugs || _id in $slugs)][0]{
       _id, _updatedAt, title, "slug": coalesce(slug.current, _id), description, location,
       salary, posted, deadline, deadlineText, jobType, applyLink,
       "companyName": company->name, "companyLogo": company->logo.asset->url
     }`,
-    {slugs: legacyJobSlugs(slug)},
+    {slugs: legacyJobSlugs(cleanSlug)},
   );
-  return normalizeJob(job);
+  const normalized = normalizeJob(job);
+  if (normalized) return normalized;
+
+  const candidates = await querySanity(
+    `*[_type == "job" && (!defined(deadline) || deadline >= $today)]{
+      _id, _updatedAt, title, "slug": coalesce(slug.current, _id), description, location,
+      salary, posted, deadline, deadlineText, jobType, applyLink,
+      "companyName": company->name, "companyLogo": company->logo.asset->url
+    }`,
+    {today: today()},
+  );
+  return Array.isArray(candidates)
+    ? candidates.map((candidate) => normalizeJob(candidate)).find((candidate) => candidate?.slug === cleanSlug) || null
+    : null;
 }
 
 export async function getActiveJobs(limit = 200) {

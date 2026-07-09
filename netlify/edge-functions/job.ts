@@ -128,7 +128,11 @@ export default async (request: Request) => {
 
     const companyName = job.companyName || "Confidential";
     const jobTitle = job.title || "Job Opportunity";
-    const shareUrl = `https://careerunified.com/jobs/${slug}`;
+    const canonicalSlug = job.slug || slug;
+    if (canonicalSlug !== slug) {
+      return Response.redirect(`https://careerunified.com/jobs/${encodeURIComponent(canonicalSlug)}`, 301);
+    }
+    const shareUrl = `https://careerunified.com/jobs/${canonicalSlug}`;
     const image = job.companyLogo || "https://careerunified.com/android-chrome-512x512.png";
     const salaryText = job.salary || "Not specified";
     const locationText = job.location || "South Africa";
@@ -139,7 +143,7 @@ export default async (request: Request) => {
     const description = stripHtml(job.description);
     const metaDescription = `${companyName} - ${locationText} - Salary: ${salaryText} - ${snippet(description)}`.trim();
     const pageTitle = `${jobTitle} at ${companyName} | Career Unified`;
-    const currentIndex = activeJobs.findIndex((item: JobSummary) => item.slug === slug);
+    const currentIndex = activeJobs.findIndex((item: JobSummary) => item.slug === canonicalSlug);
     const previousJob = currentIndex > 0 ? activeJobs[currentIndex - 1] : null;
     const nextJob = currentIndex >= 0 && currentIndex < activeJobs.length - 1
       ? activeJobs[currentIndex + 1]

@@ -27,6 +27,7 @@ export default {
             .replace(/\bclosing\s+soon\b/g, '')
             .replace(/\bor\s+apply\b/g, '')
             .replace(/\bapply\b$/g, '')
+            .replace(/\bor\b/g, '')
             .replace(/speciliast/g, 'specialist')
             .replace(/machanical/g, 'mechanical')
             .replace(/[^a-z0-9]+/g, '-')

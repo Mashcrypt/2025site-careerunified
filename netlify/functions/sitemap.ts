@@ -15,6 +15,7 @@ type SitemapEntry = {
 
 type SanityItem = {
   slug?: string;
+  title?: string;
   name?: string;
   _updatedAt?: string;
   _createdAt?: string;
@@ -27,6 +28,13 @@ function slugify(value?: string) {
     .toLowerCase()
     .trim()
     .replace(/&/g, "and")
+    .replace(/\bapply\s+now\b/g, "")
+    .replace(/\bclosing\s+soon\b/g, "")
+    .replace(/\bor\s+apply\b/g, "")
+    .replace(/\bapply\b$/g, "")
+    .replace(/\bor\b/g, "")
+    .replace(/speciliast/g, "specialist")
+    .replace(/machanical/g, "mechanical")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
@@ -76,6 +84,7 @@ async function fetchSanityItems(type: "job" | "bursary" | "university", limit = 
   const deadlineFilter = type === "university" ? "" : ` && (!defined(deadline) || deadline >= "${today()}")`;
   const query = `*[_type == "${type}"${deadlineFilter}] | order(coalesce(_updatedAt, _createdAt) desc)[0...${limit}]{
     ${slugPath},
+    title,
     name,
     _updatedAt,
     _createdAt,
@@ -100,6 +109,10 @@ async function fetchSanityItems(type: "job" | "bursary" | "university", limit = 
 
 function opportunityEntries(items: SanityItem[], basePath: "jobs" | "bursary" | "varsity", priority: string): SitemapEntry[] {
   return items
+    .map((item) => ({
+      ...item,
+      slug: slugify(item.slug || item.title || item.name),
+    }))
     .filter((item) => item.slug)
     .map((item) => ({
       loc: `${SITE_URL}/${basePath}/${encodeURIComponent(String(item.slug))}`,
