@@ -95,12 +95,11 @@ export async function getJobBySlug(slug: string) {
   if (normalized) return normalized;
 
   const candidates = await querySanity(
-    `*[_type == "job" && (!defined(deadline) || deadline >= $today)]{
+    `*[_type == "job"]{
       _id, _updatedAt, title, "slug": coalesce(slug.current, _id), description, location,
       salary, posted, deadline, deadlineText, jobType, applyLink,
       "companyName": company->name, "companyLogo": company->logo.asset->url
     }`,
-    {today: today()},
   );
   return Array.isArray(candidates)
     ? candidates.map((candidate) => normalizeJob(candidate)).find((candidate) => candidate?.slug === cleanSlug) || null

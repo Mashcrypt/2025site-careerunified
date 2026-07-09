@@ -1530,11 +1530,14 @@
       };
     }
 
-    function findJobInMemoryBySlug(slug) { return jobs.find(j => j.slug === slug) || null; }
+    function findJobInMemoryBySlug(slug) {
+      const cleanSlug = slugify(slug);
+      return jobs.find(j => j.slug === slug || j.slug === cleanSlug || slugify(j.slug) === cleanSlug) || null;
+    }
 
     async function fetchFirestoreJobBySlug(slug) {
       try {
-        const snap = await firebase.firestore().collection('jobs').where('slug', '==', slug).limit(1).get();
+        const snap = await firebase.firestore().collection('jobs').where('slug', '==', slugify(slug)).limit(1).get();
         if (snap.empty) return null;
         const doc = snap.docs[0];
         return normalizeRecruiterJob(doc.id, doc.data() || {});
@@ -1668,7 +1671,6 @@
             }
             return;
           }
-          if (e.target.closest('.job-title-link')) return;
           selectedIndex = index;
           const j = filteredJobs[selectedIndex];
           history.pushState({}, '', `/jobs/${j.slug}`);

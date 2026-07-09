@@ -566,7 +566,7 @@
 
 <!-- HERO -->
 <header class="hero">
-  <h1>Career Unified - Jobs, Bursaries and CV Tools for South African Students and Graduates</h1>
+  <h1>Career Unified</h1>
   <p class="slogan">One click from your dream</p>
 
   <form class="hero-search" onsubmit="performSearch(); return false;" role="search" aria-label="Search jobs, bursaries and universities">
@@ -914,6 +914,7 @@ function renderJobsUI(jobs) {
     card.href = jobSlug ? "/jobs/" + encodeURIComponent(jobSlug) : "/jobs";
     card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
     card.dataset.croEvent = 'home_job_open';
+    card.dataset.jobSlug = jobSlug;
     card.dataset.jobTitle = job.title || '';
     card.dataset.jobCompany = companyName || 'Confidential';
     card.style.textDecoration = "none";
@@ -939,6 +940,15 @@ function renderJobsUI(jobs) {
 }
 
 renderRecentJobs();
+
+document.addEventListener('click', event => {
+  const card = event.target.closest?.('[data-cro-event="home_job_open"][data-job-slug]');
+  if (!card || window.innerWidth <= 900) return;
+  const slug = card.dataset.jobSlug;
+  if (!slug) return;
+  event.preventDefault();
+  window.location.href = '/jobs?slug=' + encodeURIComponent(slug);
+});
 
 const statBursaries = document.getElementById("statBursaries");
 const statVarsity = document.getElementById("statVarsity");

@@ -31,7 +31,7 @@ function renderRecentJobs(jobs: JobSummary[]) {
       const url = slug ? `/jobs/${encodeURIComponent(slug)}` : "/jobs";
       const closing = String(job.deadlineText || job.deadline || "Not specified").trim();
 
-      return `<a href="${escapeHtml(url)}" class="job-card" data-cro-event="home_job_open" data-job-title="${escapeHtml(job.title || "")}" data-job-company="${escapeHtml(job.companyName || "Confidential")}" style="text-decoration:none;color:inherit">
+      return `<a href="${escapeHtml(url)}" class="job-card" data-cro-event="home_job_open" data-job-slug="${escapeHtml(slug)}" data-job-title="${escapeHtml(job.title || "")}" data-job-company="${escapeHtml(job.companyName || "Confidential")}" style="text-decoration:none;color:inherit">
         <h3>
           ${escapeHtml(job.title || "Job opportunity")}
           ${job.category ? `<span class="badge">${escapeHtml(job.category)}</span>` : ""}

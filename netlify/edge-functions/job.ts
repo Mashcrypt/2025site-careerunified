@@ -47,6 +47,18 @@ function jsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+function browserDesktopRedirectScript(slug: string) {
+  return `<script>
+    (() => {
+      const ua = navigator.userAgent || "";
+      const isBot = /bot|crawler|spider|crawling|google|bing|yandex|duckduck|baidu|slurp|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
+      if (!isBot && window.innerWidth > 900) {
+        window.location.replace("/jobs?slug=${encodeURIComponent(slug)}");
+      }
+    })();
+  </script>`;
+}
+
 function detailRow(label: string, value: unknown, className = "") {
   const classes = ["detail-row", className].filter(Boolean).join(" ");
   return `<div class="${classes}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not specified")}</strong></div>`;
@@ -248,6 +260,7 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
+  ${browserDesktopRedirectScript(canonicalSlug)}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
