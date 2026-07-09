@@ -21,6 +21,9 @@ import { motion } from 'motion/react';
 
 interface ATSScoreProps {
   data: ResumeData;
+  jobDescription: string;
+  onJobDescriptionChange: (value: string) => void;
+  onOpenAITailor: () => void;
 }
 
 type FindingType = 'critical' | 'warning' | 'success';
@@ -37,8 +40,6 @@ type ScoreBreakdown = {
   max: number;
   note: string;
 };
-
-const ATS_JOB_STORAGE_KEY = 'careerUnifiedATSJobDescriptionV1';
 
 const STOP_WORDS = new Set([
   'about',
@@ -433,32 +434,9 @@ function scoreResume(data: ResumeData, jobDescription: string) {
   };
 }
 
-function getInitialJobDescription() {
-  if (typeof window === 'undefined') return '';
-
-  try {
-    const saved = window.localStorage.getItem(ATS_JOB_STORAGE_KEY);
-    if (saved) return saved;
-
-    const importedJob = window.sessionStorage.getItem('careerUnifiedAITailorJob');
-    if (!importedJob) return '';
-
-    const payload = JSON.parse(importedJob) as { fullText?: unknown };
-    return typeof payload.fullText === 'string' ? payload.fullText : '';
-  } catch {
-    return '';
-  }
-}
-
-export function ATSScore({ data }: ATSScoreProps) {
-  const [jobDescription, setJobDescription] = useState(() => getInitialJobDescription());
+export function ATSScore({ data, jobDescription, onJobDescriptionChange, onOpenAITailor }: ATSScoreProps) {
   const analysis = useMemo(() => scoreResume(data, jobDescription), [data, jobDescription]);
   const [score, setScore] = useState(analysis.score);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem(ATS_JOB_STORAGE_KEY, jobDescription);
-  }, [jobDescription]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -513,7 +491,7 @@ export function ATSScore({ data }: ATSScoreProps) {
           </div>
           <Textarea
             value={jobDescription}
-            onChange={(event) => setJobDescription(event.target.value)}
+            onChange={(event) => onJobDescriptionChange(event.target.value)}
             rows={7}
             className="bg-white"
             placeholder="Paste the job advert or requirements here to check real keyword match, missing skills, and role alignment..."
@@ -521,7 +499,7 @@ export function ATSScore({ data }: ATSScoreProps) {
           <div className="mt-3 flex flex-col gap-2 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
             <span>{jobDescription.trim() ? `${countWords(jobDescription)} useful words detected` : 'No job post pasted yet'}</span>
             {jobDescription ? (
-              <Button type="button" variant="ghost" size="sm" onClick={() => setJobDescription('')}>
+              <Button type="button" variant="ghost" size="sm" onClick={() => onJobDescriptionChange('')}>
                 Clear job post
               </Button>
             ) : null}
@@ -685,8 +663,8 @@ export function ATSScore({ data }: ATSScoreProps) {
               </p>
             </div>
           </div>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <a href="/cv-generator/?tab=ai">Open AI Tailor</a>
+          <Button type="button" onClick={onOpenAITailor} className="bg-blue-600 hover:bg-blue-700">
+            Open AI Tailor
           </Button>
         </div>
       </CardContent>

@@ -71,6 +71,7 @@ import { getFirebaseAuth, getFirebaseDb, getFirebaseStorage } from './utils/fire
 
 const initialData: ResumeData = southAfricanSampleData;
 const Z83_PREFILL_STORAGE_KEY = 'careerUnifiedZ83PrefillV1';
+const ACTIVE_JOB_DESCRIPTION_STORAGE_KEY = 'careerUnifiedActiveJobDescriptionV1';
 
 type PremiumTemplateId =
   | 'ats-pro'
@@ -644,6 +645,26 @@ function getInitialTabFromUrl(): AppTab {
   return 'build';
 }
 
+function getInitialActiveJobDescription() {
+  if (typeof window === 'undefined') return '';
+
+  try {
+    const importedJob = window.sessionStorage.getItem('careerUnifiedAITailorJob');
+    if (importedJob) {
+      const payload = JSON.parse(importedJob) as { fullText?: unknown };
+      if (typeof payload.fullText === 'string' && payload.fullText.trim()) return payload.fullText;
+    }
+
+    return (
+      window.localStorage.getItem(ACTIVE_JOB_DESCRIPTION_STORAGE_KEY) ||
+      window.localStorage.getItem('careerUnifiedATSJobDescriptionV1') ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+}
+
 export default function App() {
 
     const [resumeData, setResumeData] = useState<ResumeData>(() => {
@@ -679,19 +700,7 @@ export default function App() {
   const [selectedColor, setSelectedColor] = useState('blue');
   const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
   const [resumeVersionsRefreshKey, setResumeVersionsRefreshKey] = useState(0);
-  const [initialAIJobDescription] = useState(() => {
-    if (typeof window === 'undefined') return '';
-
-    try {
-      const raw = window.sessionStorage.getItem('careerUnifiedAITailorJob');
-      if (!raw) return '';
-
-      const payload = JSON.parse(raw) as { fullText?: unknown };
-      return typeof payload.fullText === 'string' ? payload.fullText : '';
-    } catch {
-      return '';
-    }
-  });
+  const [activeJobDescription, setActiveJobDescription] = useState(() => getInitialActiveJobDescription());
 
   // ✅ EDIT #1: On mobile, start at 100% immediately (prevents ugly uncentered first render flash)
   const [previewScale, setPreviewScale] = useState(() => {
@@ -1149,6 +1158,26 @@ export default function App() {
     url.searchParams.set('tab', nextTab);
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      if (activeJobDescription.trim()) {
+        window.localStorage.setItem(ACTIVE_JOB_DESCRIPTION_STORAGE_KEY, activeJobDescription);
+        window.localStorage.setItem('careerUnifiedATSJobDescriptionV1', activeJobDescription);
+      } else {
+        window.localStorage.removeItem(ACTIVE_JOB_DESCRIPTION_STORAGE_KEY);
+        window.localStorage.removeItem('careerUnifiedATSJobDescriptionV1');
+      }
+    } catch {
+      // In-memory state still keeps Analytics and AI Tailor synced for this session.
+    }
+  }, [activeJobDescription]);
+
+  const openAITailorFromAnalytics = useCallback(() => {
+    handleTabChange('ai');
+  }, [handleTabChange]);
 
   const handleUseCvForZ83 = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -1804,7 +1833,8 @@ export default function App() {
                     <AITailor
                       data={resumeData}
                       onApplySuggestions={setResumeData}
-                      initialJobDescription={initialAIJobDescription}
+                      jobDescription={activeJobDescription}
+                      onJobDescriptionChange={setActiveJobDescription}
                     />
                   </div>
                 </ScrollArea>
@@ -1813,7 +1843,12 @@ export default function App() {
               <TabsContent value="analytics" className="mt-0">
                 <ScrollArea className="h-[calc(100vh-280px)]">
                   <div className="pr-4">
-                    <ATSScore data={resumeData} />
+                    <ATSScore
+                      data={resumeData}
+                      jobDescription={activeJobDescription}
+                      onJobDescriptionChange={setActiveJobDescription}
+                      onOpenAITailor={openAITailorFromAnalytics}
+                    />
                   </div>
                 </ScrollArea>
               </TabsContent>

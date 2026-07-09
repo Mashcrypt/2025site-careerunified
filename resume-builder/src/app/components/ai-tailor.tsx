@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   Sparkles,
   Loader2,
@@ -26,7 +26,8 @@ import { getFirebaseAuth, getFirebaseDb } from '../utils/firebaseClient';
 interface AITailorProps {
   data: ResumeData;
   onApplySuggestions: (data: ResumeData) => void;
-  initialJobDescription?: string;
+  jobDescription: string;
+  onJobDescriptionChange: (value: string) => void;
 }
 
 type TailorMode = 'tailor' | 'cover_letter';
@@ -171,12 +172,10 @@ function hasClosingAlready(text: string) {
   return /(sincerely|kind regards|regards|yours faithfully|yours sincerely|best regards)/i.test(tail);
 }
 
-export function AITailor({ data, onApplySuggestions, initialJobDescription }: AITailorProps) {
+export function AITailor({ data, onApplySuggestions, jobDescription, onJobDescriptionChange }: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
-  const [jobDescription, setJobDescription] = useState('');
   const [hasImportedJobDescription, setHasImportedJobDescription] = useState(false);
-  const hasAppliedInitialJobDescription = useRef(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Tailor results
@@ -222,27 +221,15 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
     setNeedsUpgrade(false);
   }, []);
 
-  useEffect(() => {
-    if (hasAppliedInitialJobDescription.current) return;
-    if (!initialJobDescription?.trim()) return;
-
-    hasAppliedInitialJobDescription.current = true;
-
-    if (!jobDescription.trim()) {
-      setJobDescription(initialJobDescription);
-      setHasImportedJobDescription(true);
-    }
-  }, [initialJobDescription, jobDescription]);
-
   const clearImportedJob = useCallback(() => {
     if (typeof window !== 'undefined') {
       window.sessionStorage.removeItem('careerUnifiedAITailorJob');
     }
 
-    setJobDescription('');
+    onJobDescriptionChange('');
     setHasImportedJobDescription(false);
     resetResults();
-  }, [resetResults]);
+  }, [onJobDescriptionChange, resetResults]);
 
   const getIdTokenOrThrow = useCallback(async () => {
     if (!isFirebaseConfigured()) {
@@ -811,7 +798,11 @@ export function AITailor({ data, onApplySuggestions, initialJobDescription }: AI
           <Textarea
             id="jobDescription"
             value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
+            onChange={(e) => {
+              onJobDescriptionChange(e.target.value);
+              setHasImportedJobDescription(false);
+              resetResults();
+            }}
             placeholder="Paste the job description here. Include required skills, qualifications, and responsibilities..."
             rows={8}
             className="bg-white"
