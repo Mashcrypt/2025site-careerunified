@@ -358,7 +358,8 @@ export default async (request: Request, context: EdgeContext) => {
       .panel{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;margin:0}
       .mobile-preview-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
       .mobile-preview-header h1{flex:1;min-width:0;color:#1e3a8a;font-size:1.4rem;line-height:1.3;margin:0;overflow-wrap:anywhere}
-      .close-preview{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:32px;height:32px;color:#3b82f6;font-size:2rem;line-height:1;text-decoration:none}
+      .close-preview{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:28px;height:32px;color:#3b82f6;text-decoration:none}
+      .close-preview svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-width:2.5}
       .details{grid-template-columns:1fr}
       .secondary-detail{display:none}
       .detail-row{border-color:#dbeafe;border-radius:14px;padding:16px;background:#f8fbff}
@@ -394,7 +395,7 @@ export default async (request: Request, context: EdgeContext) => {
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 10.7 6.8-4.1"></path><path d="m8.6 13.3 6.8 4.1"></path></svg>
             <span>Share</span>
           </button>
-          <a class="close-preview" id="close-job" href="https://careerunified.com/jobs" aria-label="Close job details">&times;</a>
+          <a class="close-preview" id="close-job" href="https://careerunified.com/jobs" aria-label="Close job details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
         </div>
       </div>
       <div class="details">
