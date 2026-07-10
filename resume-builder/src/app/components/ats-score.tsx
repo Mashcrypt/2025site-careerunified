@@ -23,7 +23,7 @@ interface ATSScoreProps {
   data: ResumeData;
   jobDescription: string;
   onJobDescriptionChange: (value: string) => void;
-  onOpenAITailor: () => void;
+  onOpenAITailor: (atsFeedback: string) => void;
 }
 
 type FindingType = 'critical' | 'warning' | 'success';
@@ -434,8 +434,35 @@ function scoreResume(data: ResumeData, jobDescription: string) {
   };
 }
 
+function buildAtsFeedbackForTailor(analysis: ReturnType<typeof scoreResume>) {
+  const weakestBreakdown = [...analysis.breakdown]
+    .sort((a, b) => a.score / a.max - b.score / b.max)
+    .slice(0, 3)
+    .map((item) => `${item.label}: ${item.score}/${item.max} - ${item.note}`);
+
+  const findings = analysis.findings
+    .filter((finding) => finding.type !== 'success')
+    .map((finding) => `${finding.title}: ${finding.detail}`);
+
+  return [
+    `Current ATS score: ${analysis.score}/100 (${analysis.confidence}).`,
+    analysis.missingKeywords.length
+      ? `Missing job keywords to add truthfully where supported by the resume: ${analysis.missingKeywords.join(', ')}.`
+      : 'No major missing keywords detected.',
+    analysis.matchedKeywords.length
+      ? `Already matched keywords: ${analysis.matchedKeywords.join(', ')}.`
+      : 'Few strong keyword matches were detected.',
+    weakestBreakdown.length ? `Weakest score areas: ${weakestBreakdown.join(' | ')}.` : '',
+    findings.length ? `Priority ATS feedback: ${findings.join(' | ')}.` : '',
+    'Rewrite the resume to improve the ATS score without inventing facts. Prioritize summary, skills, and experience bullets.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
 export function ATSScore({ data, jobDescription, onJobDescriptionChange, onOpenAITailor }: ATSScoreProps) {
   const analysis = useMemo(() => scoreResume(data, jobDescription), [data, jobDescription]);
+  const atsFeedbackForTailor = useMemo(() => buildAtsFeedbackForTailor(analysis), [analysis]);
   const [score, setScore] = useState(analysis.score);
 
   useEffect(() => {
@@ -663,7 +690,7 @@ export function ATSScore({ data, jobDescription, onJobDescriptionChange, onOpenA
               </p>
             </div>
           </div>
-          <Button type="button" onClick={onOpenAITailor} className="bg-blue-600 hover:bg-blue-700">
+          <Button type="button" onClick={() => onOpenAITailor(atsFeedbackForTailor)} className="bg-blue-600 hover:bg-blue-700">
             Open AI Tailor
           </Button>
         </div>

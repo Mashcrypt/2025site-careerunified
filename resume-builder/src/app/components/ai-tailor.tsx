@@ -28,6 +28,8 @@ interface AITailorProps {
   onApplySuggestions: (data: ResumeData) => void;
   jobDescription: string;
   onJobDescriptionChange: (value: string) => void;
+  atsFeedback?: string;
+  onClearAtsFeedback?: () => void;
 }
 
 type TailorMode = 'tailor' | 'cover_letter';
@@ -172,7 +174,14 @@ function hasClosingAlready(text: string) {
   return /(sincerely|kind regards|regards|yours faithfully|yours sincerely|best regards)/i.test(tail);
 }
 
-export function AITailor({ data, onApplySuggestions, jobDescription, onJobDescriptionChange }: AITailorProps) {
+export function AITailor({
+  data,
+  onApplySuggestions,
+  jobDescription,
+  onJobDescriptionChange,
+  atsFeedback,
+  onClearAtsFeedback,
+}: AITailorProps) {
   const [mode, setMode] = useState<TailorMode>('tailor');
 
   const [hasImportedJobDescription, setHasImportedJobDescription] = useState(false);
@@ -448,6 +457,7 @@ export function AITailor({ data, onApplySuggestions, jobDescription, onJobDescri
           mode,
           resumeData: data,
           jobDescription,
+          atsFeedback,
         }),
       });
 
@@ -795,11 +805,24 @@ export function AITailor({ data, onApplySuggestions, jobDescription, onJobDescri
               Job description imported from Career Unified jobs.
             </div>
           )}
+          {atsFeedback?.trim() && mode === 'tailor' && (
+            <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span>ATS feedback loaded. The next AI tailor run will target the missing keywords and weak score areas.</span>
+                {onClearAtsFeedback && (
+                  <Button type="button" variant="outline" size="sm" onClick={onClearAtsFeedback} className="bg-white">
+                    Clear ATS feedback
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
           <Textarea
             id="jobDescription"
             value={jobDescription}
             onChange={(e) => {
               onJobDescriptionChange(e.target.value);
+              onClearAtsFeedback?.();
               setHasImportedJobDescription(false);
               resetResults();
             }}

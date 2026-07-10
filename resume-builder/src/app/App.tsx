@@ -701,6 +701,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>(() => getInitialTabFromUrl());
   const [resumeVersionsRefreshKey, setResumeVersionsRefreshKey] = useState(0);
   const [activeJobDescription, setActiveJobDescription] = useState(() => getInitialActiveJobDescription());
+  const [atsFeedbackForTailor, setAtsFeedbackForTailor] = useState('');
 
   // ✅ EDIT #1: On mobile, start at 100% immediately (prevents ugly uncentered first render flash)
   const [previewScale, setPreviewScale] = useState(() => {
@@ -1175,7 +1176,8 @@ export default function App() {
     }
   }, [activeJobDescription]);
 
-  const openAITailorFromAnalytics = useCallback(() => {
+  const openAITailorFromAnalytics = useCallback((atsFeedback: string) => {
+    setAtsFeedbackForTailor(atsFeedback);
     handleTabChange('ai');
   }, [handleTabChange]);
 
@@ -1835,6 +1837,8 @@ export default function App() {
                       onApplySuggestions={setResumeData}
                       jobDescription={activeJobDescription}
                       onJobDescriptionChange={setActiveJobDescription}
+                      atsFeedback={atsFeedbackForTailor}
+                      onClearAtsFeedback={() => setAtsFeedbackForTailor('')}
                     />
                   </div>
                 </ScrollArea>
