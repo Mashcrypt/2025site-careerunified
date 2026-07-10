@@ -1,6 +1,10 @@
 import {getActiveJobs, getJobBySlug} from "../lib/sanity.ts";
 import {getRecruiterJobs, isActiveRecruiterJob} from "../lib/firestore.ts";
 
+type EdgeContext = {
+  next: () => Promise<Response>;
+};
+
 type JobSummary = {
   slug?: string;
   posted?: string;
@@ -132,7 +136,7 @@ function employmentType(value: unknown) {
   return "OTHER";
 }
 
-export default async (request: Request) => {
+export default async (request: Request, context: EdgeContext) => {
   try {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
@@ -144,7 +148,7 @@ export default async (request: Request) => {
 
     const userAgent = request.headers.get("user-agent") || "";
     if (!isPreviewBot(userAgent) && !isMobileUserAgent(userAgent)) {
-      return Response.redirect(`https://careerunified.com/jobs?slug=${encodeURIComponent(slug)}`, 302);
+      return context.next();
     }
 
     const [sanityJob, sanityJobs, recruiterJobs] = await Promise.all([
