@@ -105,7 +105,7 @@ function renderDescriptionLink(url: string, label: string) {
 
 function formatDescriptionHtml(value: unknown) {
   const cleaned = formatDescription(value);
-  const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\((https?:\/\/[^\s<>"')]+)\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
+  const linkPattern = /\[([^\]\n]+)\]\s*\(\s*(https?:\/\/[^\s<>"')]+)\s*\)|\(\s*(https?:\/\/[^\s<>"')]+)\s*\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
   let output = "";
   let lastIndex = 0;
 

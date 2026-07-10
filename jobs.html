@@ -1282,7 +1282,7 @@
 
     function formatDescriptionHtml(value, fallback = 'Description not provided.') {
       const text = safeText(value, fallback);
-      const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\((https?:\/\/[^\s<>"')]+)\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
+      const linkPattern = /\[([^\]\n]+)\]\s*\(\s*(https?:\/\/[^\s<>"')]+)\s*\)|\(\s*(https?:\/\/[^\s<>"')]+)\s*\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
       let output = '';
       let lastIndex = 0;
 
