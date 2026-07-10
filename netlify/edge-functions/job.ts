@@ -47,16 +47,12 @@ function jsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
-function browserDesktopRedirectScript(slug: string) {
-  return `<script>
-    (() => {
-      const ua = navigator.userAgent || "";
-      const isBot = /bot|crawler|spider|crawling|google|bing|yandex|duckduck|baidu|slurp|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
-      if (!isBot && window.innerWidth > 900) {
-        window.location.replace("/jobs?slug=${encodeURIComponent(slug)}");
-      }
-    })();
-  </script>`;
+function isPreviewBot(userAgent: string) {
+  return /bot|crawler|spider|crawling|google|bing|yandex|duckduck|baidu|slurp|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|discordbot/i.test(userAgent);
+}
+
+function isMobileUserAgent(userAgent: string) {
+  return /android|iphone|ipad|ipod|mobile|opera mini|iemobile/i.test(userAgent);
 }
 
 function detailRow(label: string, value: unknown, className = "") {
@@ -88,6 +84,44 @@ function formatDescription(value: unknown) {
   return escapeHtml(cleaned || "Description not provided.");
 }
 
+function renderDescriptionLink(url: string, label: string) {
+  const cleanUrl = url.trim();
+  if (!/^https?:\/\//i.test(cleanUrl)) return escapeHtml(label || url);
+
+  let isInternal = false;
+  try {
+    isInternal = new URL(cleanUrl).origin === "https://careerunified.com";
+  } catch {
+    isInternal = false;
+  }
+
+  const targetAttrs = isInternal ? "" : ' target="_blank" rel="noopener noreferrer"';
+  return `<a class="description-link" href="${escapeHtml(cleanUrl)}"${targetAttrs}>${escapeHtml(label || cleanUrl)}</a>`;
+}
+
+function formatDescriptionHtml(value: unknown) {
+  const cleaned = formatDescription(value);
+  const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s<>"')]+)\)|\((https?:\/\/[^\s<>"')]+)\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
+  let output = "";
+  let lastIndex = 0;
+
+  cleaned.replace(linkPattern, (match, label, markdownUrl, reversedUrl, reversedLabel, offset) => {
+    const url = markdownUrl || reversedUrl || match;
+    const punctuation = markdownUrl || reversedUrl ? "" : (url.match(/[).,!?;:]+$/)?.[0] || "");
+    const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+    const linkLabel = markdownUrl ? String(label).trim() : reversedUrl ? String(reversedLabel).trim() : cleanUrl;
+
+    output += cleaned.slice(lastIndex, offset);
+    output += renderDescriptionLink(cleanUrl, linkLabel);
+    output += escapeHtml(punctuation);
+    lastIndex = offset + match.length;
+    return match;
+  });
+
+  output += cleaned.slice(lastIndex);
+  return output;
+}
+
 function employmentType(value: unknown) {
   const normalized = String(value ?? "").toLowerCase();
   if (normalized.includes("part")) return "PART_TIME";
@@ -106,6 +140,11 @@ export default async (request: Request) => {
 
     if (!slug || slug === "jobs") {
       return Response.redirect("https://careerunified.com/jobs", 301);
+    }
+
+    const userAgent = request.headers.get("user-agent") || "";
+    if (!isPreviewBot(userAgent) && !isMobileUserAgent(userAgent)) {
+      return Response.redirect(`https://careerunified.com/jobs?slug=${encodeURIComponent(slug)}`, 302);
     }
 
     const [sanityJob, sanityJobs, recruiterJobs] = await Promise.all([
@@ -260,7 +299,6 @@ export default async (request: Request) => {
   <meta name="twitter:title" content="${escapeHtml(pageTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
   <meta name="twitter:image" content="${escapeHtml(image)}">
-  ${browserDesktopRedirectScript(canonicalSlug)}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -288,6 +326,8 @@ export default async (request: Request) => {
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
     .detail-row strong{display:block;color:#111827}
     .description-content{color:#374151;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+    .description-link{color:#2563eb;font-weight:700;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+    .description-link:hover,.description-link:focus-visible{color:#1d4ed8}
     .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .actions>:only-child{grid-column:1/-1}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
@@ -363,7 +403,7 @@ export default async (request: Request) => {
       </div>
     </section>
     <section class="panel description">
-      <div class="description-content">${formatDescription(job.description)}</div>
+      <div class="description-content">${formatDescriptionHtml(job.description)}</div>
     </section>
     <section class="panel actions-panel">
       <div class="actions">

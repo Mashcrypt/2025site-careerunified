@@ -27,7 +27,7 @@ async function querySanity(query: string, params: Record<string, unknown> = {}) 
   const search = new URLSearchParams({query});
   Object.entries(params).forEach(([key, value]) => search.set(`$${key}`, JSON.stringify(value)));
 
-  const url = `https://${PROJECT_ID}.apicdn.sanity.io/v${API_VERSION}/data/query/${DATASET}?${search}`;
+  const url = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}?${search}`;
   const response = await fetch(url, {headers: {Accept: "application/json"}});
 
   if (!response.ok) {
@@ -59,6 +59,33 @@ function cleanJobTitle(value: unknown) {
     .replace(/speciliast/gi, "specialist")
     .replace(/machanical/gi, "mechanical")
     .trim();
+}
+
+function slugTokens(value: unknown) {
+  return slugify(value)
+    .split("-")
+    .filter((token) => token && token !== "and");
+}
+
+function isLooseSlugMatch(candidate: Record<string, unknown>, requestedSlug: string) {
+  const requestedTokens = slugTokens(requestedSlug);
+  if (!requestedTokens.length) return false;
+
+  const candidateTokens = slugTokens(candidate.slug || candidate.title || candidate._id);
+  if (!candidateTokens.length) return false;
+
+  const requestedCompact = requestedTokens.join("-");
+  const candidateCompact = candidateTokens.join("-");
+  if (requestedCompact === candidateCompact) return true;
+  if (requestedCompact.length > 20 && candidateCompact.length > 20) {
+    if (requestedCompact.startsWith(candidateCompact) || candidateCompact.startsWith(requestedCompact)) {
+      return true;
+    }
+  }
+
+  const candidateSet = new Set(candidateTokens);
+  const overlap = requestedTokens.filter((token) => candidateSet.has(token)).length;
+  return overlap / requestedTokens.length >= 0.85 && overlap / candidateTokens.length >= 0.75;
 }
 
 function normalizeJob(job: Record<string, unknown> | null) {
@@ -102,7 +129,9 @@ export async function getJobBySlug(slug: string) {
     }`,
   );
   return Array.isArray(candidates)
-    ? candidates.map((candidate) => normalizeJob(candidate)).find((candidate) => candidate?.slug === cleanSlug) || null
+    ? candidates
+        .map((candidate) => normalizeJob(candidate))
+        .find((candidate) => candidate?.slug === cleanSlug || (candidate && isLooseSlugMatch(candidate, cleanSlug))) || null
     : null;
 }
 

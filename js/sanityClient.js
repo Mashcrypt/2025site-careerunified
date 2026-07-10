@@ -5,14 +5,18 @@ const projectId = 'qjg5raj1'
 const dataset = 'production'
 const apiVersion = '2024-01-01'
 
-const baseUrl = `https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`
+const baseUrl = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}`
 
 window.sanityClient = {
   // ===============================
   // RAW FETCH (for any query)
   // ===============================
   fetch: async function (query, options = {}) {
-    const url = `${baseUrl}?query=${encodeURIComponent(query)}`
+    const params = new URLSearchParams({ query })
+    Object.entries(options || {}).forEach(([key, value]) => {
+      if (key !== 'throwOnError') params.set(`$${key}`, JSON.stringify(value))
+    })
+    const url = `${baseUrl}?${params.toString()}`
 
     try {
       const res = await fetch(url)
@@ -64,7 +68,7 @@ window.sanityClient = {
   // ===============================
   fetchJobBySlug: async function (slug) {
     const query = `
-      *[_type == "job" && slug.current == "${slug}"][0]{
+      *[_type == "job" && slug.current == $slug][0]{
         _id,
         _createdAt,
         title,
@@ -87,7 +91,7 @@ window.sanityClient = {
         }
       }
     `
-    const result = await this.fetch(query)
+    const result = await this.fetch(query, { slug })
     return result || null
   },
 
