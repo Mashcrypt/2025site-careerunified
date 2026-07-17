@@ -68,6 +68,7 @@ import { motion } from 'motion/react';
 import { southAfricanSampleData } from './utils/sample-data';
 
 import { getFirebaseAuth, getFirebaseDb, getFirebaseStorage } from './utils/firebaseClient';
+import { trackAnalyticsEvent, trackAnalyticsEventOnce } from './utils/analytics';
 
 const initialData: ResumeData = southAfricanSampleData;
 const Z83_PREFILL_STORAGE_KEY = 'careerUnifiedZ83PrefillV1';
@@ -728,10 +729,25 @@ export default function App() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showManageSubscriptionModal, setShowManageSubscriptionModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hasAppliedTailoredResume, setHasAppliedTailoredResume] = useState(false);
 
   const previewRef = useRef<HTMLDivElement | null>(null);
   const previewWrapRef = useRef<HTMLDivElement | null>(null);
   const profileCvImportAttemptedRef = useRef(false);
+
+  const openUpgradeModal = useCallback((placement: string, feature?: string) => {
+    const analytics = {
+      placement,
+      feature,
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+
+    trackAnalyticsEvent('upgrade_cta_click', analytics);
+    if (feature) trackAnalyticsEvent('premium_feature_blocked', analytics);
+    trackAnalyticsEvent('pricing_view', analytics);
+    setShowUpgradeModal(true);
+  }, [billing?.plan, billing?.subscriptionStatus]);
 
   useEffect(() => {
     resumeDataRef.current = resumeData;
@@ -993,6 +1009,8 @@ export default function App() {
 
     const params = new URLSearchParams(window.location.search);
     const isCreditReturn = params.get('product') === 'credits';
+    const product = isCreditReturn ? 'ai_tailor_credits' : 'subscription';
+    trackAnalyticsEventOnce(`billing-success-return:${product}`, 'billing_success_return', { product });
     let cancelled = false;
     let timeoutId: number | undefined;
     let attempts = 0;
@@ -1015,6 +1033,20 @@ export default function App() {
       if (timeoutId) window.clearTimeout(timeoutId);
     };
   }, [loadBillingStatus]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!window.location.pathname.includes('/billing/success')) return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('product') === 'credits') return;
+    if (billing?.plan === 'free' || billing?.subscriptionStatus !== 'active') return;
+
+    trackAnalyticsEventOnce(`subscription-active:${billing.plan}`, 'subscription_active', {
+      plan: billing.plan,
+      subscription_status: billing.subscriptionStatus,
+    });
+  }, [billing?.plan, billing?.subscriptionStatus]);
 
   useEffect(() => {
     if (!showManageSubscriptionModal) return;
@@ -1136,13 +1168,13 @@ export default function App() {
     const tpl = templates.find((t) => t.id === id);
     const isLocked = !!tpl?.premium && !hasAIPlan;
     if (isLocked) {
-      setShowUpgradeModal(true);
+      openUpgradeModal('premium_template', id);
       return;
     }
     setSelectedTemplate(id);
   };
 
-  const handleTabChange = useCallback((value: string) => {
+  const handleTabChange = useCallback((value: string, placement = 'cv_generator_navigation') => {
     const nextTab: AppTab = (
       value === 'build' ||
       value === 'templates' ||
@@ -1152,13 +1184,30 @@ export default function App() {
       value === 'versions'
     ) ? (value as AppTab) : 'build';
 
+    if (nextTab !== activeTab && nextTab === 'ai') {
+      trackAnalyticsEvent('ai_cv_tailor_click', {
+        placement,
+        current_plan: billing?.plan || 'free',
+        subscription_status: billing?.subscriptionStatus || 'inactive',
+      });
+    }
+
+    if (nextTab !== activeTab && nextTab === 'analytics') {
+      trackAnalyticsEvent('ats_checker_view', {
+        placement,
+        has_job_description: Boolean(activeJobDescription.trim()),
+        current_plan: billing?.plan || 'free',
+        subscription_status: billing?.subscriptionStatus || 'inactive',
+      });
+    }
+
     setActiveTab(nextTab);
 
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
     url.searchParams.set('tab', nextTab);
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  }, []);
+  }, [activeJobDescription, activeTab, billing?.plan, billing?.subscriptionStatus]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -1178,8 +1227,13 @@ export default function App() {
 
   const openAITailorFromAnalytics = useCallback((atsFeedback: string) => {
     setAtsFeedbackForTailor(atsFeedback);
-    handleTabChange('ai');
+    handleTabChange('ai', 'ats_feedback');
   }, [handleTabChange]);
+
+  const handleApplyTailoredResume = useCallback((data: ResumeData) => {
+    setResumeData(data);
+    setHasAppliedTailoredResume(true);
+  }, []);
 
   const handleUseCvForZ83 = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -1212,6 +1266,17 @@ export default function App() {
     if (!el) {
       alert('Preview not ready yet. Please try again.');
       return;
+    }
+
+    const downloadAnalytics = {
+      template: selectedTemplate,
+      tailored: hasAppliedTailoredResume,
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+    trackAnalyticsEvent('resume_pdf_download_click', downloadAnalytics);
+    if (hasAppliedTailoredResume) {
+      trackAnalyticsEvent('tailored_resume_pdf_download_click', downloadAnalytics);
     }
 
     setIsPrinting(true);
@@ -1281,20 +1346,40 @@ export default function App() {
       a.click();
       a.remove();
 
+      trackAnalyticsEvent('resume_pdf_download', downloadAnalytics);
+
       URL.revokeObjectURL(url);
     } catch (e: any) {
       alert(e?.message || 'PDF export failed.');
     } finally {
       setIsPrinting(false);
     }
-  }, [fileSafeName]);
+  }, [billing?.plan, billing?.subscriptionStatus, fileSafeName, hasAppliedTailoredResume, selectedTemplate]);
 
   const startSubscription = async (plan: PlanId) => {
     setIsRedirecting(true);
     setBillingError('');
 
+    const checkoutAnalytics = {
+      product: 'subscription',
+      plan,
+      placement: 'upgrade_modal',
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+    const trackCheckoutError = (errorCode: string, responseStatus?: number) => {
+      trackAnalyticsEvent('checkout_error', {
+        ...checkoutAnalytics,
+        error_code: errorCode,
+        response_status: responseStatus,
+      });
+    };
+
+    trackAnalyticsEvent('plan_select', checkoutAnalytics);
+
     try {
       if (!isFirebaseConfigured()) {
+        trackCheckoutError('firebase_not_configured');
         setBillingError('Firebase is not configured on this deployment.');
         setIsRedirecting(false);
         return;
@@ -1303,12 +1388,14 @@ export default function App() {
       const auth = getFirebaseAuth();
       const user = auth.currentUser;
       if (!user) {
+        trackCheckoutError('login_required');
         setBillingError('Please login to upgrade.');
         setIsRedirecting(false);
         return;
       }
 
       const token = await user.getIdToken();
+      trackAnalyticsEvent('checkout_start', checkoutAnalytics);
 
       const res = await fetch('/.netlify/functions/create-subscription', {
         method: 'POST',
@@ -1322,6 +1409,7 @@ export default function App() {
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
+        trackCheckoutError('checkout_response_error', res.status);
         const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
         const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
         setBillingError(details ? `${error} ${details}` : error);
@@ -1332,6 +1420,7 @@ export default function App() {
       const paymentUrl = payload?.payment_url as string | undefined;
       const fields = payload?.fields as Record<string, string> | undefined;
       if (!paymentUrl || !fields) {
+        trackCheckoutError('invalid_checkout_payload');
         setBillingError('Could not start PayFast checkout. Please try again.');
         setIsRedirecting(false);
         return;
@@ -1351,8 +1440,10 @@ export default function App() {
       });
 
       document.body.appendChild(form);
+      trackAnalyticsEvent('payfast_form_submit', checkoutAnalytics);
       form.submit();
     } catch (e: any) {
+      trackCheckoutError('checkout_exception');
       setBillingError('Could not start PayFast checkout. Please try again.');
       setIsRedirecting(false);
     }
@@ -1362,8 +1453,26 @@ export default function App() {
     setIsRedirecting(true);
     setBillingError('');
 
+    const checkoutAnalytics = {
+      product: 'ai_tailor_credits',
+      pack: 'ai_tailor_10',
+      placement: showManageSubscriptionModal ? 'manage_subscription' : 'upgrade_modal',
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+    const trackCheckoutError = (errorCode: string, responseStatus?: number) => {
+      trackAnalyticsEvent('checkout_error', {
+        ...checkoutAnalytics,
+        error_code: errorCode,
+        response_status: responseStatus,
+      });
+    };
+
+    trackAnalyticsEvent('credit_pack_select', checkoutAnalytics);
+
     try {
       if (!isFirebaseConfigured()) {
+        trackCheckoutError('firebase_not_configured');
         setBillingError('Firebase is not configured on this deployment.');
         setIsRedirecting(false);
         return;
@@ -1372,12 +1481,14 @@ export default function App() {
       const auth = getFirebaseAuth();
       const user = auth.currentUser;
       if (!user) {
+        trackCheckoutError('login_required');
         setBillingError('Please login to buy AI Tailor credits.');
         setIsRedirecting(false);
         return;
       }
 
       const token = await user.getIdToken();
+      trackAnalyticsEvent('checkout_start', checkoutAnalytics);
 
       const res = await fetch('/.netlify/functions/create-ai-credit-payment', {
         method: 'POST',
@@ -1391,6 +1502,7 @@ export default function App() {
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
+        trackCheckoutError('checkout_response_error', res.status);
         const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
         const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
         setBillingError(details ? `${error} ${details}` : error);
@@ -1401,6 +1513,7 @@ export default function App() {
       const paymentUrl = payload?.payment_url as string | undefined;
       const fields = payload?.fields as Record<string, string> | undefined;
       if (!paymentUrl || !fields) {
+        trackCheckoutError('invalid_checkout_payload');
         setBillingError('Could not start PayFast checkout. Please try again.');
         setIsRedirecting(false);
         return;
@@ -1420,8 +1533,10 @@ export default function App() {
       });
 
       document.body.appendChild(form);
+      trackAnalyticsEvent('payfast_form_submit', checkoutAnalytics);
       form.submit();
     } catch (e: any) {
+      trackCheckoutError('checkout_exception');
       setBillingError('Could not start PayFast checkout. Please try again.');
       setIsRedirecting(false);
     }
@@ -1660,7 +1775,7 @@ export default function App() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button type="button" onClick={() => setShowUpgradeModal(true)} className="bg-blue-600 hover:bg-blue-700">
+                <Button type="button" onClick={() => openUpgradeModal('plan_status')} className="bg-blue-600 hover:bg-blue-700">
                   <Crown className="mr-2 h-4 w-4" />
                   {isActiveSubscription ? 'Change plan' : 'Upgrade'}
                 </Button>
@@ -1834,7 +1949,7 @@ export default function App() {
                   <div className="pr-4">
                     <AITailor
                       data={resumeData}
-                      onApplySuggestions={setResumeData}
+                      onApplySuggestions={handleApplyTailoredResume}
                       jobDescription={activeJobDescription}
                       onJobDescriptionChange={setActiveJobDescription}
                       atsFeedback={atsFeedbackForTailor}
@@ -2298,7 +2413,7 @@ export default function App() {
                 className="min-h-[44px] bg-[#185FA5] text-[13px] font-medium text-white hover:bg-[#0C447C]"
                 onClick={() => {
                   setShowManageSubscriptionModal(false);
-                  setShowUpgradeModal(true);
+                  openUpgradeModal('manage_subscription');
                 }}
               >
                 Upgrade plan

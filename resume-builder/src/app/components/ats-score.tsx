@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -18,6 +18,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import type { ResumeData } from '../types/resume';
 import { motion } from 'motion/react';
+import { trackAnalyticsEvent } from '../utils/analytics';
 
 interface ATSScoreProps {
   data: ResumeData;
@@ -464,6 +465,25 @@ export function ATSScore({ data, jobDescription, onJobDescriptionChange, onOpenA
   const analysis = useMemo(() => scoreResume(data, jobDescription), [data, jobDescription]);
   const atsFeedbackForTailor = useMemo(() => buildAtsFeedbackForTailor(analysis), [analysis]);
   const [score, setScore] = useState(analysis.score);
+  const lastTrackedJobDescriptionRef = useRef('');
+
+  useEffect(() => {
+    const normalizedJobDescription = jobDescription.trim().replace(/\s+/g, ' ');
+    if (!normalizedJobDescription || normalizedJobDescription === lastTrackedJobDescriptionRef.current) return;
+
+    const timer = window.setTimeout(() => {
+      trackAnalyticsEvent('ats_analysis_run', {
+        job_description_words: countWords(jobDescription),
+        ats_score: analysis.score,
+        score_band: analysis.score >= 75 ? 'strong' : analysis.score >= 55 ? 'needs_tailoring' : 'high_risk',
+        matched_keyword_count: analysis.matchedKeywords.length,
+        missing_keyword_count: analysis.missingKeywords.length,
+      });
+      lastTrackedJobDescriptionRef.current = normalizedJobDescription;
+    }, 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [analysis.matchedKeywords.length, analysis.missingKeywords.length, analysis.score, jobDescription]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -690,7 +710,19 @@ export function ATSScore({ data, jobDescription, onJobDescriptionChange, onOpenA
               </p>
             </div>
           </div>
-          <Button type="button" onClick={() => onOpenAITailor(atsFeedbackForTailor)} className="bg-blue-600 hover:bg-blue-700">
+          <Button
+            type="button"
+            onClick={() => {
+              trackAnalyticsEvent('ats_feedback_to_tailor', {
+                ats_score: analysis.score,
+                score_band: analysis.score >= 75 ? 'strong' : analysis.score >= 55 ? 'needs_tailoring' : 'high_risk',
+                matched_keyword_count: analysis.matchedKeywords.length,
+                missing_keyword_count: analysis.missingKeywords.length,
+              });
+              onOpenAITailor(atsFeedbackForTailor);
+            }}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
             Open AI Tailor
           </Button>
         </div>

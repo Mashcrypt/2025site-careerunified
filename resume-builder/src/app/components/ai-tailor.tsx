@@ -22,6 +22,7 @@ import { doc as firestoreDoc, getDoc } from 'firebase/firestore';
 
 // ✅ Use your initialized Firebase client helper
 import { getFirebaseAuth, getFirebaseDb } from '../utils/firebaseClient';
+import { trackAnalyticsEvent } from '../utils/analytics';
 
 interface AITailorProps {
   data: ResumeData;
@@ -441,8 +442,20 @@ export function AITailor({
   const analyze = async () => {
     if (!jobDescription.trim()) return;
 
+    const contentType = mode === 'cover_letter' ? 'cover_letter' : 'resume';
+    const eventPrefix = mode === 'cover_letter' ? 'cover_letter_generate' : 'ai_tailor_generate';
+    const analytics = {
+      content_type: contentType,
+      job_description_words: jobDescription.trim().split(/\s+/).length,
+      has_ats_feedback: Boolean(atsFeedback?.trim()),
+      job_source: hasImportedJobDescription ? 'career_unified_job' : 'manual',
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+
     setIsAnalyzing(true);
     resetResults();
+    trackAnalyticsEvent(`${eventPrefix}_start`, analytics);
 
     try {
       const token = await getIdTokenOrThrow();
@@ -464,6 +477,23 @@ export function AITailor({
       const payload = await res.json().catch(() => null);
 
       if (res.status === 402) {
+        trackAnalyticsEvent('premium_feature_blocked', {
+          placement: 'ai_tailor',
+          feature: contentType,
+          current_plan: analytics.current_plan,
+          subscription_status: analytics.subscription_status,
+        });
+        trackAnalyticsEvent(`${eventPrefix}_error`, {
+          ...analytics,
+          error_code: 'upgrade_required',
+          response_status: res.status,
+        });
+        trackAnalyticsEvent('pricing_view', {
+          placement: 'ai_tailor_limit',
+          feature: contentType,
+          current_plan: analytics.current_plan,
+          subscription_status: analytics.subscription_status,
+        });
         setNeedsUpgrade(true);
         const details =
           payload?.error ||
@@ -473,6 +503,11 @@ export function AITailor({
       }
 
       if (!res.ok) {
+        trackAnalyticsEvent(`${eventPrefix}_error`, {
+          ...analytics,
+          error_code: 'request_failed',
+          response_status: res.status,
+        });
         const details = payload?.error || payload?.details || 'AI request failed. Please try again.';
         setErrorMsg(typeof details === 'string' ? details : JSON.stringify(details));
         return;
@@ -482,6 +517,10 @@ export function AITailor({
         const typed = payload as CoverLetterResponse;
 
         if (!typed?.coverLetter || !Array.isArray(typed?.talkingPoints)) {
+          trackAnalyticsEvent(`${eventPrefix}_error`, {
+            ...analytics,
+            error_code: 'invalid_response',
+          });
           setErrorMsg('AI returned an unexpected response format (cover letter).');
           return;
         }
@@ -492,6 +531,10 @@ export function AITailor({
         const typed = payload as TailorResponse;
 
         if (!typed?.tailoredData || !Array.isArray(typed?.suggestions)) {
+          trackAnalyticsEvent(`${eventPrefix}_error`, {
+            ...analytics,
+            error_code: 'invalid_response',
+          });
           setErrorMsg('AI returned an unexpected response format (tailor).');
           return;
         }
@@ -505,8 +548,14 @@ export function AITailor({
         });
       }
 
+      trackAnalyticsEvent(`${eventPrefix}_success`, analytics);
+
       await loadBillingStatus();
     } catch (err: any) {
+      trackAnalyticsEvent(`${eventPrefix}_error`, {
+        ...analytics,
+        error_code: 'request_exception',
+      });
       setErrorMsg(err?.message || 'Network error. Please try again.');
     } finally {
       setIsAnalyzing(false);
@@ -527,6 +576,13 @@ export function AITailor({
   const downloadCoverLetterPDF = useCallback(async () => {
     const raw = (coverLetter || '').trim();
     if (!raw) return;
+
+    const downloadAnalytics = {
+      content_source: 'ai_generated',
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+    trackAnalyticsEvent('cover_letter_pdf_download_click', downloadAnalytics);
 
     setIsDownloadingCover(true);
     setErrorMsg('');
@@ -640,19 +696,38 @@ export function AITailor({
       }
 
       doc.save(`${fileName}.pdf`);
+      trackAnalyticsEvent('cover_letter_pdf_download', downloadAnalytics);
     } catch (e: any) {
       setErrorMsg(e?.message || 'Could not generate PDF. Please try again.');
     } finally {
       setIsDownloadingCover(false);
     }
-  }, [coverLetter, data]);
+  }, [billing?.plan, billing?.subscriptionStatus, coverLetter, data]);
 
   const startSubscription = async (plan: PlanId) => {
     setIsRedirecting(true);
     setErrorMsg('');
 
+    const checkoutAnalytics = {
+      product: 'subscription',
+      plan,
+      placement: 'ai_tailor_limit',
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    };
+    const trackCheckoutError = (errorCode: string, responseStatus?: number) => {
+      trackAnalyticsEvent('checkout_error', {
+        ...checkoutAnalytics,
+        error_code: errorCode,
+        response_status: responseStatus,
+      });
+    };
+
+    trackAnalyticsEvent('plan_select', checkoutAnalytics);
+
     try {
       const token = await getIdTokenOrThrow();
+      trackAnalyticsEvent('checkout_start', checkoutAnalytics);
 
       const res = await fetch('/.netlify/functions/create-subscription', {
         method: 'POST',
@@ -666,6 +741,7 @@ export function AITailor({
       const payload = await res.json().catch(() => null);
 
       if (!res.ok) {
+        trackCheckoutError('checkout_response_error', res.status);
         const error = payload?.error || 'Could not start PayFast checkout. Please try again.';
         const details = payload?.details || (Array.isArray(payload?.missing) ? payload.missing.join(', ') : '');
         setErrorMsg(details ? `${error} ${details}` : error);
@@ -676,6 +752,7 @@ export function AITailor({
       const paymentUrl = payload?.payment_url as string | undefined;
       const fields = payload?.fields as Record<string, string> | undefined;
       if (!paymentUrl || !fields) {
+        trackCheckoutError('invalid_checkout_payload');
         setErrorMsg('Could not start PayFast checkout. Please try again.');
         setIsRedirecting(false);
         return;
@@ -695,11 +772,25 @@ export function AITailor({
       });
 
       document.body.appendChild(form);
+      trackAnalyticsEvent('payfast_form_submit', checkoutAnalytics);
       form.submit();
     } catch (err: any) {
+      trackCheckoutError('checkout_exception');
       setErrorMsg('Could not start PayFast checkout. Please try again.');
       setIsRedirecting(false);
     }
+  };
+
+  const applyTailoredVersion = () => {
+    if (!tailoredData) return;
+
+    trackAnalyticsEvent('ai_tailored_resume_apply', {
+      has_ats_feedback: Boolean(atsFeedback?.trim()),
+      suggestion_count: suggestions.length,
+      current_plan: billing?.plan || 'free',
+      subscription_status: billing?.subscriptionStatus || 'inactive',
+    });
+    onApplySuggestions(tailoredData);
   };
 
   return (
@@ -986,7 +1077,7 @@ export function AITailor({
             <div className="bg-white rounded-lg p-4 border border-blue-200">
               <div className="flex gap-2">
                 <Button
-                  onClick={() => tailoredData && onApplySuggestions(tailoredData)}
+                  onClick={applyTailoredVersion}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                 >
                   Apply Tailored Version
