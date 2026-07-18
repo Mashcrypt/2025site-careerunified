@@ -1711,7 +1711,7 @@ export default function App() {
 
       <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div className="mb-6">
-          <SmartTips data={resumeData} />
+          <SmartTips data={resumeData} jobDescription={activeJobDescription} />
         </div>
 
         <section className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4">

@@ -154,6 +154,12 @@
   force = true
 
 [[redirects]]
+  from = "/guides/how-to-complete-z83-form.html"
+  to = "/guides/how-to-complete-z83-form"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/cv-tips"
   to = "/cv-tips.html"
   status = 200
@@ -171,6 +177,16 @@
 [[redirects]]
   from = "/z83-filler/"
   to = "/z83-filler.html"
+  status = 200
+
+[[redirects]]
+  from = "/guides/how-to-complete-z83-form"
+  to = "/guides/how-to-complete-z83-form.html"
+  status = 200
+
+[[redirects]]
+  from = "/guides/how-to-complete-z83-form/"
+  to = "/guides/how-to-complete-z83-form.html"
   status = 200
 
 [[redirects]]
@@ -284,6 +300,11 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
+  for = "/assets/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
   for = "/*.ico"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
@@ -307,6 +328,11 @@
 # HTML pages: always revalidate (important for fresh SEO content)
 [[headers]]
   for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/guides/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
