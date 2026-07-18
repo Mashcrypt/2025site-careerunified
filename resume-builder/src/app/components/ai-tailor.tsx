@@ -38,6 +38,18 @@ type TailorMode = 'tailor' | 'cover_letter';
 type TailorResponse = {
   suggestions: string[];
   tailoredData: ResumeData;
+  atsQuality?: AtsQuality;
+};
+
+type AtsQuality = {
+  beforeScore: number;
+  afterScore: number;
+  improvement: number;
+  targetScore: number;
+  targetMet: boolean;
+  repairPassUsed: boolean;
+  remainingKeywords: string[];
+  remainingActions: string[];
 };
 
 type CoverLetterResponse = {
@@ -191,6 +203,7 @@ export function AITailor({
   // Tailor results
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [tailoredData, setTailoredData] = useState<ResumeData | null>(null);
+  const [atsQuality, setAtsQuality] = useState<AtsQuality | null>(null);
 
   // Cover letter results
   const [coverLetter, setCoverLetter] = useState<string>('');
@@ -224,6 +237,7 @@ export function AITailor({
   const resetResults = useCallback(() => {
     setSuggestions([]);
     setTailoredData(null);
+    setAtsQuality(null);
     setCoverLetter('');
     setTalkingPoints([]);
     setErrorMsg('');
@@ -503,15 +517,22 @@ export function AITailor({
       }
 
       if (!res.ok) {
+        if (payload?.atsQuality) setAtsQuality(payload.atsQuality as AtsQuality);
         trackAnalyticsEvent(`${eventPrefix}_error`, {
           ...analytics,
           error_code: 'request_failed',
           response_status: res.status,
+          ats_score_before: payload?.atsQuality?.beforeScore,
+          ats_score_after: payload?.atsQuality?.afterScore,
         });
-        const details = payload?.error || payload?.details || 'AI request failed. Please try again.';
-        setErrorMsg(typeof details === 'string' ? details : JSON.stringify(details));
+        const details = [payload?.error, payload?.details]
+          .filter((value, index, values) => value && values.indexOf(value) === index)
+          .join(' ');
+        setErrorMsg(details || 'AI request failed. Please try again.');
         return;
       }
+
+      let responseAtsQuality: AtsQuality | undefined;
 
       if (mode === 'cover_letter') {
         const typed = payload as CoverLetterResponse;
@@ -539,6 +560,8 @@ export function AITailor({
           return;
         }
 
+        responseAtsQuality = typed.atsQuality;
+        setAtsQuality(typed.atsQuality || null);
         setSuggestions(typed.suggestions);
         setTailoredData({
           ...typed.tailoredData,
@@ -548,7 +571,14 @@ export function AITailor({
         });
       }
 
-      trackAnalyticsEvent(`${eventPrefix}_success`, analytics);
+      trackAnalyticsEvent(`${eventPrefix}_success`, {
+        ...analytics,
+        ats_score_before: responseAtsQuality?.beforeScore,
+        ats_score_after: responseAtsQuality?.afterScore,
+        ats_score_improvement: responseAtsQuality?.improvement,
+        ats_target_met: responseAtsQuality?.targetMet,
+        ats_repair_pass_used: responseAtsQuality?.repairPassUsed,
+      });
 
       await loadBillingStatus();
     } catch (err: any) {
@@ -787,6 +817,10 @@ export function AITailor({
     trackAnalyticsEvent('ai_tailored_resume_apply', {
       has_ats_feedback: Boolean(atsFeedback?.trim()),
       suggestion_count: suggestions.length,
+      ats_score_before: atsQuality?.beforeScore,
+      ats_score_after: atsQuality?.afterScore,
+      ats_score_improvement: atsQuality?.improvement,
+      ats_target_met: atsQuality?.targetMet,
       current_plan: billing?.plan || 'free',
       subscription_status: billing?.subscriptionStatus || 'inactive',
     });
@@ -899,7 +933,7 @@ export function AITailor({
           {atsFeedback?.trim() && mode === 'tailor' && (
             <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span>ATS feedback loaded. The next AI tailor run will target the missing keywords and weak score areas.</span>
+                <span>ATS feedback loaded. One tailoring request will optimize the CV, check the new score, and automatically repair weak areas before returning it.</span>
                 {onClearAtsFeedback && (
                   <Button type="button" variant="outline" size="sm" onClick={onClearAtsFeedback} className="bg-white">
                     Clear ATS feedback
@@ -931,7 +965,7 @@ export function AITailor({
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {mode === 'cover_letter' ? 'Generating Cover Letter...' : 'Analyzing & Tailoring...'}
+              {mode === 'cover_letter' ? 'Generating Cover Letter...' : 'Tailoring & checking ATS quality...'}
             </>
           ) : (
             <>
@@ -960,6 +994,19 @@ export function AITailor({
                 <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
               </div>
             </div>
+          </div>
+        )}
+
+        {errorMsg && atsQuality && atsQuality.remainingActions.length > 0 && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-medium text-amber-900">
+              Quality check: {atsQuality.beforeScore} to {atsQuality.afterScore}. No AI credit was used.
+            </p>
+            <ul className="mt-2 space-y-1 pl-4 text-xs leading-5 text-amber-900">
+              {atsQuality.remainingActions.slice(0, 4).map((action) => (
+                <li key={action} className="list-disc">{action}</li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -1059,6 +1106,66 @@ export function AITailor({
         {/* Tailor results */}
         {mode === 'tailor' && suggestions.length > 0 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            {atsQuality && (
+              <div
+                className={`rounded-lg border p-4 ${
+                  atsQuality.targetMet
+                    ? 'border-emerald-200 bg-emerald-50'
+                    : 'border-amber-200 bg-amber-50'
+                }`}
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    {atsQuality.targetMet ? (
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+                    ) : (
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+                    )}
+                    <div>
+                      <h3 className="font-medium text-slate-900">Verified ATS improvement</h3>
+                      <p className="mt-1 text-sm text-slate-700">
+                        In-app score: <strong>{atsQuality.beforeScore}</strong>
+                        <span className="mx-2" aria-hidden="true">&rarr;</span>
+                        <strong>{atsQuality.afterScore}</strong>
+                        <span className="ml-2 font-semibold text-emerald-700">
+                          ({atsQuality.improvement >= 0 ? '+' : ''}{atsQuality.improvement})
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex self-start rounded-md border px-2.5 py-1 text-xs font-semibold ${
+                      atsQuality.targetMet
+                        ? 'border-emerald-200 bg-white text-emerald-800'
+                        : 'border-amber-200 bg-white text-amber-800'
+                    }`}
+                  >
+                    {atsQuality.targetMet ? 'Strong threshold reached' : `Target ${atsQuality.targetScore}+`}
+                  </span>
+                </div>
+
+                <p className="mt-3 text-xs leading-5 text-slate-700">
+                  {atsQuality.repairPassUsed
+                    ? 'An automatic quality review and repair pass was included inside this request. Only one AI credit is used.'
+                    : 'The tailored version passed the quality check on its first pass.'}
+                </p>
+
+                {!atsQuality.targetMet && atsQuality.remainingActions.length > 0 && (
+                  <div className="mt-3 border-t border-amber-200 pt-3">
+                    <p className="text-xs font-semibold text-amber-900">Truthful information still needed</p>
+                    <ul className="mt-1 space-y-1 pl-4 text-xs leading-5 text-amber-900">
+                      {atsQuality.remainingActions.slice(0, 3).map((action) => (
+                        <li key={action} className="list-disc">{action}</li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-xs leading-5 text-amber-900">
+                      Add facts you genuinely have before tailoring again. Repeating the same input cannot safely create missing experience.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="bg-white rounded-lg p-4 border border-blue-200">
               <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -1080,7 +1187,7 @@ export function AITailor({
                   onClick={applyTailoredVersion}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700"
                 >
-                  Apply Tailored Version
+                  {atsQuality ? `Apply Tailored Version (ATS ${atsQuality.afterScore})` : 'Apply Tailored Version'}
                 </Button>
                 <Button variant="outline" onClick={resetResults}>
                   Discard

@@ -357,6 +357,9 @@
   external_node_modules = ["puppeteer-core", "@sparticuz/chromium"]
   memory = 1024
   timeout = 26
+
+[functions."ai-tailor"]
+  timeout = 26
 # ================================
 # FOR AUTONOMUS EMAIL FUNCTION
 # ================================
