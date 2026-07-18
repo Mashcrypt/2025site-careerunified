@@ -813,7 +813,7 @@ body {
   <div class="nav-links desktop-nav">
     <a href="jobs.html">Jobs</a>
     <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsity</a>
+    <a href="varsity.html">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="recruiter-apply.html">Apply as Recruiter</a>
@@ -853,8 +853,9 @@ body {
 <div class="mobile-menu" id="mobileMenu">
   <a href="jobs.html">Jobs</a>
   <a href="bursaries.html">Bursaries</a>
-  <a href="varsity.html">Varsity</a>
+  <a href="varsity.html">Varsities</a>
   <a href="/cv-generator/">Generate CV</a>
+  <a href="/z83-filler">Z83 Filler</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
   <a href="saved-items.html">Saved Items</a>
@@ -937,7 +938,7 @@ body {
     <section class="footer-alerts" aria-label="Job Alerts">
       <h2>Job Alerts</h2>
       <p>Get new jobs, bursaries, and career tips sent to your inbox.</p>
-      <form class="footer-alert-form" name="job-alerts" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <form class="footer-alert-form" name="job-alerts" action="/job-alerts-success.html" method="POST" data-netlify="true" netlify-honeypot="bot-field">
         <input type="hidden" name="form-name" value="job-alerts">
         <p hidden><label>Leave this field empty <input name="bot-field"></label></p>
         <label for="footerJobAlertEmail">Email address</label>
@@ -949,7 +950,7 @@ body {
       </form>
     </section>
     <nav class="footer-grid" aria-label="Footer navigation">
-      <div class="footer-column"><h3>Opportunities</h3><a href="jobs.html">Jobs</a><a href="bursaries.html">Bursaries</a><a href="varsity.html">Varsity</a><a href="saved-items.html">Saved Items</a></div>
+      <div class="footer-column"><h3>Opportunities</h3><a href="jobs.html">Jobs</a><a href="bursaries.html">Bursaries</a><a href="varsity.html">Varsities</a><a href="saved-items.html">Saved Items</a></div>
       <div class="footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/cv-tips">CV Tips</a><a href="/cv-tips#interview-prep">Interview Prep</a></div>
       <div class="footer-column"><h3>Company</h3><a href="about-us.html">About Us</a><a href="contact-us.html">Contact Us</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms &amp; Conditions</a></div>
     </nav>
@@ -1658,5 +1659,6 @@ function initSavedItemsAuth() {
 initSavedItemsAuth();
 </script>
 
+<script src="/js/job-alerts.js"></script>
 </body>
 </html>

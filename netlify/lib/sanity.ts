@@ -173,7 +173,7 @@ export async function getActiveBursaries(limit = 200) {
 export async function getUniversities(limit = 200) {
   const universities = await querySanity(
     `*[_type == "university"] | order(deadline asc, name asc)[0...${limit}]{
-      _id, name, "slug": slug.current, applicationLink, applicationFee,
+      _id, _updatedAt, name, "slug": slug.current, applicationLink, applicationFee,
       registrationFee, deadline, notes, city, province
     }`,
   );

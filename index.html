@@ -108,7 +108,7 @@
       {
         "@type": "ListItem",
         "position": 3,
-        "name": "Varsity",
+        "name": "Varsities",
         "description": "View all South African universities, application deadlines, and requirements.",
         "url": "https://careerunified.com/varsity"
       },
@@ -508,7 +508,7 @@
   <div class="nav-links desktop-nav">
     <a href="/jobs">Jobs</a>
     <a href="/bursaries">Bursaries</a>
-    <a href="/varsity">Varsity</a>
+    <a href="/varsity">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/cv-tips">CV Tips</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
@@ -553,8 +553,9 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="/jobs">Jobs</a>
   <a href="/bursaries">Bursaries</a>
-  <a href="/varsity">Varsity</a>
+  <a href="/varsity">Varsities</a>
   <a href="/cv-generator/">Generate CV</a>
+  <a href="/z83-filler">Z83 Filler</a>
   <a href="/cv-tips">CV Tips</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="recruiter-apply.html">Apply as Recruiter</a>
@@ -728,7 +729,7 @@
     <section class="footer-alerts" aria-label="Job Alerts">
       <h2>Job Alerts</h2>
       <p>Get new jobs, bursaries, and career tips sent to your inbox.</p>
-      <form class="footer-alert-form" name="job-alerts" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <form class="footer-alert-form" name="job-alerts" action="/job-alerts-success.html" method="POST" data-netlify="true" netlify-honeypot="bot-field">
         <input type="hidden" name="form-name" value="job-alerts">
         <p hidden>
           <label>Leave this field empty <input name="bot-field"></label>
@@ -747,7 +748,7 @@
         <h3>Opportunities</h3>
         <a href="/jobs">Jobs</a>
         <a href="/bursaries">Bursaries</a>
-        <a href="/varsity">Varsity</a>
+        <a href="/varsity">Varsities</a>
         <a href="saved-items.html">Saved Items</a>
       </div>
       <div class="footer-column">
@@ -1190,5 +1191,6 @@ document.addEventListener("click", e => {
 });
 </script>
 
+<script src="/js/job-alerts.js"></script>
 </body>
 </html>

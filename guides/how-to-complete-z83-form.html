@@ -166,7 +166,7 @@
     <div class="nav-links" id="guideNav">
       <a href="/jobs">Jobs</a>
       <a href="/bursaries">Bursaries</a>
-      <a href="/varsity">Varsity</a>
+      <a href="/varsity">Varsities</a>
       <a href="/cv-tips" aria-current="page">Career Guides</a>
       <a href="/cv-generator/">Generate CV</a>
       <a href="/z83-filler">Z83 Filler</a>
@@ -526,7 +526,11 @@
 
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'z83_guide_view', {
-        guide_name: 'how_to_complete_z83_form'
+        event_category: 'content_engagement',
+        content_type: 'career_guide',
+        guide_name: 'how_to_complete_z83_form',
+        guide_title: 'How to Complete the Z83 Form Correctly',
+        page_path: window.location.pathname
       });
     }
 

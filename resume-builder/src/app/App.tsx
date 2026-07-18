@@ -1643,7 +1643,7 @@ export default function App() {
         <div className="nav-links desktop-nav">
           <a href="/jobs">Jobs</a>
           <a href="/bursaries">Bursaries</a>
-          <a href="/varsity">Varsity</a>
+          <a href="/varsity">Varsities</a>
           <a href="/cv-generator/">Generate CV</a>
           <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
           <a href="/recruiter-apply.html">Apply as Recruiter</a>
@@ -1700,7 +1700,7 @@ export default function App() {
       <div className="mobile-menu" id="mobileMenu" style={{ display: mobileMenuOpen ? 'block' : 'none' }}>
         <a href="/jobs">Jobs</a>
         <a href="/bursaries">Bursaries</a>
-        <a href="/varsity">Varsity</a>
+        <a href="/varsity">Varsities</a>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
         <a href="/recruiter-apply.html">Apply as Recruiter</a>
