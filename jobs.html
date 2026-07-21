@@ -1080,8 +1080,8 @@
       const fromQ  = normalizeSearchTerm(getSearchParam('q'));
       const fromLS = normalizeSearchTerm(localStorage.getItem('homeSearchTerm'));
       const term   = fromQ || fromLS;
+      localStorage.removeItem('homeSearchTerm');
       if (!term) return;
-      localStorage.setItem('homeSearchTerm', term);
       input.value = term;
     }
 
@@ -1147,14 +1147,15 @@
       } catch {}
     }
 
-    function restoreJobsViewState() {
+    function restoreJobsViewState(options = {}) {
+      const { restoreSearch = true, restoreCategory = true } = options;
       try {
         const state = JSON.parse(sessionStorage.getItem(JOBS_VIEW_STATE_KEY) || 'null');
         if (!state) return;
         const search = document.getElementById('jobSearch');
         const category = document.getElementById('categoryFilter');
-        if (search && typeof state.search === 'string') search.value = state.search;
-        if (category && typeof state.category === 'string') category.value = state.category;
+        if (restoreSearch && search && typeof state.search === 'string') search.value = state.search;
+        if (restoreCategory && category && typeof state.category === 'string') category.value = state.category;
       } catch {}
     }
 
@@ -2045,7 +2046,15 @@
     }
 
     showDefaultPreview();
-    restoreJobsViewState();
+    const hasInitialSearchIntent = Boolean(
+      getUrlJobSlug() ||
+      normalizeSearchTerm(getSearchParam('q')) ||
+      normalizeSearchTerm(localStorage.getItem('homeSearchTerm'))
+    );
+    restoreJobsViewState({
+      restoreSearch: hasInitialSearchIntent,
+      restoreCategory: hasInitialSearchIntent
+    });
     applyInitialSearchTermToUI();
 
     const cachedJobs = readJobsCache();
