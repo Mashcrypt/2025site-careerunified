@@ -1443,8 +1443,19 @@
         .replace(/speciliast/g, 'specialist')
         .replace(/machanical/g, 'mechanical')
         .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 60);
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function isLooseJobSlugMatch(candidateSlug, requestedSlug) {
+      const candidate = slugify(candidateSlug);
+      const requested = slugify(requestedSlug);
+      return Boolean(
+        candidate &&
+        requested &&
+        candidate !== requested &&
+        candidate.startsWith(requested) &&
+        requested.length >= 45
+      );
     }
 
     function cleanJobTitle(value) {
@@ -1540,7 +1551,12 @@
 
     function findJobInMemoryBySlug(slug) {
       const cleanSlug = slugify(slug);
-      return jobs.find(j => j.slug === slug || j.slug === cleanSlug || slugify(j.slug) === cleanSlug) || null;
+      return jobs.find(j =>
+        j.slug === slug ||
+        j.slug === cleanSlug ||
+        slugify(j.slug) === cleanSlug ||
+        isLooseJobSlugMatch(j.slug || j.title || j._id, cleanSlug)
+      ) || null;
     }
 
     async function fetchFirestoreJobBySlug(slug) {

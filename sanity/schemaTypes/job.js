@@ -17,7 +17,7 @@ export default {
       type: 'slug',
       options: {
         source: 'title',
-        maxLength: 80,
+        maxLength: 120,
         slugify: input =>
           input
             .toLowerCase()
@@ -33,7 +33,8 @@ export default {
             .replace(/machanical/g, 'mechanical')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '')
-            .slice(0, 80)
+            .slice(0, 120)
+            .replace(/-+$/g, '')
       },
       validation: Rule => Rule.required()
     },
