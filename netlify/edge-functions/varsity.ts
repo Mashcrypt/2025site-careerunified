@@ -476,6 +476,7 @@ export default async (request: Request) => {
     trackClick('relatedBursariesLink', 'university_bursary_click');
     trackClick('relatedCvLink', 'university_cv_click');
   </script>
+  <script src="/js/cookie-notice.js"></script>
 </body>
 </html>`;
 

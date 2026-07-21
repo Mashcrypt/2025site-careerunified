@@ -233,6 +233,7 @@ export function AITailor({
     }
     return 'Paste the job description below and let AI optimize your resume to match the requirements.';
   }, [mode]);
+  const isAtsFeedbackWorkflow = mode === 'tailor' && Boolean(atsFeedback?.trim());
 
   const resetResults = useCallback(() => {
     setSuggestions([]);
@@ -251,9 +252,10 @@ export function AITailor({
     }
 
     onJobDescriptionChange('');
+    onClearAtsFeedback?.();
     setHasImportedJobDescription(false);
     resetResults();
-  }, [onJobDescriptionChange, resetResults]);
+  }, [onClearAtsFeedback, onJobDescriptionChange, resetResults]);
 
   const getIdTokenOrThrow = useCallback(async () => {
     if (!isFirebaseConfigured()) {
@@ -460,6 +462,7 @@ export function AITailor({
     const eventPrefix = mode === 'cover_letter' ? 'cover_letter_generate' : 'ai_tailor_generate';
     const analytics = {
       content_type: contentType,
+      tailor_workflow: isAtsFeedbackWorkflow ? 'ats_feedback' : 'standard',
       job_description_words: jobDescription.trim().split(/\s+/).length,
       has_ats_feedback: Boolean(atsFeedback?.trim()),
       job_source: hasImportedJobDescription ? 'career_unified_job' : 'manual',
@@ -482,6 +485,7 @@ export function AITailor({
         },
         body: JSON.stringify({
           mode,
+          workflow: isAtsFeedbackWorkflow ? 'ats_feedback' : 'standard',
           resumeData: data,
           jobDescription,
           atsFeedback,
@@ -935,7 +939,16 @@ export function AITailor({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span>ATS feedback loaded. One tailoring request will optimize the CV, check the new score, and automatically repair weak areas before returning it.</span>
                 {onClearAtsFeedback && (
-                  <Button type="button" variant="outline" size="sm" onClick={onClearAtsFeedback} className="bg-white">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onClearAtsFeedback();
+                      resetResults();
+                    }}
+                    className="bg-white"
+                  >
                     Clear ATS feedback
                   </Button>
                 )}
@@ -965,7 +978,11 @@ export function AITailor({
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {mode === 'cover_letter' ? 'Generating Cover Letter...' : 'Tailoring & checking ATS quality...'}
+              {mode === 'cover_letter'
+                ? 'Generating Cover Letter...'
+                : isAtsFeedbackWorkflow
+                ? 'Tailoring & checking ATS quality...'
+                : 'Tailoring your resume...'}
             </>
           ) : (
             <>

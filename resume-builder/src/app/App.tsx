@@ -1184,6 +1184,10 @@ export default function App() {
       value === 'versions'
     ) ? (value as AppTab) : 'build';
 
+    if (nextTab === 'ai' && placement !== 'ats_feedback') {
+      setAtsFeedbackForTailor('');
+    }
+
     if (nextTab !== activeTab && nextTab === 'ai') {
       trackAnalyticsEvent('ai_cv_tailor_click', {
         placement,

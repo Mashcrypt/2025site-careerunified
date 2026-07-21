@@ -664,31 +664,6 @@
 </section>
 
 
-<!-- COOKIE NOTICE -->
-<div id="cookieNotice" class="cookie-notice">
-  <p>
-    Career Unified uses browser storage (cookies & localStorage) to improve your experience,
-    remember preferences, and analyse site usage.
-    By continuing to use this site, you agree to this.
-    <a href="/privacy">Learn more</a>
-  </p>
-  <button id="acceptCookies">Accept</button>
-</div>
-
-<script>
-(function () {
-  const notice = document.getElementById('cookieNotice');
-  const acceptBtn = document.getElementById('acceptCookies');
-  if (localStorage.getItem('cookiesAccepted') === 'true') {
-    notice.style.display = 'none';
-  }
-  acceptBtn.addEventListener('click', () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    notice.style.display = 'none';
-  });
-})();
-</script>
-
 <!-- GLOBAL SEARCH OVERLAY -->
 <div id="smartSearchOverlay" class="smart-search-overlay" aria-hidden="true">
   <div class="smart-search-modal" role="dialog" aria-modal="true" aria-labelledby="smartSearchTitle">
@@ -1192,5 +1167,6 @@ document.addEventListener("click", e => {
 </script>
 
 <script src="/js/job-alerts.js"></script>
+<script src="/js/cookie-notice.js"></script>
 </body>
 </html>

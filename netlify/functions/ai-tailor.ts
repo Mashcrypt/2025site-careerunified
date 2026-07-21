@@ -11,9 +11,11 @@ import {
 } from "../../resume-builder/src/app/utils/ats-analysis";
 
 type TailorMode = "tailor" | "cover_letter";
+type TailorWorkflow = "standard" | "ats_feedback";
 
 type TailorRequestBody = {
   mode?: TailorMode;
+  workflow?: TailorWorkflow;
   resumeData: ResumeData;
   jobDescription: string;
   atsFeedback?: string;
@@ -90,7 +92,25 @@ function compactAtsFeedback(value?: string) {
   return text.length > 6000 ? `${text.slice(0, 6000)}...` : text;
 }
 
-function buildPrompts(mode: TailorMode, resumeData: ResumeData, jobDescription: string, atsFeedback?: string) {
+export function shouldEnforceAtsQuality(
+  mode: TailorMode,
+  workflow: TailorWorkflow | undefined,
+  atsFeedback?: string,
+) {
+  return (
+    mode === "tailor" &&
+    Boolean(compactAtsFeedback(atsFeedback)) &&
+    (workflow === "ats_feedback" || workflow === undefined)
+  );
+}
+
+function buildPrompts(
+  mode: TailorMode,
+  resumeData: ResumeData,
+  jobDescription: string,
+  atsFeedback?: string,
+  enforceAtsQuality = false,
+) {
   const atsFeedbackText = compactAtsFeedback(atsFeedback);
 
   if (mode === "cover_letter") {
@@ -130,8 +150,29 @@ Write a tailored cover letter for this job using only the resume facts. Also ret
     return { systemRules, userPrompt };
   }
 
+  const workflowRules = enforceAtsQuality
+    ? `
+- Complete the ATS optimization in this ONE response. Do not make a partial first pass.
+- Silently review the finished resume against the supplied ATS score breakdown before returning JSON.
+- Target an in-app ATS score of at least ${ATS_TAILOR_TARGET}/100 whenever the existing facts support it.
+- Add all supported job keywords naturally across the summary, skills, projects, and experience. Never keyword-stuff.
+- Write a focused 35-95 word summary that states the candidate's relevant level, role, strengths, tools, and value.
+- Keep a deduplicated skills list of 8-16 role-relevant skills where the source facts allow it.
+- Strengthen every relevant experience description with clear action, scope, and outcome language.
+- If ATS FEEDBACK is provided, prioritize those weak areas and missing keywords, but only add terms that are truthful or clearly supported by the existing resume.
+- Do not stop after changing only the summary or skills. Improve the summary, skills, and every relevant experience entry in the same response.
+- If a keyword or requested achievement is not supported by the source facts, omit it and mention that factual blocker in suggestions instead of inventing it.
+`
+    : `
+- Tailor the resume to the supplied job description in one complete response.
+- Prioritize the candidate's most relevant existing experience, skills, qualifications, and strengths.
+- Improve the summary and relevant experience descriptions so they are clear, specific, and professional.
+- Use supported job terminology naturally, but do not force keywords or target an ATS score.
+- Return a useful tailored version even when the source resume does not contain every requirement in the job description.
+`;
+
   const systemRules = `
-You are an expert resume writer and ATS optimization assistant.
+You are an expert resume writer and job-tailoring assistant.
 
 Return ONLY valid JSON (no markdown, no backticks, no explanation).
 The JSON must match this shape:
@@ -143,23 +184,14 @@ The JSON must match this shape:
 
 Rules:
 - Keep the user's facts truthful. Do NOT invent companies, degrees, dates, or achievements.
-- Complete the ATS optimization in this ONE response. Do not make a partial first pass.
-- Silently review the finished resume against the supplied ATS score breakdown before returning JSON.
-- Target an in-app ATS score of at least ${ATS_TAILOR_TARGET}/100 whenever the existing facts support it.
-- You MAY rephrase sentences and reorder content for ATS, but factual job titles, employers, dates, qualifications, contact details, and IDs must not change.
-- Add all supported job keywords naturally across the summary, skills, projects, and experience. Never keyword-stuff.
-- Write a focused 35-95 word summary that states the candidate's relevant level, role, strengths, tools, and value.
-- Keep a deduplicated skills list of 8-16 role-relevant skills where the source facts allow it.
-- Strengthen every relevant experience description with clear action, scope, and outcome language.
+- You MAY rephrase sentences and reorder content for relevance and clarity, but factual job titles, employers, dates, qualifications, contact details, and IDs must not change.
 - Use measurable language only when a number or quantity already exists in the source resume. Never create a number.
 - Improve clarity and action verbs only when supported by the existing text.
 - Keep ResumeData structure identical.
 - Maintain all IDs as-is.
 - Preserve every experience, education, and project entry. Do not remove source facts to shorten the resume.
 - Preserve every additionalSections entry, title, item and ID. Do not remove imported information.
-- If ATS FEEDBACK is provided, prioritize those weak areas and missing keywords, but only add terms that are truthful or clearly supported by the existing resume.
-- Do not stop after changing only the summary or skills. Improve the summary, skills, and every relevant experience entry in the same response.
-- If a keyword or requested achievement is not supported by the source facts, omit it and mention that factual blocker in suggestions instead of inventing it.
+${workflowRules}
 
 ${AI_TAILOR_SECURITY_RULES}
 `.trim();
@@ -175,8 +207,8 @@ ${JSON.stringify(resumeData)}
 
 TASK:
 1) Generate 4-8 short suggestions describing what you changed.
-2) Make this the complete final optimization, not an intermediate draft.
-3) Output tailoredData optimized for this job description and ATS feedback.
+2) Make this the complete final tailored version, not an intermediate draft.
+3) Output tailoredData aligned with this job description${enforceAtsQuality ? " and the supplied ATS feedback" : ""}.
 `.trim();
 
   return { systemRules, userPrompt };
@@ -670,24 +702,32 @@ export const handler: Handler = async (event) => {
     `https://generativelanguage.googleapis.com/v1beta/models/` +
     `gemini-2.5-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-  const baselineAnalysis =
-    mode === "tailor" ? analyzeResumeForAts(body.resumeData, body.jobDescription) : null;
+  const explicitAtsFeedback = compactAtsFeedback(body.atsFeedback);
+  const isAtsFeedbackWorkflow = shouldEnforceAtsQuality(
+    mode,
+    body.workflow,
+    explicitAtsFeedback,
+  );
+  const baselineAnalysis = isAtsFeedbackWorkflow
+    ? analyzeResumeForAts(body.resumeData, body.jobDescription)
+    : null;
   const serverAtsFeedback = baselineAnalysis
     ? buildAtsFeedbackForTailor(baselineAnalysis)
-    : compactAtsFeedback(body.atsFeedback);
-  const explicitAtsFeedback = compactAtsFeedback(body.atsFeedback);
-  const combinedAtsFeedback =
-    baselineAnalysis &&
-    explicitAtsFeedback &&
-    !serverAtsFeedback.includes(explicitAtsFeedback.slice(0, 180))
+    : "";
+  const combinedAtsFeedback = isAtsFeedbackWorkflow
+    ? baselineAnalysis &&
+      explicitAtsFeedback &&
+      !serverAtsFeedback.includes(explicitAtsFeedback.slice(0, 180))
       ? `${serverAtsFeedback}\n\nADDITIONAL FEEDBACK FROM ANALYTICS:\n${explicitAtsFeedback}`
-      : serverAtsFeedback;
+      : serverAtsFeedback
+    : "";
 
   const { systemRules, userPrompt } = buildPrompts(
     mode,
     body.resumeData,
     body.jobDescription,
     combinedAtsFeedback,
+    isAtsFeedbackWorkflow,
   );
 
   // 1️⃣ Try Groq first — fast and reliable
@@ -764,72 +804,74 @@ export const handler: Handler = async (event) => {
     return json(200, typed, baseHeaders);
   }
 
-  if (!baselineAnalysis) {
-    return json(500, { error: "ATS quality analysis was not available. No AI credit was used." }, baseHeaders);
-  }
-
   let typed = parseTailorResponse(text, body.resumeData);
   if (!typed) {
     return json(500, { error: "Could not parse AI tailoring response. No AI credit was used." }, baseHeaders);
   }
 
-  let bestAnalysis = analyzeResumeForAts(typed.tailoredData, body.jobDescription);
-  let repairPassUsed = false;
-
-  if (baselineAnalysis.hasJobDescription && bestAnalysis.score < ATS_TAILOR_TARGET) {
-    repairPassUsed = true;
-    const repairPrompts = buildRepairPrompts(
-      body.resumeData,
-      typed.tailoredData,
-      body.jobDescription,
-      bestAnalysis,
-    );
-
-    try {
-      const repairedText = await generateAiText({
-        ...repairPrompts,
-        temperature: 0.05,
-        maxOutputTokens: 4200,
-        groqApiKey,
-        geminiEndpoint,
-      });
-      const repaired = parseTailorResponse(repairedText, body.resumeData);
-
-      if (repaired) {
-        const repairedAnalysis = analyzeResumeForAts(repaired.tailoredData, body.jobDescription);
-        if (repairedAnalysis.score > bestAnalysis.score) {
-          typed = repaired;
-          bestAnalysis = repairedAnalysis;
-        }
-      }
-    } catch (error: any) {
-      console.error("ATS automatic repair pass failed:", error?.message);
+  if (isAtsFeedbackWorkflow) {
+    if (!baselineAnalysis) {
+      return json(500, { error: "ATS quality analysis was not available. No AI credit was used." }, baseHeaders);
     }
-  }
 
-  const atsQuality = buildAtsQuality(baselineAnalysis, bestAnalysis, repairPassUsed);
-  typed.atsQuality = atsQuality;
-  if (repairPassUsed) {
-    typed.suggestions = uniqueStrings([
-      "Completed an automatic ATS quality review and repair inside this single tailoring request.",
-      ...typed.suggestions,
-    ]).slice(0, 10);
-  }
+    let bestAnalysis = analyzeResumeForAts(typed.tailoredData, body.jobDescription);
+    let repairPassUsed = false;
 
-  if (
-    baselineAnalysis.hasJobDescription &&
-    !hasMeaningfulAtsImprovement(baselineAnalysis, bestAnalysis)
-  ) {
-    return json(
-      502,
-      {
-        error: "The AI could not produce a meaningful truthful ATS improvement. No AI credit was used.",
-        details:
-          "Add any missing experience or skills you genuinely have, then try again. The system will not charge for this unsuccessful result.",
-        atsQuality,
-      },
-      baseHeaders,
-    );
+    if (baselineAnalysis.hasJobDescription && bestAnalysis.score < ATS_TAILOR_TARGET) {
+      repairPassUsed = true;
+      const repairPrompts = buildRepairPrompts(
+        body.resumeData,
+        typed.tailoredData,
+        body.jobDescription,
+        bestAnalysis,
+      );
+
+      try {
+        const repairedText = await generateAiText({
+          ...repairPrompts,
+          temperature: 0.05,
+          maxOutputTokens: 4200,
+          groqApiKey,
+          geminiEndpoint,
+        });
+        const repaired = parseTailorResponse(repairedText, body.resumeData);
+
+        if (repaired) {
+          const repairedAnalysis = analyzeResumeForAts(repaired.tailoredData, body.jobDescription);
+          if (repairedAnalysis.score > bestAnalysis.score) {
+            typed = repaired;
+            bestAnalysis = repairedAnalysis;
+          }
+        }
+      } catch (error: any) {
+        console.error("ATS automatic repair pass failed:", error?.message);
+      }
+    }
+
+    const atsQuality = buildAtsQuality(baselineAnalysis, bestAnalysis, repairPassUsed);
+    typed.atsQuality = atsQuality;
+    if (repairPassUsed) {
+      typed.suggestions = uniqueStrings([
+        "Completed an automatic ATS quality review and repair inside this single tailoring request.",
+        ...typed.suggestions,
+      ]).slice(0, 10);
+    }
+
+    if (
+      baselineAnalysis.hasJobDescription &&
+      !hasMeaningfulAtsImprovement(baselineAnalysis, bestAnalysis)
+    ) {
+      return json(
+        502,
+        {
+          error: "The AI could not produce a meaningful truthful ATS improvement. No AI credit was used.",
+          details:
+            "Add any missing experience or skills you genuinely have, then try again. The system will not charge for this unsuccessful result.",
+          atsQuality,
+        },
+        baseHeaders,
+      );
+    }
   }
 
   if (usageBucket === "free_resume") {

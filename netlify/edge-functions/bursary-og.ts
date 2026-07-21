@@ -394,6 +394,7 @@ export default async (request: Request) => {
       }, {passive: true});
     })();
   </script>
+  <script src="/js/cookie-notice.js"></script>
 </body>
 </html>`;
 

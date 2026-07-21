@@ -527,6 +527,7 @@ export default async (request: Request, context: EdgeContext) => {
       }, {passive: true});
     })();
   </script>
+  <script src="/js/cookie-notice.js"></script>
 </body>
 </html>`;
 
