@@ -857,20 +857,13 @@ export const handler: Handler = async (event) => {
       ]).slice(0, 10);
     }
 
-    if (
-      baselineAnalysis.hasJobDescription &&
-      !hasMeaningfulAtsImprovement(baselineAnalysis, bestAnalysis)
-    ) {
-      return json(
-        502,
-        {
-          error: "The AI could not produce a meaningful truthful ATS improvement. No AI credit was used.",
-          details:
-            "Add any missing experience or skills you genuinely have, then try again. The system will not charge for this unsuccessful result.",
-          atsQuality,
-        },
-        baseHeaders,
-      );
+    if (baselineAnalysis.hasJobDescription && !hasMeaningfulAtsImprovement(baselineAnalysis, bestAnalysis)) {
+      typed.suggestions = uniqueStrings([
+        "Returned the strongest truthful ATS improvement available from the current resume facts.",
+        "Some ATS gaps remain because the missing keywords or achievements were not clearly supported by the resume.",
+        ...typed.suggestions,
+        ...atsQuality.remainingActions,
+      ]).slice(0, 10);
     }
   }
 

@@ -19,15 +19,16 @@ export const SITE_SHELL_STYLES = `
   .site-detail-page .icon-btn svg,.site-detail-page .desktop-account-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .site-detail-page .mobile-logo{color:#fff;font-size:18px;font-weight:700;letter-spacing:0;text-decoration:none}
   .site-detail-page .mobile-menu a[aria-current="page"]{background:#eaf1fb;color:#1e3a8a}
-  .site-detail-footer{margin-top:0;padding:42px 20px 28px;background:#111827;color:#fff}
+  .site-detail-footer{margin-top:0;padding:42px 20px 28px;background:#1e3a8a;color:#fff}
   .site-detail-footer-inner{display:grid;grid-template-columns:1.1fr 2fr;gap:40px;width:min(1120px,100%);margin:0 auto}
   .site-detail-footer-brand{max-width:360px}
   .site-detail-footer-brand strong{display:block;margin-bottom:10px;font-size:21px}
-  .site-detail-footer-brand p{margin:0;color:#cbd5e1;font-size:14px}
+  .site-detail-footer-brand p{margin:0;color:rgba(255,255,255,.78);font-size:14px}
   .site-detail-footer-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-  .site-detail-footer-links h2{margin:0 0 10px;color:#fff;font-size:15px}
-  .site-detail-footer-links a{display:block;margin:7px 0;color:#fde047;font-size:14px}
-  .site-detail-footer-bottom{width:min(1120px,100%);margin:28px auto 0;padding-top:20px;border-top:1px solid #334155;color:#cbd5e1;text-align:center;font-size:13px}
+  .site-detail-footer-links h2{margin:0 0 10px;color:#fff;font-size:15px;letter-spacing:.02em}
+  .site-detail-footer-links a{display:block;margin:9px 0;color:#facc15;font-size:14px;font-weight:650;line-height:1.35;text-decoration:none}
+  .site-detail-footer-links a:hover{text-decoration:underline}
+  .site-detail-footer-bottom{width:min(1120px,100%);margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.82);text-align:center;font-size:13px}
   @media(max-width:1000px){.site-detail-page .nav-links{gap:11px}.site-detail-page .nav-links a{font-size:14px}}
   @media(max-width:900px){
     .site-detail-page .desktop-nav{display:none}
