@@ -84,6 +84,44 @@ function formatDescription(value: unknown) {
   return escapeHtml(cleaned || "Description not provided.");
 }
 
+function renderDescriptionLink(url: string, label: string) {
+  const cleanUrl = url.trim();
+  if (!/^https?:\/\//i.test(cleanUrl)) return escapeHtml(label || url);
+
+  let isInternal = false;
+  try {
+    isInternal = new URL(cleanUrl).origin === "https://careerunified.com";
+  } catch {
+    isInternal = false;
+  }
+
+  const targetAttrs = isInternal ? "" : ' target="_blank" rel="noopener noreferrer"';
+  return `<a class="description-link" href="${escapeHtml(cleanUrl)}"${targetAttrs}>${escapeHtml(label || cleanUrl)}</a>`;
+}
+
+function formatDescriptionHtml(value: unknown) {
+  const cleaned = formatDescription(value);
+  const linkPattern = /\[([^\]\n]+)\]\s*\(\s*(https?:\/\/[^\s<>"')]+)\s*\)|\(\s*(https?:\/\/[^\s<>"')]+)\s*\)\s*\[([^\]\n]+)\]|\bhttps?:\/\/[^\s<>"']+/gi;
+  let output = "";
+  let lastIndex = 0;
+
+  cleaned.replace(linkPattern, (match, label, markdownUrl, reversedUrl, reversedLabel, offset) => {
+    const url = markdownUrl || reversedUrl || match;
+    const punctuation = markdownUrl || reversedUrl ? "" : (url.match(/[).,!?;:]+$/)?.[0] || "");
+    const cleanUrl = punctuation ? url.slice(0, -punctuation.length) : url;
+    const linkLabel = markdownUrl ? String(label).trim() : reversedUrl ? String(reversedLabel).trim() : cleanUrl;
+
+    output += cleaned.slice(lastIndex, offset);
+    output += renderDescriptionLink(cleanUrl, linkLabel);
+    output += escapeHtml(punctuation);
+    lastIndex = offset + match.length;
+    return match;
+  });
+
+  output += cleaned.slice(lastIndex);
+  return output;
+}
+
 export default async (request: Request) => {
   try {
     const url = new URL(request.url);
@@ -258,6 +296,8 @@ export default async (request: Request) => {
     .detail-row span{display:block;color:#64748b;font-size:.86rem;font-weight:700}
     .detail-row strong{display:block;color:#111827}
     .description-content{color:#374151;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+    .description-link{color:#2563eb;font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}
+    .description-link:hover,.description-link:focus-visible{color:#1d4ed8}
     .actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
     .btn.green{background:#16a34a;color:#fff}
@@ -329,7 +369,7 @@ export default async (request: Request) => {
       </div>
     </section>
     <section class="panel description">
-      <div class="description-content">${formatDescription(bursary.description)}</div>
+      <div class="description-content">${formatDescriptionHtml(bursary.description)}</div>
     </section>
     <section class="panel actions-panel">
       <div class="actions">
