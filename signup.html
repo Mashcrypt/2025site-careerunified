@@ -778,7 +778,13 @@ signupBtn.onclick = async () => {
     showSuccess("Account created successfully! Redirecting...");
     
     setTimeout(() => {
-      window.location.href = "index.html";
+      const returnUrl = sessionStorage.getItem("careerUnifiedReturnUrl");
+      if (selectedRole !== "recruiter" && returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+        sessionStorage.removeItem("careerUnifiedReturnUrl");
+        window.location.href = returnUrl;
+      } else {
+        window.location.href = "index.html";
+      }
     }, 1500);
 
   } catch (error) {
@@ -818,7 +824,13 @@ googleBtn.onclick = async () => {
     showSuccess("Account created successfully! Redirecting...");
     
     setTimeout(() => {
-      window.location.href = "index.html";
+      const returnUrl = sessionStorage.getItem("careerUnifiedReturnUrl");
+      if (selectedRole !== "recruiter" && returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+        sessionStorage.removeItem("careerUnifiedReturnUrl");
+        window.location.href = returnUrl;
+      } else {
+        window.location.href = "index.html";
+      }
     }, 1500);
 
   } catch (error) {

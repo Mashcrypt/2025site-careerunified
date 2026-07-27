@@ -203,6 +203,7 @@ export default async (request: Request, context: EdgeContext) => {
     const deadlineDate = normalizeDate(job.deadline);
     const deadlineLabel = closingDateLabel(job, deadlineDate);
     const expired = Boolean(deadlineDate && deadlineDate < new Date().toISOString().slice(0, 10));
+    const directApplication = job.applicationMethod === "direct";
     const description = stripHtml(job.description);
     const metaDescription = `${companyName} - ${locationText} - Salary: ${salaryText} - ${snippet(description)}`.trim();
     const pageTitle = `${jobTitle} at ${companyName} | Career Unified`;
@@ -438,7 +439,7 @@ export default async (request: Request, context: EdgeContext) => {
     </section>
     <section class="panel actions-panel">
       <div class="actions">
-        ${!expired && job.applyLink ? `<a class="btn green" id="apply-job-link" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noopener noreferrer">Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg></a>` : ""}
+        ${!expired && job.applyLink ? `<a class="btn green" id="apply-job-link" href="${escapeHtml(job.applyLink)}"${directApplication ? "" : ' target="_blank" rel="noopener noreferrer"'}>${directApplication ? "Apply on Career Unified" : 'Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg>'}</a>` : ""}
         <a class="btn green" id="ai-tailor-link" href="https://careerunified.com/cv-generator/?tab=ai&source=job">AI Tailor CV</a>
       </div>
       ${(previousUrl || nextUrl) ? '<p class="swipe-hint">Swipe right or left to view another job</p>' : ""}

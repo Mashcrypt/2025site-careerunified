@@ -7,6 +7,13 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag("js", new Date());
+        gtag("config", "G-2Z934XRVXT");
+    </script>
     
     <style>
         * {
@@ -633,6 +640,124 @@
             color: #6b7280;
         }
 
+        /* Direct job applications */
+        .application-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+        }
+
+        .application-summary-item {
+            padding: 1rem;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+
+        .application-summary-item strong {
+            display: block;
+            color: #1e3a8a;
+            font-size: 1.5rem;
+        }
+
+        .application-summary-item span {
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .candidate-application-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .candidate-application-card {
+            padding: 1.25rem;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .candidate-application-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .candidate-application-head h3 {
+            margin: 0;
+            color: #1e3a8a;
+            font-size: 1.05rem;
+        }
+
+        .candidate-application-head p {
+            margin-top: 0.25rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .candidate-status {
+            flex: 0 0 auto;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .candidate-status.progress { background: #ecfdf5; color: #047857; }
+        .candidate-status.closed { background: #f3f4f6; color: #4b5563; }
+
+        .application-progress {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin: 1rem 0;
+        }
+
+        .application-progress span {
+            min-height: 5px;
+            border-radius: 999px;
+            background: #e5e7eb;
+        }
+
+        .application-progress span.complete { background: #16a34a; }
+
+        .candidate-application-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .candidate-application-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .application-success-note {
+            display: none;
+            margin: 0.9rem 0 1.2rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .application-summary { grid-template-columns: 1fr; }
+            .candidate-application-head { flex-direction: column; }
+            .candidate-application-actions .btn { width: 100%; }
+        }
+
         /* CV Preview Modal */
         .cv-modal {
             display: none;
@@ -1018,6 +1143,19 @@
                         </svg>
                     </button>
 
+                    <button class="nav-item" data-tab="applications">
+                        <div class="nav-item-content">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                            <span>My Applications</span>
+                        </div>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+
                     <button class="nav-item" data-tab="account-settings">
                         <div class="nav-item-content">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1320,6 +1458,31 @@
                         <label for="cvUpload" style="display: inline-block; padding: 14px 28px; background: #2563eb; color: #fff; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
                             Upload Your CV
                         </label>
+                    </div>
+                </div>
+
+                <!-- Applications Tab -->
+                <div id="applications-content" class="tab-content hidden">
+                    <div class="content-header">
+                        <div>
+                            <h2 class="content-title">My Applications</h2>
+                            <p class="content-subtitle">Track jobs you applied for directly through Career Unified.</p>
+                        </div>
+                        <a class="btn btn-primary" href="/jobs.html">Browse Jobs</a>
+                    </div>
+
+                    <div class="application-success-note" id="applicationSubmittedNotice">
+                        Your application was submitted. You can follow its status here.
+                    </div>
+
+                    <div class="application-summary">
+                        <div class="application-summary-item"><strong id="candidateApplicationsTotal">0</strong><span>Total applications</span></div>
+                        <div class="application-summary-item"><strong id="candidateApplicationsProgress">0</strong><span>In progress</span></div>
+                        <div class="application-summary-item"><strong id="candidateApplicationsOffers">0</strong><span>Offers and hires</span></div>
+                    </div>
+
+                    <div class="candidate-application-list" id="candidateApplicationList">
+                        <p style="color:#6b7280;">Open this section to load your applications.</p>
                     </div>
                 </div>
 
@@ -2572,6 +2735,7 @@ Platform: ${navigator.platform}
         });
     }
     </script>
+    <script type="module" src="/js/candidate-applications.js"></script>
 <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

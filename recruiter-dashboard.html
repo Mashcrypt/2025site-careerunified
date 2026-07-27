@@ -440,6 +440,64 @@
   .company-preview .name { font-weight: 800; font-size: 15px; }
   .company-preview .meta { color:#6b7280; font-size: 12px; margin-top: 2px; }
   .company-preview .chips { display:flex; gap:8px; flex-wrap: wrap; margin-top: 12px; }
+  .company-logo-upload {
+    padding: 14px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+  .company-logo-upload-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .company-logo-thumb {
+    width: 66px;
+    height: 66px;
+    flex: 0 0 66px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    object-fit: contain;
+    background: #fff;
+  }
+  .company-logo-select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 13px;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .company-logo-upload.uploading .company-logo-select {
+    pointer-events: none;
+    opacity: .65;
+  }
+  .company-logo-status {
+    min-height: 18px;
+    margin-top: 9px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .company-logo-status.success { color: #15803d; }
+  .company-logo-status.error { color: #b91c1c; }
+  .company-logo-url {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #dbeafe;
+  }
+  .company-logo-url summary {
+    color: #1e3a8a;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .company-logo-url input { margin-top: 10px; }
   .chip {
     display:inline-flex; align-items:center; gap:8px;
     padding: 8px 10px; border-radius: 999px;
@@ -499,6 +557,184 @@
   th { color:#2563eb; font-size: 12px; }
   tr:last-child td { border-bottom: none; }
   .muted { color:#6b7280; }
+
+  .direct-apply-settings {
+    margin-top: 14px;
+    padding: 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+  .direct-apply-value {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px;
+    border-left: 4px solid #16a34a;
+    background: #f0fdf4;
+    color: #166534;
+  }
+  .direct-apply-value i { font-size: 24px; }
+  .screening-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+    margin: 16px 0;
+  }
+  .screening-toolbar button { min-height: 46px; }
+  .screening-question-list { display: grid; gap: 12px; }
+  .screening-question-card {
+    padding: 16px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .screening-question-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .screening-question-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1e3a8a;
+    font-weight: 800;
+    font-size: 12px;
+  }
+  .screening-remove {
+    padding: 6px;
+    border: 0;
+    background: transparent;
+    color: #dc2626;
+    font-size: 22px;
+  }
+  .screening-config {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, .5fr);
+    gap: 12px;
+  }
+  .screening-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .screening-check input { width: 18px; height: 18px; }
+  .application-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .application-kpi {
+    padding: 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .application-kpi strong { display: block; color: #1e3a8a; font-size: 1.7rem; }
+  .application-kpi span { color: #64748b; font-size: 13px; font-weight: 700; }
+  .application-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(180px, .45fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .application-list { display: grid; gap: 12px; }
+  .application-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(160px, .55fr) minmax(130px, .4fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .application-row h3 { margin: 0 0 4px; color: #1e3a8a; font-size: 1rem; }
+  .application-row p { margin: 0; color: #64748b; font-size: 13px; }
+  .application-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .application-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .application-badge.match { background: #dcfce7; color: #166534; }
+  .application-badge.review { background: #fef3c7; color: #92400e; }
+  .application-status { font-weight: 800; color: #374151; text-transform: capitalize; }
+  .application-review-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, .68);
+  }
+  .application-review-modal[hidden] { display: none; }
+  .application-review-panel {
+    width: min(880px, 100%);
+    max-height: calc(100vh - 36px);
+    overflow-y: auto;
+    padding: 24px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .28);
+  }
+  .application-review-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .application-review-close {
+    padding: 5px;
+    background: transparent;
+    color: #334155;
+    font-size: 26px;
+  }
+  .application-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .application-detail {
+    padding: 13px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+  .application-detail span { display: block; color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+  .application-detail strong { display: block; margin-top: 3px; color: #1f2937; overflow-wrap: anywhere; }
+  .answer-list { display: grid; gap: 10px; margin: 12px 0 20px; }
+  .answer-item { padding: 13px; border-left: 3px solid #2563eb; background: #f8fbff; }
+  .answer-item span { display: block; color: #475569; font-size: 12px; font-weight: 700; }
+  .answer-item strong { display: block; margin-top: 5px; color: #111827; white-space: pre-wrap; }
+  .application-review-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0; }
+  .application-review-actions button { display: inline-flex; align-items: center; gap: 6px; }
+  .application-note { display: grid; gap: 8px; margin-top: 18px; }
+  .application-note textarea { min-height: 96px; }
 
   /* ======================================================
      MOBILE RESPONSIVE DESIGN
@@ -583,6 +819,12 @@
 
     .analytics-grid { grid-template-columns: 1fr; }
     .chart-grid { grid-template-columns: 1fr; }
+    .application-kpis { grid-template-columns: 1fr; }
+    .application-filters { grid-template-columns: 1fr; }
+    .application-row { grid-template-columns: 1fr; align-items: start; }
+    .screening-toolbar,.screening-config { grid-template-columns: 1fr; }
+    .application-detail-grid { grid-template-columns: 1fr; }
+    .application-review-panel { padding: 18px; }
   }
 
   @media (max-width: 480px) {
@@ -624,6 +866,7 @@
     <a onclick="showSection('post-job', this)"><i class='bx bx-plus-circle'></i>Post a Job</a>
     <a onclick="showSection('jobs', this)"><i class='bx bx-briefcase'></i>Manage Jobs</a>
     <a onclick="showSection('cvs', this)"><i class='bx bx-file'></i>CV Library</a>
+    <a id="applicationsNav" onclick="showSection('applications', this)"><i class='bx bx-user-check'></i>Applications</a>
     <a onclick="showSection('billing', this)"><i class='bx bx-credit-card'></i>Packages</a>
     <a onclick="showSection('analytics', this)"><i class='bx bx-bar-chart-alt-2'></i>Analytics</a>
     <a onclick="logoutUser()"><i class='bx bx-log-out'></i>Logout</a>
@@ -638,6 +881,7 @@
     <div class="stat"><div><h3 id="totalCVs">0</h3><span>Total CVs Available</span></div><i class='bx bx-file'></i></div>
     <div class="stat"><div><h3 id="unlockedCVs">0</h3><span>Unlocked CVs</span></div><i class='bx bx-lock-open'></i></div>
     <div class="stat"><div><h3 id="remainingUnlocks">0</h3><span>Remaining Unlocks</span></div><i class='bx bx-user-check'></i></div>
+    <div class="stat"><div><h3 id="directApplicationsCount">0</h3><span>Direct Applications</span></div><i class='bx bx-check-square'></i></div>
   </div>
 
   <!-- DASHBOARD -->
@@ -651,6 +895,14 @@
         <p>Access uploaded CVs from job seekers</p>
         <button class="primary-btn" onclick="showSection('cvs', document.querySelector('.nav a:nth-child(5)'))">
           Browse CVs
+        </button>
+      </div>
+
+      <div class="cv-card">
+        <h3><i class='bx bx-user-check'></i> Direct Applications</h3>
+        <p>Review candidates, screening answers and submitted CVs in one place</p>
+        <button class="primary-btn" onclick="showSection('applications', document.getElementById('applicationsNav'))">
+          Review Applications
         </button>
       </div>
 
@@ -749,8 +1001,25 @@
           </div>
 
           <div class="form-group">
-            <label>Logo URL</label>
-            <input type="url" name="logo" id="cp_logo" placeholder="https://.../logo.png">
+            <label>Company Logo</label>
+            <div class="company-logo-upload" id="companyLogoUpload">
+              <input type="file" id="cp_logo_file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" hidden>
+              <input type="hidden" id="cp_logo_path" value="">
+              <div class="company-logo-upload-main">
+                <img class="company-logo-thumb" id="cp_logo_thumb" src="/android-chrome-192x192.png" alt="Company logo preview">
+                <div>
+                  <label class="company-logo-select" for="cp_logo_file">
+                    <i class='bx bx-upload'></i> Choose Logo
+                  </label>
+                  <p style="margin:7px 0 0;">PNG, JPG or WebP. Maximum 2MB.</p>
+                </div>
+              </div>
+              <div class="company-logo-status" id="companyLogoStatus">No image selected.</div>
+              <details class="company-logo-url">
+                <summary>Use an image URL instead</summary>
+                <input type="url" name="logo" id="cp_logo" placeholder="https://company.com/logo.png">
+              </details>
+            </div>
           </div>
 
           <div class="form-group">
@@ -994,6 +1263,81 @@
           <input type="text" name="deadline" placeholder="e.g. 31 Jan 2026">
         </div>
 
+        <h3 style="margin:30px 0 10px;">How candidates apply</h3>
+        <div class="form-group">
+          <label>Application method <span style="color:red">*</span></label>
+          <select name="applicationMethod" id="applicationMethod" required>
+            <option value="direct">Apply on Career Unified (Recommended)</option>
+            <option value="external">External application website</option>
+            <option value="email">Application by email</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="externalApplyLinkGroup" style="display:none;">
+          <label>External application URL <span style="color:red">*</span></label>
+          <input type="url" name="applyLink" id="job_apply_link" placeholder="https://company.com/careers/apply">
+        </div>
+
+        <div class="direct-apply-settings" id="directApplySettings">
+          <div class="direct-apply-value">
+            <i class='bx bx-check-shield'></i>
+            <div>
+              <strong>Career Unified Direct Apply</strong>
+              <div style="font-size:13px;margin-top:3px;">Candidates reuse their verified profile and CV. You receive structured applications, essential-criteria signals and a job-specific hiring pipeline.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+            <div>
+              <strong>Screening questions</strong>
+              <p class="muted" style="font-size:13px;margin-top:4px;">Add up to 8 concise questions. Essential criteria help you prioritise review; candidates are never silently rejected.</p>
+            </div>
+            <span class="pill"><span id="screeningQuestionCount">0</span>/8 questions</span>
+          </div>
+
+          <div class="screening-toolbar">
+            <div class="form-group" style="margin:0;">
+              <label for="screeningTemplate">Question library</label>
+              <select id="screeningTemplate">
+                <option value="work_authorisation">Work authorisation</option>
+                <option value="qualification">Highest qualification</option>
+                <option value="experience">Relevant experience</option>
+                <option value="drivers_licence">Driver's Licence</option>
+                <option value="relocation">Willingness to relocate</option>
+                <option value="notice_period">Notice period</option>
+                <option value="travel">Willingness to travel</option>
+              </select>
+            </div>
+            <button type="button" class="primary-btn" id="addScreeningTemplateBtn"><i class='bx bx-plus'></i> Add question</button>
+          </div>
+
+          <details style="margin:12px 0 16px;">
+            <summary style="cursor:pointer;color:#1e3a8a;font-weight:800;">Add a custom question</summary>
+            <div class="screening-config" style="margin-top:12px;">
+              <div class="form-group" style="margin:0;">
+                <label for="customQuestionLabel">Question</label>
+                <input id="customQuestionLabel" type="text" maxlength="240" placeholder="For example: Which accounting software have you used?">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label for="customQuestionType">Answer type</label>
+                <select id="customQuestionType">
+                  <option value="short_text">Short answer</option>
+                  <option value="yes_no">Yes / No</option>
+                  <option value="number">Number</option>
+                  <option value="single_select">Multiple choice</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="customQuestionOptionsGroup" style="display:none;margin-top:12px;">
+              <label for="customQuestionOptions">Options, separated by commas</label>
+              <input id="customQuestionOptions" type="text" placeholder="Option one, Option two, Option three">
+            </div>
+            <button type="button" class="primary-btn btn-secondary" id="addCustomQuestionBtn" style="margin-top:12px;"><i class='bx bx-plus'></i> Add custom question</button>
+          </details>
+
+          <div class="screening-question-list" id="screeningQuestionList"></div>
+        </div>
+
         <div class="helper" id="companyAutofillHelper" style="display:none;">
           <span><i class='bx bx-lock-alt' style="color:#2563eb;"></i> Auto-filled from Company Profile</span>
           <span>•</span>
@@ -1007,6 +1351,42 @@
         </div>
 
       </form>
+    </div>
+  </div>
+
+  <!-- DIRECT APPLICATIONS -->
+  <div id="applications" class="section">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+      <div>
+        <h2>Direct Applications</h2>
+        <p style="color:#6b7280;">Review applicants who applied to your jobs on Career Unified.</p>
+      </div>
+      <button class="primary-btn" id="refreshApplicationsBtn"><i class='bx bx-refresh'></i> Refresh</button>
+    </div>
+
+    <div class="application-kpis">
+      <div class="application-kpi"><strong id="applicationTotalKpi">0</strong><span>Total applications</span></div>
+      <div class="application-kpi"><strong id="applicationNewKpi">0</strong><span>Waiting for review</span></div>
+      <div class="application-kpi"><strong id="applicationShortlistKpi">0</strong><span>Shortlisted and interviews</span></div>
+    </div>
+
+    <div class="application-filters">
+      <select id="applicationJobFilter"><option value="">All jobs</option></select>
+      <select id="applicationStatusFilter">
+        <option value="">All statuses</option>
+        <option value="submitted">Submitted</option>
+        <option value="viewed">Viewed</option>
+        <option value="shortlisted">Shortlisted</option>
+        <option value="interview">Interview</option>
+        <option value="offer">Offer</option>
+        <option value="hired">Hired</option>
+        <option value="unsuccessful">Unsuccessful</option>
+        <option value="withdrawn">Withdrawn</option>
+      </select>
+    </div>
+
+    <div class="application-list" id="recruiterApplicationsList">
+      <p style="color:#6b7280;">Open this section to load applications.</p>
     </div>
   </div>
 
@@ -1321,11 +1701,17 @@
     <h3>Upgrade Required</h3>
     <p id="modalMessage">Please upgrade your subscription to unlock CVs.</p>
     <div style="display: flex; gap: 12px; margin-top: 16px;">
-      <button class="primary-btn" onclick="showSection('billing', document.querySelector('.nav a:nth-child(6)')); closeModal()">
+      <button class="primary-btn" onclick="showSection('billing', document.querySelector('.nav a:nth-child(7)')); closeModal()">
         View Plans
       </button>
       <button class="close" onclick="closeModal()">Close</button>
     </div>
+  </div>
+</div>
+
+<div class="application-review-modal" id="applicationReviewModal" hidden>
+  <div class="application-review-panel" role="dialog" aria-modal="true" aria-labelledby="applicationReviewTitle">
+    <div id="applicationReviewContent"></div>
   </div>
 </div>
 
@@ -1433,6 +1819,261 @@ const db = getFirestore(app);
 let currentRecruiter = null;
 let recruiterData = null;
 let allCVsCount = 0;
+let screeningQuestionsDraft = [];
+let recruiterApplicationsCache = [];
+let activeApplicationId = null;
+
+const SCREENING_QUESTION_LIBRARY = {
+  work_authorisation: {
+    label: "Are you legally authorised to work in South Africa?",
+    type: "yes_no",
+    required: true,
+    options: [],
+    criteria: {operator: "equals", value: "Yes"}
+  },
+  qualification: {
+    label: "What is your highest completed qualification?",
+    type: "single_select",
+    required: true,
+    options: ["Matric", "Certificate", "Diploma", "Bachelor's degree", "Honours degree", "Master's degree", "Doctorate"],
+    criteria: null
+  },
+  experience: {
+    label: "How many years of relevant experience do you have?",
+    type: "number",
+    required: true,
+    options: [],
+    criteria: {operator: "gte", value: "1"}
+  },
+  drivers_licence: {
+    label: "Do you have the Driver's Licence required for this role?",
+    type: "yes_no",
+    required: true,
+    options: [],
+    criteria: {operator: "equals", value: "Yes"}
+  },
+  relocation: {
+    label: "Are you willing to relocate for this position?",
+    type: "yes_no",
+    required: false,
+    options: [],
+    criteria: null
+  },
+  notice_period: {
+    label: "What is your current notice period?",
+    type: "single_select",
+    required: true,
+    options: ["Immediately available", "1 week", "2 weeks", "1 month", "2 months", "3 months or more"],
+    criteria: null
+  },
+  travel: {
+    label: "Are you willing to travel when the role requires it?",
+    type: "yes_no",
+    required: false,
+    options: [],
+    criteria: null
+  }
+};
+
+const SENSITIVE_SCREENING_PATTERN = /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
+
+function dashboardText(value, fallback = "") {
+  const output = String(value ?? "").trim();
+  return output || fallback;
+}
+
+function escapeDashboard(value, fallback = "") {
+  return dashboardText(value, fallback)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function questionId(prefix = "question") {
+  const random = Math.random().toString(36).slice(2, 8);
+  return `${prefix}_${Date.now().toString(36)}_${random}`;
+}
+
+function normalizeScreeningQuestion(question, index = 0) {
+  const type = ["yes_no", "number", "single_select", "short_text"].includes(question?.type)
+    ? question.type
+    : "short_text";
+  return {
+    id: dashboardText(question?.id, `question_${index + 1}`).slice(0, 80),
+    label: dashboardText(question?.label).slice(0, 240),
+    type,
+    required: question?.required !== false,
+    options: Array.isArray(question?.options)
+      ? question.options.map(option => dashboardText(option).slice(0, 120)).filter(Boolean).slice(0, 12)
+      : [],
+    criteria: question?.criteria?.operator && dashboardText(question.criteria.value)
+      ? {
+          operator: question.criteria.operator === "gte" ? "gte" : "equals",
+          value: dashboardText(question.criteria.value).slice(0, 120)
+        }
+      : null
+  };
+}
+
+function criterionControl(question) {
+  const currentValue = dashboardText(question.criteria?.value);
+  if (question.type === "yes_no") {
+    return `
+      <div class="form-group" style="margin:0;">
+        <label>Essential answer</label>
+        <select data-question-field="criterion">
+          <option value="">No automatic priority</option>
+          <option value="Yes"${currentValue === "Yes" ? " selected" : ""}>Yes</option>
+          <option value="No"${currentValue === "No" ? " selected" : ""}>No</option>
+        </select>
+      </div>`;
+  }
+  if (question.type === "number") {
+    return `
+      <div class="form-group" style="margin:0;">
+        <label>Minimum essential value</label>
+        <input data-question-field="criterion" type="number" min="0" step="1" value="${escapeDashboard(currentValue)}" placeholder="No minimum">
+      </div>`;
+  }
+  if (question.type === "single_select") {
+    return `
+      <div class="form-group" style="margin:0;">
+        <label>Essential answer</label>
+        <select data-question-field="criterion">
+          <option value="">No automatic priority</option>
+          ${question.options.map(option => `<option value="${escapeDashboard(option)}"${currentValue === option ? " selected" : ""}>${escapeDashboard(option)}</option>`).join("")}
+        </select>
+      </div>`;
+  }
+  return `<div class="form-group" style="margin:0;"><label>Review method</label><input value="Recruiter review" disabled></div>`;
+}
+
+function renderScreeningQuestions() {
+  const list = document.getElementById("screeningQuestionList");
+  const count = document.getElementById("screeningQuestionCount");
+  if (!list || !count) return;
+  count.textContent = String(screeningQuestionsDraft.length);
+
+  if (!screeningQuestionsDraft.length) {
+    list.innerHTML = `<div class="muted" style="padding:16px;text-align:center;border:1px dashed #bfdbfe;border-radius:8px;">No screening questions added yet. Candidates will still submit their profile and CV.</div>`;
+    return;
+  }
+
+  list.innerHTML = screeningQuestionsDraft.map((question, index) => `
+    <div class="screening-question-card" data-question-id="${escapeDashboard(question.id)}">
+      <div class="screening-question-head">
+        <span class="screening-question-number">${index + 1}</span>
+        <button class="screening-remove" type="button" data-remove-question="${escapeDashboard(question.id)}" title="Remove question" aria-label="Remove question"><i class='bx bx-trash'></i></button>
+      </div>
+      <div class="screening-config">
+        <div class="form-group" style="margin:0;">
+          <label>Question</label>
+          <input data-question-field="label" type="text" maxlength="240" value="${escapeDashboard(question.label)}">
+        </div>
+        ${criterionControl(question)}
+      </div>
+      <label class="screening-check">
+        <input data-question-field="required" type="checkbox"${question.required ? " checked" : ""}>
+        Candidate must answer this question
+      </label>
+    </div>
+  `).join("");
+}
+
+function addScreeningQuestion(question) {
+  if (screeningQuestionsDraft.length >= 8) {
+    showToast("warn", "Question limit reached", "Use no more than 8 focused screening questions.", 3800);
+    return;
+  }
+  screeningQuestionsDraft.push(normalizeScreeningQuestion({...question, id: questionId("screen")}));
+  renderScreeningQuestions();
+}
+
+function updateApplicationMethodUI() {
+  const method = document.getElementById("applicationMethod")?.value || "direct";
+  const directSettings = document.getElementById("directApplySettings");
+  const externalGroup = document.getElementById("externalApplyLinkGroup");
+  const externalInput = document.getElementById("job_apply_link");
+  if (directSettings) directSettings.style.display = method === "direct" ? "block" : "none";
+  if (externalGroup) externalGroup.style.display = method === "external" ? "block" : "none";
+  if (externalInput) externalInput.required = method === "external";
+}
+
+function collectScreeningQuestions() {
+  return screeningQuestionsDraft
+    .map((question, index) => normalizeScreeningQuestion(question, index))
+    .filter(question => question.label)
+    .slice(0, 8);
+}
+
+function setupApplicationBuilder() {
+  document.getElementById("applicationMethod")?.addEventListener("change", updateApplicationMethodUI);
+  document.getElementById("addScreeningTemplateBtn")?.addEventListener("click", () => {
+    const key = document.getElementById("screeningTemplate")?.value;
+    const template = SCREENING_QUESTION_LIBRARY[key];
+    if (template) addScreeningQuestion(template);
+  });
+  document.getElementById("customQuestionType")?.addEventListener("change", (event) => {
+    const group = document.getElementById("customQuestionOptionsGroup");
+    if (group) group.style.display = event.target.value === "single_select" ? "block" : "none";
+  });
+  document.getElementById("addCustomQuestionBtn")?.addEventListener("click", () => {
+    const labelInput = document.getElementById("customQuestionLabel");
+    const typeInput = document.getElementById("customQuestionType");
+    const optionsInput = document.getElementById("customQuestionOptions");
+    const label = dashboardText(labelInput?.value);
+    const type = typeInput?.value || "short_text";
+    const options = type === "single_select"
+      ? dashboardText(optionsInput?.value).split(",").map(option => option.trim()).filter(Boolean).slice(0, 12)
+      : [];
+    if (!label) {
+      showToast("warn", "Question required", "Write the custom question first.", 3200);
+      return;
+    }
+    if (SENSITIVE_SCREENING_PATTERN.test(label)) {
+      showToast(
+        "warn",
+        "Use a role-specific question",
+        "Do not request identity numbers, demographic or medical details, salary history, bank details, photos, or criminal-record information in standard screening.",
+        6500
+      );
+      return;
+    }
+    if (type === "single_select" && options.length < 2) {
+      showToast("warn", "Options required", "Add at least two multiple-choice options.", 3500);
+      return;
+    }
+    addScreeningQuestion({label, type, options, required: true, criteria: null});
+    labelInput.value = "";
+    optionsInput.value = "";
+  });
+  document.getElementById("screeningQuestionList")?.addEventListener("click", (event) => {
+    const removeButton = event.target.closest("[data-remove-question]");
+    if (!removeButton) return;
+    const id = removeButton.dataset.removeQuestion;
+    screeningQuestionsDraft = screeningQuestionsDraft.filter(question => question.id !== id);
+    renderScreeningQuestions();
+  });
+  document.getElementById("screeningQuestionList")?.addEventListener("input", (event) => {
+    const card = event.target.closest("[data-question-id]");
+    const field = event.target.dataset.questionField;
+    if (!card || !field) return;
+    const question = screeningQuestionsDraft.find(item => item.id === card.dataset.questionId);
+    if (!question) return;
+    if (field === "label") question.label = event.target.value;
+    if (field === "required") question.required = event.target.checked;
+    if (field === "criterion") {
+      const value = dashboardText(event.target.value);
+      question.criteria = value
+        ? {operator: question.type === "number" ? "gte" : "equals", value}
+        : null;
+    }
+  });
+  updateApplicationMethodUI();
+  renderScreeningQuestions();
+}
 
 function toDateValue(value) {
   if (!value) return null;
@@ -1614,6 +2255,7 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('prefillFromAccountBtn')?.addEventListener('click', () => {
     prefillCompanyFromAccount();
   });
+  setupCompanyLogoUpload();
 
   // Jobs
   loadCVs();
@@ -1629,6 +2271,11 @@ onAuthStateChanged(auth, async (user) => {
   });
 
   document.getElementById('cancelEditBtn')?.addEventListener('click', cancelEditJob);
+  setupApplicationBuilder();
+  document.getElementById('refreshApplicationsBtn')?.addEventListener('click', loadRecruiterApplications);
+  document.getElementById('applicationJobFilter')?.addEventListener('change', renderRecruiterApplications);
+  document.getElementById('applicationStatusFilter')?.addEventListener('change', renderRecruiterApplications);
+  loadRecruiterApplications();
 
   // Analytics
   document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => updateCharts());
@@ -1767,6 +2414,7 @@ function getCompanyFormValue() {
     city: document.getElementById('cp_city')?.value?.trim() || "",
     country: document.getElementById('cp_country')?.value?.trim() || "",
     logo: normalizeUrl(document.getElementById('cp_logo')?.value || ""),
+    logoPath: document.getElementById('cp_logo_path')?.value?.trim() || "",
     about: document.getElementById('cp_about')?.value?.trim() || "",
     contactName: document.getElementById('cp_contactName')?.value?.trim() || ""
   };
@@ -1781,6 +2429,9 @@ function setCompanyForm(p) {
   document.getElementById('cp_city').value = p?.city || "";
   document.getElementById('cp_country').value = p?.country || "";
   document.getElementById('cp_logo').value = p?.logo || "";
+  document.getElementById('cp_logo_path').value = p?.logoPath || "";
+  setCompanyLogoThumb(p?.logo || "");
+  setCompanyLogoStatus(p?.logo ? "Current company logo loaded." : "No image selected.");
   document.getElementById('cp_about').value = p?.about || "";
   document.getElementById('cp_contactName').value = p?.contactName || "";
 }
@@ -1804,6 +2455,10 @@ function renderCompanyPreview(p) {
 
   const logoEl = document.getElementById('cp_previewLogo');
   if (logoEl) {
+    logoEl.onerror = () => {
+      logoEl.onerror = null;
+      logoEl.src = "/android-chrome-192x192.png";
+    };
     logoEl.src = p.logo || "https://dummyimage.com/108x108/2563eb/ffffff&text=CU";
   }
 
@@ -1814,7 +2469,129 @@ function renderCompanyPreview(p) {
 
   if (sidebarName) sidebarName.textContent = name || "Career Unified";
   if (sidebarSub) sidebarSub.textContent = "Recruiter Dashboard";
-  if (sidebarLogo) sidebarLogo.src = p.logo || "https://dummyimage.com/80x80/2563eb/ffffff&text=CU";
+  if (sidebarLogo) {
+    sidebarLogo.onerror = () => {
+      sidebarLogo.onerror = null;
+      sidebarLogo.src = "/android-chrome-192x192.png";
+    };
+    sidebarLogo.src = p.logo || "https://dummyimage.com/80x80/2563eb/ffffff&text=CU";
+  }
+}
+
+let companyLogoObjectUrl = "";
+
+function setCompanyLogoThumb(url) {
+  const thumb = document.getElementById("cp_logo_thumb");
+  if (!thumb) return;
+  thumb.onerror = () => {
+    thumb.onerror = null;
+    thumb.src = "/android-chrome-192x192.png";
+  };
+  thumb.src = url || "/android-chrome-192x192.png";
+}
+
+function setCompanyLogoStatus(message, type = "") {
+  const status = document.getElementById("companyLogoStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.className = `company-logo-status${type ? ` ${type}` : ""}`;
+}
+
+async function uploadCompanyLogo(file) {
+  const uploadBox = document.getElementById("companyLogoUpload");
+  const input = document.getElementById("cp_logo_file");
+  const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+  const hasAllowedExtension = /\.(png|jpe?g|webp)$/i.test(file.name || "");
+  if (!allowedTypes.includes(file.type) && !hasAllowedExtension) {
+    setCompanyLogoStatus("Choose a PNG, JPG, or WebP image.", "error");
+    showToast("warn", "Unsupported logo", "Choose a PNG, JPG, or WebP image.", 3800);
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    setCompanyLogoStatus("Logo file size must be less than 2MB.", "error");
+    showToast("warn", "Logo is too large", "Choose an image smaller than 2MB.", 3800);
+    return;
+  }
+
+  if (companyLogoObjectUrl) URL.revokeObjectURL(companyLogoObjectUrl);
+  companyLogoObjectUrl = URL.createObjectURL(file);
+  setCompanyLogoThumb(companyLogoObjectUrl);
+  uploadBox?.classList.add("uploading");
+  setCompanyLogoStatus("Uploading and updating your job posts...");
+
+  try {
+    const token = await currentRecruiter.getIdToken(true);
+    const formData = new FormData();
+    formData.append("logo", file);
+    const response = await fetch("/.netlify/functions/upload-recruiter-logo", {
+      method: "POST",
+      headers: {Authorization: `Bearer ${token}`},
+      body: formData
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.error || "Could not upload the company logo.");
+    }
+
+    document.getElementById("cp_logo").value = payload.logoUrl || "";
+    document.getElementById("cp_logo_path").value = payload.logoPath || "";
+    companyProfile = {
+      ...(companyProfile || {}),
+      logo: payload.logoUrl || "",
+      logoPath: payload.logoPath || ""
+    };
+    companyProfileVersion = payload.companyProfileVersion || companyProfileVersion;
+    setCompanyLogoThumb(payload.logoUrl);
+    renderCompanyPreview({...getCompanyFormValue(), logo: payload.logoUrl});
+    applyCompanyProfileToJobForm({lock: true});
+    if (payload.syncComplete === false) {
+      setCompanyLogoStatus("Logo uploaded. Some existing job posts could not be refreshed yet.", "error");
+      showToast("warn", "Logo uploaded", "The logo is saved, but some existing job posts need another update.", 5200);
+    } else {
+      setCompanyLogoStatus(
+        payload.syncedJobs
+          ? `Logo uploaded and applied to ${payload.syncedJobs} job post${payload.syncedJobs === 1 ? "" : "s"}.`
+          : "Logo uploaded successfully.",
+        "success"
+      );
+      showToast(
+        "success",
+        "Logo uploaded",
+        payload.syncedJobs
+          ? "Your company logo is ready and existing job posts were updated."
+          : "Your company logo is ready for your job posts.",
+        4200
+      );
+    }
+    await loadManageJobs();
+  } catch (error) {
+    setCompanyLogoStatus(error.message || "Could not upload the company logo.", "error");
+    showToast("error", "Logo upload failed", error.message || "Please try again.", 4500);
+    setCompanyLogoThumb(document.getElementById("cp_logo")?.value || "");
+  } finally {
+    uploadBox?.classList.remove("uploading");
+    if (input) input.value = "";
+    if (companyLogoObjectUrl) {
+      URL.revokeObjectURL(companyLogoObjectUrl);
+      companyLogoObjectUrl = "";
+    }
+  }
+}
+
+function setupCompanyLogoUpload() {
+  const input = document.getElementById("cp_logo_file");
+  input?.addEventListener("change", event => {
+    const file = event.target.files?.[0];
+    if (file) uploadCompanyLogo(file);
+  });
+  const logoUrl = document.getElementById("cp_logo");
+  logoUrl?.addEventListener("input", () => {
+    setCompanyLogoThumb(logoUrl.value);
+    setCompanyLogoStatus(
+      logoUrl.value ? "Image URL ready. Save the Company Profile to apply it." : "No image selected."
+    );
+  });
+  setCompanyLogoThumb(document.getElementById("cp_logo")?.value || "");
 }
 
 function bindCompanyPreviewLive() {
@@ -1835,12 +2612,25 @@ function prefillCompanyFromAccount(silent=false) {
   renderCompanyPreview(getCompanyFormValue());
 }
 
+async function syncCompanyLogoUrlToJobs(logo) {
+  const jobsSnapshot = await getDocs(query(
+    collection(db, "jobs"),
+    where("recruiterId", "==", currentRecruiter.uid)
+  ));
+  await Promise.all(jobsSnapshot.docs.map(job => updateDoc(job.ref, {
+    logo,
+    updatedAt: serverTimestamp()
+  })));
+  return jobsSnapshot.size;
+}
+
 async function saveCompanyProfile() {
   const btn = document.getElementById('saveCompanyBtn');
   if (btn) btn.disabled = true;
 
   try {
     const p = getCompanyFormValue();
+    const previousLogo = companyProfile?.logo || "";
 
     if (!p.name || !p.email) {
       showToast('warn', 'Missing required fields', 'Company Name and Company Email are required.', 4200);
@@ -1863,7 +2653,25 @@ async function saveCompanyProfile() {
     updateCompanyPills();
     applyCompanyProfileToJobForm({ lock: true });
 
-    showToast('success', 'Saved', 'Company profile saved. Job posts will auto-fill automatically.', 3500);
+    let logoSyncFailed = false;
+    if (p.logo !== previousLogo) {
+      try {
+        await syncCompanyLogoUrlToJobs(p.logo);
+        await loadManageJobs();
+      } catch (syncError) {
+        logoSyncFailed = true;
+        console.error("company logo URL sync error:", syncError);
+      }
+    }
+
+    showToast(
+      logoSyncFailed ? 'warn' : 'success',
+      'Saved',
+      logoSyncFailed
+        ? 'Company profile saved, but some existing job logos could not be refreshed.'
+        : 'Company profile saved. Job posts will auto-fill automatically.',
+      logoSyncFailed ? 5200 : 3500
+    );
   } catch (err) {
     console.error("saveCompanyProfile error:", err);
     showToast('error', 'Save failed', 'Could not save company profile. Check console for details.', 4500);
@@ -1986,10 +2794,19 @@ async function saveJob(status) {
     remote: remoteChecked,
     ...jobCompany,
     deadline: (data.deadline || '').trim(),
+    applicationMethod: (data.applicationMethod || 'direct').trim(),
+    applyLink: (data.applicationMethod || 'direct') === 'external'
+      ? (data.applyLink || '').trim()
+      : '',
+    screeningQuestions: (data.applicationMethod || 'direct') === 'direct'
+      ? collectScreeningQuestions()
+      : [],
     status: status === 'draft' ? 'draft' : 'active',
     recruiterId: currentRecruiter.uid,
     updatedAt: serverTimestamp(),
-    applicationsCount: 0,
+    applicationsCount: editingJobId
+      ? Number(recruiterJobsCache.find(job => job.id === editingJobId)?.applicationsCount || 0)
+      : 0,
 
     // helpful for future features
     companyIndustry: companyProfile.industry || "",
@@ -2003,6 +2820,16 @@ async function saveJob(status) {
   if (!jobData.title || !jobData.category || !jobData.type || !jobData.experience || !jobData.description || !jobData.city || !jobData.country || !jobData.company || !jobData.email) {
     showToast('warn', 'Missing required fields', 'Please fill in all required fields.', 4200);
     return;
+  }
+
+  if (jobData.applicationMethod === 'external') {
+    try {
+      const externalUrl = new URL(jobData.applyLink);
+      if (!['http:', 'https:'].includes(externalUrl.protocol)) throw new Error('Unsupported protocol');
+    } catch {
+      showToast('warn', 'Invalid application link', 'Enter a complete website address beginning with https://.', 4400);
+      return;
+    }
   }
 
   const baseSlug = slugify(`${jobData.title}-${jobData.company}-${jobData.city}`);
@@ -2066,6 +2893,13 @@ function setFormEditMode(job) {
   document.getElementById('companyProfileVersion').value = companyProfileVersion || job.companyProfileVersion || "";
 
   form.deadline.value = job.deadline || '';
+  form.applicationMethod.value = job.applicationMethod || (job.applyLink ? 'external' : 'email');
+  form.applyLink.value = job.applyLink || '';
+  screeningQuestionsDraft = Array.isArray(job.screeningQuestions)
+    ? job.screeningQuestions.map(normalizeScreeningQuestion)
+    : [];
+  updateApplicationMethodUI();
+  renderScreeningQuestions();
 
   applyCompanyProfileToJobForm({ lock: true });
 
@@ -2093,6 +2927,14 @@ function cancelEditJob(silent=false) {
 
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
+
+  const applicationMethod = document.getElementById('applicationMethod');
+  if (applicationMethod) applicationMethod.value = 'direct';
+  const applyLink = document.getElementById('job_apply_link');
+  if (applyLink) applyLink.value = '';
+  screeningQuestionsDraft = [];
+  updateApplicationMethodUI();
+  renderScreeningQuestions();
 
   if (!silent) {
     // nothing (you said you prefer not changing unrelated behavior)
@@ -2223,6 +3065,352 @@ document.addEventListener('click', async (e) => {
       showToast('error', 'Delete failed', 'Failed to delete job.', 3800);
     }
   }
+});
+
+/* ======================================================
+   DIRECT APPLICATIONS: recruiter review workflow
+====================================================== */
+const APPLICATION_STATUS_LABELS = {
+  submitted: "Submitted",
+  viewed: "Viewed",
+  shortlisted: "Shortlisted",
+  interview: "Interview",
+  offer: "Offer",
+  hired: "Hired",
+  unsuccessful: "Unsuccessful",
+  withdrawn: "Withdrawn"
+};
+
+function applicationDate(value) {
+  const date = toDateValue(value);
+  return date
+    ? date.toLocaleDateString("en-ZA", {day: "numeric", month: "short", year: "numeric"})
+    : "Date unavailable";
+}
+
+function applicationStatusLabel(value) {
+  return APPLICATION_STATUS_LABELS[value] || dashboardText(value, "Submitted");
+}
+
+function screeningBadge(application) {
+  if (application.screeningResult === "meets_essentials") {
+    return `<span class="application-badge match"><i class='bx bx-check'></i> Meets essential criteria</span>`;
+  }
+  if (application.screeningResult === "review_required") {
+    return `<span class="application-badge review"><i class='bx bx-search-alt'></i> Review essential answers</span>`;
+  }
+  return `<span class="application-badge"><i class='bx bx-list-check'></i> Recruiter review</span>`;
+}
+
+async function loadRecruiterApplications() {
+  const list = document.getElementById("recruiterApplicationsList");
+  if (!list || !currentRecruiter) return;
+  list.innerHTML = `<p class="muted">Loading applications...</p>`;
+
+  try {
+    const applicationQuery = query(
+      collection(db, "applications"),
+      where("recruiterId", "==", currentRecruiter.uid)
+    );
+    const snapshot = await getDocs(applicationQuery);
+    recruiterApplicationsCache = snapshot.docs
+      .map(application => ({id: application.id, ...application.data()}))
+      .sort((left, right) => {
+        const leftDate = toDateValue(left.submittedAt)?.getTime() || 0;
+        const rightDate = toDateValue(right.submittedAt)?.getTime() || 0;
+        return rightDate - leftDate;
+      });
+
+    const total = recruiterApplicationsCache.length;
+    const waiting = recruiterApplicationsCache.filter(application => application.status === "submitted").length;
+    const progressing = recruiterApplicationsCache.filter(application =>
+      ["shortlisted", "interview"].includes(application.status)
+    ).length;
+
+    document.getElementById("applicationTotalKpi").textContent = String(total);
+    document.getElementById("applicationNewKpi").textContent = String(waiting);
+    document.getElementById("applicationShortlistKpi").textContent = String(progressing);
+    document.getElementById("directApplicationsCount").textContent = String(total);
+
+    const jobFilter = document.getElementById("applicationJobFilter");
+    const selectedJob = jobFilter?.value || "";
+    if (jobFilter) {
+      const jobs = new Map();
+      recruiterApplicationsCache.forEach(application => {
+        jobs.set(application.jobId, dashboardText(application.jobSnapshot?.title, "Untitled job"));
+      });
+      jobFilter.innerHTML = `<option value="">All jobs</option>${Array.from(jobs.entries())
+        .sort((left, right) => left[1].localeCompare(right[1]))
+        .map(([jobId, title]) => `<option value="${escapeDashboard(jobId)}">${escapeDashboard(title)}</option>`)
+        .join("")}`;
+      if (jobs.has(selectedJob)) jobFilter.value = selectedJob;
+    }
+
+    renderRecruiterApplications();
+  } catch (error) {
+    console.error("loadRecruiterApplications error:", error);
+    list.innerHTML = `<p style="color:#b91c1c;">Applications could not be loaded. Please refresh and try again.</p>`;
+  }
+}
+
+function renderRecruiterApplications() {
+  const list = document.getElementById("recruiterApplicationsList");
+  if (!list) return;
+  const jobId = document.getElementById("applicationJobFilter")?.value || "";
+  const status = document.getElementById("applicationStatusFilter")?.value || "";
+  const applications = recruiterApplicationsCache.filter(application =>
+    (!jobId || application.jobId === jobId) &&
+    (!status || application.status === status)
+  );
+
+  if (!applications.length) {
+    list.innerHTML = `
+      <div class="cv-card" style="text-align:center;">
+        <i class='bx bx-user-search' style="font-size:40px;color:#2563eb;"></i>
+        <h3 style="margin-top:8px;">No applications in this view</h3>
+        <p class="muted">Direct applications will appear here as candidates submit them.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = applications.map(application => {
+    const candidate = application.candidateSnapshot || {};
+    const job = application.jobSnapshot || {};
+    return `
+      <article class="application-row">
+        <div>
+          <h3>${escapeDashboard(candidate.fullName, "Candidate")}</h3>
+          <p>${escapeDashboard(job.title, "Job application")} at ${escapeDashboard(job.company, "your company")}</p>
+          <div class="application-badges">
+            ${screeningBadge(application)}
+            <span class="application-badge"><i class='bx bx-map'></i> ${escapeDashboard(candidate.location, "Location unavailable")}</span>
+          </div>
+        </div>
+        <div>
+          <p>Applied</p>
+          <strong>${escapeDashboard(applicationDate(application.submittedAt))}</strong>
+        </div>
+        <div>
+          <p>Status</p>
+          <span class="application-status">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+        </div>
+        <button class="primary-btn" type="button" data-review-application="${escapeDashboard(application.id)}">
+          <i class='bx bx-show'></i> Review
+        </button>
+      </article>`;
+  }).join("");
+}
+
+async function postApplicationUpdate(applicationId, payload) {
+  const token = await currentRecruiter.getIdToken();
+  const response = await fetch("/.netlify/functions/update-job-application", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({applicationId, ...payload})
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || "Could not update this application.");
+  return result;
+}
+
+async function openRecruiterApplication(applicationId) {
+  let application = recruiterApplicationsCache.find(item => item.id === applicationId);
+  if (!application) return;
+  activeApplicationId = applicationId;
+
+  if (application.status === "submitted") {
+    try {
+      await postApplicationUpdate(applicationId, {status: "viewed"});
+      application.status = "viewed";
+      renderRecruiterApplications();
+    } catch (error) {
+      console.error("mark application viewed error:", error);
+    }
+  }
+
+  let privateNote = "";
+  try {
+    const noteSnapshot = await getDoc(doc(db, "applicationNotes", applicationId));
+    privateNote = noteSnapshot.exists() ? dashboardText(noteSnapshot.data()?.note) : "";
+  } catch (error) {
+    console.error("load application note error:", error);
+  }
+
+  application = recruiterApplicationsCache.find(item => item.id === applicationId) || application;
+  const candidate = application.candidateSnapshot || {};
+  const job = application.jobSnapshot || {};
+  const answers = Array.isArray(application.answers) ? application.answers : [];
+  const modal = document.getElementById("applicationReviewModal");
+  const content = document.getElementById("applicationReviewContent");
+  if (!modal || !content) return;
+
+  content.innerHTML = `
+    <div class="application-review-head">
+      <div>
+        <p class="muted" style="margin:0 0 4px;">${escapeDashboard(job.title, "Job application")}</p>
+        <h2 id="applicationReviewTitle" style="margin:0;">${escapeDashboard(candidate.fullName, "Candidate")}</h2>
+        <div class="application-badges" style="margin-top:10px;">
+          ${screeningBadge(application)}
+          <span class="application-badge">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+        </div>
+      </div>
+      <button class="application-review-close" type="button" data-close-application-review aria-label="Close review"><i class='bx bx-x'></i></button>
+    </div>
+
+    <div class="application-detail-grid">
+      <div class="application-detail"><span>Email</span><strong><a href="mailto:${escapeDashboard(candidate.email)}">${escapeDashboard(candidate.email, "Not supplied")}</a></strong></div>
+      <div class="application-detail"><span>Telephone</span><strong>${escapeDashboard(candidate.phone, "Not supplied")}</strong></div>
+      <div class="application-detail"><span>Location</span><strong>${escapeDashboard(candidate.location, "Not supplied")}</strong></div>
+      <div class="application-detail"><span>Qualification</span><strong>${escapeDashboard(candidate.qualification, "Not supplied")}</strong></div>
+      <div class="application-detail"><span>Current role</span><strong>${escapeDashboard(candidate.currentJobTitle, "Not supplied")}</strong></div>
+      <div class="application-detail"><span>Applied</span><strong>${escapeDashboard(applicationDate(application.submittedAt))}</strong></div>
+    </div>
+
+    <div class="application-review-actions">
+      <button class="primary-btn" type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-file'></i> Open submitted CV</button>
+      <button class="primary-btn btn-secondary" type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download CV</button>
+      <a class="primary-btn btn-secondary" href="mailto:${escapeDashboard(candidate.email)}?subject=${encodeURIComponent(`Your application for ${dashboardText(job.title, "our vacancy")}`)}"><i class='bx bx-envelope'></i> Email candidate</a>
+    </div>
+
+    <h3>Screening answers</h3>
+    <div class="answer-list">
+      ${answers.length ? answers.map(answer => `
+        <div class="answer-item">
+          <span>${escapeDashboard(answer.label, "Question")}${answer.essentialMatch === false ? " · Essential answer needs review" : ""}</span>
+          <strong>${escapeDashboard(Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer, "No answer")}</strong>
+        </div>`).join("") : `<p class="muted">This vacancy did not include screening questions.</p>`}
+    </div>
+
+    ${application.coverLetter ? `
+      <h3>Application note</h3>
+      <div class="answer-item"><strong>${escapeDashboard(application.coverLetter)}</strong></div>` : ""}
+
+    <h3 style="margin-top:20px;">Move candidate</h3>
+    <div class="application-review-actions">
+      ${["shortlisted", "interview", "offer", "hired", "unsuccessful"].map(status => `
+        <button class="primary-btn${application.status === status ? " btn-secondary" : ""}" type="button"
+          data-set-application-status="${status}" data-application-id="${escapeDashboard(applicationId)}"
+          ${application.status === status ? "disabled" : ""}>
+          ${escapeDashboard(applicationStatusLabel(status))}
+        </button>`).join("")}
+    </div>
+
+    <label class="application-note">
+      <strong>Private recruiter note</strong>
+      <span class="muted" style="font-size:12px;">Only your recruiter account can see this note.</span>
+      <textarea id="applicationPrivateNote" maxlength="1500" placeholder="Add interview notes, follow-up details, or an internal reminder.">${escapeDashboard(privateNote)}</textarea>
+      <button class="primary-btn btn-secondary" type="button" data-save-application-note="${escapeDashboard(applicationId)}"><i class='bx bx-save'></i> Save private note</button>
+    </label>`;
+
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeApplicationReview() {
+  const modal = document.getElementById("applicationReviewModal");
+  if (modal) modal.hidden = true;
+  document.body.style.overflow = "";
+  activeApplicationId = null;
+}
+
+async function setRecruiterApplicationStatus(applicationId, status) {
+  try {
+    await postApplicationUpdate(applicationId, {status});
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) application.status = status;
+    showToast("success", "Application updated", `Candidate moved to ${applicationStatusLabel(status)}.`, 3200);
+    renderRecruiterApplications();
+    await openRecruiterApplication(applicationId);
+  } catch (error) {
+    showToast("error", "Update failed", error.message || "Could not update this application.", 4200);
+  }
+}
+
+async function saveRecruiterApplicationNote(applicationId) {
+  const note = document.getElementById("applicationPrivateNote")?.value || "";
+  if (!note.trim()) {
+    showToast("warn", "Note is empty", "Write a private note before saving.", 3200);
+    return;
+  }
+  try {
+    await postApplicationUpdate(applicationId, {note});
+    showToast("success", "Private note saved", "This note is visible only to your recruiter account.", 3200);
+  } catch (error) {
+    showToast("error", "Note not saved", error.message || "Could not save this note.", 4200);
+  }
+}
+
+async function openApplicationCv(applicationId, download = false) {
+  const previewWindow = download ? null : window.open("", "_blank");
+  try {
+    const token = await currentRecruiter.getIdToken();
+    const response = await fetch(
+      `/.netlify/functions/download-application-cv?id=${encodeURIComponent(applicationId)}${download ? "&download=1" : ""}`,
+      {headers: {"Authorization": `Bearer ${token}`}}
+    );
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || "Could not open this CV.");
+    }
+    const blobUrl = URL.createObjectURL(await response.blob());
+    if (download) {
+      const link = document.createElement("a");
+      const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+      link.href = blobUrl;
+      link.download = dashboardText(application?.cvSnapshot?.fileName, "candidate-cv.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else if (previewWindow) {
+      previewWindow.location.href = blobUrl;
+    }
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+  } catch (error) {
+    if (previewWindow) previewWindow.close();
+    showToast("error", "CV unavailable", error.message || "Could not open this CV.", 4200);
+  }
+}
+
+document.addEventListener("click", async event => {
+  const reviewButton = event.target.closest("[data-review-application]");
+  if (reviewButton) {
+    await openRecruiterApplication(reviewButton.dataset.reviewApplication);
+    return;
+  }
+  if (event.target.closest("[data-close-application-review]")) {
+    closeApplicationReview();
+    return;
+  }
+  const statusButton = event.target.closest("[data-set-application-status]");
+  if (statusButton) {
+    statusButton.disabled = true;
+    await setRecruiterApplicationStatus(statusButton.dataset.applicationId, statusButton.dataset.setApplicationStatus);
+    return;
+  }
+  const noteButton = event.target.closest("[data-save-application-note]");
+  if (noteButton) {
+    await saveRecruiterApplicationNote(noteButton.dataset.saveApplicationNote);
+    return;
+  }
+  const openCvButton = event.target.closest("[data-open-application-cv]");
+  if (openCvButton) {
+    await openApplicationCv(openCvButton.dataset.openApplicationCv, false);
+    return;
+  }
+  const downloadCvButton = event.target.closest("[data-download-application-cv]");
+  if (downloadCvButton) {
+    await openApplicationCv(downloadCvButton.dataset.downloadApplicationCv, true);
+  }
+});
+
+document.getElementById("applicationReviewModal")?.addEventListener("click", event => {
+  if (event.target.id === "applicationReviewModal") closeApplicationReview();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && activeApplicationId) closeApplicationReview();
 });
 
 /* ======================================================
@@ -3012,6 +4200,7 @@ window.showSection = function(id, el) {
       'post-job': 'Post a Job',
       'jobs': 'Manage Jobs',
       'cvs': 'CV Library',
+      'applications': 'Applications',
       'billing': 'Packages',
       'analytics': 'Analytics'
     };
@@ -3022,6 +4211,7 @@ window.showSection = function(id, el) {
 
   if (id === 'jobs') loadManageJobs();
   if (id === 'post-job') applyCompanyProfileToJobForm({ lock: true });
+  if (id === 'applications') loadRecruiterApplications();
   if (id === 'analytics') updateCharts();
 }
 

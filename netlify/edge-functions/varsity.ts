@@ -240,7 +240,7 @@ export default async (request: Request) => {
     .university-detail-page .nav-links a[aria-current="page"]{color:#facc15}
     .university-detail-page .mobile-logo{letter-spacing:0}
     .detail-container{width:min(1120px,calc(100% - 40px));margin:0 auto}
-    .detail-hero{background:#1e3a8a;color:#fff;border-top:4px solid #facc15;padding:34px 0 46px}
+    .detail-hero{background:#1e3a8a;color:#fff;padding:34px 0 46px}
     .detail-breadcrumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 28px;padding:0;list-style:none;font-size:14px;color:#dbeafe}
     .detail-breadcrumb a{color:#fff;text-decoration:underline;text-underline-offset:3px}
     .detail-eyebrow{margin:0 0 10px;color:#fde68a;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0}
@@ -249,14 +249,11 @@ export default async (request: Request) => {
     .hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px;color:#dbeafe;font-size:13px}
     .status-pill{display:inline-flex;align-items:center;min-height:32px;padding:5px 11px;border-radius:6px;background:${closed ? "#fee2e2" : "#dcfce7"};color:${closed ? "#991b1b" : "#166534"};font-weight:700}
     .detail-main{padding:36px 0 64px}
-    .quick-answer{margin:0 0 26px;padding:22px 24px;background:#fff;border:1px solid #dbe3ee;border-left:5px solid #16a34a;border-radius:8px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+    .quick-answer{margin:0 0 26px;padding:22px 24px;background:#fff;border:1px solid #dbe3ee;border-left:5px solid #2563eb;border-radius:8px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
     .quick-answer h2{margin:0 0 8px;color:#111827;font-size:24px;line-height:1.3}
     .quick-answer p{margin:0;color:#374151}
     .facts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:36px}
     .fact-card{min-width:0;min-height:116px;padding:18px;background:#fff;border:1px solid #dbe3ee;border-top:4px solid #2563eb;border-radius:8px}
-    .fact-card--registration{border-top-color:#16a34a}
-    .fact-card--deadline{border-top-color:#eab308}
-    .fact-card--status{border-top-color:#64748b}
     .fact-card span{display:block;margin-bottom:7px;color:#64748b;font-size:13px;font-weight:700}
     .fact-card strong{display:block;overflow-wrap:anywhere;color:#111827;font-size:18px;line-height:1.35}
     .content-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.75fr);gap:44px;align-items:start}

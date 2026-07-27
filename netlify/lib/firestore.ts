@@ -80,6 +80,9 @@ function normalizeDocument(document: FirestoreDocument) {
   const email = text(data.email || data.applyEmail || data.contactEmail);
   const website = text(data.website);
   const documentId = text(document.name?.split("/").pop());
+  const applicationMethod = text(data.applicationMethod).toLowerCase();
+  const directApply = applicationMethod === "direct";
+  const emailApply = applicationMethod === "email";
 
   return {
     _id: documentId,
@@ -92,9 +95,14 @@ function normalizeDocument(document: FirestoreDocument) {
     deadline: text(data.deadline || data.applicationDeadline || data.closingDate),
     jobType: text(data.type || data.jobType || data.employmentType) || "Full-time",
     category: text(data.category),
-    applyLink: text(data.applyLink || data.applyURL || data.applyUrl) ||
-      website ||
-      (email ? `mailto:${email}?subject=${encodeURIComponent(`Application: ${title}`)}` : ""),
+    applicationMethod: directApply ? "direct" : applicationMethod,
+    applyLink: directApply
+      ? `/apply.html?job=${encodeURIComponent(documentId)}`
+      : emailApply && email
+        ? `mailto:${email}?subject=${encodeURIComponent(`Application: ${title}`)}`
+        : text(data.applyLink || data.applyURL || data.applyUrl) ||
+          website ||
+          (email ? `mailto:${email}?subject=${encodeURIComponent(`Application: ${title}`)}` : ""),
     companyName,
     companyLogo: text(company.logoUrl || data.logoUrl || data.logo),
     listingTier: text(data.listingTier || data.tier),

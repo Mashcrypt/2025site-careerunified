@@ -1411,7 +1411,11 @@
           ...jobAnalytics(currentPreviewJob),
           link_url: applyLink
         });
-        window.open(applyLink, '_blank', 'noopener,noreferrer');
+        if (applyLink.startsWith('/apply.html')) {
+          window.location.assign(applyLink);
+        } else {
+          window.open(applyLink, '_blank', 'noopener,noreferrer');
+        }
       }
     }
 
@@ -1530,7 +1534,12 @@
 
       const email     = safeText(data.email || data.applyEmail || data.contactEmail);
       const website   = safeText(data.website);
-      const applyLink = safeText(data.applyLink) || safeText(data.applyURL) || safeText(data.applyUrl) || website || (email ? `mailto:${email}?subject=${encodeURIComponent('Application: ' + title)}` : '#');
+      const applicationMethod = safeText(data.applicationMethod).toLowerCase();
+      const applyLink = applicationMethod === 'direct'
+        ? `/apply.html?job=${encodeURIComponent(id)}`
+        : applicationMethod === 'email' && email
+          ? `mailto:${email}?subject=${encodeURIComponent('Application: ' + title)}`
+          : safeText(data.applyLink) || safeText(data.applyURL) || safeText(data.applyUrl) || website || (email ? `mailto:${email}?subject=${encodeURIComponent('Application: ' + title)}` : '#');
 
       const category    = safeText(data.category, 'all').toLowerCase();
       const listingTier = safeText(data.listingTier || data.tier, '');
@@ -1545,7 +1554,7 @@
         jobType: safeText(data.type || data.jobType || data.employmentType, 'FULL_TIME'),
         category, listingTier: listingTier || '', badge: badge || '',
         sponsoredUntil: toISODateString(data.sponsoredUntil) || null,
-        applyLink, company: { name: companyName, logoUrl }, _source: 'firestore',
+        applyLink, applicationMethod, company: { name: companyName, logoUrl }, _source: 'firestore',
         createdAt: toISODateString(data.createdAt || data.created_at) || postedISO || null
       };
     }
@@ -1673,7 +1682,7 @@
         li.innerHTML = `
           ${badgeHtml ? `<div class="job-card-badges">${badgeHtml}</div>` : ''}
           <div class="job-row">
-            <img src="${logoUrl || '/fallback-company.png'}" class="company-logo" alt="${job.company?.name || 'Company'} logo" width="80" height="80" loading="lazy">
+            <img src="${escapeHtml(logoUrl || '/android-chrome-192x192.png')}" class="company-logo" alt="${escapeHtml(job.company?.name || 'Company')} logo" width="80" height="80" loading="lazy" onerror="this.onerror=null;this.src='/android-chrome-192x192.png'">
             <div>
               ${job.slug
                 ? `<a class="job-title-link" href="/jobs/${encodeURIComponent(job.slug)}"><h3>${job.title}</h3></a>`
@@ -1786,16 +1795,18 @@
             <div class="job-desc">${formatDescriptionHtml(job.description)}</div>
             <div class="job-action-buttons">
               <button class="apply-btn" type="button" onclick="openExternalApply('${escapeInlineArg(job.applyLink)}')">
-                Apply Now
-                <svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
+                ${job.applicationMethod === 'direct' ? 'Apply on Career Unified' : 'Apply Now'}
+                ${job.applicationMethod === 'direct' ? '' : `<svg class="external-link-symbol" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M14 4h6v6"/>
                   <path d="M20 4 10 14"/>
                   <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
-                </svg>
+                </svg>`}
               </button>
               <button class="ai-tailor-btn" type="button" onclick="openAITailorFromJob()">AI Tailor CV</button>
             </div>
-            <p class="external-apply-note">Apply Now opens the employer&rsquo;s external application page after confirmation.</p>
+            <p class="external-apply-note">${job.applicationMethod === 'direct'
+              ? 'Apply securely with your saved Career Unified profile and CV.'
+              : 'Apply Now opens the employer&rsquo;s external application page after confirmation.'}</p>
           </div>
         </div>`;
 

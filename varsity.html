@@ -221,6 +221,24 @@
     .varsity-card small        { display: block; color: #6b7280; margin-bottom: 8px; font-size: 0.9rem; }
 
     .varsity-card .labels      { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .varsity-card .varsity-card-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 0 0;
+      padding-top: 13px;
+      border-top: 1px solid #e5e7eb;
+      color: #1e3a8a;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .varsity-card .varsity-card-action i {
+      flex: 0 0 auto;
+      font-size: 0.85rem;
+      transition: transform 0.2s ease;
+    }
+    .varsity-card .varsity-card-action:hover i { transform: translateX(3px); }
 
     .status         { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; }
     .status.open    { background: #dcfce7; color: #16a34a; }
@@ -795,11 +813,15 @@
           ${optionalDetailLine('Registration Fee', uni.registrationFee)}`;
 
         li.innerHTML = `
-          <a href="${internalUrl}">${uni.name || 'University'}</a>
+          <a href="${internalUrl}">${escapeHtml(uni.name || 'University')}</a>
           ${feesHTML}
           <small>Application Deadline: ${uni.deadline || 'TBA'}</small>
           ${notesHTML}
-          ${labelsHTML}`;
+          ${labelsHTML}
+          <a class="varsity-card-action" href="${internalUrl}" aria-label="View details for ${escapeHtml(uni.name || 'this university')}">
+            <span>View university details</span>
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </a>`;
 
         varsityList.appendChild(li);
       });

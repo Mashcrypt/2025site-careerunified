@@ -45,7 +45,26 @@ service cloud.firestore {
           && resource.data.recruiterId == request.auth.uid
           && request.resource.data.recruiterId == request.auth.uid);
       allow delete: if isAdmin()
-        || (isRecruiter() && resource.data.recruiterId == request.auth.uid);
+          || (isRecruiter() && resource.data.recruiterId == request.auth.uid);
+    }
+
+    match /applications/{applicationId} {
+      allow read: if signedIn()
+        && (
+          resource.data.candidateId == request.auth.uid
+          || (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+          || isAdmin()
+        );
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /applicationNotes/{applicationId} {
+      allow read: if signedIn()
+        && (
+          (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+          || isAdmin()
+        );
+      allow create, update, delete: if isAdmin();
     }
 
     match /recruiters/{recruiterId} {

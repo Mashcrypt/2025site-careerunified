@@ -571,11 +571,23 @@ async function redirectUser(user) {
     if (tokenResult.claims.recruiter) {
       window.location.href = "recruiter-dashboard.html";
     } else {
-      window.location.href = "index.html";
+      const returnUrl = sessionStorage.getItem("careerUnifiedReturnUrl");
+      if (returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+        sessionStorage.removeItem("careerUnifiedReturnUrl");
+        window.location.href = returnUrl;
+      } else {
+        window.location.href = "index.html";
+      }
     }
   } catch (error) {
     console.error('Error getting token:', error);
-    window.location.href = "index.html";
+    const returnUrl = sessionStorage.getItem("careerUnifiedReturnUrl");
+    if (returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+      sessionStorage.removeItem("careerUnifiedReturnUrl");
+      window.location.href = returnUrl;
+    } else {
+      window.location.href = "index.html";
+    }
   }
 }
 

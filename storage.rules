@@ -25,6 +25,14 @@ service firebase.storage {
       allow update: if false;
     }
 
+    match /applications/{recruiterId}/{jobId}/{candidateId}/{fileName} {
+      allow read, write: if false;
+    }
+
+    match /company-logos/{recruiterId}/{fileName} {
+      allow read, write: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if isAdmin();
     }
