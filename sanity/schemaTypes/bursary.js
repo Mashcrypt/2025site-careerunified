@@ -2,20 +2,26 @@
 const FACULTY_OPTIONS = [
   { title: "Open to All Fields", value: "Open to All Fields" },
   { title: "Accounting & Finance", value: "Accounting & Finance" },
+  { title: "Actuarial Science", value: "Actuarial Science" },
+  { title: "Applied Mathematics", value: "Applied Mathematics" },
+  { title: "Applied Statistics", value: "Applied Statistics" },
   { title: "Arts & Humanities", value: "Arts & Humanities" },
   { title: "Commerce & Business", value: "Commerce & Business" },
   { title: "Computer Science & IT", value: "Computer Science & IT" },
   { title: "Construction & Built Environment", value: "Construction & Built Environment" },
+  { title: "Economics", value: "Economics" },
   { title: "Engineering", value: "Engineering" },
+  { title: "Government", value: "Government" },
   { title: "Health & Medical", value: "Health & Medical" },
   { title: "Law", value: "Law" },
+  { title: "Mathematical Science", value: "Mathematical Science" },
+  { title: "Mathematical Statistics", value: "Mathematical Statistics" },
   { title: "MBA & Postgraduate", value: "MBA & Postgraduate" },
   { title: "Nursing", value: "Nursing" },
   { title: "Science", value: "Science" },
-  { title: "Government", value: "Government" },
+  { title: "Statistical Sciences", value: "Statistical Sciences" },
   { title: "Student Loan", value: "Student Loan" },
   { title: "Supply Chain & Logistics", value: "Supply Chain & Logistics" },
-  { title: "Actuarial Science", value: "Actuarial Science" },
 ];
 
 export default {
