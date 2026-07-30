@@ -87,7 +87,9 @@ export default {
           { title: 'Learnership', value: 'learnership' },
           { title: 'Part-time', value: 'part-time' },
           { title: 'Graduate Program', value: 'graduate-program' },
-          { title: 'Freelance', value: 'freelance' }
+          { title: 'Freelance', value: 'freelance' },
+          { title: 'YES Programmes', value: 'yes-programmes' },
+          { title: 'Youth Opportunities', value: 'youth-opportunities' }
         ],
         layout: 'radio'
       },
