@@ -112,7 +112,8 @@
     notice.innerHTML = `
       <p class="cu-cookie-notice__text">
         <strong>Career Unified uses cookies</strong> and browser storage to remember preferences,
-        improve features, and understand site usage. <a href="/privacy">Privacy Policy</a>
+        improve features, understand site usage, and support advertising on selected content pages.
+        <a href="/privacy" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a>
       </p>
       <button class="cu-cookie-notice__button" type="button">Accept</button>
     `;
