@@ -407,6 +407,57 @@
   }
   .actions button:hover { background: #e0e7ff; }
 
+  .public-listings-grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  .public-listing-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+  }
+
+  .public-listing-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  .public-listing-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    color: #6b7280;
+    font-size: 12px;
+  }
+
+  .public-listing-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .public-listing-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .public-listing-url {
+    margin-top: 10px;
+    color: #2563eb;
+    font-size: 12px;
+    word-break: break-word;
+  }
+
   /* ======================================================
      COMPANY PROFILE
   ====================================================== */
@@ -808,6 +859,17 @@
       margin-right: 12px;
     }
     .actions { justify-content: flex-end; }
+    .public-listing-card {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+    .public-listing-actions {
+      justify-content: stretch;
+    }
+    .public-listing-actions .primary-btn {
+      width: 100%;
+      justify-content: center;
+    }
 
     body.authorized { flex-direction: column !important; }
     .mobile-header { width: 100%; flex: 0 0 auto; }
@@ -869,6 +931,7 @@
     <a id="applicationsNav" onclick="showSection('applications', this)"><i class='bx bx-user-check'></i>Applications</a>
     <a onclick="showSection('billing', this)"><i class='bx bx-credit-card'></i>Packages</a>
     <a onclick="showSection('analytics', this)"><i class='bx bx-bar-chart-alt-2'></i>Analytics</a>
+    <a data-nav-public-listings onclick="showSection('public-listings', this)"><i class='bx bx-world'></i>View as Member</a>
     <a onclick="logoutUser()"><i class='bx bx-log-out'></i>Logout</a>
   </div>
 </div>
@@ -919,6 +982,14 @@
         <p>View and edit your job postings</p>
         <button class="primary-btn" onclick="showSection('jobs', document.querySelector('.nav a:nth-child(4)'))">
           View Jobs
+        </button>
+      </div>
+
+      <div class="cv-card">
+        <h3><i class='bx bx-world'></i> View as Member</h3>
+        <p>Open your live public listings the same way job seekers see them.</p>
+        <button class="primary-btn" onclick="showSection('public-listings', document.querySelector('[data-nav-public-listings]'))">
+          View Public Listings
         </button>
       </div>
     </div>
@@ -1119,6 +1190,31 @@
         <div id="manageJobsRows">
           <p style="color:#6b7280;">Loading your jobs...</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW AS MEMBER ================= -->
+  <div id="public-listings" class="section">
+    <h2>View as Member</h2>
+    <p style="color:#6b7280; margin-bottom:20px;">Open your public listings exactly as candidates see them on Career Unified.</p>
+
+    <div class="jobs-card">
+      <div class="jobs-header">
+        <div>
+          <h3>Your Public Listings</h3>
+          <div class="muted" style="font-size:13px; margin-top:4px;">
+            Active jobs can be opened in the main site. Draft jobs stay private until published.
+          </div>
+        </div>
+
+        <button class="primary-btn btn-ghost" onclick="loadPublicListings()">
+          <i class='bx bx-refresh'></i> Refresh
+        </button>
+      </div>
+
+      <div id="publicListingsRows" class="public-listings-grid">
+        <p style="color:#6b7280;">Loading your public listings...</p>
       </div>
     </div>
   </div>
@@ -1889,6 +1985,11 @@ function escapeDashboard(value, fallback = "") {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function publicJobUrl(job) {
+  const slug = job?.slug || slugify(`${job?.title || ""}-${job?.company || ""}-${job?.city || ""}`);
+  return slug ? `/jobs/${encodeURIComponent(slug)}` : "/jobs";
 }
 
 function questionId(prefix = "question") {
@@ -2974,6 +3075,8 @@ async function loadManageJobs() {
         })
       : recruiterJobsCache;
 
+    renderPublicListings(recruiterJobsCache);
+
     if (filtered.length === 0) {
       wrap.innerHTML = `<p style="color:#6b7280;">You haven’t posted any jobs yet.</p>`;
       return;
@@ -3028,6 +3131,66 @@ async function loadManageJobs() {
   }
 }
 
+function renderPublicListings(jobs = recruiterJobsCache) {
+  const wrap = document.getElementById("publicListingsRows");
+  if (!wrap) return;
+
+  const listings = (jobs || []).filter(Boolean);
+  if (listings.length === 0) {
+    wrap.innerHTML = `
+      <div class="cv-card" style="box-shadow:none; border:1px solid #e5e7eb;">
+        <h3><i class='bx bx-info-circle'></i> No listings yet</h3>
+        <p style="color:#6b7280;">Post a job first, then come back here to view it as a member.</p>
+        <button class="primary-btn" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))">
+          <i class='bx bx-plus'></i> Post a Job
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = listings.map((job) => {
+    const status = dashboardText(job.status, "active").toLowerCase();
+    const statusClass = status === "draft" ? "status draft" : "status active";
+    const url = publicJobUrl(job);
+    const fullUrl = `${window.location.origin}${url}`;
+    const location = job.remote
+      ? "Remote"
+      : dashboardText(`${job.city || ""}${job.country ? ", " + job.country : ""}`.trim(), "Location not set");
+
+    return `
+      <div class="public-listing-card">
+        <div>
+          <h4>${escapeDashboard(job.title, "Untitled job")}</h4>
+          <div class="public-listing-meta">
+            <span><i class='bx bx-buildings'></i>${escapeDashboard(job.company || companyProfile?.name, "Company")}</span>
+            <span><i class='bx bx-map'></i>${escapeDashboard(location)}</span>
+            <span><i class='bx bx-calendar'></i>Closing: ${escapeDashboard(job.deadline, "Unspecified")}</span>
+            <span class="${statusClass}">${escapeDashboard(status.toUpperCase())}</span>
+          </div>
+          <div class="public-listing-url">${escapeDashboard(fullUrl)}</div>
+        </div>
+        <div class="public-listing-actions">
+          <a class="primary-btn" href="${escapeDashboard(url)}" target="_blank" rel="noopener noreferrer">
+            <i class='bx bx-show'></i> View as member
+          </a>
+          <button class="primary-btn btn-ghost" type="button" data-copy-public-url="${escapeDashboard(fullUrl)}">
+            <i class='bx bx-link'></i> Copy link
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function loadPublicListings() {
+  const wrap = document.getElementById("publicListingsRows");
+  if (wrap) wrap.innerHTML = `<p style="color:#6b7280;">Loading your public listings...</p>`;
+  await loadManageJobs();
+  renderPublicListings(recruiterJobsCache);
+}
+window.loadPublicListings = loadPublicListings;
+
 /* Handle Manage Jobs action buttons */
 document.addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
@@ -3044,8 +3207,7 @@ document.addEventListener('click', async (e) => {
   }
 
   if (action === 'view') {
-    const slug = job.slug || slugify(`${job.title}-${job.company}-${job.city}`);
-    window.open(`jobs.html?slug=${encodeURIComponent(slug)}`, "_blank");
+    window.open(publicJobUrl(job), "_blank", "noopener,noreferrer");
   }
 
   if (action === 'edit') {
@@ -3064,6 +3226,21 @@ document.addEventListener('click', async (e) => {
       console.error("delete job error:", err);
       showToast('error', 'Delete failed', 'Failed to delete job.', 3800);
     }
+  }
+});
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-copy-public-url]');
+  if (!btn) return;
+
+  const url = btn.getAttribute('data-copy-public-url');
+  if (!url) return;
+
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('success', 'Copied', 'Public listing link copied.', 2500);
+  } catch (err) {
+    showToast('warn', 'Copy failed', 'Please copy the link manually from the card.', 3500);
   }
 });
 
@@ -4202,7 +4379,8 @@ window.showSection = function(id, el) {
       'cvs': 'CV Library',
       'applications': 'Applications',
       'billing': 'Packages',
-      'analytics': 'Analytics'
+      'analytics': 'Analytics',
+      'public-listings': 'View as Member'
     };
     mobileTitle.textContent = titles[id] || 'Dashboard';
   }
@@ -4213,6 +4391,7 @@ window.showSection = function(id, el) {
   if (id === 'post-job') applyCompanyProfileToJobForm({ lock: true });
   if (id === 'applications') loadRecruiterApplications();
   if (id === 'analytics') updateCharts();
+  if (id === 'public-listings') loadPublicListings();
 }
 
 window.addEventListener('load', handleMobileLayout);
