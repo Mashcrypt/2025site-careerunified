@@ -100,6 +100,11 @@
   status = 301
 
 [[redirects]]
+  from = "/for-recruiters/"
+  to = "/for-recruiters"
+  status = 301
+
+[[redirects]]
   from = "/jobs.html"
   to = "/jobs"
   status = 301
@@ -138,6 +143,12 @@
 [[redirects]]
   from = "/terms.html"
   to = "/terms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/for-recruiters.html"
+  to = "/for-recruiters"
   status = 301
   force = true
 
@@ -207,6 +218,11 @@
 [[redirects]]
   from = "/terms"
   to = "/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/for-recruiters"
+  to = "/for-recruiters.html"
   status = 200
 
 # ================================

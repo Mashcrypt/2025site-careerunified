@@ -64,7 +64,7 @@ function sanityUrl(query: string) {
 
 function staticEntries(): SitemapEntry[] {
   return [
-    {loc: `${SITE_URL}/`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "1.0"},
+    {loc: `${SITE_URL}/`, lastmod: "2026-08-08", changefreq: "weekly", priority: "1.0"},
     {loc: `${SITE_URL}/jobs`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
     {loc: `${SITE_URL}/bursaries`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
     {loc: `${SITE_URL}/varsity`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
@@ -72,6 +72,7 @@ function staticEntries(): SitemapEntry[] {
     {loc: `${SITE_URL}/cv-generator/`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/z83-filler`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/guides/how-to-complete-z83-form`, lastmod: "2026-07-18", changefreq: "monthly", priority: "0.85"},
+    {loc: `${SITE_URL}/for-recruiters`, lastmod: "2026-08-08", changefreq: "monthly", priority: "0.75"},
     {loc: `${SITE_URL}/about-us`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.6"},
     {loc: `${SITE_URL}/contact-us`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.5"},
     {loc: `${SITE_URL}/privacy`, lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3"},
