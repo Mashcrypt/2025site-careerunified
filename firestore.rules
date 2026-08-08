@@ -71,6 +71,20 @@ service cloud.firestore {
       allow read: if isOwner(recruiterId) || isAdmin();
       allow create, update: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
       allow delete: if isAdmin();
+
+      match /pipeline/{candidateId} {
+        allow read: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+        allow create, update: if isAdmin()
+          || (isOwner(recruiterId)
+            && isRecruiter()
+            && request.resource.data.recruiterId == recruiterId
+            && request.resource.data.candidateId == candidateId
+            && request.resource.data.stage in ['new', 'contacted', 'interview', 'offer', 'hired', 'rejected']
+            && request.resource.data.favorite is bool
+            && request.resource.data.notes is list
+            && request.resource.data.notes.size() <= 20);
+        allow delete: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+      }
     }
 
     match /recruiterApplications/{applicationId} {
