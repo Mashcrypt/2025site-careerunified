@@ -492,6 +492,14 @@
       flex-shrink: 0;
     }
 
+    .ai-tailor-symbol {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      flex-shrink: 0;
+    }
+
     .apply-btn { background: #16a34a; }
     .apply-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
     .ai-tailor-btn { background: #16a34a; }
@@ -1805,7 +1813,10 @@
                   <path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/>
                 </svg>`}
               </button>
-              <button class="ai-tailor-btn" type="button" onclick="openAITailorFromJob()">AI Tailor CV</button>
+              <button class="ai-tailor-btn" type="button" onclick="openAITailorFromJob()">
+                AI Tailor CV
+                <img class="ai-tailor-symbol" src="/assets/images/icons8-ai-24.png" alt="" aria-hidden="true">
+              </button>
             </div>
             <p class="external-apply-note">${job.applicationMethod === 'direct'
               ? 'Apply securely with your saved Career Unified profile and CV.'
