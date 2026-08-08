@@ -6,6 +6,7 @@ import {
   FileText,
   Wand2,
   Eye,
+  EyeOff,
   Download,
   Palette,
   BarChart3,
@@ -201,13 +202,19 @@ const PLAN_OPTIONS: Array<{
     id: 'starter',
     name: 'Starter',
     price: 'R28,99/month',
-    benefits: ['15 AI tailors/month', 'Cover letters', 'Premium templates'],
+    benefits: ['15 AI tailors/month', 'Cover letters', 'Premium templates', 'No ads across Career Unified'],
   },
   {
     id: 'job_seeker',
     name: 'Job Hunter',
     price: 'R49/month',
-    benefits: ['40 AI tailors/month', 'Cover letters', 'Saved CV versions', 'Enough for a full month of job hunting'],
+    benefits: [
+      '40 AI tailors/month',
+      'Cover letters',
+      'Saved CV versions',
+      'No ads across Career Unified',
+      'Enough for a full month of job hunting',
+    ],
     badge: 'Most popular',
     featured: true,
   },
@@ -215,7 +222,13 @@ const PLAN_OPTIONS: Array<{
     id: 'career_pro',
     name: 'Career Pro',
     price: 'R99/month',
-    benefits: ['Unlimited AI tailors', 'All templates', 'Multiple CV versions', 'Priority new features'],
+    benefits: [
+      'Unlimited AI tailors',
+      'All templates',
+      'Multiple CV versions',
+      'No ads across Career Unified',
+      'Priority new features',
+    ],
   },
 ];
 
@@ -1632,6 +1645,11 @@ export default function App() {
       label: 'Premium templates',
       value: billing?.plan === 'free' ? 'Upgrade' : 'Included',
       icon: Layout,
+    },
+    {
+      label: 'No ads across Career Unified',
+      value: 'Included',
+      icon: EyeOff,
     },
   ];
   const visibleBillingHistory = showAllBillingHistory ? billingHistory : billingHistory.slice(0, 3);
