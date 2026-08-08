@@ -183,6 +183,7 @@ export const handler: Handler = async (event) => {
     const qualification = cleanText(contact.qualification || profile.degreeType, 160);
     const currentJobTitle = cleanText(profile.currentJobTitle, 160);
     const yearsOfExperience = cleanText(profile.yearsOfExperience, 80);
+    const profilePhotoURL = cleanText(profile.profilePhotoURL, 1200);
 
     if (!fullName || !email || !phone || !location) {
       throw new ApplicationError(400, "Name, verified email, telephone, and location are required.");
@@ -271,6 +272,7 @@ export const handler: Handler = async (event) => {
         qualification,
         currentJobTitle,
         yearsOfExperience,
+        profilePhotoURL,
       },
       jobSnapshot: {
         title: cleanText(job.title || job.jobTitle, 200),

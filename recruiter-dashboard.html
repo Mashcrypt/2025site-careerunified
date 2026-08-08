@@ -716,6 +716,38 @@
   }
   .application-row h3 { margin: 0 0 4px; color: #1e3a8a; font-size: 1rem; }
   .application-row p { margin: 0; color: #64748b; font-size: 13px; }
+  .candidate-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .candidate-avatar {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #bfdbfe;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1e3a8a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .candidate-avatar.large {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+    font-size: 17px;
+  }
+  .candidate-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
   .application-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .application-badge {
     display: inline-flex;
@@ -786,6 +818,185 @@
   .application-review-actions button { display: inline-flex; align-items: center; gap: 6px; }
   .application-note { display: grid; gap: 8px; margin-top: 18px; }
   .application-note textarea { min-height: 96px; }
+
+  /* ======================================================
+     RECRUITER WORK INBOX + VACANCY WORKSPACE
+  ====================================================== */
+  .recruiter-inbox {
+    margin: 20px 0 26px;
+    overflow: hidden;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .recruiter-inbox-head,
+  .workspace-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+  }
+  .recruiter-inbox-head h3,
+  .workspace-head h2 { margin: 0; color: #111827; }
+  .recruiter-inbox-head p,
+  .workspace-head p { margin: 5px 0 0; color: #64748b; font-size: 13px; }
+  .inbox-kpis,
+  .workspace-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .inbox-kpi,
+  .workspace-kpi {
+    min-width: 0;
+    padding: 15px 18px;
+    border: 0;
+    border-right: 1px solid #e5e7eb;
+    background: #f8fafc;
+    color: #475569;
+    text-align: left;
+  }
+  button.inbox-kpi { cursor: pointer; }
+  button.inbox-kpi:hover,
+  button.inbox-kpi:focus-visible { background: #eff6ff; }
+  .inbox-kpi:last-child,
+  .workspace-kpi:last-child { border-right: 0; }
+  .inbox-kpi strong,
+  .workspace-kpi strong { display: block; color: #1e3a8a; font-size: 22px; line-height: 1.15; }
+  .inbox-kpi span,
+  .workspace-kpi span { display: block; margin-top: 4px; font-size: 12px; font-weight: 700; }
+  .recruiter-task-list { display: grid; }
+  .recruiter-task-row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 62px;
+    padding: 11px 18px;
+    border-bottom: 1px solid #eef2f7;
+  }
+  .recruiter-task-row:last-child { border-bottom: 0; }
+  .recruiter-task-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 18px;
+  }
+  .recruiter-task-copy strong { display: block; color: #1f2937; font-size: 13px; }
+  .recruiter-task-copy span { display: block; margin-top: 2px; color: #64748b; font-size: 12px; }
+  .dashboard-shortcuts-title { margin: 0 0 12px; color: #475569; font-size: 13px; text-transform: uppercase; }
+
+  .workspace-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #1d4ed8;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .workspace-shell {
+    overflow: hidden;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .workspace-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+  .workspace-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 0;
+    align-items: start;
+  }
+  .workspace-main { min-width: 0; padding: 18px; }
+  .workspace-main-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .workspace-main-head h3 { margin: 0; font-size: 16px; }
+  .workspace-main-head p { margin: 4px 0 0; color: #64748b; font-size: 12px; }
+  .workspace-side {
+    min-width: 0;
+    padding: 18px;
+    border-left: 1px solid #e5e7eb;
+    background: #f8fafc;
+  }
+  .workspace-side h3 { margin: 0 0 12px; font-size: 14px; }
+  .workspace-detail { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+  .workspace-detail:last-child { border-bottom: 0; }
+  .workspace-detail span { display: block; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .workspace-detail strong { display: block; margin-top: 4px; color: #1f2937; font-size: 13px; overflow-wrap: anywhere; }
+  .workspace-pipeline {
+    display: grid;
+    grid-auto-columns: minmax(210px, 1fr);
+    grid-auto-flow: column;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+  }
+  .workspace-column {
+    min-height: 210px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    background: #f8fafc;
+    scroll-snap-align: start;
+  }
+  .workspace-column-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .workspace-column-head strong { color: #334155; font-size: 12px; }
+  .workspace-column-head span { min-width: 24px; padding: 3px 7px; border-radius: 999px; background: #dbeafe; color: #1e3a8a; font-size: 11px; font-weight: 800; text-align: center; }
+  .workspace-candidates { display: grid; gap: 8px; }
+  .workspace-candidate {
+    padding: 11px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .workspace-candidate h4 { margin: 0; color: #1e3a8a; font-size: 13px; }
+  .workspace-candidate p { margin: 4px 0 8px; color: #64748b; font-size: 11px; }
+  .workspace-candidate button { width: 100%; justify-content: center; padding: 8px 10px; font-size: 12px; }
+  .workspace-empty { color: #94a3b8; font-size: 12px; text-align: center; padding: 24px 6px; }
+
+  .job-draft-recovery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    border: 1px solid #93c5fd;
+    border-radius: 8px;
+    background: #eff6ff;
+  }
+  .job-draft-recovery[hidden] { display: none; }
+  .job-draft-recovery strong { display: block; color: #1e3a8a; font-size: 13px; }
+  .job-draft-recovery span { display: block; margin-top: 3px; color: #475569; font-size: 12px; }
+  .job-draft-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .job-autosave-status { min-height: 18px; margin-top: 7px; color: #64748b; font-size: 12px; }
+
+  .pipeline-columns {
+    display: grid;
+    grid-auto-columns: minmax(220px, 1fr);
+    grid-auto-flow: column;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  .pipeline-column { min-height: 220px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f8fafc; }
+  .pipeline-card { margin-top: 9px; padding: 11px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; cursor: grab; }
+  .pipeline-card.dragging { opacity: .55; }
+  .candidate-note { margin-top: 7px; padding: 7px; border-left: 3px solid #2563eb; background: #eff6ff; color: #334155; font-size: 11px; }
+  .pipeline-stage-select { width: 100%; margin-top: 8px; padding: 7px; font-size: 11px; }
 
   /* ======================================================
      MOBILE RESPONSIVE DESIGN
@@ -887,6 +1098,22 @@
     .screening-toolbar,.screening-config { grid-template-columns: 1fr; }
     .application-detail-grid { grid-template-columns: 1fr; }
     .application-review-panel { padding: 18px; }
+    .inbox-kpis,.workspace-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .inbox-kpi:nth-child(2),.workspace-kpi:nth-child(2) { border-right: 0; }
+    .inbox-kpi:nth-child(-n+2),.workspace-kpi:nth-child(-n+2) { border-bottom: 1px solid #e5e7eb; }
+    .recruiter-task-row { grid-template-columns: 34px minmax(0, 1fr); }
+    .recruiter-task-row .primary-btn { grid-column: 1 / -1; width: 100%; justify-content: center; }
+    .workspace-head,.workspace-main-head { flex-direction: column; }
+    .workspace-actions { width: 100%; justify-content: stretch; }
+    .workspace-actions .primary-btn { flex: 1 1 140px; justify-content: center; }
+    .workspace-layout { grid-template-columns: 1fr; }
+    .workspace-side { border-top: 1px solid #e5e7eb; border-left: 0; }
+    .job-draft-recovery { grid-template-columns: 1fr; }
+    .job-draft-actions .primary-btn { width: auto !important; flex: 1; }
+    .recruiter-task-row .primary-btn,
+    .workspace-actions .primary-btn,
+    .job-draft-actions .primary-btn,
+    .pipeline-stage-select { min-height: 44px; }
   }
 
   @media (max-width: 480px) {
@@ -951,6 +1178,40 @@
   <div id="dashboard" class="section active">
     <h2>Welcome to Your Recruiter Dashboard</h2>
     <p style="color:#6b7280; margin-bottom:20px;">Manage your job postings and access candidate CVs</p>
+
+    <section class="recruiter-inbox" aria-labelledby="recruiterInboxTitle">
+      <div class="recruiter-inbox-head">
+        <div>
+          <h3 id="recruiterInboxTitle">Recruiter inbox</h3>
+          <p id="recruiterInboxSummary">Loading the work that needs your attention...</p>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" id="refreshRecruiterInboxBtn">
+          <i class='bx bx-refresh'></i> Refresh
+        </button>
+      </div>
+      <div class="inbox-kpis">
+        <button class="inbox-kpi" type="button" data-inbox-view="new-applications">
+          <strong id="inboxNewCount">0</strong><span>New applications</span>
+        </button>
+        <button class="inbox-kpi" type="button" data-inbox-view="interviews">
+          <strong id="inboxInterviewCount">0</strong><span>Interviews</span>
+        </button>
+        <button class="inbox-kpi" type="button" data-inbox-view="closing-jobs">
+          <strong id="inboxClosingCount">0</strong><span>Closing in 7 days</span>
+        </button>
+        <button class="inbox-kpi" type="button" data-inbox-view="active-jobs">
+          <strong id="inboxActiveJobsCount">0</strong><span>Active jobs</span>
+        </button>
+      </div>
+      <div class="recruiter-task-list" id="recruiterTaskList">
+        <div class="recruiter-task-row">
+          <span class="recruiter-task-icon"><i class='bx bx-loader-alt bx-spin'></i></span>
+          <div class="recruiter-task-copy"><strong>Loading your inbox</strong><span>Applications and vacancies will appear here.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <h3 class="dashboard-shortcuts-title">Quick actions</h3>
 
     <div class="cv-grid">
       <div class="cv-card">
@@ -1194,6 +1455,55 @@
     </div>
   </div>
 
+  <!-- ================= VACANCY WORKSPACE ================= -->
+  <div id="job-workspace" class="section">
+    <button class="workspace-back" type="button" data-workspace-back>
+      <i class='bx bx-left-arrow-alt'></i> Back to jobs
+    </button>
+
+    <div class="workspace-shell">
+      <div class="workspace-head">
+        <div>
+          <span class="pill" id="workspaceJobStatus">ACTIVE</span>
+          <h2 id="workspaceJobTitle" style="margin-top:10px;">Vacancy workspace</h2>
+          <p id="workspaceJobMeta">Review this vacancy and its applicants in one place.</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="primary-btn btn-ghost" type="button" id="workspaceViewPublicBtn"><i class='bx bx-show'></i> Public view</button>
+          <button class="primary-btn btn-ghost" type="button" id="workspaceDuplicateBtn"><i class='bx bx-copy'></i> Duplicate</button>
+          <button class="primary-btn" type="button" id="workspaceEditBtn"><i class='bx bx-edit'></i> Edit job</button>
+        </div>
+      </div>
+
+      <div class="workspace-kpis">
+        <div class="workspace-kpi"><strong id="workspaceTotalApplications">0</strong><span>Total applications</span></div>
+        <div class="workspace-kpi"><strong id="workspaceWaitingApplications">0</strong><span>Waiting for review</span></div>
+        <div class="workspace-kpi"><strong id="workspaceProgressingApplications">0</strong><span>In progress</span></div>
+        <div class="workspace-kpi"><strong id="workspaceHiredApplications">0</strong><span>Hired</span></div>
+      </div>
+
+      <div class="workspace-layout">
+        <section class="workspace-main">
+          <div class="workspace-main-head">
+            <div>
+              <h3>Hiring pipeline</h3>
+              <p>Open any candidate to review their CV, screening answers and private notes.</p>
+            </div>
+            <button class="primary-btn btn-ghost" type="button" id="workspaceAllApplicationsBtn">
+              <i class='bx bx-list-ul'></i> All applications
+            </button>
+          </div>
+          <div class="workspace-pipeline" id="workspacePipeline"></div>
+        </section>
+
+        <aside class="workspace-side" id="workspaceJobDetails">
+          <h3>Role summary</h3>
+          <p class="muted">Choose a job from Manage Jobs to open its workspace.</p>
+        </aside>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= VIEW AS MEMBER ================= -->
   <div id="public-listings" class="section">
     <h2>View as Member</h2>
@@ -1225,6 +1535,18 @@
       <h2>Post a Job</h2>
       <p style="color:#6b7280;">Find the perfect candidate for your team</p>
       <p id="jobFormMode" style="color:#2563eb; font-weight:700; margin-top:8px; display:none;"></p>
+      <div class="job-autosave-status" id="jobAutosaveStatus" aria-live="polite"></div>
+    </div>
+
+    <div class="job-draft-recovery" id="jobDraftRecovery" hidden>
+      <div>
+        <strong>Continue your unfinished job post?</strong>
+        <span id="jobDraftRecoveryText">A draft from this device is available.</span>
+      </div>
+      <div class="job-draft-actions">
+        <button class="primary-btn" type="button" id="restoreJobDraftBtn"><i class='bx bx-history'></i> Restore</button>
+        <button class="primary-btn btn-ghost" type="button" id="discardJobDraftBtn"><i class='bx bx-trash'></i> Discard</button>
+      </div>
     </div>
 
     <div class="cv-card">
@@ -1987,6 +2309,38 @@ function escapeDashboard(value, fallback = "") {
     .replace(/'/g, "&#39;");
 }
 
+function safeCandidatePhotoURL(value) {
+  try {
+    const url = new URL(dashboardText(value));
+    const allowedHost = url.hostname === 'firebasestorage.googleapis.com'
+      || url.hostname === 'lh3.googleusercontent.com'
+      || url.hostname.endsWith('.googleusercontent.com');
+    return url.protocol === 'https:' && allowedHost ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function candidateInitials(name) {
+  return dashboardText(name, 'Candidate')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'CU';
+}
+
+function candidatePhotoMarkup(candidate, large = false) {
+  const photoURL = safeCandidatePhotoURL(candidate?.profilePhotoURL);
+  const name = dashboardText(candidate?.fullName, 'Candidate');
+  const className = `candidate-avatar${large ? ' large' : ''}`;
+  if (!photoURL) {
+    return `<span class="${className}" aria-hidden="true">${escapeDashboard(candidateInitials(name))}</span>`;
+  }
+  return `<span class="${className}"><img src="${escapeDashboard(photoURL)}" alt="${escapeDashboard(name)} profile photo" loading="lazy" referrerpolicy="no-referrer"></span>`;
+}
+
 function publicJobUrl(job) {
   const slug = job?.slug || slugify(`${job?.title || ""}-${job?.company || ""}-${job?.city || ""}`);
   return slug ? `/jobs/${encodeURIComponent(slug)}` : "/jobs";
@@ -2090,6 +2444,7 @@ function addScreeningQuestion(question) {
   }
   screeningQuestionsDraft.push(normalizeScreeningQuestion({...question, id: questionId("screen")}));
   renderScreeningQuestions();
+  scheduleJobDraftSave();
 }
 
 function updateApplicationMethodUI() {
@@ -2156,6 +2511,7 @@ function setupApplicationBuilder() {
     const id = removeButton.dataset.removeQuestion;
     screeningQuestionsDraft = screeningQuestionsDraft.filter(question => question.id !== id);
     renderScreeningQuestions();
+    scheduleJobDraftSave();
   });
   document.getElementById("screeningQuestionList")?.addEventListener("input", (event) => {
     const card = event.target.closest("[data-question-id]");
@@ -2171,6 +2527,7 @@ function setupApplicationBuilder() {
         ? {operator: question.type === "number" ? "gte" : "equals", value}
         : null;
     }
+    scheduleJobDraftSave();
   });
   updateApplicationMethodUI();
   renderScreeningQuestions();
@@ -2302,6 +2659,9 @@ let companyProfileVersion = ""; // timestamp string
 ====================================================== */
 let recruiterJobsCache = [];
 let editingJobId = null;
+let duplicatingJob = false;
+let selectedWorkspaceJobId = null;
+let jobDraftSaveTimer = null;
 
 /* ======================================================
    ANALYTICS state
@@ -2317,6 +2677,7 @@ let selectedForComparison = [];
 let favorites = [];
 let candidatePipeline = { new: [], contacted: [], interview: [], offer: [], hired: [], rejected: [] };
 let candidateNotes = {};
+const TALENT_PIPELINE_STAGES = ['new', 'contacted', 'interview', 'offer', 'hired', 'rejected'];
 
 /* ======================================================
    AUTH GATE
@@ -2371,12 +2732,32 @@ onAuthStateChanged(auth, async (user) => {
     await saveJob('active');
   });
 
-  document.getElementById('cancelEditBtn')?.addEventListener('click', cancelEditJob);
+  document.getElementById('cancelEditBtn')?.addEventListener('click', () => cancelEditJob());
   setupApplicationBuilder();
+  setupJobDraftRecovery();
   document.getElementById('refreshApplicationsBtn')?.addEventListener('click', loadRecruiterApplications);
   document.getElementById('applicationJobFilter')?.addEventListener('change', renderRecruiterApplications);
   document.getElementById('applicationStatusFilter')?.addEventListener('change', renderRecruiterApplications);
   loadRecruiterApplications();
+
+  document.getElementById('refreshRecruiterInboxBtn')?.addEventListener('click', refreshRecruiterInbox);
+  document.getElementById('workspaceAllApplicationsBtn')?.addEventListener('click', () => {
+    if (selectedWorkspaceJobId) openApplicationsForJob(selectedWorkspaceJobId);
+  });
+  document.getElementById('workspaceEditBtn')?.addEventListener('click', () => {
+    const job = recruiterJobsCache.find(item => item.id === selectedWorkspaceJobId);
+    if (job) editRecruiterJob(job);
+  });
+  document.getElementById('workspaceDuplicateBtn')?.addEventListener('click', () => {
+    const job = recruiterJobsCache.find(item => item.id === selectedWorkspaceJobId);
+    if (job) duplicateRecruiterJob(job);
+  });
+  document.getElementById('workspaceViewPublicBtn')?.addEventListener('click', () => {
+    const job = recruiterJobsCache.find(item => item.id === selectedWorkspaceJobId);
+    if (job && dashboardText(job.status, 'active').toLowerCase() !== 'draft') {
+      window.open(publicJobUrl(job), '_blank', 'noopener,noreferrer');
+    }
+  });
 
   // Analytics
   document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => updateCharts());
@@ -2845,6 +3226,140 @@ function slugify(text) {
     .replace(/^-+|-+$/g, '');
 }
 
+function jobDraftStorageKey() {
+  return currentRecruiter ? `careerUnifiedRecruiterJobDraft:${currentRecruiter.uid}` : '';
+}
+
+function readLocalJobDraft() {
+  const key = jobDraftStorageKey();
+  if (!key) return null;
+  try {
+    const draft = JSON.parse(localStorage.getItem(key) || 'null');
+    return draft?.version === 1 && draft?.values ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function hasMeaningfulJobDraft(values = {}) {
+  return ['title', 'description', 'requirements', 'city', 'deadline']
+    .some(field => dashboardText(values[field]));
+}
+
+function updateJobDraftRecovery() {
+  const recovery = document.getElementById('jobDraftRecovery');
+  const recoveryText = document.getElementById('jobDraftRecoveryText');
+  if (!recovery) return;
+  const draft = readLocalJobDraft();
+  const available = !editingJobId && draft && hasMeaningfulJobDraft(draft.values);
+  recovery.hidden = !available;
+  if (available && recoveryText) {
+    const savedAt = new Date(draft.savedAt);
+    recoveryText.textContent = Number.isNaN(savedAt.getTime())
+      ? 'An unfinished job post from this device is available.'
+      : `Saved ${savedAt.toLocaleString('en-ZA', {dateStyle: 'medium', timeStyle: 'short'})} on this device.`;
+  }
+}
+
+function collectLocalJobDraft() {
+  const form = document.getElementById('jobForm');
+  if (!form) return null;
+  const values = Object.fromEntries(new FormData(form).entries());
+  ['jobId', 'companyProfileVersion', 'company', 'email', 'website', 'logo'].forEach(field => delete values[field]);
+  values.remote = !!form.remote?.checked;
+  return {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    values,
+    screeningQuestions: collectScreeningQuestions(),
+  };
+}
+
+function saveJobDraftLocally() {
+  if (editingJobId) return;
+  const draft = collectLocalJobDraft();
+  const key = jobDraftStorageKey();
+  if (!draft || !key || !hasMeaningfulJobDraft(draft.values)) return;
+  try {
+    localStorage.setItem(key, JSON.stringify(draft));
+    const status = document.getElementById('jobAutosaveStatus');
+    if (status) status.textContent = 'Draft saved on this device';
+  } catch {
+    const status = document.getElementById('jobAutosaveStatus');
+    if (status) status.textContent = 'Draft recovery is unavailable in this browser';
+  }
+}
+
+function scheduleJobDraftSave() {
+  if (editingJobId) return;
+  if (jobDraftSaveTimer) clearTimeout(jobDraftSaveTimer);
+  const status = document.getElementById('jobAutosaveStatus');
+  if (status) status.textContent = 'Saving draft...';
+  jobDraftSaveTimer = setTimeout(saveJobDraftLocally, 500);
+}
+
+function clearLocalJobDraft() {
+  const key = jobDraftStorageKey();
+  if (jobDraftSaveTimer) clearTimeout(jobDraftSaveTimer);
+  jobDraftSaveTimer = null;
+  try {
+    if (key) localStorage.removeItem(key);
+  } catch {
+    // Draft recovery is a convenience feature; saving the job must still succeed.
+  }
+  const status = document.getElementById('jobAutosaveStatus');
+  if (status) status.textContent = '';
+  updateJobDraftRecovery();
+}
+
+function restoreLocalJobDraft() {
+  const draft = readLocalJobDraft();
+  const form = document.getElementById('jobForm');
+  if (!draft || !form) return;
+
+  editingJobId = null;
+  duplicatingJob = false;
+  Object.entries(draft.values || {}).forEach(([name, value]) => {
+    if (name === 'remote') {
+      if (form.remote) form.remote.checked = !!value;
+      return;
+    }
+    const field = form.elements.namedItem(name);
+    if (field && typeof field.value !== 'undefined') field.value = value;
+  });
+  screeningQuestionsDraft = Array.isArray(draft.screeningQuestions)
+    ? draft.screeningQuestions.map(normalizeScreeningQuestion)
+    : [];
+  const mode = document.getElementById('jobFormMode');
+  if (mode) mode.style.display = 'none';
+  const cancelBtn = document.getElementById('cancelEditBtn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  const publishBtn = document.getElementById('publishJobBtn');
+  if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
+  updateApplicationMethodUI();
+  renderScreeningQuestions();
+  applyCompanyProfileToJobForm({lock: true});
+  document.getElementById('jobDraftRecovery').hidden = true;
+  const status = document.getElementById('jobAutosaveStatus');
+  if (status) status.textContent = 'Recovered draft loaded';
+  showSection('post-job', document.querySelector('.nav a:nth-child(3)'));
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  showToast('success', 'Draft restored', 'Review the details, then publish or save the job.', 3200);
+}
+
+function setupJobDraftRecovery() {
+  const form = document.getElementById('jobForm');
+  if (!form) return;
+  form.addEventListener('input', scheduleJobDraftSave);
+  form.addEventListener('change', scheduleJobDraftSave);
+  document.getElementById('restoreJobDraftBtn')?.addEventListener('click', restoreLocalJobDraft);
+  document.getElementById('discardJobDraftBtn')?.addEventListener('click', () => {
+    clearLocalJobDraft();
+    showToast('info', 'Draft discarded', 'The saved draft from this device was removed.', 2600);
+  });
+  updateJobDraftRecovery();
+}
+
 function getMonthsAgoDate(months) {
   if (!months || months === 0) return null;
   const d = new Date();
@@ -2951,6 +3466,7 @@ async function saveJob(status) {
       showToast('success', 'Saved', status === 'draft' ? 'Draft saved.' : 'Job published successfully.', 3200);
     }
 
+    clearLocalJobDraft();
     form.reset();
     cancelEditJob(true);
     applyCompanyProfileToJobForm({ lock: true });
@@ -2973,6 +3489,11 @@ function setFormEditMode(job) {
   if (!form) return;
 
   editingJobId = job.id;
+  duplicatingJob = false;
+  const recovery = document.getElementById('jobDraftRecovery');
+  if (recovery) recovery.hidden = true;
+  const autosaveStatus = document.getElementById('jobAutosaveStatus');
+  if (autosaveStatus) autosaveStatus.textContent = 'Editing an existing job';
 
   document.getElementById('jobId').value = job.id || '';
   form.title.value = job.title || '';
@@ -3011,20 +3532,64 @@ function setFormEditMode(job) {
   }
 
   const cancelBtn = document.getElementById('cancelEditBtn');
-  if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+  if (cancelBtn) {
+    cancelBtn.style.display = 'inline-flex';
+    cancelBtn.innerHTML = "<i class='bx bx-x'></i> Cancel Edit";
+  }
 
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-edit'></i> Update Job";
 }
 
-function cancelEditJob(silent=false) {
+function editRecruiterJob(job) {
+  showSection('post-job', document.querySelector('.nav a:nth-child(3)'));
+  setFormEditMode(job);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function duplicateRecruiterJob(job) {
+  setFormEditMode(job);
   editingJobId = null;
+  duplicatingJob = true;
+  document.getElementById('jobId').value = '';
+  const form = document.getElementById('jobForm');
+  if (form?.title) form.title.value = `Copy of ${dashboardText(job.title, 'job')}`;
+  if (form?.deadline) form.deadline.value = '';
+
+  const mode = document.getElementById('jobFormMode');
+  if (mode) {
+    mode.style.display = 'block';
+    mode.textContent = `Creating a new job from: ${dashboardText(job.title, 'existing job')}`;
+  }
+  const publishBtn = document.getElementById('publishJobBtn');
+  if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Copied Job";
+  const cancelBtn = document.getElementById('cancelEditBtn');
+  if (cancelBtn) {
+    cancelBtn.style.display = 'inline-flex';
+    cancelBtn.innerHTML = "<i class='bx bx-x'></i> Clear Copy";
+  }
+  const autosaveStatus = document.getElementById('jobAutosaveStatus');
+  if (autosaveStatus) autosaveStatus.textContent = 'Copied details are ready for review';
+
+  showSection('post-job', document.querySelector('.nav a:nth-child(3)'));
+  scheduleJobDraftSave();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  showToast('success', 'Job copied', 'Review the title and closing date before publishing.', 3600);
+}
+
+function cancelEditJob(silent=false) {
+  const wasDuplicating = duplicatingJob;
+  editingJobId = null;
+  duplicatingJob = false;
 
   const mode = document.getElementById('jobFormMode');
   if (mode) mode.style.display = 'none';
 
   const cancelBtn = document.getElementById('cancelEditBtn');
-  if (cancelBtn) cancelBtn.style.display = 'none';
+  if (cancelBtn) {
+    cancelBtn.style.display = 'none';
+    cancelBtn.innerHTML = "<i class='bx bx-x'></i> Cancel Edit";
+  }
 
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
@@ -3036,10 +3601,18 @@ function cancelEditJob(silent=false) {
   screeningQuestionsDraft = [];
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  const autosaveStatus = document.getElementById('jobAutosaveStatus');
+  if (autosaveStatus) autosaveStatus.textContent = '';
 
   if (!silent) {
-    // nothing (you said you prefer not changing unrelated behavior)
+    const form = document.getElementById('jobForm');
+    if (form) form.reset();
+    const jobId = document.getElementById('jobId');
+    if (jobId) jobId.value = '';
+    applyCompanyProfileToJobForm({lock: true});
+    if (wasDuplicating) clearLocalJobDraft();
   }
+  updateJobDraftRecovery();
 }
 
 /* ======================================================
@@ -3076,6 +3649,8 @@ async function loadManageJobs() {
       : recruiterJobsCache;
 
     renderPublicListings(recruiterJobsCache);
+    renderRecruiterInbox();
+    if (selectedWorkspaceJobId) renderJobWorkspace();
 
     if (filtered.length === 0) {
       wrap.innerHTML = `<p style="color:#6b7280;">You haven’t posted any jobs yet.</p>`;
@@ -3097,16 +3672,16 @@ async function loadManageJobs() {
 
       row.innerHTML = `
         <div data-label="Title">
-          <strong>${j.title || "Untitled"}</strong>
+          <strong>${escapeDashboard(j.title, "Untitled")}</strong>
           <div class="job-location">
-            <i class='bx bx-map'></i> ${j.remote ? "Remote" : `${j.city || ""}${j.country ? ", " + j.country : ""}`.trim()}
+            <i class='bx bx-map'></i> ${j.remote ? "Remote" : escapeDashboard(`${j.city || ""}${j.country ? ", " + j.country : ""}`.trim(), "Location not set")}
           </div>
           <div class="muted" style="font-size:12px; margin-top:4px;">
-            <i class='bx bx-buildings'></i> ${j.company || companyProfile?.name || 'Company'}
+            <i class='bx bx-buildings'></i> ${escapeDashboard(j.company || companyProfile?.name, 'Company')}
           </div>
         </div>
 
-        <div data-label="Applications" class="applied">${j.applicationsCount || 0}</div>
+        <div data-label="Applications" class="applied">${Number(j.applicationsCount || 0)}</div>
 
         <div data-label="Dates" class="dates">
           <span>${createdText}</span>
@@ -3116,9 +3691,11 @@ async function loadManageJobs() {
         <div data-label="Status"><span class="${statusClass}">${(j.status || "active").toUpperCase()}</span></div>
 
         <div data-label="Actions" class="actions">
-          <button title="View" data-action="view" data-id="${j.id}"><i class='bx bx-show'></i></button>
-          <button title="Edit" data-action="edit" data-id="${j.id}"><i class='bx bx-edit'></i></button>
-          <button title="Delete" data-action="delete" data-id="${j.id}"><i class='bx bx-trash'></i></button>
+          <button title="Open vacancy workspace" data-action="workspace" data-id="${escapeDashboard(j.id)}"><i class='bx bx-layout'></i></button>
+          <button title="View" data-action="view" data-id="${escapeDashboard(j.id)}"><i class='bx bx-show'></i></button>
+          <button title="Edit" data-action="edit" data-id="${escapeDashboard(j.id)}"><i class='bx bx-edit'></i></button>
+          <button title="Duplicate" data-action="duplicate" data-id="${escapeDashboard(j.id)}"><i class='bx bx-copy'></i></button>
+          <button title="Delete" data-action="delete" data-id="${escapeDashboard(j.id)}"><i class='bx bx-trash'></i></button>
         </div>
       `;
 
@@ -3210,10 +3787,16 @@ document.addEventListener('click', async (e) => {
     window.open(publicJobUrl(job), "_blank", "noopener,noreferrer");
   }
 
+  if (action === 'workspace') {
+    openJobWorkspace(id);
+  }
+
   if (action === 'edit') {
-    showSection('post-job', document.querySelector('.nav a:nth-child(3)'));
-    setFormEditMode(job);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    editRecruiterJob(job);
+  }
+
+  if (action === 'duplicate') {
+    duplicateRecruiterJob(job);
   }
 
   if (action === 'delete') {
@@ -3279,6 +3862,244 @@ function screeningBadge(application) {
   return `<span class="application-badge"><i class='bx bx-list-check'></i> Recruiter review</span>`;
 }
 
+function jobDeadlineDate(job) {
+  const raw = dashboardText(job?.deadline);
+  if (!raw) return null;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function jobsClosingWithin(days = 7) {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const end = new Date(now);
+  end.setDate(end.getDate() + days);
+  return recruiterJobsCache
+    .filter(job => dashboardText(job.status, 'active').toLowerCase() === 'active')
+    .filter(job => {
+      const deadline = jobDeadlineDate(job);
+      return deadline && deadline >= now && deadline <= end;
+    })
+    .sort((left, right) => jobDeadlineDate(left) - jobDeadlineDate(right));
+}
+
+function renderRecruiterInbox() {
+  const list = document.getElementById('recruiterTaskList');
+  if (!list) return;
+
+  const submitted = recruiterApplicationsCache
+    .filter(application => application.status === 'submitted')
+    .sort((left, right) => (toDateValue(right.submittedAt)?.getTime() || 0) - (toDateValue(left.submittedAt)?.getTime() || 0));
+  const interviews = recruiterApplicationsCache.filter(application => application.status === 'interview');
+  const closingJobs = jobsClosingWithin(7);
+  const activeJobs = recruiterJobsCache.filter(job => dashboardText(job.status, 'active').toLowerCase() === 'active');
+
+  document.getElementById('inboxNewCount').textContent = String(submitted.length);
+  document.getElementById('inboxInterviewCount').textContent = String(interviews.length);
+  document.getElementById('inboxClosingCount').textContent = String(closingJobs.length);
+  document.getElementById('inboxActiveJobsCount').textContent = String(activeJobs.length);
+
+  const attentionCount = submitted.length + interviews.length + closingJobs.length;
+  const summary = document.getElementById('recruiterInboxSummary');
+  if (summary) {
+    summary.textContent = attentionCount
+      ? `${attentionCount} item${attentionCount === 1 ? '' : 's'} need your attention.`
+      : 'You are up to date. New applications and deadlines will appear here.';
+  }
+
+  const tasks = [];
+  submitted.slice(0, 4).forEach(application => {
+    const candidate = application.candidateSnapshot || {};
+    const job = application.jobSnapshot || {};
+    tasks.push(`
+      <div class="recruiter-task-row">
+        <span class="recruiter-task-icon"><i class='bx bx-user-plus'></i></span>
+        <div class="recruiter-task-copy">
+          <strong>Review ${escapeDashboard(candidate.fullName, 'new applicant')}</strong>
+          <span>${escapeDashboard(job.title, 'Job application')} · ${escapeDashboard(applicationDate(application.submittedAt))}</span>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" data-review-application="${escapeDashboard(application.id)}">Review</button>
+      </div>`);
+  });
+
+  interviews.slice(0, Math.max(0, 5 - tasks.length)).forEach(application => {
+    const candidate = application.candidateSnapshot || {};
+    const job = application.jobSnapshot || {};
+    tasks.push(`
+      <div class="recruiter-task-row">
+        <span class="recruiter-task-icon"><i class='bx bx-calendar-event'></i></span>
+        <div class="recruiter-task-copy">
+          <strong>Interview follow-up: ${escapeDashboard(candidate.fullName, 'candidate')}</strong>
+          <span>${escapeDashboard(job.title, 'Job application')}</span>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" data-review-application="${escapeDashboard(application.id)}">Open</button>
+      </div>`);
+  });
+
+  closingJobs.slice(0, Math.max(0, 6 - tasks.length)).forEach(job => {
+    tasks.push(`
+      <div class="recruiter-task-row">
+        <span class="recruiter-task-icon"><i class='bx bx-time-five'></i></span>
+        <div class="recruiter-task-copy">
+          <strong>${escapeDashboard(job.title, 'Job')} closes soon</strong>
+          <span>Closing ${escapeDashboard(job.deadline)} · ${Number(job.applicationsCount || 0)} applications</span>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" data-open-job-workspace="${escapeDashboard(job.id)}">Open job</button>
+      </div>`);
+  });
+
+  if (!tasks.length) {
+    tasks.push(`
+      <div class="recruiter-task-row">
+        <span class="recruiter-task-icon"><i class='bx bx-check'></i></span>
+        <div class="recruiter-task-copy">
+          <strong>${activeJobs.length ? 'Nothing is waiting for review' : 'Post your first active vacancy'}</strong>
+          <span>${activeJobs.length ? 'Your recruiter inbox is clear.' : 'A direct-apply vacancy will bring applications into this inbox.'}</span>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" data-empty-inbox-action>${activeJobs.length ? 'View jobs' : 'Post a job'}</button>
+      </div>`);
+  }
+
+  list.innerHTML = tasks.join('');
+}
+
+async function refreshRecruiterInbox() {
+  const button = document.getElementById('refreshRecruiterInboxBtn');
+  if (button) button.disabled = true;
+  try {
+    await Promise.all([loadManageJobs(), loadRecruiterApplications()]);
+    showToast('success', 'Inbox refreshed', 'Your latest jobs and applications are loaded.', 2400);
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function openApplicationsForJob(jobId, status = '') {
+  const jobFilter = document.getElementById('applicationJobFilter');
+  const statusFilter = document.getElementById('applicationStatusFilter');
+  if (jobFilter) jobFilter.value = jobId || '';
+  if (statusFilter) statusFilter.value = status || '';
+  showSection('applications', document.getElementById('applicationsNav'));
+  renderRecruiterApplications();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+const WORKSPACE_PIPELINE_GROUPS = [
+  {key: 'new', label: 'New', statuses: ['submitted', 'viewed']},
+  {key: 'shortlisted', label: 'Shortlisted', statuses: ['shortlisted']},
+  {key: 'interview', label: 'Interview', statuses: ['interview']},
+  {key: 'offer', label: 'Offer', statuses: ['offer']},
+  {key: 'hired', label: 'Hired', statuses: ['hired']},
+  {key: 'closed', label: 'Closed', statuses: ['unsuccessful', 'withdrawn']},
+];
+
+function renderJobWorkspace() {
+  if (!selectedWorkspaceJobId) return;
+  const job = recruiterJobsCache.find(item => item.id === selectedWorkspaceJobId);
+  if (!job) {
+    selectedWorkspaceJobId = null;
+    showToast('warn', 'Job unavailable', 'This job could not be found. Refresh Manage Jobs.', 3400);
+    return;
+  }
+
+  const applications = recruiterApplicationsCache.filter(application => application.jobId === job.id);
+  const waiting = applications.filter(application => ['submitted', 'viewed'].includes(application.status)).length;
+  const progressing = applications.filter(application => ['shortlisted', 'interview', 'offer'].includes(application.status)).length;
+  const hired = applications.filter(application => application.status === 'hired').length;
+  const status = dashboardText(job.status, 'active').toLowerCase();
+  const location = job.remote
+    ? 'Remote'
+    : dashboardText(`${job.city || ''}${job.country ? `, ${job.country}` : ''}`, 'Location not set');
+
+  document.getElementById('workspaceJobTitle').textContent = dashboardText(job.title, 'Untitled job');
+  document.getElementById('workspaceJobMeta').textContent = `${dashboardText(job.company || companyProfile?.name, 'Company')} · ${location}`;
+  const statusPill = document.getElementById('workspaceJobStatus');
+  if (statusPill) statusPill.textContent = status.toUpperCase();
+  document.getElementById('workspaceTotalApplications').textContent = String(applications.length);
+  document.getElementById('workspaceWaitingApplications').textContent = String(waiting);
+  document.getElementById('workspaceProgressingApplications').textContent = String(progressing);
+  document.getElementById('workspaceHiredApplications').textContent = String(hired);
+
+  const viewButton = document.getElementById('workspaceViewPublicBtn');
+  if (viewButton) {
+    viewButton.disabled = status === 'draft';
+    viewButton.title = status === 'draft' ? 'Publish this draft before opening its public page' : 'Open the public job page';
+  }
+
+  const pipeline = document.getElementById('workspacePipeline');
+  if (pipeline) {
+    pipeline.innerHTML = WORKSPACE_PIPELINE_GROUPS.map(group => {
+      const candidates = applications.filter(application => group.statuses.includes(application.status));
+      return `
+        <section class="workspace-column" data-workspace-stage="${group.key}">
+          <div class="workspace-column-head"><strong>${group.label}</strong><span>${candidates.length}</span></div>
+          <div class="workspace-candidates">
+            ${candidates.length ? candidates.map(application => {
+              const candidate = application.candidateSnapshot || {};
+              const signal = application.screeningResult === 'meets_essentials'
+                ? 'Essentials matched'
+                : application.screeningResult === 'review_required' ? 'Screening review' : 'Recruiter review';
+              return `
+                <article class="workspace-candidate">
+                  <h4>${escapeDashboard(candidate.fullName, 'Candidate')}</h4>
+                  <p>${escapeDashboard(signal)} · ${escapeDashboard(applicationDate(application.submittedAt))}</p>
+                  <button class="primary-btn btn-ghost" type="button" data-review-application="${escapeDashboard(application.id)}"><i class='bx bx-show'></i> Review</button>
+                </article>`;
+            }).join('') : '<div class="workspace-empty">No candidates</div>'}
+          </div>
+        </section>`;
+    }).join('');
+  }
+
+  const details = document.getElementById('workspaceJobDetails');
+  if (details) {
+    details.innerHTML = `
+      <h3>Role summary</h3>
+      <div class="workspace-detail"><span>Job type</span><strong>${escapeDashboard(job.type, 'Not specified')}</strong></div>
+      <div class="workspace-detail"><span>Experience</span><strong>${escapeDashboard(job.experience, 'Not specified')}</strong></div>
+      <div class="workspace-detail"><span>Closing</span><strong>${escapeDashboard(job.deadline, 'Unspecified')}</strong></div>
+      <div class="workspace-detail"><span>Application method</span><strong>${job.applicationMethod === 'direct' ? 'Career Unified Direct Apply' : job.applicationMethod === 'external' ? 'External website' : 'Email'}</strong></div>
+      <div class="workspace-detail"><span>Screening questions</span><strong>${Array.isArray(job.screeningQuestions) ? job.screeningQuestions.length : 0}</strong></div>
+      <div class="workspace-detail"><span>Requirements</span><strong>${escapeDashboard(dashboardText(job.requirements, 'No separate requirements added').slice(0, 320))}</strong></div>`;
+  }
+}
+
+function openJobWorkspace(jobId) {
+  const job = recruiterJobsCache.find(item => item.id === jobId);
+  if (!job) {
+    showToast('warn', 'Job unavailable', 'Refresh Manage Jobs and try again.', 3200);
+    return;
+  }
+  selectedWorkspaceJobId = jobId;
+  renderJobWorkspace();
+  showSection('job-workspace', null);
+  const mobileTitle = document.getElementById('mobilePageTitle');
+  if (mobileTitle) mobileTitle.textContent = 'Vacancy Workspace';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.addEventListener('click', event => {
+  const workspaceButton = event.target.closest('[data-open-job-workspace]');
+  if (workspaceButton) {
+    openJobWorkspace(workspaceButton.dataset.openJobWorkspace);
+    return;
+  }
+  if (event.target.closest('[data-workspace-back]')) {
+    showSection('jobs', document.querySelector('.nav a:nth-child(4)'));
+    return;
+  }
+  const inboxView = event.target.closest('[data-inbox-view]')?.dataset.inboxView;
+  if (inboxView === 'new-applications') openApplicationsForJob('', 'submitted');
+  if (inboxView === 'interviews') openApplicationsForJob('', 'interview');
+  if (inboxView === 'closing-jobs' || inboxView === 'active-jobs') {
+    showSection('jobs', document.querySelector('.nav a:nth-child(4)'));
+  }
+  if (event.target.closest('[data-empty-inbox-action]')) {
+    const activeJobs = recruiterJobsCache.some(job => dashboardText(job.status, 'active').toLowerCase() === 'active');
+    showSection(activeJobs ? 'jobs' : 'post-job', document.querySelector(`.nav a:nth-child(${activeJobs ? 4 : 3})`));
+  }
+});
+
 async function loadRecruiterApplications() {
   const list = document.getElementById("recruiterApplicationsList");
   if (!list || !currentRecruiter) return;
@@ -3290,13 +4111,37 @@ async function loadRecruiterApplications() {
       where("recruiterId", "==", currentRecruiter.uid)
     );
     const snapshot = await getDocs(applicationQuery);
-    recruiterApplicationsCache = snapshot.docs
+    const applications = snapshot.docs
       .map(application => ({id: application.id, ...application.data()}))
       .sort((left, right) => {
         const leftDate = toDateValue(left.submittedAt)?.getTime() || 0;
         const rightDate = toDateValue(right.submittedAt)?.getTime() || 0;
         return rightDate - leftDate;
       });
+
+    const candidateIds = Array.from(new Set(
+      applications.map(application => dashboardText(application.candidateId)).filter(Boolean)
+    ));
+    const candidatePhotos = new Map();
+    await Promise.all(candidateIds.map(async candidateId => {
+      try {
+        const profileSnapshot = await getDoc(doc(db, 'users', candidateId));
+        const photoURL = safeCandidatePhotoURL(profileSnapshot.data()?.profilePhotoURL);
+        if (photoURL) candidatePhotos.set(candidateId, photoURL);
+      } catch (error) {
+        console.log('Could not load candidate profile photo:', error);
+      }
+    }));
+    recruiterApplicationsCache = applications.map(application => ({
+      ...application,
+      candidateSnapshot: {
+        ...(application.candidateSnapshot || {}),
+        profilePhotoURL:
+          candidatePhotos.get(application.candidateId)
+          || application.candidateSnapshot?.profilePhotoURL
+          || ''
+      }
+    }));
 
     const total = recruiterApplicationsCache.length;
     const waiting = recruiterApplicationsCache.filter(application => application.status === "submitted").length;
@@ -3324,6 +4169,8 @@ async function loadRecruiterApplications() {
     }
 
     renderRecruiterApplications();
+    renderRecruiterInbox();
+    if (selectedWorkspaceJobId) renderJobWorkspace();
   } catch (error) {
     console.error("loadRecruiterApplications error:", error);
     list.innerHTML = `<p style="color:#b91c1c;">Applications could not be loaded. Please refresh and try again.</p>`;
@@ -3355,12 +4202,15 @@ function renderRecruiterApplications() {
     const job = application.jobSnapshot || {};
     return `
       <article class="application-row">
-        <div>
-          <h3>${escapeDashboard(candidate.fullName, "Candidate")}</h3>
-          <p>${escapeDashboard(job.title, "Job application")} at ${escapeDashboard(job.company, "your company")}</p>
-          <div class="application-badges">
-            ${screeningBadge(application)}
-            <span class="application-badge"><i class='bx bx-map'></i> ${escapeDashboard(candidate.location, "Location unavailable")}</span>
+        <div class="candidate-identity">
+          ${candidatePhotoMarkup(candidate)}
+          <div>
+            <h3>${escapeDashboard(candidate.fullName, "Candidate")}</h3>
+            <p>${escapeDashboard(job.title, "Job application")} at ${escapeDashboard(job.company, "your company")}</p>
+            <div class="application-badges">
+              ${screeningBadge(application)}
+              <span class="application-badge"><i class='bx bx-map'></i> ${escapeDashboard(candidate.location, "Location unavailable")}</span>
+            </div>
           </div>
         </div>
         <div>
@@ -3393,6 +4243,18 @@ async function postApplicationUpdate(applicationId, payload) {
   return result;
 }
 
+function candidateWhatsAppUrl(candidate, job) {
+  let phone = dashboardText(candidate?.phone).replace(/\D/g, '');
+  if (!phone || phone.length < 9) return '';
+  if (phone.startsWith('00')) phone = phone.slice(2);
+  if (phone.startsWith('0')) phone = `27${phone.slice(1)}`;
+  const message = [
+    `Hi ${dashboardText(candidate?.fullName, 'there')},`,
+    `this is ${dashboardText(job?.company || companyProfile?.name, 'the recruitment team')} regarding your application for ${dashboardText(job?.title, 'our vacancy')}.`,
+  ].join(' ');
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
 async function openRecruiterApplication(applicationId) {
   let application = recruiterApplicationsCache.find(item => item.id === applicationId);
   if (!application) return;
@@ -3420,18 +4282,22 @@ async function openRecruiterApplication(applicationId) {
   const candidate = application.candidateSnapshot || {};
   const job = application.jobSnapshot || {};
   const answers = Array.isArray(application.answers) ? application.answers : [];
+  const whatsappUrl = candidateWhatsAppUrl(candidate, job);
   const modal = document.getElementById("applicationReviewModal");
   const content = document.getElementById("applicationReviewContent");
   if (!modal || !content) return;
 
   content.innerHTML = `
     <div class="application-review-head">
-      <div>
-        <p class="muted" style="margin:0 0 4px;">${escapeDashboard(job.title, "Job application")}</p>
-        <h2 id="applicationReviewTitle" style="margin:0;">${escapeDashboard(candidate.fullName, "Candidate")}</h2>
-        <div class="application-badges" style="margin-top:10px;">
-          ${screeningBadge(application)}
-          <span class="application-badge">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+      <div class="candidate-identity">
+        ${candidatePhotoMarkup(candidate, true)}
+        <div>
+          <p class="muted" style="margin:0 0 4px;">${escapeDashboard(job.title, "Job application")}</p>
+          <h2 id="applicationReviewTitle" style="margin:0;">${escapeDashboard(candidate.fullName, "Candidate")}</h2>
+          <div class="application-badges" style="margin-top:10px;">
+            ${screeningBadge(application)}
+            <span class="application-badge">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+          </div>
         </div>
       </div>
       <button class="application-review-close" type="button" data-close-application-review aria-label="Close review"><i class='bx bx-x'></i></button>
@@ -3450,6 +4316,7 @@ async function openRecruiterApplication(applicationId) {
       <button class="primary-btn" type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-file'></i> Open submitted CV</button>
       <button class="primary-btn btn-secondary" type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download CV</button>
       <a class="primary-btn btn-secondary" href="mailto:${escapeDashboard(candidate.email)}?subject=${encodeURIComponent(`Your application for ${dashboardText(job.title, "our vacancy")}`)}"><i class='bx bx-envelope'></i> Email candidate</a>
+      ${whatsappUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(whatsappUrl)}" target="_blank" rel="noopener noreferrer"><i class='bx bxl-whatsapp'></i> WhatsApp candidate</a>` : ''}
     </div>
 
     <h3>Screening answers</h3>
@@ -3500,6 +4367,8 @@ async function setRecruiterApplicationStatus(applicationId, status) {
     if (application) application.status = status;
     showToast("success", "Application updated", `Candidate moved to ${applicationStatusLabel(status)}.`, 3200);
     renderRecruiterApplications();
+    renderRecruiterInbox();
+    if (selectedWorkspaceJobId) renderJobWorkspace();
     await openRecruiterApplication(applicationId);
   } catch (error) {
     showToast("error", "Update failed", error.message || "Could not update this application.", 4200);
@@ -3785,6 +4654,96 @@ window.updateCharts = updateCharts;
 /* ======================================================
    YOUR EXISTING CV/PLAN LOGIC (kept)
 ====================================================== */
+function emptyTalentPipeline() {
+  return TALENT_PIPELINE_STAGES.reduce((pipeline, stage) => {
+    pipeline[stage] = [];
+    return pipeline;
+  }, {});
+}
+
+function talentPipelineStageFor(cvId) {
+  return TALENT_PIPELINE_STAGES.find(stage => candidatePipeline[stage]?.includes(cvId)) || 'new';
+}
+
+function talentPipelineDoc(cvId) {
+  return doc(db, 'recruiters', currentRecruiter.uid, 'pipeline', cvId);
+}
+
+async function loadTalentPipelineState() {
+  const nextPipeline = emptyTalentPipeline();
+  const nextNotes = {};
+  const nextFavorites = [];
+
+  try {
+    const snapshot = await getDocs(collection(db, 'recruiters', currentRecruiter.uid, 'pipeline'));
+    const saved = new Map();
+    snapshot.forEach(item => saved.set(item.id, item.data() || {}));
+
+    allCVsData.forEach(cv => {
+      const state = saved.get(cv.id) || {};
+      const stage = TALENT_PIPELINE_STAGES.includes(state.stage) ? state.stage : 'new';
+      nextPipeline[stage].push(cv.id);
+      if (state.favorite === true) nextFavorites.push(cv.id);
+      if (Array.isArray(state.notes)) {
+        nextNotes[cv.id] = state.notes
+          .map(note => ({
+            text: dashboardText(note?.text).slice(0, 500),
+            date: dashboardText(note?.date),
+          }))
+          .filter(note => note.text)
+          .slice(-20);
+      }
+    });
+  } catch (error) {
+    console.error('loadTalentPipelineState error:', error);
+    allCVsData.forEach(cv => nextPipeline.new.push(cv.id));
+    showToast('warn', 'Pipeline not synced', 'Talent pipeline changes need the latest Firestore rules before they can sync.', 5200);
+  }
+
+  candidatePipeline = nextPipeline;
+  candidateNotes = nextNotes;
+  favorites = nextFavorites;
+  if (document.getElementById('pipelineBoard')?.style.display === 'block') renderPipeline();
+}
+
+async function persistTalentCandidateState(cvId) {
+  if (!currentRecruiter || !cvId) return;
+  const notes = Array.isArray(candidateNotes[cvId]) ? candidateNotes[cvId].slice(-20) : [];
+  await setDoc(talentPipelineDoc(cvId), {
+    candidateId: cvId,
+    recruiterId: currentRecruiter.uid,
+    stage: talentPipelineStageFor(cvId),
+    favorite: favorites.includes(cvId),
+    notes: notes.map(note => ({
+      text: dashboardText(note.text).slice(0, 500),
+      date: dashboardText(note.date, new Date().toISOString()),
+    })),
+    updatedAt: serverTimestamp(),
+  }, {merge: true});
+}
+
+async function moveTalentCandidate(cvId, newStage) {
+  if (!TALENT_PIPELINE_STAGES.includes(newStage)) return;
+  const previousStage = talentPipelineStageFor(cvId);
+  if (previousStage === newStage) return;
+
+  TALENT_PIPELINE_STAGES.forEach(stage => {
+    candidatePipeline[stage] = candidatePipeline[stage].filter(id => id !== cvId);
+  });
+  candidatePipeline[newStage].push(cvId);
+  renderPipeline();
+
+  try {
+    await persistTalentCandidateState(cvId);
+    showToast('success', 'Pipeline updated', `Candidate moved to ${newStage}.`, 2200);
+  } catch (error) {
+    candidatePipeline[newStage] = candidatePipeline[newStage].filter(id => id !== cvId);
+    candidatePipeline[previousStage].push(cvId);
+    renderPipeline();
+    showToast('error', 'Pipeline not updated', 'The candidate stage could not be saved.', 3600);
+  }
+}
+
 async function loadCVs() {
   const grid = document.getElementById("cvGrid");
   grid.innerHTML = '<p style="text-align: center; color: #6b7280;">Loading CVs...</p>';
@@ -3867,18 +4826,19 @@ async function loadCVs() {
       return {
         id: cvDoc.id,
         ...cvDoc.data,
-        fullName: userProfile.fullName || cvDoc.data.fullName || "Anonymous User",
+        fullName: userProfile.name || userProfile.fullName || cvDoc.data.fullName || "Anonymous User",
         jobTitle: userProfile.desiredJobTitle || cvDoc.data.jobTitle || "Job Seeker",
         location: userProfile.location || cvDoc.data.location || "Location not specified",
         phone: userProfile.phone || "Not specified",
         email: userProfile.email || "Not specified",
-        institution: userProfile.institution || "Not specified",
+        institution: userProfile.institutionName || userProfile.institution || "Not specified",
         degreeType: userProfile.degreeType || "Not specified",
         fieldOfStudy: userProfile.fieldOfStudy || "Not specified",
-        expectedGraduation: userProfile.expectedGraduation || "Not specified",
+        expectedGraduation: userProfile.graduationYear || userProfile.expectedGraduation || "Not specified",
         desiredJobTitle: userProfile.desiredJobTitle || "Not specified",
-        preferredLocation: userProfile.preferredLocation || "Not specified",
+        preferredLocation: userProfile.desiredLocation || userProfile.preferredLocation || "Not specified",
         employmentStatus: userProfile.employmentStatus || "Not specified",
+        profilePhotoURL: userProfile.profilePhotoURL || cvDoc.data.profilePhotoURL || "",
         skills: cvDoc.data.skills || userProfile.skills || "Not specified",
         experience: cvDoc.data.experience || '1-3 years',
         availability: cvDoc.data.availability || 'immediate',
@@ -3889,7 +4849,7 @@ async function loadCVs() {
       };
     }));
 
-    candidatePipeline.new = allCVsData.map(cv => cv.id);
+    await loadTalentPipelineState();
     document.getElementById('totalCvCount').textContent = allCVsData.length;
     applyFilters();
 
@@ -4083,10 +5043,13 @@ function displayFilteredCVs(cvs) {
 
     card.innerHTML = `
       <div style="${shouldBlur ? 'filter: blur(5px);' : ''}">
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-          <div>
-            <h3>${data.fullName}</h3>
-            <p><strong>${data.jobTitle}</strong></p>
+        <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 8px;">
+          <div class="candidate-identity">
+            ${candidatePhotoMarkup(data)}
+            <div>
+              <h3>${escapeDashboard(data.fullName)}</h3>
+              <p><strong>${escapeDashboard(data.jobTitle)}</strong></p>
+            </div>
           </div>
           <i class='bx bxs-star favorite-star ${isFavorite ? 'active' : ''}'
             onclick="toggleFavorite('${cvId}')"
@@ -4240,13 +5203,24 @@ function renderComparison() {
   });
 }
 
-window.toggleFavorite = function(cvId) {
-  if (favorites.includes(cvId)) favorites = favorites.filter(id => id !== cvId);
+window.toggleFavorite = async function(cvId) {
+  const wasFavorite = favorites.includes(cvId);
+  if (wasFavorite) favorites = favorites.filter(id => id !== cvId);
   else favorites.push(cvId);
 
   applyFilters();
   if (document.getElementById('comparisonContainer').style.display === 'block') renderComparison();
   if (document.getElementById('pipelineBoard').style.display === 'block') renderPipeline();
+
+  try {
+    await persistTalentCandidateState(cvId);
+  } catch (error) {
+    if (wasFavorite && !favorites.includes(cvId)) favorites.push(cvId);
+    if (!wasFavorite) favorites = favorites.filter(id => id !== cvId);
+    applyFilters();
+    if (document.getElementById('pipelineBoard').style.display === 'block') renderPipeline();
+    showToast('error', 'Favorite not saved', 'Please try again.', 3000);
+  }
 }
 
 /* ======================================================
@@ -4290,10 +5264,17 @@ function renderPipeline() {
       const lastNote = notes.length > 0 ? notes[notes.length - 1] : null;
 
       card.innerHTML = `
-        <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">${cv.fullName}</div>
-        <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px;">${cv.jobTitle}</div>
+        <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">${escapeDashboard(cv.fullName, 'Candidate')}</div>
+        <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px;">${escapeDashboard(cv.jobTitle, 'Job seeker')}</div>
 
-        ${lastNote ? `<div class="candidate-note">${lastNote.text}</div>` : ''}
+        ${lastNote ? `<div class="candidate-note">${escapeDashboard(lastNote.text)}</div>` : ''}
+
+        <label style="display:block;color:#64748b;font-size:10px;font-weight:700;">
+          Stage
+          <select class="pipeline-stage-select" data-talent-stage="${escapeDashboard(cvId)}">
+            ${TALENT_PIPELINE_STAGES.map(option => `<option value="${option}"${option === stage ? ' selected' : ''}>${option.charAt(0).toUpperCase() + option.slice(1)}</option>`).join('')}
+          </select>
+        </label>
 
         <div style="display: flex; gap: 4px; margin-top: 8px;">
           <button onclick="addCandidateNote('${cvId}')"
@@ -4314,25 +5295,43 @@ function renderPipeline() {
 window.allowDrop = function(ev) { ev.preventDefault(); }
 window.drag = function(ev, cvId) { ev.dataTransfer.setData("cvId", cvId); ev.target.classList.add('dragging'); }
 
-window.drop = function(ev, newStage) {
+window.drop = async function(ev, newStage) {
   ev.preventDefault();
   const cvId = ev.dataTransfer.getData("cvId");
-
-  Object.keys(candidatePipeline).forEach(stage => {
-    candidatePipeline[stage] = candidatePipeline[stage].filter(id => id !== cvId);
-  });
-
-  candidatePipeline[newStage].push(cvId);
-  renderPipeline();
   document.querySelectorAll('.pipeline-card').forEach(el => el.classList.remove('dragging'));
+  await moveTalentCandidate(cvId, newStage);
 }
 
-window.addCandidateNote = function(cvId) {
+document.addEventListener('change', async event => {
+  const stageSelect = event.target.closest('[data-talent-stage]');
+  if (!stageSelect) return;
+  stageSelect.disabled = true;
+  try {
+    await moveTalentCandidate(stageSelect.dataset.talentStage, stageSelect.value);
+  } finally {
+    stageSelect.disabled = false;
+  }
+});
+
+window.addCandidateNote = async function(cvId) {
   const note = prompt('Add a note for this candidate:');
-  if (note && note.trim()) {
-    if (!candidateNotes[cvId]) candidateNotes[cvId] = [];
-    candidateNotes[cvId].push({ text: note.trim(), date: new Date() });
+  const cleanNote = dashboardText(note).slice(0, 500);
+  if (!cleanNote) return;
+
+  const previousNotes = [...(candidateNotes[cvId] || [])];
+  candidateNotes[cvId] = [
+    ...previousNotes,
+    {text: cleanNote, date: new Date().toISOString()},
+  ].slice(-20);
+  renderPipeline();
+
+  try {
+    await persistTalentCandidateState(cvId);
+    showToast('success', 'Note saved', 'The private candidate note is available on your next visit.', 2600);
+  } catch (error) {
+    candidateNotes[cvId] = previousNotes;
     renderPipeline();
+    showToast('error', 'Note not saved', 'Please try again.', 3200);
   }
 }
 
@@ -4378,6 +5377,7 @@ window.showSection = function(id, el) {
       'jobs': 'Manage Jobs',
       'cvs': 'CV Library',
       'applications': 'Applications',
+      'job-workspace': 'Vacancy Workspace',
       'billing': 'Packages',
       'analytics': 'Analytics',
       'public-listings': 'View as Member'
