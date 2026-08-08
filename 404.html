@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#1e3a8a">
+  <title>Page Not Found | Career Unified</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-navy: #1e3a8a;
+      --brand-blue: #2563eb;
+      --brand-yellow: #facc15;
+      --text-primary: #111827;
+      --text-muted: #64748b;
+      --border: #dbe4f0;
+      --surface: #f8fbff;
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--surface);
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      padding: 0 5vw;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .brand {
+      color: var(--brand-navy);
+      font-size: 22px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .header-link {
+      color: var(--brand-navy);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .brand:focus-visible,
+    .header-link:focus-visible,
+    .action:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.3);
+      outline-offset: 3px;
+    }
+
+    main {
+      display: grid;
+      min-height: calc(100dvh - 72px);
+      place-items: center;
+      padding: 28px 24px 40px;
+    }
+
+    .error-content {
+      width: min(920px, 100%);
+      text-align: center;
+    }
+
+    .error-illustration {
+      display: block;
+      width: min(760px, 100%);
+      height: auto;
+      margin: 0 auto;
+    }
+
+    .error-label {
+      margin-top: 4px;
+      color: var(--brand-blue);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin-top: 10px;
+      color: var(--brand-navy);
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .error-copy {
+      max-width: 570px;
+      margin: 12px auto 0;
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 154px;
+      min-height: 48px;
+      padding: 12px 20px;
+      border: 1px solid var(--brand-blue);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .action-primary {
+      background: var(--brand-blue);
+      color: #ffffff;
+    }
+
+    .action-primary:hover {
+      border-color: var(--brand-navy);
+      background: var(--brand-navy);
+    }
+
+    .action-secondary {
+      background: #ffffff;
+      color: var(--brand-navy);
+    }
+
+    .action-secondary:hover {
+      background: #eff6ff;
+    }
+
+    @media (max-width: 600px) {
+      .site-header {
+        min-height: 64px;
+        padding: 0 18px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      .header-link {
+        font-size: 13px;
+      }
+
+      main {
+        min-height: calc(100dvh - 64px);
+        padding: 20px 18px 32px;
+      }
+
+      .error-illustration {
+        width: calc(100% + 32px);
+        max-width: none;
+        margin-left: -16px;
+      }
+
+      .error-label {
+        margin-top: 0;
+      }
+
+      .error-copy {
+        font-size: 14px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+      }
+
+      .action {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Career Unified home">Career Unified</a>
+    <a class="header-link" href="/contact-us">Need help?</a>
+  </header>
+
+  <main>
+    <section class="error-content" aria-labelledby="page-title">
+      <img
+        class="error-illustration"
+        src="/assets/images/career-unified-404.webp"
+        width="1400"
+        height="933"
+        alt="Four job seekers exploring a large 404 sign"
+        decoding="async"
+        fetchpriority="high"
+      >
+      <p class="error-label">Error 404</p>
+      <h1 id="page-title">Oops! Page not found</h1>
+      <p class="error-copy">
+        The page may have moved or the link may be outdated. Let us help you get back to the opportunities that matter.
+      </p>
+      <nav class="actions" aria-label="Page recovery options">
+        <a class="action action-primary" href="/">&larr;&nbsp; Back to home</a>
+        <a class="action action-secondary" href="/jobs">Browse jobs</a>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>
