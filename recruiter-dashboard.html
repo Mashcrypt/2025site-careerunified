@@ -93,6 +93,78 @@
   ====================================================== */
   .main { flex: 1; padding: 26px; overflow-y: auto; }
 
+  .dashboard-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 66px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .dashboard-toolbar-copy span {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .dashboard-toolbar-copy strong {
+    display: block;
+    margin-top: 2px;
+    color: #111827;
+    font-size: 18px;
+  }
+
+  .dashboard-inbox-shortcut {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    padding: 0;
+    border: 1px solid #dbeafe;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .dashboard-inbox-shortcut:hover,
+  .dashboard-inbox-shortcut:focus-visible {
+    border-color: #93c5fd;
+    background: #eff6ff;
+  }
+
+  .dashboard-inbox-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .dashboard-inbox-badge[hidden] { display: none; }
+
   /* ======================================================
      TOP STATS
   ====================================================== */
@@ -145,6 +217,212 @@
   .cv-card h3 { margin-bottom: 6px; }
   .cv-card ul { margin: 12px 0; padding-left: 18px; font-size: 13px; color: #374151; }
   .cv-card p { font-size: 14px; margin-bottom: 6px; }
+
+  .recruiter-pricing-head {
+    max-width: 720px;
+    margin: 0 auto 34px;
+    text-align: center;
+  }
+
+  .recruiter-pricing-kicker {
+    margin-bottom: 8px;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .recruiter-pricing-head h2 { margin-bottom: 9px; font-size: 24px; }
+  .recruiter-pricing-head p { color: #64748b; font-size: 14px; line-height: 1.6; }
+
+  .recruiter-single-offer {
+    max-width: 1030px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+    margin: 0 auto;
+    padding: 22px 24px;
+    border: 1px solid #b9d4f3;
+    border-radius: 12px;
+    background: #f2f8ff;
+  }
+
+  .recruiter-single-offer-icon {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #dcecff;
+    color: #2563eb;
+    font-size: 20px;
+  }
+
+  .recruiter-single-offer-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .recruiter-single-offer-title span {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .recruiter-single-offer-title h3 { color: #0f172a; font-size: 18px; line-height: 1.35; }
+  .recruiter-single-offer-content > p { margin-top: 8px; color: #4b5a78; font-size: 12px; line-height: 1.65; }
+
+  .recruiter-single-offer-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 12px;
+  }
+
+  .recruiter-single-offer-benefits span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #38516f;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .recruiter-single-offer-benefits i { color: #2563eb; font-size: 13px; }
+
+  .recruiter-single-offer-action { min-width: 174px; text-align: right; }
+  .recruiter-single-offer-price { margin: 0 0 10px; color: #64748b; font-size: 11px; }
+  .recruiter-single-offer-price strong { color: #0f172a; font-size: 25px; }
+  .recruiter-single-offer-action .primary-btn { width: 100%; min-height: 44px; justify-content: center; margin: 0; }
+  .recruiter-single-offer-status { min-height: 16px; margin-top: 8px; color: #1e3a8a; font-size: 11px; }
+
+  .recruiter-monthly-label {
+    max-width: 1030px;
+    margin: 34px auto 14px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .recruiter-pricing-grid {
+    max-width: 1030px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 22px;
+    margin: 0 auto;
+  }
+
+  .recruiter-plan-card {
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 28px;
+    border: 1px solid #e1e7f0;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  .recruiter-plan-card.featured {
+    border: 2px solid #2563eb;
+    box-shadow: 0 9px 38px rgba(37, 99, 235, 0.13);
+  }
+
+  .recruiter-plan-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .recruiter-plan-name {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .recruiter-plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0 0 8px;
+    color: #0f172a;
+  }
+
+  .recruiter-plan-price strong { font-size: 30px; line-height: 1; }
+  .recruiter-plan-price span { color: #64748b; font-size: 12px; }
+  .recruiter-plan-summary { min-height: 58px; color: #4b5a78; font-size: 12px; line-height: 1.65; }
+
+  .recruiter-plan-features {
+    flex: 1;
+    display: grid;
+    align-content: start;
+    gap: 11px;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none;
+  }
+
+  .recruiter-plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    color: #334155;
+    line-height: 1.45;
+  }
+
+  .recruiter-plan-features i {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: #2563eb;
+    font-size: 16px;
+  }
+
+  .recruiter-plan-card .primary-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .recruiter-pricing-note {
+    max-width: 1030px;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin: 22px auto 0;
+    padding: 14px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .recruiter-pricing-note i { margin-top: 2px; color: #2563eb; font-size: 18px; }
+  .recruiter-pricing-note strong { color: #1e3a8a; }
 
   /* ======================================================
      LOCK OVERLAY
@@ -683,6 +961,705 @@
     font-weight: 700;
   }
   .screening-check input { width: 18px; height: 18px; }
+
+  /* ======================================================
+     FIVE-STEP JOB POSTING WORKFLOW
+  ====================================================== */
+  .main.post-job-open .stats { display: none; }
+
+  #post-job {
+    --job-wizard-accent: #245d57;
+    --job-wizard-accent-dark: #194843;
+    --job-wizard-border: #e2e8f0;
+    --job-wizard-surface: #f8fafc;
+  }
+
+  .job-wizard-context {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 28px;
+    margin-bottom: 14px;
+  }
+
+  .job-wizard-context .job-autosave-status { margin-left: auto; text-align: right; }
+
+  .job-wizard-shell {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .job-wizard-steps {
+    position: sticky;
+    top: 18px;
+    display: grid;
+    padding: 18px;
+    border: 1px solid var(--job-wizard-border);
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .job-wizard-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 58px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #475569;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .job-wizard-step::after {
+    content: "";
+    position: absolute;
+    top: 43px;
+    bottom: -15px;
+    left: 13px;
+    width: 1px;
+    background: #dbe2ea;
+  }
+
+  .job-wizard-step:last-child::after { display: none; }
+
+  .job-wizard-step-indicator {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #d8dee8;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .job-wizard-step.active,
+  .job-wizard-step.completed { color: #111827; }
+
+  .job-wizard-step.active .job-wizard-step-indicator,
+  .job-wizard-step.completed .job-wizard-step-indicator {
+    border-color: var(--job-wizard-accent);
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+  }
+
+  .job-wizard-step.active .job-wizard-step-label { font-weight: 700; }
+  .job-wizard-workspace { min-width: 0; }
+  .job-wizard-panel[hidden] { display: none; }
+
+  .job-wizard-panel-card {
+    min-width: 0;
+    padding: 24px 28px 28px;
+    border: 1px solid var(--job-wizard-border);
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .job-wizard-panel-head {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--job-wizard-border);
+  }
+
+  #post-job .job-wizard-panel-head h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .job-wizard-panel-head p { margin-top: 6px; line-height: 1.6; }
+
+  .job-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+
+  .job-form-grid .full-width { grid-column: 1 / -1; }
+
+  #post-job .form-group { min-width: 0; margin-bottom: 16px; }
+  #post-job label { color: #111827; font-size: 12px; font-weight: 600; }
+
+  #post-job input,
+  #post-job select,
+  #post-job textarea {
+    width: 100%;
+    min-width: 0;
+    border-color: #dfe4ea;
+    border-radius: 5px;
+    background: #fbfcfd;
+    color: #111827;
+  }
+
+  #post-job textarea { min-height: 96px; }
+  #post-job textarea.job-brief-input { min-height: 180px; }
+
+  .job-location-inputs {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(110px, .75fr);
+    gap: 8px;
+  }
+
+  .job-wizard-section-title {
+    margin: 12px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--job-wizard-border);
+  }
+
+  #post-job .job-wizard-section-title h4 {
+    margin: 0;
+    color: #111827;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .job-salary-row {
+    display: grid;
+    grid-template-columns: 130px minmax(120px, 1fr) auto minmax(120px, 1fr) 150px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .salary-divider { color: #475569; font-size: 12px; text-align: center; }
+
+  .salary-input-wrap { position: relative; }
+  .salary-input-wrap span {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    z-index: 1;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .salary-input-wrap input { padding-left: 28px !important; }
+
+  .job-facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px 16px;
+  }
+
+  .job-facility-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  #post-job .job-facility-option input {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    margin: 0;
+    accent-color: var(--job-wizard-accent);
+  }
+
+  .job-plain-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: -5px;
+    padding: 7px 8px;
+    border: 1px solid #dfe4ea;
+    border-top: 0;
+    border-radius: 0 0 5px 5px;
+    background: #f8fafc;
+  }
+
+  .job-plain-toolbar button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #64748b;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .job-plain-toolbar button:hover,
+  .job-plain-toolbar button:focus-visible { background: #e2e8f0; color: #1f2937; }
+
+  .job-faq-list { display: grid; gap: 12px; }
+  .job-faq-card {
+    position: relative;
+    display: grid;
+    gap: 9px;
+    padding: 14px 44px 14px 14px;
+    background: #f8fafc;
+  }
+  .job-faq-card label { margin: 0; }
+  .job-faq-card textarea { min-height: 76px !important; }
+  .job-faq-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #b91c1c;
+    font-size: 19px;
+    cursor: pointer;
+  }
+
+  .job-add-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--job-wizard-accent);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  #post-job .direct-apply-settings {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #post-job .direct-apply-value { border-left-color: var(--job-wizard-accent); }
+
+  #post-job .screening-question-card {
+    border: 0;
+    border-radius: 0;
+    background: #f8fafc;
+  }
+
+  #post-job .screening-question-number {
+    border-radius: 50%;
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+  }
+  #post-job .screening-options-field { margin: 12px 0 0; }
+  #post-job .screening-criteria-config { align-items: end; margin-top: 12px; }
+  #post-job .screening-criteria-config .screening-check {
+    min-height: 46px;
+    margin: 0;
+    padding: 0 4px;
+  }
+
+  .hiring-route-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+
+  .hiring-pipeline-preview {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(110px, 1fr));
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .hiring-stage {
+    min-width: 110px;
+    padding: 13px;
+    border: 1px solid var(--job-wizard-border);
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+  .hiring-stage span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .hiring-stage strong { display: block; margin-top: 8px; color: #1f2937; font-size: 11px; }
+
+  .job-company-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+    padding: 16px;
+    border: 1px solid #dbeafe;
+    border-radius: 6px;
+    background: #f8fbff;
+  }
+
+  .job-company-summary .full-width { grid-column: 1 / -1; }
+
+  .job-confirmation-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--job-wizard-border);
+  }
+
+  .job-confirmation-head h4 { margin: 0; color: #111827; font-size: 21px; }
+  .job-confirmation-company { margin-top: 6px; color: var(--job-wizard-accent); font-size: 13px; font-weight: 700; }
+  .job-confirmation-location { margin-top: 4px; color: #334155; font-size: 13px; }
+  .job-confirmation-apply {
+    min-width: 170px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 5px;
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .job-confirmation-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0 22px;
+  }
+
+  .job-confirmation-meta div { padding: 12px; border-radius: 5px; background: #f4f7f7; }
+  .job-confirmation-meta span { display: block; color: #475569; font-size: 11px; }
+  .job-confirmation-meta strong { display: block; margin-top: 5px; color: var(--job-wizard-accent); font-size: 13px; }
+
+  .job-confirmation-section { margin-top: 20px; }
+  .job-confirmation-section h4 { margin: 0 0 8px; color: #111827; font-size: 17px; }
+  .job-confirmation-section p,
+  .job-confirmation-section li { color: #374151; font-size: 12px; line-height: 1.75; }
+  .job-confirmation-section ul { margin: 0; padding-left: 20px; }
+  .job-confirmation-facilities { display: flex; flex-wrap: wrap; gap: 7px; }
+  .job-confirmation-facilities span { padding: 6px 9px; border-radius: 4px; background: #eff6ff; color: #1e40af; font-size: 11px; font-weight: 700; }
+
+  .job-wizard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 0 2px;
+  }
+
+  .job-wizard-footer-left,
+  .job-wizard-footer-right { display: flex; align-items: center; gap: 10px; }
+
+  .job-wizard-nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 5px;
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .job-wizard-nav-button:hover { background: var(--job-wizard-accent-dark); }
+  .job-wizard-nav-button.secondary { border: 1px solid #d8dee8; background: #ffffff; color: #334155; }
+  .job-wizard-nav-button.secondary:hover { background: #f8fafc; }
+  .job-wizard-nav-button.danger { background: #b91c1c; }
+  .job-wizard-nav-button[hidden] { display: none; }
+  .job-wizard-progress { color: #334155; font-size: 12px; white-space: nowrap; }
+
+  .job-wizard-panel-card[hidden] { display: none; }
+  .job-wizard-context h2 { margin: 0; color: #111827; font-size: 24px; }
+  .job-wizard-eyebrow,
+  .job-wizard-kicker {
+    margin: 0 0 4px;
+    color: var(--job-wizard-accent);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .job-form-mode { margin: 6px 0 0; color: #2563eb; font-size: 13px; font-weight: 700; }
+  .job-form-mode[hidden] { display: none; }
+  .required-mark { color: #dc2626; }
+  .job-wizard-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .job-wizard-panel-head > div { min-width: 0; }
+  .job-wizard-panel-head > .pill { flex: 0 0 auto; }
+
+  .job-location-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(110px, .75fr);
+    gap: 8px;
+  }
+
+  .job-section-divider {
+    margin: 14px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--job-wizard-border);
+  }
+  .job-section-divider h4 { margin: 0; color: #111827; font-size: 17px; font-weight: 600; }
+  .job-section-divider p { margin: 4px 0 0; color: #64748b; font-size: 12px; line-height: 1.55; }
+
+  .job-salary-separator { color: #475569; font-size: 12px; text-align: center; }
+  .job-salary-separator[hidden],
+  .salary-value-field[hidden] { display: none; }
+
+  .job-facilities-fieldset {
+    min-width: 0;
+    margin: 14px 0 0;
+    padding: 0;
+    border: 0;
+  }
+  .job-facilities-fieldset legend {
+    margin-bottom: 12px;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .job-faq-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .job-faq-empty {
+    padding: 16px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+  }
+  .job-inline-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 38px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #ffffff;
+    color: var(--job-wizard-accent);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .job-inline-add-button:hover { border-color: var(--job-wizard-accent); background: #f4f8f7; }
+
+  .custom-screening-question {
+    margin: 18px 0;
+    padding: 14px;
+    border: 1px solid var(--job-wizard-border);
+    border-radius: 6px;
+    background: #ffffff;
+  }
+  .custom-screening-question summary {
+    color: var(--job-wizard-accent);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .custom-screening-question .screening-config { margin-top: 14px; }
+  .custom-screening-question [hidden] { display: none; }
+
+  .job-hiring-route {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+  .job-hiring-pipeline {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0;
+    padding: 0 0 6px;
+    list-style: none;
+  }
+  .job-hiring-pipeline li {
+    min-width: 120px;
+    padding: 13px;
+    border: 1px solid var(--job-wizard-border);
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+  .job-hiring-pipeline li > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+  }
+  .job-hiring-pipeline strong { display: block; margin-top: 9px; color: #1f2937; font-size: 12px; }
+  .job-hiring-pipeline small { display: block; margin-top: 4px; color: #64748b; font-size: 10px; line-height: 1.45; }
+
+  .job-confirmation-preview { color: #1f2937; }
+  .job-preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 4px 0 18px;
+    border-bottom: 1px solid var(--job-wizard-border);
+  }
+  .job-preview-header h4 { margin: 0; color: #111827; font-size: 22px; line-height: 1.3; }
+  .job-preview-header p { margin: 5px 0 0; font-size: 13px; }
+  .job-preview-company { color: var(--job-wizard-accent); font-weight: 700; }
+  .job-preview-meta { color: #64748b; }
+  .job-preview-actions {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 8px;
+    min-width: 210px;
+  }
+  .job-preview-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #d8dee8;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #334155;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .job-preview-actions .job-preview-apply {
+    grid-column: 1 / -1;
+    border-color: var(--job-wizard-accent);
+    background: var(--job-wizard-accent);
+    color: #ffffff;
+  }
+  .job-preview-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0 22px;
+  }
+  .job-preview-facts > div { padding: 12px; border-radius: 5px; background: #f4f7f7; }
+  .job-preview-facts span { display: block; color: #64748b; font-size: 11px; }
+  .job-preview-facts strong { display: block; margin-top: 5px; color: var(--job-wizard-accent); font-size: 12px; }
+  .job-confirmation-preview > section { margin-top: 20px; }
+  .job-confirmation-preview h5 { margin: 0 0 8px; color: #111827; font-size: 16px; }
+  .job-preview-copy { color: #374151; font-size: 12px; line-height: 1.75; }
+  .job-preview-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .job-preview-tags span { padding: 6px 9px; border-radius: 4px; background: #eff6ff; color: #1e40af; font-size: 11px; font-weight: 700; }
+  .job-preview-summary-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .job-preview-summary-row > div { padding: 14px; border: 1px solid var(--job-wizard-border); border-radius: 6px; }
+  .job-preview-summary-row p { margin: 0; color: #64748b; font-size: 12px; }
+
+  @media (max-width: 1180px) {
+    .job-facilities-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .job-salary-row { grid-template-columns: 1fr 1fr; }
+    .job-salary-row .salary-divider,
+    .job-salary-row .job-salary-separator { display: none; }
+    .job-salary-row > *:last-child { grid-column: 1 / -1; }
+    .job-confirmation-meta,
+    .job-preview-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 900px) {
+    .job-wizard-shell { grid-template-columns: 1fr; gap: 14px; }
+    .job-wizard-steps {
+      position: static;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px;
+      scroll-snap-type: x proximity;
+    }
+    .job-wizard-step {
+      grid-template-columns: 24px auto;
+      min-width: max-content;
+      min-height: 42px;
+      padding: 0 8px;
+      scroll-snap-align: start;
+    }
+    .job-wizard-step::after { display: none; }
+    .job-wizard-panel-card { padding: 20px; }
+    .job-wizard-context { align-items: flex-start; }
+  }
+
+  @media (max-width: 600px) {
+    .job-form-grid,
+    .hiring-route-grid,
+    .job-hiring-route,
+    .job-company-summary { grid-template-columns: 1fr; }
+    .job-form-grid .full-width,
+    .job-company-summary .full-width { grid-column: auto; }
+    .job-location-inputs,
+    .job-location-pair { grid-template-columns: 1fr; }
+    .job-facilities-grid { grid-template-columns: 1fr 1fr; }
+    .job-salary-row { grid-template-columns: 1fr; }
+    .job-salary-row > *:last-child { grid-column: auto; }
+    .job-wizard-panel-card { padding: 16px; }
+    .job-wizard-panel-head { flex-direction: column; }
+    .job-confirmation-head { flex-direction: column; }
+    .job-confirmation-apply { width: 100%; }
+    .job-preview-header { flex-direction: column; }
+    .job-preview-actions { width: 100%; min-width: 0; }
+    .job-preview-summary-row { grid-template-columns: 1fr; }
+    .job-wizard-footer { align-items: stretch; flex-direction: column; }
+    .job-wizard-footer-left,
+    .job-wizard-footer-right { width: 100%; flex-wrap: wrap; }
+    .job-wizard-footer-right { justify-content: flex-end; }
+    .job-wizard-footer .job-wizard-nav-button { flex: 1 1 120px; }
+    .job-wizard-progress { width: 100%; text-align: right; }
+  }
+
   .application-kpis {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1042,6 +2019,31 @@
 
     .mobile-header h1 { font-size: 1.25rem; font-weight: 600; }
 
+    .mobile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mobile-header .dashboard-inbox-shortcut {
+      width: 40px;
+      height: 40px;
+      flex-basis: 40px;
+      border-color: rgba(255,255,255,0.3);
+      background: transparent;
+      color: #ffffff;
+    }
+
+    .mobile-header .dashboard-inbox-shortcut:hover,
+    .mobile-header .dashboard-inbox-shortcut:focus-visible {
+      border-color: rgba(255,255,255,0.65);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .mobile-header .dashboard-inbox-badge { border-color: #1e3a8a; }
+
+    .dashboard-toolbar { display: none; }
+
     .menu-toggle {
       background: none;
       border: none;
@@ -1114,6 +2116,25 @@
     .workspace-actions .primary-btn,
     .job-draft-actions .primary-btn,
     .pipeline-stage-select { min-height: 44px; }
+    .recruiter-single-offer {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .recruiter-single-offer-action {
+      grid-column: 1 / -1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #cfe0f5;
+      text-align: left;
+    }
+    .recruiter-single-offer-price { margin: 0; }
+    .recruiter-single-offer-action .primary-btn { width: auto; }
+    .recruiter-single-offer-status { flex: 1 1 100%; order: 3; margin: 0; text-align: right; }
+    .recruiter-pricing-grid { grid-template-columns: 1fr; }
+    .recruiter-plan-summary { min-height: 0; }
   }
 
   @media (max-width: 480px) {
@@ -1122,6 +2143,23 @@
     .stat { padding: 12px; }
     .stat h3 { font-size: 18px; }
     .cv-card { padding: 14px; }
+    .recruiter-pricing-head { margin-bottom: 26px; }
+    .recruiter-pricing-head h2 { font-size: 22px; }
+    .recruiter-single-offer {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 20px;
+    }
+    .recruiter-single-offer-icon { display: none; }
+    .recruiter-single-offer-action {
+      grid-column: auto;
+      display: block;
+      padding-top: 16px;
+    }
+    .recruiter-single-offer-price { margin-bottom: 10px; }
+    .recruiter-single-offer-action .primary-btn { width: 100%; }
+    .recruiter-single-offer-status { margin-top: 8px; text-align: left; }
+    .recruiter-plan-card { padding: 24px; }
   }
 </style>
 </head>
@@ -1131,9 +2169,22 @@
 <!-- Mobile Header -->
 <div class="mobile-header" style="display: none;">
   <h1 id="mobilePageTitle">Dashboard</h1>
-  <button class="menu-toggle" onclick="toggleMobileSidebar()">
-    <i class='bx bx-menu'></i>
-  </button>
+  <div class="mobile-header-actions">
+    <button
+      class="dashboard-inbox-shortcut"
+      type="button"
+      data-recruiter-inbox-shortcut
+      title="Recruiter inbox"
+      aria-label="Open recruiter inbox"
+      onclick="openRecruiterInboxShortcut()"
+    >
+      <i class='bx bx-envelope' aria-hidden="true"></i>
+      <span class="dashboard-inbox-badge" data-recruiter-inbox-badge hidden>0</span>
+    </button>
+    <button class="menu-toggle" type="button" aria-label="Open dashboard menu" onclick="toggleMobileSidebar()">
+      <i class='bx bx-menu' aria-hidden="true"></i>
+    </button>
+  </div>
 </div>
 
 <!-- Mobile Overlay -->
@@ -1166,6 +2217,24 @@
 <!-- ================= MAIN ================= -->
 <div class="main">
 
+  <header class="dashboard-toolbar" aria-label="Recruiter dashboard tools">
+    <div class="dashboard-toolbar-copy">
+      <span>Recruiter workspace</span>
+      <strong id="desktopPageTitle">Dashboard</strong>
+    </div>
+    <button
+      class="dashboard-inbox-shortcut"
+      type="button"
+      data-recruiter-inbox-shortcut
+      title="Recruiter inbox"
+      aria-label="Open recruiter inbox"
+      onclick="openRecruiterInboxShortcut()"
+    >
+      <i class='bx bx-envelope' aria-hidden="true"></i>
+      <span class="dashboard-inbox-badge" data-recruiter-inbox-badge hidden>0</span>
+    </button>
+  </header>
+
   <!-- TOP STATS -->
   <div class="stats">
     <div class="stat"><div><h3 id="totalCVs">0</h3><span>Total CVs Available</span></div><i class='bx bx-file'></i></div>
@@ -1182,7 +2251,7 @@
     <section class="recruiter-inbox" aria-labelledby="recruiterInboxTitle">
       <div class="recruiter-inbox-head">
         <div>
-          <h3 id="recruiterInboxTitle">Recruiter inbox</h3>
+          <h3 id="recruiterInboxTitle" tabindex="-1">Recruiter inbox</h3>
           <p id="recruiterInboxSummary">Loading the work that needs your attention...</p>
         </div>
         <button class="primary-btn btn-ghost" type="button" id="refreshRecruiterInboxBtn">
@@ -1531,10 +2600,8 @@
 
   <!-- ================= POST A JOB ================= -->
   <div id="post-job" class="section">
-    <div style="margin-bottom: 20px;">
-      <h2>Post a Job</h2>
-      <p style="color:#6b7280;">Find the perfect candidate for your team</p>
-      <p id="jobFormMode" style="color:#2563eb; font-weight:700; margin-top:8px; display:none;"></p>
+    <div class="job-wizard-context">
+      <p id="jobFormMode" class="job-form-mode" hidden></p>
       <div class="job-autosave-status" id="jobAutosaveStatus" aria-live="polite"></div>
     </div>
 
@@ -1549,226 +2616,468 @@
       </div>
     </div>
 
-    <div class="cv-card">
-      <form id="jobForm">
+    <div class="job-wizard-shell">
+      <aside class="job-wizard-steps" aria-label="Job posting progress">
+        <button type="button" class="job-wizard-step active" data-job-step-target="1">
+          <span class="job-wizard-step-indicator" data-job-step-indicator="1">1</span>
+          <span>Basic Information</span>
+        </button>
+        <button type="button" class="job-wizard-step" data-job-step-target="2">
+          <span class="job-wizard-step-indicator" data-job-step-indicator="2">2</span>
+          <span>Job Description</span>
+        </button>
+        <button type="button" class="job-wizard-step" data-job-step-target="3">
+          <span class="job-wizard-step-indicator" data-job-step-indicator="3">3</span>
+          <span>Applicable Questions</span>
+        </button>
+        <button type="button" class="job-wizard-step" data-job-step-target="4">
+          <span class="job-wizard-step-indicator" data-job-step-indicator="4">4</span>
+          <span>Hiring Process</span>
+        </button>
+        <button type="button" class="job-wizard-step" data-job-step-target="5">
+          <span class="job-wizard-step-indicator" data-job-step-indicator="5">5</span>
+          <span>Confirmation</span>
+        </button>
+      </aside>
 
-        <input type="hidden" name="jobId" id="jobId" value="">
-        <input type="hidden" name="companyProfileVersion" id="companyProfileVersion" value="">
+      <div class="job-wizard-workspace">
+        <form id="jobForm" novalidate>
+          <input type="hidden" name="jobId" id="jobId" value="">
+          <input type="hidden" name="companyProfileVersion" id="companyProfileVersion" value="">
+          <input type="hidden" name="salary" id="jobSalaryDisplay" value="">
 
-        <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap: wrap;">
-          <h3 style="margin-bottom:16px;">Job Details</h3>
-          <div class="pill" id="jobCompanyAutofillPill">
-            <i class='bx bx-buildings'></i>
-            Company auto-fill: OFF
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Job Title <span style="color:red">*</span></label>
-          <input type="text" name="title" required placeholder="e.g. Senior Frontend Developer">
-        </div>
-
-        <div class="row">
-          <div class="form-group">
-            <label>Job Category <span style="color:red">*</span></label>
-            <select name="category" required>
-              <option value="">Select category</option>
-              <option>IT & Software</option>
-              <option>Design</option>
-              <option>Marketing</option>
-              <option>Sales</option>
-              <option>Finance</option>
-              <option>HR</option>
-              <option>Engineering</option>
-              <option>Healthcare</option>
-              <option>Education</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Job Type <span style="color:red">*</span></label>
-            <select name="type" required>
-              <option value="">Select type</option>
-              <option>Full Time</option>
-              <option>Part Time</option>
-              <option>Contract</option>
-              <option>Freelance</option>
-              <option>Internship</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="form-group">
-            <label>Experience Level <span style="color:red">*</span></label>
-            <select name="experience" required>
-              <option value="">Select level</option>
-              <option>Entry</option>
-              <option>Mid</option>
-              <option>Senior</option>
-              <option>Lead</option>
-              <option>Executive</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Salary Range</label>
-            <input type="text" name="salary" placeholder="e.g. R30,000 – R50,000">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Job Description <span style="color:red">*</span></label>
-          <textarea name="description" rows="5" required placeholder="Describe the role, impact, responsibilities, and team..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Requirements</label>
-          <textarea name="requirements" rows="4" placeholder="List must-haves and nice-to-haves..."></textarea>
-        </div>
-
-        <h3 style="margin:30px 0 16px;">Location</h3>
-
-        <div class="row">
-          <div class="form-group">
-            <label>City <span style="color:red">*</span></label>
-            <input type="text" name="city" required>
-          </div>
-
-          <div class="form-group">
-            <label>Country <span style="color:red">*</span></label>
-            <input type="text" name="country" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>
-            <input type="checkbox" name="remote">
-            Remote Position
-          </label>
-        </div>
-
-        <h3 style="margin:30px 0 10px;">Company Information</h3>
-        <div class="muted" style="font-size:13px; margin-bottom: 14px;" id="companyAutofillHint">
-          If your company profile is saved, these fields will be auto-filled and kept consistent.
-        </div>
-
-        <div class="form-group">
-          <label>Company Name <span style="color:red">*</span></label>
-          <input type="text" name="company" required id="job_company">
-        </div>
-
-        <div class="row">
-          <div class="form-group">
-            <label>Email <span style="color:red">*</span></label>
-            <input type="email" name="email" required id="job_email">
-          </div>
-
-          <div class="form-group">
-            <label>Website</label>
-            <input type="url" name="website" id="job_website">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Logo URL</label>
-          <input type="url" name="logo" id="job_logo">
-        </div>
-
-        <div class="form-group">
-          <label>Application Deadline</label>
-          <input type="text" name="deadline" placeholder="e.g. 31 Jan 2026">
-        </div>
-
-        <h3 style="margin:30px 0 10px;">How candidates apply</h3>
-        <div class="form-group">
-          <label>Application method <span style="color:red">*</span></label>
-          <select name="applicationMethod" id="applicationMethod" required>
-            <option value="direct">Apply on Career Unified (Recommended)</option>
-            <option value="external">External application website</option>
-            <option value="email">Application by email</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="externalApplyLinkGroup" style="display:none;">
-          <label>External application URL <span style="color:red">*</span></label>
-          <input type="url" name="applyLink" id="job_apply_link" placeholder="https://company.com/careers/apply">
-        </div>
-
-        <div class="direct-apply-settings" id="directApplySettings">
-          <div class="direct-apply-value">
-            <i class='bx bx-check-shield'></i>
-            <div>
-              <strong>Career Unified Direct Apply</strong>
-              <div style="font-size:13px;margin-top:3px;">Candidates reuse their verified profile and CV. You receive structured applications, essential-criteria signals and a job-specific hiring pipeline.</div>
-            </div>
-          </div>
-
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
-            <div>
-              <strong>Screening questions</strong>
-              <p class="muted" style="font-size:13px;margin-top:4px;">Add up to 8 concise questions. Essential criteria help you prioritise review; candidates are never silently rejected.</p>
-            </div>
-            <span class="pill"><span id="screeningQuestionCount">0</span>/8 questions</span>
-          </div>
-
-          <div class="screening-toolbar">
-            <div class="form-group" style="margin:0;">
-              <label for="screeningTemplate">Question library</label>
-              <select id="screeningTemplate">
-                <option value="work_authorisation">Work authorisation</option>
-                <option value="qualification">Highest qualification</option>
-                <option value="experience">Relevant experience</option>
-                <option value="drivers_licence">Driver's Licence</option>
-                <option value="relocation">Willingness to relocate</option>
-                <option value="notice_period">Notice period</option>
-                <option value="travel">Willingness to travel</option>
-              </select>
-            </div>
-            <button type="button" class="primary-btn" id="addScreeningTemplateBtn"><i class='bx bx-plus'></i> Add question</button>
-          </div>
-
-          <details style="margin:12px 0 16px;">
-            <summary style="cursor:pointer;color:#1e3a8a;font-weight:800;">Add a custom question</summary>
-            <div class="screening-config" style="margin-top:12px;">
-              <div class="form-group" style="margin:0;">
-                <label for="customQuestionLabel">Question</label>
-                <input id="customQuestionLabel" type="text" maxlength="240" placeholder="For example: Which accounting software have you used?">
+          <section class="job-wizard-panel-card" data-job-step="1">
+            <div class="job-wizard-panel-head">
+              <div>
+                <p class="job-wizard-kicker">Step 1</p>
+                <h3>Basic Information</h3>
               </div>
-              <div class="form-group" style="margin:0;">
-                <label for="customQuestionType">Answer type</label>
-                <select id="customQuestionType">
-                  <option value="short_text">Short answer</option>
-                  <option value="yes_no">Yes / No</option>
-                  <option value="number">Number</option>
-                  <option value="single_select">Multiple choice</option>
+              <span class="pill" id="jobCompanyAutofillPill"><i class='bx bx-buildings'></i> Company auto-fill: OFF</span>
+            </div>
+
+            <div class="job-form-grid">
+              <div class="form-group">
+                <label for="job_title">Job Title <span class="required-mark">*</span></label>
+                <input id="job_title" type="text" name="title" required placeholder="Ex: Medical Biller">
+              </div>
+              <div class="form-group">
+                <label for="job_category">Industry <span class="required-mark">*</span></label>
+                <select id="job_category" name="category" required>
+                  <option value="">Select an option</option>
+                  <option>IT & Software</option>
+                  <option>Design</option>
+                  <option>Marketing</option>
+                  <option>Sales</option>
+                  <option>Finance</option>
+                  <option>HR</option>
+                  <option>Engineering</option>
+                  <option>Healthcare</option>
+                  <option>Education</option>
+                  <option>YES Programmes</option>
+                  <option>Youth Opportunities</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Location <span class="required-mark">*</span></label>
+                <div class="job-location-pair">
+                  <input type="text" name="city" required placeholder="City or town" aria-label="City or town">
+                  <input type="text" name="country" required placeholder="Country" aria-label="Country">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="job_work_preference">Work Preference <span class="required-mark">*</span></label>
+                <select id="job_work_preference" name="workPreference" required>
+                  <option value="">Select an option</option>
+                  <option value="On Site">On Site</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Remote">Remote</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="job_type">Employment Type <span class="required-mark">*</span></label>
+                <select id="job_type" name="type" required>
+                  <option value="">Select an option</option>
+                  <option>Full Time</option>
+                  <option>Part Time</option>
+                  <option>Contract</option>
+                  <option>Freelance</option>
+                  <option>Internship</option>
+                  <option>Learnership</option>
+                  <option>Graduate Programme</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="job_experience">Job Seniority <span class="required-mark">*</span></label>
+                <select id="job_experience" name="experience" required>
+                  <option value="">Select an option</option>
+                  <option>Graduate</option>
+                  <option>Entry</option>
+                  <option>Mid</option>
+                  <option>Senior</option>
+                  <option>Lead</option>
+                  <option>Executive</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="job_qualification">Minimum Qualification Level</label>
+                <select id="job_qualification" name="minimumQualification">
+                  <option value="">None specified</option>
+                  <option>Grade 10</option>
+                  <option>Matric / Grade 12</option>
+                  <option>Certificate</option>
+                  <option>Diploma</option>
+                  <option>Bachelor's Degree</option>
+                  <option>Honours Degree</option>
+                  <option>Master's Degree</option>
+                  <option>Doctorate</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="job_clearance">Requires Security Clearance</label>
+                <select id="job_clearance" name="securityClearance">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                  <option value="Role dependent">Role dependent</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="job_drivers_licence">Requires Driver's Licence</label>
+                <select id="job_drivers_licence" name="driversLicence">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                  <option value="Preferred">Preferred</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="job_visa_sponsorship">Can You Provide Visa Sponsorship?</label>
+                <select id="job_visa_sponsorship" name="visaSponsorship">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                  <option value="Case by case">Case by case</option>
                 </select>
               </div>
             </div>
-            <div class="form-group" id="customQuestionOptionsGroup" style="display:none;margin-top:12px;">
-              <label for="customQuestionOptions">Options, separated by commas</label>
-              <input id="customQuestionOptions" type="text" placeholder="Option one, Option two, Option three">
+
+            <div class="job-section-divider">
+              <h4>Salary & Facilities</h4>
             </div>
-            <button type="button" class="primary-btn btn-secondary" id="addCustomQuestionBtn" style="margin-top:12px;"><i class='bx bx-plus'></i> Add custom question</button>
-          </details>
 
-          <div class="screening-question-list" id="screeningQuestionList"></div>
-        </div>
+            <div class="job-salary-row">
+              <div class="form-group">
+                <label for="job_salary_type">Salary</label>
+                <select id="job_salary_type" name="salaryType">
+                  <option value="Range">Range</option>
+                  <option value="Fixed">Fixed amount</option>
+                  <option value="Negotiable">Negotiable</option>
+                </select>
+              </div>
+              <div class="form-group salary-value-field">
+                <label for="job_salary_min">Minimum</label>
+                <div class="salary-input-wrap"><span>R</span><input id="job_salary_min" type="number" min="0" step="1" name="salaryMin" placeholder="20000"></div>
+              </div>
+              <span class="job-salary-separator" aria-hidden="true">to</span>
+              <div class="form-group salary-value-field" id="jobSalaryMaxGroup">
+                <label for="job_salary_max">Maximum</label>
+                <div class="salary-input-wrap"><span>R</span><input id="job_salary_max" type="number" min="0" step="1" name="salaryMax" placeholder="40000"></div>
+              </div>
+              <div class="form-group">
+                <label for="job_salary_frequency">Frequency</label>
+                <select id="job_salary_frequency" name="salaryFrequency">
+                  <option value="Per Month">Per Month</option>
+                  <option value="Per Year">Per Year</option>
+                  <option value="Per Week">Per Week</option>
+                  <option value="Per Day">Per Day</option>
+                  <option value="Per Hour">Per Hour</option>
+                </select>
+              </div>
+            </div>
 
-        <div class="helper" id="companyAutofillHelper" style="display:none;">
-          <span><i class='bx bx-lock-alt' style="color:#2563eb;"></i> Auto-filled from Company Profile</span>
-          <span>•</span>
-          <a href="#" onclick="showSection('company', document.querySelector('.nav a:nth-child(2)')); return false;">Edit Company Profile</a>
-        </div>
+            <fieldset class="job-facilities-fieldset">
+              <legend>Facilities</legend>
+              <div class="job-facilities-grid">
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Bonus"> Bonus</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Commission"> Commission</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Paid Overtime"> Paid Overtime</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Medical Cover"> Medical Cover</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Dental Care"> Dental Care</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Life Insurance"> Life Insurance</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Eye Care"> Eye Care</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Company Car"> Company Car</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Travel Expenses"> Travel Expenses</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Share Plan"> Share Plan</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Flexible Working Hours"> Flexible Working Hours</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Car Allowance"> Car Allowance</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Subsidised Food"> Subsidised Food</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Employee Discount"> Employee Discount</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Gym Membership"> Gym Membership</label>
+                <label class="job-facility-option"><input type="checkbox" name="facilities" value="Private Pension"> Private Pension</label>
+              </div>
+            </fieldset>
+          </section>
 
-        <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
-          <button type="submit" class="primary-btn" id="publishJobBtn"><i class='bx bx-paper-plane'></i> Publish Job</button>
-          <button type="button" class="primary-btn btn-secondary" id="saveDraftBtn"><i class='bx bx-save'></i> Save Draft</button>
-          <button type="button" class="primary-btn btn-danger" style="display:none;" id="cancelEditBtn"><i class='bx bx-x'></i> Cancel Edit</button>
-        </div>
+          <section class="job-wizard-panel-card" data-job-step="2" hidden>
+            <div class="job-wizard-panel-head">
+              <div>
+                <p class="job-wizard-kicker">Step 2</p>
+                <h3>Job Description</h3>
+              </div>
+            </div>
 
-      </form>
+            <div class="form-group">
+              <label for="job_description">Job Brief <span class="required-mark">*</span></label>
+              <textarea id="job_description" class="job-brief-input" name="description" rows="7" required placeholder="Describe the role, its purpose, and the team the successful candidate will join."></textarea>
+              <div class="job-plain-toolbar" aria-label="Job brief formatting">
+                <button type="button" data-text-list-target="job_description" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
+                <button type="button" data-text-list-target="job_description" data-list-prefix="1. " title="Add a numbered list"><i class='bx bx-list-ol'></i></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="job_responsibilities">Responsibilities</label>
+              <textarea id="job_responsibilities" name="responsibilities" rows="5" placeholder="List the main responsibilities for this role."></textarea>
+              <div class="job-plain-toolbar" aria-label="Responsibilities formatting">
+                <button type="button" data-text-list-target="job_responsibilities" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
+                <button type="button" data-text-list-target="job_responsibilities" data-list-prefix="1. " title="Add a numbered list"><i class='bx bx-list-ol'></i></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="job_requirements">Requirements and Skills</label>
+              <textarea id="job_requirements" name="requirements" rows="5" placeholder="List required qualifications, experience, and skills."></textarea>
+              <div class="job-plain-toolbar" aria-label="Requirements formatting">
+                <button type="button" data-text-list-target="job_requirements" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
+                <button type="button" data-text-list-target="job_requirements" data-list-prefix="1. " title="Add a numbered list"><i class='bx bx-list-ol'></i></button>
+              </div>
+            </div>
+
+            <div class="job-section-divider job-faq-heading">
+              <div>
+                <h4>Frequently Asked Questions</h4>
+                <p>Add useful role-specific information candidates commonly ask about.</p>
+              </div>
+              <span class="pill"><span id="jobFaqCount">0</span>/5</span>
+            </div>
+            <div class="job-faq-list" id="jobFaqList"></div>
+            <button type="button" class="job-inline-add-button" id="addJobFaqBtn"><i class='bx bx-plus'></i> Add Question</button>
+          </section>
+
+          <section class="job-wizard-panel-card" data-job-step="3" hidden>
+            <div class="job-wizard-panel-head">
+              <div>
+                <p class="job-wizard-kicker">Step 3</p>
+                <h3>Screening Questions</h3>
+                <p>Collect consistent answers that help your team review applicants fairly.</p>
+              </div>
+              <span class="pill"><span id="screeningQuestionCount">0</span>/8 questions</span>
+            </div>
+
+            <div class="direct-apply-settings" id="directApplySettings">
+              <div class="direct-apply-value">
+                <i class='bx bx-check-shield'></i>
+                <div>
+                  <strong>Career Unified Direct Apply</strong>
+                  <div>Applicants reuse their profile and CV. Answers support human review and do not silently reject candidates.</div>
+                </div>
+              </div>
+
+              <div class="screening-toolbar">
+                <div class="form-group">
+                  <label for="screeningTemplate">Question library</label>
+                  <select id="screeningTemplate">
+                    <option value="work_authorisation">Work authorisation</option>
+                    <option value="qualification">Highest qualification</option>
+                    <option value="experience">Relevant experience</option>
+                    <option value="drivers_licence">Driver's Licence</option>
+                    <option value="relocation">Willingness to relocate</option>
+                    <option value="notice_period">Notice period</option>
+                    <option value="travel">Willingness to travel</option>
+                  </select>
+                </div>
+                <button type="button" class="job-inline-add-button" id="addScreeningTemplateBtn"><i class='bx bx-plus'></i> Add Question</button>
+              </div>
+
+              <details class="custom-screening-question">
+                <summary>Add a custom question</summary>
+                <div class="screening-config">
+                  <div class="form-group">
+                    <label for="customQuestionLabel">Question</label>
+                    <input id="customQuestionLabel" type="text" maxlength="240" placeholder="For example: Which accounting software have you used?">
+                  </div>
+                  <div class="form-group">
+                    <label for="customQuestionType">Type of Answer</label>
+                    <select id="customQuestionType">
+                      <option value="short_text">Short Answer</option>
+                      <option value="yes_no">Yes / No</option>
+                      <option value="number">Number</option>
+                      <option value="single_select">Multiple Choice</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group" id="customQuestionOptionsGroup" hidden>
+                  <label for="customQuestionOptions">Options, separated by commas</label>
+                  <input id="customQuestionOptions" type="text" placeholder="Option one, Option two, Option three">
+                </div>
+                <button type="button" class="job-inline-add-button" id="addCustomQuestionBtn"><i class='bx bx-plus'></i> Add Custom Question</button>
+              </details>
+
+              <div class="screening-question-list" id="screeningQuestionList"></div>
+            </div>
+          </section>
+
+          <section class="job-wizard-panel-card" data-job-step="4" hidden>
+            <div class="job-wizard-panel-head">
+              <div>
+                <p class="job-wizard-kicker">Step 4</p>
+                <h3>Hiring Process</h3>
+                <p>Choose where applications arrive and confirm the company details candidates will see.</p>
+              </div>
+            </div>
+
+            <div class="job-hiring-route">
+              <div class="form-group">
+                <label for="applicationMethod">Application Method <span class="required-mark">*</span></label>
+                <select name="applicationMethod" id="applicationMethod" required>
+                  <option value="direct">Apply on Career Unified (Recommended)</option>
+                  <option value="external">External application website</option>
+                  <option value="email">Application by email</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="job_deadline">Application Deadline</label>
+                <input id="job_deadline" type="text" name="deadline" placeholder="e.g. 31 Jan 2027">
+              </div>
+            </div>
+
+            <div class="form-group" id="externalApplyLinkGroup" hidden>
+              <label for="job_apply_link">External Application URL <span class="required-mark">*</span></label>
+              <input type="url" name="applyLink" id="job_apply_link" placeholder="https://company.com/careers/apply">
+            </div>
+
+            <div class="job-section-divider">
+              <h4>Candidate Pipeline</h4>
+              <p>Direct applications move through this clear review process.</p>
+            </div>
+            <ol class="job-hiring-pipeline" aria-label="Candidate pipeline">
+              <li><span>1</span><div><strong>Submitted</strong><small>New applications arrive with a CV and profile.</small></div></li>
+              <li><span>2</span><div><strong>Review</strong><small>Compare candidate details and screening answers.</small></div></li>
+              <li><span>3</span><div><strong>Shortlisted</strong><small>Move promising applicants into active consideration.</small></div></li>
+              <li><span>4</span><div><strong>Interview</strong><small>Track candidates selected for interviews.</small></div></li>
+              <li><span>5</span><div><strong>Offer</strong><small>Record the final hiring decision.</small></div></li>
+              <li><span>6</span><div><strong>Hired</strong><small>Close the role with a successful candidate.</small></div></li>
+            </ol>
+
+            <div class="job-section-divider">
+              <div>
+                <h4>Company Profile</h4>
+                <p id="companyAutofillHint">These details are kept consistent with your saved recruiter profile.</p>
+              </div>
+            </div>
+
+            <div class="job-company-summary">
+              <div class="form-group">
+                <label for="job_company">Company Name <span class="required-mark">*</span></label>
+                <input type="text" name="company" required id="job_company">
+              </div>
+              <div class="form-group">
+                <label for="job_email">Recruiter Email <span class="required-mark">*</span></label>
+                <input type="email" name="email" required id="job_email">
+              </div>
+              <div class="form-group">
+                <label for="job_website">Website</label>
+                <input type="url" name="website" id="job_website">
+              </div>
+              <div class="form-group">
+                <label for="job_logo">Logo URL</label>
+                <input type="url" name="logo" id="job_logo">
+              </div>
+            </div>
+
+            <div class="helper" id="companyAutofillHelper" hidden>
+              <span><i class='bx bx-lock-alt'></i> Auto-filled from Company Profile</span>
+              <span aria-hidden="true">|</span>
+              <a href="#" onclick="showSection('company', document.querySelector('.nav a:nth-child(2)')); return false;">Edit Company Profile</a>
+            </div>
+          </section>
+
+          <section class="job-wizard-panel-card job-confirmation-panel" data-job-step="5" hidden>
+            <div class="job-wizard-panel-head">
+              <div>
+                <p class="job-wizard-kicker">Step 5</p>
+                <h3>Preview</h3>
+                <p>Review the listing exactly as candidates will understand it before publishing.</p>
+              </div>
+            </div>
+
+            <article class="job-confirmation-preview">
+              <header class="job-preview-header">
+                <div>
+                  <h4 id="jobPreviewTitle">Your job title</h4>
+                  <p class="job-preview-company"><span id="jobPreviewCompany">Company name</span> <i class='bx bx-link-external'></i></p>
+                  <p id="jobPreviewLocation">Location</p>
+                  <p class="job-preview-meta"><span id="jobPreviewApplyMethod">Career Unified Direct Apply</span></p>
+                </div>
+                <div class="job-preview-actions" aria-hidden="true">
+                  <button type="button" tabindex="-1"><i class='bx bx-heart'></i> Save</button>
+                  <button type="button" tabindex="-1"><i class='bx bx-share-alt'></i> Share</button>
+                  <button type="button" class="job-preview-apply" tabindex="-1">Apply Now</button>
+                </div>
+              </header>
+
+              <div class="job-preview-facts">
+                <div><span>Experience</span><strong id="jobPreviewExperience">Not specified</strong></div>
+                <div><span>Qualification</span><strong id="jobPreviewSeniority">Not specified</strong></div>
+                <div><span>Employment Type</span><strong id="jobPreviewType">Not specified</strong></div>
+                <div><span>Offer Salary</span><strong id="jobPreviewSalary">Negotiable</strong></div>
+              </div>
+
+              <section>
+                <h5>Overview</h5>
+                <div id="jobPreviewOverview" class="job-preview-copy">Your job brief will appear here.</div>
+              </section>
+              <section id="jobPreviewResponsibilitiesSection">
+                <h5>Responsibilities</h5>
+                <div id="jobPreviewResponsibilities" class="job-preview-copy">Add the core responsibilities for this role.</div>
+              </section>
+              <section id="jobPreviewRequirementsSection">
+                <h5>Requirements and Skills</h5>
+                <div id="jobPreviewRequirements" class="job-preview-copy">Add the experience, qualifications, and skills candidates need.</div>
+              </section>
+              <section id="jobPreviewFacilitiesSection">
+                <h5>Benefits</h5>
+                <div id="jobPreviewFacilities" class="job-preview-tags"><span>Not specified</span></div>
+              </section>
+              <section class="job-preview-summary-row">
+                <div>
+                  <h5>Frequently Asked Questions</h5>
+                  <p id="jobPreviewFaqs">No FAQs added</p>
+                </div>
+                <div>
+                  <h5>Screening Questions</h5>
+                  <p id="jobPreviewScreening">No screening questions added</p>
+                </div>
+              </section>
+            </article>
+          </section>
+
+          <div class="job-wizard-footer">
+            <div class="job-wizard-footer-left">
+              <button type="button" class="job-wizard-nav-button secondary job-wizard-previous" id="jobWizardPreviousBtn" hidden><i class='bx bx-chevron-left'></i> Previous</button>
+              <button type="button" class="job-wizard-nav-button secondary job-wizard-draft" id="saveDraftBtn"><i class='bx bx-save'></i> Save Draft</button>
+              <button type="button" class="job-wizard-nav-button danger job-wizard-cancel" id="cancelEditBtn" hidden><i class='bx bx-x'></i> Cancel Edit</button>
+            </div>
+            <div class="job-wizard-footer-right">
+              <span class="job-wizard-progress" id="jobStepProgress" aria-live="polite">1 of 5 Steps</span>
+              <button type="button" class="job-wizard-nav-button job-wizard-next" id="jobWizardNextBtn">Continue <i class='bx bx-chevron-right'></i></button>
+              <button type="submit" class="job-wizard-nav-button job-wizard-publish" id="publishJobBtn" hidden><i class='bx bx-paper-plane'></i> Publish Job</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -1965,61 +3274,88 @@
     </div>
   </div>
 
-  <!-- BILLING (Premium plans later; kept as-is) -->
+  <!-- BILLING -->
   <div id="billing" class="section">
-    <h2>Packages & Billing</h2>
-    <p style="color:#6b7280; margin-bottom:20px;">Choose a plan that fits your needs</p>
+    <div class="recruiter-pricing-head">
+      <p class="recruiter-pricing-kicker">Recruiter pricing</p>
+      <h2>Packages & Billing</h2>
+      <p>Choose the candidate access that matches your hiring volume. Every package includes vacancy publishing, direct applications, screening, and candidate communication tools.</p>
+    </div>
 
-    <div class="cv-grid">
-      <div class="cv-card">
-        <h3>Free</h3>
-        <p><strong>R0 / month</strong></p>
-        <ul>
-          <li> Post Jobs</li>
-          <li> View 10 CV Previews (Blurred)</li>
-          <li> 10 Unlocked CVs</li>
-        </ul>
-        <button class="primary-btn" id="freePlanBtn" disabled>Current Plan</button>
+    <article class="recruiter-single-offer">
+      <div class="recruiter-single-offer-icon" aria-hidden="true"><i class='bx bx-briefcase'></i></div>
+      <div class="recruiter-single-offer-content">
+        <div class="recruiter-single-offer-title">
+          <span>Once-off hiring</span>
+          <h3>Advertise one job without a subscription</h3>
+        </div>
+        <p>One promoted vacancy for 30 days, with Direct Apply, screening questions, applicant CVs, pipeline tracking, and candidate outcome emails.</p>
+        <div class="recruiter-single-offer-benefits" aria-label="Single job offer benefits">
+          <span><i class='bx bx-check' aria-hidden="true"></i>No recurring charge</span>
+          <span><i class='bx bx-check' aria-hidden="true"></i>Applicant CVs included</span>
+          <span><i class='bx bx-check' aria-hidden="true"></i>30-day promotion</span>
+        </div>
       </div>
+      <div class="recruiter-single-offer-action">
+        <p class="recruiter-single-offer-price"><strong>R199</strong> once off</p>
+        <button class="primary-btn" id="singleJobOfferBtn" type="button" onclick="startPayFastSingleJob()">Choose single job</button>
+        <p class="recruiter-single-offer-status" id="singleJobCreditStatus">No subscription required</p>
+      </div>
+    </article>
 
-      <div class="cv-card">
-        <h3>Starter</h3>
-        <p><strong>R299 / month</strong></p>
-        <ul>
-          <li> View All CVs</li>
-          <li> 50 CV Unlocks</li>
-          <li> Email Support</li>
-          <li> Job Posting</li>
-          <li> One job featured badge</li>
-        </ul>
-      <button class="primary-btn" id="starterPlanBtn" onclick="startPayFastUpgrade('starter')">Upgrade</button>
-      </div>
+    <p class="recruiter-monthly-label">Monthly packages</p>
 
-      <div class="cv-card">
-        <h3>Pro</h3>
-        <p><strong>R699 / month</strong></p>
-        <ul>
-          <li> View All CVs</li>
-          <li> 200 CV Unlocks</li>
-          <li> Priority Support</li>
-          <li> Advanced Filters</li>
-          <li> Four job featured badge</li>
+    <div class="recruiter-pricing-grid">
+      <article class="recruiter-plan-card">
+        <p class="recruiter-plan-name">Starter</p>
+        <p class="recruiter-plan-price"><strong>R299</strong><span>/ month</span></p>
+        <p class="recruiter-plan-summary">For smaller teams making focused hires.</p>
+        <ul class="recruiter-plan-features">
+          <li><i class='bx bx-check-circle'></i><span>Vacancy publishing with Direct Apply</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Applicant CVs and screening answers</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Pipeline stages and private notes</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Candidate outcome email templates</span></li>
+          <li><i class='bx bx-check-circle'></i><span>50 talent database CV unlocks</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Email support</span></li>
         </ul>
-        <button class="primary-btn" id="proPlanBtn" onclick="startPayFastUpgrade('pro')">Upgrade</button>
-      </div>
+        <button class="primary-btn btn-ghost" id="starterPlanBtn" onclick="startPayFastUpgrade('starter')">Choose Starter</button>
+      </article>
 
-      <div class="cv-card">
-        <h3>Enterprise</h3>
-        <p><strong>R1499 / month</strong></p>
-        <ul>
-          <li> View All CVs</li>
-          <li> Unlimited Unlocks</li>
-          <li> Dedicated Manager</li>
-          <li> API Access</li>
-          <li> Unlimited job featured badge</li>
+      <article class="recruiter-plan-card featured">
+        <span class="recruiter-plan-badge">Most popular</span>
+        <p class="recruiter-plan-name">Growth</p>
+        <p class="recruiter-plan-price"><strong>R699</strong><span>/ month</span></p>
+        <p class="recruiter-plan-summary">For growing teams managing several vacancies.</p>
+        <ul class="recruiter-plan-features">
+          <li><i class='bx bx-check-circle'></i><span>Everything in Starter</span></li>
+          <li><i class='bx bx-check-circle'></i><span>200 talent database CV unlocks</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Advanced candidate filters and comparison</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Vacancy and application analytics</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Email and WhatsApp candidate follow-up</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Priority support</span></li>
         </ul>
-        <button class="primary-btn" id="enterprisePlanBtn" onclick="startPayFastUpgrade('enterprise')">Upgrade</button>
-      </div>
+        <button class="primary-btn" id="proPlanBtn" onclick="startPayFastUpgrade('pro')">Choose Growth</button>
+      </article>
+
+      <article class="recruiter-plan-card">
+        <p class="recruiter-plan-name">Agency</p>
+        <p class="recruiter-plan-price"><strong>R1,499</strong><span>/ month</span></p>
+        <p class="recruiter-plan-summary">For agencies and high-volume hiring teams.</p>
+        <ul class="recruiter-plan-features">
+          <li><i class='bx bx-check-circle'></i><span>Everything in Growth</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Unlimited talent database CV unlocks</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Multi-vacancy applicant workspace</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Screening, notes, pipeline, and analytics</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Interview, offer, and outcome email tools</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Priority email support</span></li>
+        </ul>
+        <button class="primary-btn btn-ghost" id="enterprisePlanBtn" onclick="startPayFastUpgrade('enterprise')">Choose Agency</button>
+      </article>
+    </div>
+
+    <div class="recruiter-pricing-note" role="note">
+      <i class='bx bx-info-circle'></i>
+      <div><strong>Applicant CVs are always included.</strong> Unlocks are only used when searching the wider Career Unified talent database. Secure monthly PayFast billing, cancel before your next billing date. No annual contract.</div>
     </div>
   </div>
 
@@ -2153,6 +3489,7 @@
 function showSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  document.querySelector('.main')?.classList.toggle('post-job-open', id === 'post-job');
 
   document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -2162,6 +3499,32 @@ function showSection(id, el) {
       if (typeof updateCharts === 'function') updateCharts();
     }, 50);
   }
+}
+
+function setRecruiterInboxShortcutCount(value) {
+  const count = Math.max(0, Number(value) || 0);
+  const displayCount = count > 99 ? '99+' : String(count);
+  const label = count
+    ? `Open recruiter inbox, ${count} new application${count === 1 ? '' : 's'}`
+    : 'Open recruiter inbox';
+
+  document.querySelectorAll('[data-recruiter-inbox-badge]').forEach(badge => {
+    badge.textContent = displayCount;
+    badge.hidden = count === 0;
+  });
+  document.querySelectorAll('[data-recruiter-inbox-shortcut]').forEach(button => {
+    button.setAttribute('aria-label', label);
+    button.title = label;
+  });
+}
+
+function openRecruiterInboxShortcut() {
+  showSection('dashboard', document.querySelector('.nav a:first-child'));
+  requestAnimationFrame(() => {
+    const heading = document.getElementById('recruiterInboxTitle');
+    heading?.closest('.recruiter-inbox')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+    heading?.focus({preventScroll: true});
+  });
 }
 
 /* ======================================================
@@ -2238,12 +3601,25 @@ let currentRecruiter = null;
 let recruiterData = null;
 let allCVsCount = 0;
 let screeningQuestionsDraft = [];
+let jobFaqsDraft = [];
+let currentJobWizardStep = 1;
 let recruiterApplicationsCache = [];
 let activeApplicationId = null;
 
+const JOB_WIZARD_STEP_COUNT = 5;
+const JOB_HIRING_PROCESS = [
+  'Submitted',
+  'Review',
+  'Shortlisted',
+  'Interview',
+  'Offer',
+  'Hired'
+];
+
 const SCREENING_QUESTION_LIBRARY = {
   work_authorisation: {
-    label: "Are you legally authorised to work in South Africa?",
+    templateKey: "work_authorisation",
+    label: "Are you legally authorised to work in the country where this position is based?",
     type: "yes_no",
     required: true,
     options: [],
@@ -2298,6 +3674,19 @@ const SENSITIVE_SCREENING_PATTERN = /\b(?:id|identity|passport|visa)\s*(?:number
 function dashboardText(value, fallback = "") {
   const output = String(value ?? "").trim();
   return output || fallback;
+}
+
+const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
+const GENERIC_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in the country where this position is based?";
+
+function jobCountryFromForm() {
+  return dashboardText(document.querySelector('#jobForm [name="country"]')?.value).slice(0, 120);
+}
+
+function workAuthorisationQuestionLabel(country = jobCountryFromForm()) {
+  return country
+    ? `Are you legally authorised to work in ${country}?`
+    : GENERIC_WORK_AUTHORISATION_QUESTION;
 }
 
 function escapeDashboard(value, fallback = "") {
@@ -2355,9 +3744,14 @@ function normalizeScreeningQuestion(question, index = 0) {
   const type = ["yes_no", "number", "single_select", "short_text"].includes(question?.type)
     ? question.type
     : "short_text";
+  const rawLabel = dashboardText(question?.label).slice(0, 240);
+  const isWorkAuthorisation = question?.templateKey === "work_authorisation"
+    || rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION
+    || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION;
   return {
     id: dashboardText(question?.id, `question_${index + 1}`).slice(0, 80),
-    label: dashboardText(question?.label).slice(0, 240),
+    label: isWorkAuthorisation ? workAuthorisationQuestionLabel() : rawLabel,
+    templateKey: isWorkAuthorisation ? "work_authorisation" : "",
     type,
     required: question?.required !== false,
     options: Array.isArray(question?.options)
@@ -2413,6 +3807,7 @@ function renderScreeningQuestions() {
 
   if (!screeningQuestionsDraft.length) {
     list.innerHTML = `<div class="muted" style="padding:16px;text-align:center;border:1px dashed #bfdbfe;border-radius:8px;">No screening questions added yet. Candidates will still submit their profile and CV.</div>`;
+    renderJobConfirmationPreview();
     return;
   }
 
@@ -2427,14 +3822,32 @@ function renderScreeningQuestions() {
           <label>Question</label>
           <input data-question-field="label" type="text" maxlength="240" value="${escapeDashboard(question.label)}">
         </div>
-        ${criterionControl(question)}
+        <div class="form-group" style="margin:0;">
+          <label>Type of Answer</label>
+          <select data-question-field="type">
+            <option value="short_text"${question.type === "short_text" ? " selected" : ""}>Short Answer</option>
+            <option value="yes_no"${question.type === "yes_no" ? " selected" : ""}>Yes / No</option>
+            <option value="number"${question.type === "number" ? " selected" : ""}>Number</option>
+            <option value="single_select"${question.type === "single_select" ? " selected" : ""}>Multiple Choice</option>
+          </select>
+        </div>
       </div>
-      <label class="screening-check">
-        <input data-question-field="required" type="checkbox"${question.required ? " checked" : ""}>
-        Candidate must answer this question
-      </label>
+      ${question.type === "single_select" ? `
+        <div class="form-group screening-options-field">
+          <label>Answer options</label>
+          <input data-question-field="options" type="text" value="${escapeDashboard(question.options.join(", "))}" placeholder="Option one, Option two, Option three">
+        </div>
+      ` : ""}
+      <div class="screening-config screening-criteria-config">
+        ${criterionControl(question)}
+        <label class="screening-check">
+          <input data-question-field="required" type="checkbox"${question.required ? " checked" : ""}>
+          Candidate must answer this question
+        </label>
+      </div>
     </div>
   `).join("");
+  renderJobConfirmationPreview();
 }
 
 function addScreeningQuestion(question) {
@@ -2452,9 +3865,16 @@ function updateApplicationMethodUI() {
   const directSettings = document.getElementById("directApplySettings");
   const externalGroup = document.getElementById("externalApplyLinkGroup");
   const externalInput = document.getElementById("job_apply_link");
-  if (directSettings) directSettings.style.display = method === "direct" ? "block" : "none";
-  if (externalGroup) externalGroup.style.display = method === "external" ? "block" : "none";
+  if (directSettings) {
+    directSettings.hidden = method !== "direct";
+    directSettings.style.display = method === "direct" ? "block" : "none";
+  }
+  if (externalGroup) {
+    externalGroup.hidden = method !== "external";
+    externalGroup.style.display = method === "external" ? "block" : "none";
+  }
   if (externalInput) externalInput.required = method === "external";
+  renderJobConfirmationPreview();
 }
 
 function collectScreeningQuestions() {
@@ -2469,11 +3889,14 @@ function setupApplicationBuilder() {
   document.getElementById("addScreeningTemplateBtn")?.addEventListener("click", () => {
     const key = document.getElementById("screeningTemplate")?.value;
     const template = SCREENING_QUESTION_LIBRARY[key];
-    if (template) addScreeningQuestion(template);
+    if (template) addScreeningQuestion({...template, templateKey: key});
   });
   document.getElementById("customQuestionType")?.addEventListener("change", (event) => {
     const group = document.getElementById("customQuestionOptionsGroup");
-    if (group) group.style.display = event.target.value === "single_select" ? "block" : "none";
+    if (group) {
+      group.hidden = event.target.value !== "single_select";
+      group.style.display = event.target.value === "single_select" ? "block" : "none";
+    }
   });
   document.getElementById("addCustomQuestionBtn")?.addEventListener("click", () => {
     const labelInput = document.getElementById("customQuestionLabel");
@@ -2519,7 +3942,30 @@ function setupApplicationBuilder() {
     if (!card || !field) return;
     const question = screeningQuestionsDraft.find(item => item.id === card.dataset.questionId);
     if (!question) return;
-    if (field === "label") question.label = event.target.value;
+    if (field === "label") {
+      question.label = event.target.value;
+      if (
+        question.templateKey === "work_authorisation"
+        && dashboardText(event.target.value) !== workAuthorisationQuestionLabel()
+      ) {
+        question.templateKey = "";
+      }
+    }
+    if (field === "type") {
+      question.type = ["yes_no", "number", "single_select", "short_text"].includes(event.target.value)
+        ? event.target.value
+        : "short_text";
+      if (question.type !== "single_select") question.options = [];
+      question.criteria = null;
+      renderScreeningQuestions();
+    }
+    if (field === "options") {
+      question.options = event.target.value
+        .split(",")
+        .map(option => option.trim())
+        .filter(Boolean)
+        .slice(0, 12);
+    }
     if (field === "required") question.required = event.target.checked;
     if (field === "criterion") {
       const value = dashboardText(event.target.value);
@@ -2529,8 +3975,395 @@ function setupApplicationBuilder() {
     }
     scheduleJobDraftSave();
   });
+  document.querySelector('#jobForm [name="country"]')?.addEventListener("input", () => {
+    let changed = false;
+    screeningQuestionsDraft.forEach(question => {
+      if (question.templateKey !== "work_authorisation") return;
+      question.label = workAuthorisationQuestionLabel();
+      changed = true;
+    });
+    if (changed) renderScreeningQuestions();
+  });
   updateApplicationMethodUI();
   renderScreeningQuestions();
+}
+
+function normalizeJobFaq(faq, index = 0) {
+  return {
+    id: dashboardText(faq?.id, `faq_${index + 1}`).slice(0, 80),
+    question: dashboardText(faq?.question).slice(0, 240),
+    answer: dashboardText(faq?.answer).slice(0, 1200)
+  };
+}
+
+function collectJobFaqs({completeOnly = false} = {}) {
+  return jobFaqsDraft
+    .map(normalizeJobFaq)
+    .filter(faq => completeOnly ? faq.question && faq.answer : faq.question || faq.answer)
+    .slice(0, 5);
+}
+
+function renderJobFaqs() {
+  const list = document.getElementById('jobFaqList');
+  const count = document.getElementById('jobFaqCount');
+  if (!list || !count) return;
+  count.textContent = String(jobFaqsDraft.length);
+
+  if (!jobFaqsDraft.length) {
+    list.innerHTML = '<div class="job-faq-empty">No FAQs added. Use this section only when candidates need extra role-specific guidance.</div>';
+    renderJobConfirmationPreview();
+    return;
+  }
+
+  list.innerHTML = jobFaqsDraft.map((faq, index) => `
+    <div class="job-faq-card" data-job-faq-id="${escapeDashboard(faq.id)}">
+      <button type="button" class="job-faq-remove" data-remove-job-faq="${escapeDashboard(faq.id)}" title="Remove question" aria-label="Remove question"><i class='bx bx-trash'></i></button>
+      <label for="job_faq_question_${index}">Question ${index + 1}</label>
+      <input id="job_faq_question_${index}" type="text" maxlength="240" data-job-faq-field="question" value="${escapeDashboard(faq.question)}" placeholder="What should candidates know about this role?">
+      <label for="job_faq_answer_${index}">Answer</label>
+      <textarea id="job_faq_answer_${index}" maxlength="1200" data-job-faq-field="answer" placeholder="Give a concise, useful answer.">${escapeDashboard(faq.answer)}</textarea>
+    </div>
+  `).join('');
+  renderJobConfirmationPreview();
+}
+
+function collectJobFacilities() {
+  return Array.from(document.querySelectorAll('#jobForm input[name="facilities"]:checked'))
+    .map(input => dashboardText(input.value))
+    .filter(Boolean);
+}
+
+function setJobFacilities(values = []) {
+  const selected = new Set(Array.isArray(values) ? values.map(value => dashboardText(value)) : []);
+  document.querySelectorAll('#jobForm input[name="facilities"]').forEach(input => {
+    input.checked = selected.has(input.value);
+  });
+}
+
+function formatSalaryAmount(value) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || amount < 0) return '';
+  return new Intl.NumberFormat('en-ZA', {maximumFractionDigits: 0}).format(amount);
+}
+
+function currentJobSalary({useStored = true} = {}) {
+  const form = document.getElementById('jobForm');
+  if (!form) return 'Negotiable';
+  const type = dashboardText(form.elements.namedItem('salaryType')?.value, 'Range');
+  const frequency = dashboardText(form.elements.namedItem('salaryFrequency')?.value, 'Per Month');
+  const minimum = formatSalaryAmount(form.elements.namedItem('salaryMin')?.value);
+  const maximum = formatSalaryAmount(form.elements.namedItem('salaryMax')?.value);
+
+  if (type === 'Negotiable') return 'Negotiable';
+  if (type === 'Fixed' && minimum) return `R${minimum} ${frequency}`;
+  if (minimum && maximum) return `R${minimum} - R${maximum} ${frequency}`;
+  if (minimum) return `From R${minimum} ${frequency}`;
+  if (maximum) return `Up to R${maximum} ${frequency}`;
+
+  const stored = dashboardText(document.getElementById('jobSalaryDisplay')?.value);
+  return useStored && stored ? stored : (type === 'Negotiable' ? 'Negotiable' : '');
+}
+
+function syncJobSalaryDisplay() {
+  const salaryField = document.getElementById('jobSalaryDisplay');
+  if (!salaryField) return;
+  salaryField.value = currentJobSalary({useStored: false});
+}
+
+function updateSalaryFieldsUI() {
+  const type = document.getElementById('job_salary_type')?.value || 'Range';
+  const minInput = document.getElementById('job_salary_min');
+  const maxInput = document.getElementById('job_salary_max');
+  const maxGroup = document.getElementById('jobSalaryMaxGroup');
+  const separator = document.querySelector('.job-salary-separator');
+  const minGroup = minInput?.closest('.salary-value-field');
+  const isNegotiable = type === 'Negotiable';
+  const isRange = type === 'Range';
+
+  if (minGroup) minGroup.hidden = isNegotiable;
+  if (maxGroup) maxGroup.hidden = !isRange;
+  if (separator) separator.hidden = !isRange;
+  if (minInput) minInput.disabled = isNegotiable;
+  if (maxInput) maxInput.disabled = !isRange;
+
+  if (isNegotiable) {
+    if (minInput) minInput.value = '';
+    if (maxInput) maxInput.value = '';
+  }
+  syncJobSalaryDisplay();
+  renderJobConfirmationPreview();
+}
+
+function composePublicJobDescription({overview, responsibilities, requirements, faqs}) {
+  const sections = [];
+  if (dashboardText(overview)) sections.push(dashboardText(overview));
+  if (dashboardText(responsibilities)) sections.push(`Responsibilities\n${dashboardText(responsibilities)}`);
+  if (dashboardText(requirements)) sections.push(`Requirements and Skills\n${dashboardText(requirements)}`);
+
+  const completeFaqs = Array.isArray(faqs) ? faqs.filter(faq => faq.question && faq.answer) : [];
+  if (completeFaqs.length) {
+    sections.push([
+      'Frequently Asked Questions',
+      ...completeFaqs.flatMap(faq => [`Q: ${faq.question}`, `A: ${faq.answer}`])
+    ].join('\n'));
+  }
+  return sections.join('\n\n');
+}
+
+function jobPreviewCopy(value, fallback) {
+  const content = dashboardText(value);
+  return content
+    ? escapeDashboard(content).replace(/\r?\n/g, '<br>')
+    : escapeDashboard(fallback);
+}
+
+function renderJobConfirmationPreview() {
+  const form = document.getElementById('jobForm');
+  if (!form || !document.getElementById('jobPreviewTitle')) return;
+  const value = name => dashboardText(form.elements.namedItem(name)?.value);
+  const city = value('city');
+  const country = value('country');
+  const workPreference = value('workPreference');
+  const location = [city, country].filter(Boolean).join(', ');
+  const methodLabels = {
+    direct: 'Career Unified Direct Apply',
+    external: 'External application website',
+    email: 'Application by email'
+  };
+
+  document.getElementById('jobPreviewTitle').textContent = value('title') || 'Your job title';
+  document.getElementById('jobPreviewCompany').textContent = value('company') || companyProfile?.name || 'Company name';
+  document.getElementById('jobPreviewLocation').textContent = [location || 'Location', workPreference].filter(Boolean).join(' | ');
+  document.getElementById('jobPreviewApplyMethod').textContent = methodLabels[value('applicationMethod')] || methodLabels.direct;
+  document.getElementById('jobPreviewExperience').textContent = value('experience') || 'Not specified';
+  document.getElementById('jobPreviewSeniority').textContent = value('minimumQualification') || 'Not specified';
+  document.getElementById('jobPreviewType').textContent = value('type') || 'Not specified';
+  document.getElementById('jobPreviewSalary').textContent = currentJobSalary() || 'Negotiable';
+  document.getElementById('jobPreviewOverview').innerHTML = jobPreviewCopy(value('description'), 'Your job brief will appear here.');
+  document.getElementById('jobPreviewResponsibilities').innerHTML = jobPreviewCopy(value('responsibilities'), 'Add the core responsibilities for this role.');
+  document.getElementById('jobPreviewRequirements').innerHTML = jobPreviewCopy(value('requirements'), 'Add the experience, qualifications, and skills candidates need.');
+
+  const facilities = collectJobFacilities();
+  document.getElementById('jobPreviewFacilities').innerHTML = facilities.length
+    ? facilities.map(item => `<span>${escapeDashboard(item)}</span>`).join('')
+    : '<span>Not specified</span>';
+  const faqs = collectJobFaqs({completeOnly: true});
+  document.getElementById('jobPreviewFaqs').textContent = faqs.length
+    ? `${faqs.length} candidate FAQ${faqs.length === 1 ? '' : 's'} included`
+    : 'No FAQs added';
+  const screening = collectScreeningQuestions();
+  document.getElementById('jobPreviewScreening').textContent = screening.length
+    ? `${screening.length} screening question${screening.length === 1 ? '' : 's'} included`
+    : 'No screening questions added';
+}
+
+function validateJobWizardStep(step) {
+  const panel = document.querySelector(`#jobForm [data-job-step="${step}"]`);
+  if (!panel) return true;
+
+  if (step === 1) {
+    const minInput = document.getElementById('job_salary_min');
+    const maxInput = document.getElementById('job_salary_max');
+    const salaryType = document.getElementById('job_salary_type')?.value;
+    const minimum = Number(minInput?.value || 0);
+    const maximum = Number(maxInput?.value || 0);
+    if (maxInput) maxInput.setCustomValidity('');
+    if (salaryType === 'Range' && minimum && maximum && maximum < minimum) {
+      maxInput?.setCustomValidity('Maximum salary must be greater than or equal to the minimum salary.');
+    }
+  }
+
+  if (step === 2) {
+    const incompleteFaq = collectJobFaqs().find(faq => !faq.question || !faq.answer);
+    if (incompleteFaq) {
+      if (currentJobWizardStep !== step) showJobWizardStep(step, {focus: false});
+      showToast('warn', 'Complete the FAQ', 'Each FAQ needs both a question and an answer, or remove the unfinished FAQ.', 4200);
+      const card = document.querySelector(`[data-job-faq-id="${CSS.escape(incompleteFaq.id)}"]`);
+      card?.querySelector(!incompleteFaq.question ? '[data-job-faq-field="question"]' : '[data-job-faq-field="answer"]')?.focus();
+      return false;
+    }
+  }
+
+  if (step === 3) {
+    const invalidQuestion = screeningQuestionsDraft.find(question => {
+      const label = dashboardText(question.label);
+      return !label
+        || SENSITIVE_SCREENING_PATTERN.test(label)
+        || (question.type === 'single_select' && question.options.length < 2);
+    });
+    if (invalidQuestion) {
+      if (currentJobWizardStep !== step) showJobWizardStep(step, {focus: false});
+      const label = dashboardText(invalidQuestion.label);
+      const message = !label
+        ? 'Each screening question needs a question.'
+        : SENSITIVE_SCREENING_PATTERN.test(label)
+          ? 'Use role-specific screening questions and do not request sensitive personal information.'
+          : 'Multiple-choice questions need at least two answer options.';
+      showToast('warn', 'Review the screening question', message, 5200);
+      const card = document.querySelector(`[data-question-id="${CSS.escape(invalidQuestion.id)}"]`);
+      const field = !label
+        ? card?.querySelector('[data-question-field="label"]')
+        : invalidQuestion.type === 'single_select' && invalidQuestion.options.length < 2
+          ? card?.querySelector('[data-question-field="options"]')
+          : card?.querySelector('[data-question-field="label"]');
+      field?.focus();
+      return false;
+    }
+  }
+
+  const invalidField = Array.from(panel.querySelectorAll('input, select, textarea'))
+    .find(field => !field.disabled && !field.checkValidity());
+  if (invalidField) {
+    if (currentJobWizardStep !== step) showJobWizardStep(step, {focus: false});
+    invalidField.reportValidity();
+    invalidField.focus({preventScroll: true});
+    invalidField.scrollIntoView({behavior: 'smooth', block: 'center'});
+    showToast('warn', 'Complete this step', 'Fill in the required information before continuing.', 3400);
+    return false;
+  }
+  return true;
+}
+
+function validateAllJobWizardSteps() {
+  for (let step = 1; step < JOB_WIZARD_STEP_COUNT; step += 1) {
+    if (!validateJobWizardStep(step)) {
+      showJobWizardStep(step);
+      return false;
+    }
+  }
+  return true;
+}
+
+function showJobWizardStep(step, {focus = true} = {}) {
+  const nextStep = Math.min(JOB_WIZARD_STEP_COUNT, Math.max(1, Number(step) || 1));
+  currentJobWizardStep = nextStep;
+
+  document.querySelectorAll('#jobForm [data-job-step]').forEach(panel => {
+    panel.hidden = Number(panel.dataset.jobStep) !== nextStep;
+  });
+
+  document.querySelectorAll('[data-job-step-target]').forEach(button => {
+    const buttonStep = Number(button.dataset.jobStepTarget);
+    button.classList.toggle('active', buttonStep === nextStep);
+    button.classList.toggle('completed', buttonStep < nextStep);
+    if (buttonStep === nextStep) button.setAttribute('aria-current', 'step');
+    else button.removeAttribute('aria-current');
+    const indicator = button.querySelector('[data-job-step-indicator]');
+    if (indicator) indicator.innerHTML = buttonStep < nextStep ? "<i class='bx bx-check'></i>" : String(buttonStep);
+  });
+
+  const previous = document.getElementById('jobWizardPreviousBtn');
+  const next = document.getElementById('jobWizardNextBtn');
+  const publish = document.getElementById('publishJobBtn');
+  const progress = document.getElementById('jobStepProgress');
+  if (previous) previous.hidden = nextStep === 1;
+  if (next) {
+    next.hidden = nextStep === JOB_WIZARD_STEP_COUNT;
+    next.innerHTML = `${nextStep === 1 ? 'Continue' : 'Next'} <i class='bx bx-chevron-right'></i>`;
+  }
+  if (publish) publish.hidden = nextStep !== JOB_WIZARD_STEP_COUNT;
+  if (progress) progress.textContent = `${nextStep} of ${JOB_WIZARD_STEP_COUNT} Steps`;
+
+  if (nextStep === JOB_WIZARD_STEP_COUNT) renderJobConfirmationPreview();
+  if (focus) {
+    const panel = document.querySelector(`#jobForm [data-job-step="${nextStep}"]`);
+    panel?.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+}
+
+function insertListPrefix(textarea, prefix) {
+  if (!textarea) return;
+  const start = textarea.selectionStart ?? textarea.value.length;
+  const end = textarea.selectionEnd ?? start;
+  const selected = textarea.value.slice(start, end);
+  const addition = selected
+    ? selected.split(/\r?\n/).map(line => `${prefix}${line}`).join('\n')
+    : `${start > 0 && !textarea.value.endsWith('\n') ? '\n' : ''}${prefix}`;
+  textarea.setRangeText(addition, start, end, 'end');
+  textarea.dispatchEvent(new Event('input', {bubbles: true}));
+  textarea.focus();
+}
+
+function setupJobWizard() {
+  const form = document.getElementById('jobForm');
+  if (!form || form.dataset.wizardReady === 'true') return;
+  form.dataset.wizardReady = 'true';
+
+  document.getElementById('jobWizardNextBtn')?.addEventListener('click', () => {
+    if (!validateJobWizardStep(currentJobWizardStep)) return;
+    showJobWizardStep(currentJobWizardStep + 1);
+  });
+  document.getElementById('jobWizardPreviousBtn')?.addEventListener('click', () => {
+    showJobWizardStep(currentJobWizardStep - 1);
+  });
+  document.querySelectorAll('[data-job-step-target]').forEach(button => {
+    button.querySelector(':scope > span:last-child')?.classList.add('job-wizard-step-label');
+    button.addEventListener('click', () => {
+      const target = Number(button.dataset.jobStepTarget);
+      if (target <= currentJobWizardStep) {
+        showJobWizardStep(target);
+        return;
+      }
+      for (let step = currentJobWizardStep; step < target; step += 1) {
+        if (!validateJobWizardStep(step)) {
+          showJobWizardStep(step);
+          return;
+        }
+      }
+      showJobWizardStep(target);
+    });
+  });
+
+  document.getElementById('addJobFaqBtn')?.addEventListener('click', () => {
+    if (jobFaqsDraft.length >= 5) {
+      showToast('warn', 'FAQ limit reached', 'Use no more than 5 focused candidate questions.', 3400);
+      return;
+    }
+    jobFaqsDraft.push({id: questionId('faq'), question: '', answer: ''});
+    renderJobFaqs();
+    document.querySelector('#jobFaqList .job-faq-card:last-child input')?.focus();
+    scheduleJobDraftSave();
+  });
+  document.getElementById('jobFaqList')?.addEventListener('click', event => {
+    const removeButton = event.target.closest('[data-remove-job-faq]');
+    if (!removeButton) return;
+    jobFaqsDraft = jobFaqsDraft.filter(faq => faq.id !== removeButton.dataset.removeJobFaq);
+    renderJobFaqs();
+    scheduleJobDraftSave();
+  });
+  document.getElementById('jobFaqList')?.addEventListener('input', event => {
+    const card = event.target.closest('[data-job-faq-id]');
+    const field = event.target.dataset.jobFaqField;
+    if (!card || !field) return;
+    const faq = jobFaqsDraft.find(item => item.id === card.dataset.jobFaqId);
+    if (!faq) return;
+    faq[field] = event.target.value;
+    renderJobConfirmationPreview();
+    scheduleJobDraftSave();
+  });
+
+  document.querySelectorAll('[data-text-list-target]').forEach(button => {
+    button.addEventListener('click', () => {
+      insertListPrefix(document.getElementById(button.dataset.textListTarget), button.dataset.listPrefix || '- ');
+    });
+  });
+
+  ['job_salary_type', 'job_salary_min', 'job_salary_max', 'job_salary_frequency'].forEach(id => {
+    const eventName = id === 'job_salary_min' || id === 'job_salary_max' ? 'input' : 'change';
+    document.getElementById(id)?.addEventListener(eventName, () => {
+      if (id === 'job_salary_type') updateSalaryFieldsUI();
+      else {
+        syncJobSalaryDisplay();
+        renderJobConfirmationPreview();
+      }
+    });
+  });
+
+  form.addEventListener('input', renderJobConfirmationPreview);
+  form.addEventListener('change', renderJobConfirmationPreview);
+  updateSalaryFieldsUI();
+  renderJobFaqs();
+  showJobWizardStep(1, {focus: false});
 }
 
 function toDateValue(value) {
@@ -2564,10 +4397,28 @@ function effectiveRecruiterPlan() {
 ====================================================== */
 
 const PLAN_CONFIG = {
-  starter: { label: "STARTER", amountZAR: 299, unlocks: 50 },
-  pro: { label: "PRO", amountZAR: 699, unlocks: 200 },
-  enterprise: { label: "ENTERPRISE", amountZAR: 1499, unlocks: -1 },
+  starter: { label: "STARTER", buttonLabel: "Choose Starter", amountZAR: 299, unlocks: 50 },
+  pro: { label: "GROWTH", buttonLabel: "Choose Growth", amountZAR: 699, unlocks: 200 },
+  enterprise: { label: "AGENCY", buttonLabel: "Choose Agency", amountZAR: 1499, unlocks: -1 },
 };
+
+function submitPayFastCheckout(paymentUrl, fields) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = paymentUrl;
+  form.style.display = "none";
+
+  Object.entries(fields).forEach(([key, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = String(value);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+}
 
 window.startPayFastUpgrade = async function (plan) {
   const cfg = PLAN_CONFIG[plan];
@@ -2616,34 +4467,70 @@ window.startPayFastUpgrade = async function (plan) {
       alert(`${out?.error || "Could not start PayFast checkout. Please try again."}${details ? `\n\n${details}` : ""}`);
       if (btn) {
         btn.disabled = false;
-        btn.textContent = "Upgrade";
+        btn.textContent = cfg.buttonLabel;
       }
       return;
     }
 
     sessionStorage.setItem("pendingPayFastUpgrade", JSON.stringify({ plan, ts: Date.now() }));
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = out.payment_url;
-    form.style.display = "none";
-
-    Object.entries(out.fields).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = String(value);
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
+    submitPayFastCheckout(out.payment_url, out.fields);
   } catch (e) {
     console.error("startPayFastUpgrade error:", e);
     alert("Network error starting payment. Please try again.");
     if (btn) {
       btn.disabled = false;
-      btn.textContent = "Upgrade";
+      btn.textContent = cfg.buttonLabel;
+    }
+  }
+};
+
+window.startPayFastSingleJob = async function () {
+  if (!currentRecruiter) return alert("Please login again.");
+
+  const confirmed = confirm(
+    "Advertise one promoted vacancy for R199?\n\n" +
+      "This is a once-off payment, not a subscription. The listing will be promoted for 30 days when you publish it."
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById("singleJobOfferBtn");
+  const originalLabel = btn?.textContent || "Choose single job";
+
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Redirecting...";
+    }
+
+    const idToken = await currentRecruiter.getIdToken();
+    const res = await fetch("/.netlify/functions/create-recruiter-single-job-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({ offer: "single_job_30" }),
+    });
+    const out = await res.json().catch(() => null);
+
+    if (!res.ok || !out?.payment_url || !out?.fields) {
+      alert(out?.error || "Could not start PayFast checkout. Please try again.");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }
+      return;
+    }
+
+    sessionStorage.setItem("pendingRecruiterSingleJob", JSON.stringify({ ts: Date.now() }));
+    submitPayFastCheckout(out.payment_url, out.fields);
+  } catch (error) {
+    console.error("startPayFastSingleJob error:", error);
+    alert("Network error starting payment. Please try again.");
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
     }
   }
 };
@@ -2701,7 +4588,12 @@ onAuthStateChanged(auth, async (user) => {
   await loadCompanyProfile();          // ✅ NEW
   wireCompanyProfileUI();              // ✅ NEW
 
-  if (new URLSearchParams(window.location.search).get("payment") === "pending") {
+  const paymentReturn = new URLSearchParams(window.location.search).get("payment");
+  if (paymentReturn === "single-job-pending") {
+    window.history.replaceState({}, document.title, `${window.location.pathname}#billing`);
+    alert("Payment received by PayFast. Your single-job credit will appear here once PayFast confirms the payment.");
+    showSection('billing', document.querySelector('.nav a:nth-child(7)'));
+  } else if (paymentReturn === "pending") {
     window.history.replaceState({}, document.title, window.location.pathname);
     alert("Payment received by PayFast. Your recruiter plan will update once PayFast confirms the subscription.");
   }
@@ -2729,11 +4621,13 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('saveDraftBtn')?.addEventListener('click', () => saveJob('draft'));
   document.getElementById('jobForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!validateAllJobWizardSteps()) return;
     await saveJob('active');
   });
 
   document.getElementById('cancelEditBtn')?.addEventListener('click', () => cancelEditJob());
   setupApplicationBuilder();
+  setupJobWizard();
   setupJobDraftRecovery();
   document.getElementById('refreshApplicationsBtn')?.addEventListener('click', loadRecruiterApplications);
   document.getElementById('applicationJobFilter')?.addEventListener('change', renderRecruiterApplications);
@@ -2784,6 +4678,7 @@ async function loadRecruiterData() {
     } else {
       recruiterData = {
         plan: 'free',
+        singleJobCredits: 0,
         unlocksRemaining: 10,
         totalUnlocks: 10,
         unlockedCVs: [],
@@ -2807,7 +4702,7 @@ async function loadRecruiterData() {
 
   } catch (error) {
     console.error('Error loading recruiter data:', error);
-    recruiterData = { plan: 'free', unlocksRemaining: 10, unlockedCVs: [] };
+    recruiterData = { plan: 'free', singleJobCredits: 0, unlocksRemaining: 10, unlockedCVs: [] };
   }
 }
 
@@ -3172,7 +5067,10 @@ function applyCompanyProfileToJobForm({ lock } = { lock: true }) {
   const ok = !!(companyProfile && companyProfile.name && companyProfile.email);
 
   const helper = document.getElementById('companyAutofillHelper');
-  if (helper) helper.style.display = ok ? 'flex' : 'none';
+  if (helper) {
+    helper.hidden = !ok;
+    helper.style.display = ok ? 'flex' : 'none';
+  }
 
   const hint = document.getElementById('companyAutofillHint');
   if (hint) {
@@ -3212,6 +5110,7 @@ function applyCompanyProfileToJobForm({ lock } = { lock: true }) {
   }
 
   updateCompanyPills();
+  renderJobConfirmationPreview();
 }
 
 /* ======================================================
@@ -3242,7 +5141,7 @@ function readLocalJobDraft() {
 }
 
 function hasMeaningfulJobDraft(values = {}) {
-  return ['title', 'description', 'requirements', 'city', 'deadline']
+  return ['title', 'description', 'responsibilities', 'requirements', 'city', 'deadline']
     .some(field => dashboardText(values[field]));
 }
 
@@ -3266,12 +5165,14 @@ function collectLocalJobDraft() {
   if (!form) return null;
   const values = Object.fromEntries(new FormData(form).entries());
   ['jobId', 'companyProfileVersion', 'company', 'email', 'website', 'logo'].forEach(field => delete values[field]);
-  values.remote = !!form.remote?.checked;
+  delete values.facilities;
   return {
     version: 1,
     savedAt: new Date().toISOString(),
     values,
     screeningQuestions: collectScreeningQuestions(),
+    jobFaqs: collectJobFaqs(),
+    facilities: collectJobFacilities()
   };
 }
 
@@ -3316,12 +5217,14 @@ function restoreLocalJobDraft() {
   const draft = readLocalJobDraft();
   const form = document.getElementById('jobForm');
   if (!draft || !form) return;
+  const restoredSalary = dashboardText(draft.values?.salary);
 
   editingJobId = null;
   duplicatingJob = false;
   Object.entries(draft.values || {}).forEach(([name, value]) => {
     if (name === 'remote') {
-      if (form.remote) form.remote.checked = !!value;
+      const workPreference = form.elements.namedItem('workPreference');
+      if (workPreference && !workPreference.value) workPreference.value = value ? 'Remote' : 'On Site';
       return;
     }
     const field = form.elements.namedItem(name);
@@ -3330,14 +5233,24 @@ function restoreLocalJobDraft() {
   screeningQuestionsDraft = Array.isArray(draft.screeningQuestions)
     ? draft.screeningQuestions.map(normalizeScreeningQuestion)
     : [];
+  jobFaqsDraft = Array.isArray(draft.jobFaqs)
+    ? draft.jobFaqs.map(normalizeJobFaq).slice(0, 5)
+    : [];
+  setJobFacilities(draft.facilities);
   const mode = document.getElementById('jobFormMode');
-  if (mode) mode.style.display = 'none';
+  if (mode) mode.hidden = true;
   const cancelBtn = document.getElementById('cancelEditBtn');
-  if (cancelBtn) cancelBtn.style.display = 'none';
+  if (cancelBtn) cancelBtn.hidden = true;
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderJobFaqs();
+  updateSalaryFieldsUI();
+  if (restoredSalary && !dashboardText(form.elements.namedItem('salaryMin')?.value)) {
+    document.getElementById('jobSalaryDisplay').value = restoredSalary;
+  }
+  showJobWizardStep(1, {focus: false});
   applyCompanyProfileToJobForm({lock: true});
   document.getElementById('jobDraftRecovery').hidden = true;
   const status = document.getElementById('jobAutosaveStatus');
@@ -3377,10 +5290,22 @@ async function saveJob(status) {
 
   // enforce latest company profile auto-fill before saving
   applyCompanyProfileToJobForm({ lock: true });
+  syncJobSalaryDisplay();
 
   const fd = new FormData(form);
   const data = Object.fromEntries(fd.entries());
-  const remoteChecked = form.remote?.checked || false;
+  const workPreference = dashboardText(data.workPreference, 'On Site');
+  const completeFaqs = collectJobFaqs({completeOnly: true});
+  const facilities = collectJobFacilities();
+  const overview = dashboardText(data.description);
+  const responsibilities = dashboardText(data.responsibilities);
+  const requirements = dashboardText(data.requirements);
+  const publicDescription = composePublicJobDescription({
+    overview,
+    responsibilities,
+    requirements,
+    faqs: completeFaqs
+  });
 
   const hasCompanyProfile = !!(companyProfile && companyProfile.name && companyProfile.email);
   if (!hasCompanyProfile) {
@@ -3402,12 +5327,25 @@ async function saveJob(status) {
     category: (data.category || '').trim(),
     type: (data.type || '').trim(),
     experience: (data.experience || '').trim(),
-    salary: (data.salary || '').trim(),
-    description: (data.description || '').trim(),
-    requirements: (data.requirements || '').trim(),
+    minimumQualification: dashboardText(data.minimumQualification),
+    securityClearance: dashboardText(data.securityClearance, 'No'),
+    driversLicence: dashboardText(data.driversLicence, 'No'),
+    visaSponsorship: dashboardText(data.visaSponsorship, 'No'),
+    salaryType: dashboardText(data.salaryType, 'Range'),
+    salaryMin: dashboardText(data.salaryMin) ? Number(data.salaryMin) : null,
+    salaryMax: dashboardText(data.salaryMax) ? Number(data.salaryMax) : null,
+    salaryFrequency: dashboardText(data.salaryFrequency, 'Per Month'),
+    salary: currentJobSalary() || 'Negotiable',
+    overview,
+    description: publicDescription || overview,
+    responsibilities,
+    requirements,
+    jobFaqs: completeFaqs,
+    facilities,
     city: (data.city || '').trim(),
     country: (data.country || '').trim(),
-    remote: remoteChecked,
+    workPreference,
+    remote: workPreference === 'Remote',
     ...jobCompany,
     deadline: (data.deadline || '').trim(),
     applicationMethod: (data.applicationMethod || 'direct').trim(),
@@ -3417,6 +5355,7 @@ async function saveJob(status) {
     screeningQuestions: (data.applicationMethod || 'direct') === 'direct'
       ? collectScreeningQuestions()
       : [],
+    hiringProcess: [...JOB_HIRING_PROCESS],
     status: status === 'draft' ? 'draft' : 'active',
     recruiterId: currentRecruiter.uid,
     updatedAt: serverTimestamp(),
@@ -3433,12 +5372,19 @@ async function saveJob(status) {
     companyContactName: companyProfile.contactName || ""
   };
 
-  if (!jobData.title || !jobData.category || !jobData.type || !jobData.experience || !jobData.description || !jobData.city || !jobData.country || !jobData.company || !jobData.email) {
+  if (status === 'draft' && !jobData.title) {
+    showJobWizardStep(1);
+    showToast('warn', 'Job title required', 'Add a job title so you can identify this draft later.', 4200);
+    form.elements.namedItem('title')?.focus();
+    return;
+  }
+
+  if (status !== 'draft' && (!jobData.title || !jobData.category || !jobData.type || !jobData.experience || !jobData.description || !jobData.city || !jobData.country || !jobData.company || !jobData.email)) {
     showToast('warn', 'Missing required fields', 'Please fill in all required fields.', 4200);
     return;
   }
 
-  if (jobData.applicationMethod === 'external') {
+  if (status !== 'draft' && jobData.applicationMethod === 'external') {
     try {
       const externalUrl = new URL(jobData.applyLink);
       if (!['http:', 'https:'].includes(externalUrl.protocol)) throw new Error('Unsupported protocol');
@@ -3457,13 +5403,42 @@ async function saveJob(status) {
     if (publishBtn) publishBtn.disabled = true;
     if (draftBtn) draftBtn.disabled = true;
 
-    if (editingJobId) {
-      const ref = doc(db, "jobs", editingJobId);
-      await updateDoc(ref, { ...jobData });
-      showToast('success', 'Updated', status === 'draft' ? 'Draft updated successfully.' : 'Job updated successfully.', 3200);
+    if (status === 'draft') {
+      if (editingJobId) {
+        const ref = doc(db, "jobs", editingJobId);
+        await updateDoc(ref, { ...jobData });
+        showToast('success', 'Updated', 'Draft updated successfully.', 3200);
+      } else {
+        await addDoc(collection(db, "jobs"), { ...jobData, createdAt: serverTimestamp() });
+        showToast('success', 'Saved', 'Draft saved.', 3200);
+      }
     } else {
-      await addDoc(collection(db, "jobs"), { ...jobData, createdAt: serverTimestamp() });
-      showToast('success', 'Saved', status === 'draft' ? 'Draft saved.' : 'Job published successfully.', 3200);
+      const { updatedAt, ...publishableJobData } = jobData;
+      const idToken = await currentRecruiter.getIdToken();
+      const response = await fetch('/.netlify/functions/publish-recruiter-job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ jobId: editingJobId || '', job: publishableJobData }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        if (response.status === 402) {
+          showToast('warn', 'Choose how to advertise', result?.error || 'Choose the R199 single-job offer or a monthly package before publishing.', 6000);
+          showSection('billing', document.querySelector('.nav a:nth-child(7)'));
+          return;
+        }
+        throw new Error(result?.error || 'Could not publish this vacancy.');
+      }
+
+      showToast('success', editingJobId ? 'Updated' : 'Published', editingJobId ? 'Job updated successfully.' : 'Job published successfully.', 3200);
+      if (result?.usedSingleJobCredit) {
+        await loadRecruiterData();
+        updatePlanBadges();
+      }
     }
 
     clearLocalJobDraft();
@@ -3475,7 +5450,7 @@ async function saveJob(status) {
     // refresh analytics if user later opens it
   } catch (err) {
     console.error("saveJob error:", err);
-    showToast('error', 'Save failed', 'Failed to save job. Check console for details.', 4500);
+    showToast('error', 'Save failed', err?.message || 'Failed to save job. Please try again.', 4500);
   } finally {
     const publishBtn = document.getElementById('publishJobBtn');
     const draftBtn = document.getElementById('saveDraftBtn');
@@ -3487,6 +5462,10 @@ async function saveJob(status) {
 function setFormEditMode(job) {
   const form = document.getElementById('jobForm');
   if (!form) return;
+  const setValue = (name, value = '') => {
+    const field = form.elements.namedItem(name);
+    if (field && typeof field.value !== 'undefined') field.value = value ?? '';
+  };
 
   editingJobId = job.id;
   duplicatingJob = false;
@@ -3496,16 +5475,31 @@ function setFormEditMode(job) {
   if (autosaveStatus) autosaveStatus.textContent = 'Editing an existing job';
 
   document.getElementById('jobId').value = job.id || '';
-  form.title.value = job.title || '';
-  form.category.value = job.category || '';
-  form.type.value = job.type || '';
-  form.experience.value = job.experience || '';
-  form.salary.value = job.salary || '';
-  form.description.value = job.description || '';
-  form.requirements.value = job.requirements || '';
-  form.city.value = job.city || '';
-  form.country.value = job.country || '';
-  form.remote.checked = !!job.remote;
+  setValue('title', job.title);
+  setValue('category', job.category);
+  setValue('type', job.type);
+  setValue('experience', job.experience);
+  setValue('minimumQualification', job.minimumQualification);
+  setValue('securityClearance', job.securityClearance || 'No');
+  setValue('driversLicence', job.driversLicence || 'No');
+  setValue('visaSponsorship', job.visaSponsorship || 'No');
+  setValue('workPreference', job.workPreference || (job.remote ? 'Remote' : 'On Site'));
+  setValue('description', job.overview || job.description);
+  setValue('responsibilities', job.responsibilities);
+  setValue('requirements', job.requirements);
+  setValue('city', job.city);
+  setValue('country', job.country);
+  setValue('salaryType', job.salaryType || (/negotiable/i.test(job.salary || '') ? 'Negotiable' : 'Range'));
+  setValue('salaryMin', job.salaryMin ?? '');
+  setValue('salaryMax', job.salaryMax ?? '');
+  setValue('salaryFrequency', job.salaryFrequency || 'Per Month');
+  updateSalaryFieldsUI();
+  document.getElementById('jobSalaryDisplay').value = job.salary || currentJobSalary({useStored: false});
+  setJobFacilities(job.facilities);
+  jobFaqsDraft = Array.isArray(job.jobFaqs)
+    ? job.jobFaqs.map(normalizeJobFaq).slice(0, 5)
+    : [];
+  renderJobFaqs();
 
   // Company fields come from Company Profile; still set for legacy docs
   document.getElementById('job_company').value = (companyProfile?.name || job.company || '');
@@ -3514,9 +5508,9 @@ function setFormEditMode(job) {
   document.getElementById('job_logo').value = (companyProfile?.logo || job.logo || '');
   document.getElementById('companyProfileVersion').value = companyProfileVersion || job.companyProfileVersion || "";
 
-  form.deadline.value = job.deadline || '';
-  form.applicationMethod.value = job.applicationMethod || (job.applyLink ? 'external' : 'email');
-  form.applyLink.value = job.applyLink || '';
+  setValue('deadline', job.deadline);
+  setValue('applicationMethod', job.applicationMethod || (job.applyLink ? 'external' : 'email'));
+  setValue('applyLink', job.applyLink);
   screeningQuestionsDraft = Array.isArray(job.screeningQuestions)
     ? job.screeningQuestions.map(normalizeScreeningQuestion)
     : [];
@@ -3527,18 +5521,20 @@ function setFormEditMode(job) {
 
   const mode = document.getElementById('jobFormMode');
   if (mode) {
-    mode.style.display = 'block';
+    mode.hidden = false;
     mode.textContent = `Editing job: ${job.title || ''}`;
   }
 
   const cancelBtn = document.getElementById('cancelEditBtn');
   if (cancelBtn) {
-    cancelBtn.style.display = 'inline-flex';
+    cancelBtn.hidden = false;
     cancelBtn.innerHTML = "<i class='bx bx-x'></i> Cancel Edit";
   }
 
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-edit'></i> Update Job";
+  showJobWizardStep(1, {focus: false});
+  renderJobConfirmationPreview();
 }
 
 function editRecruiterJob(job) {
@@ -3553,19 +5549,21 @@ function duplicateRecruiterJob(job) {
   duplicatingJob = true;
   document.getElementById('jobId').value = '';
   const form = document.getElementById('jobForm');
-  if (form?.title) form.title.value = `Copy of ${dashboardText(job.title, 'job')}`;
-  if (form?.deadline) form.deadline.value = '';
+  const titleField = form?.elements.namedItem('title');
+  const deadlineField = form?.elements.namedItem('deadline');
+  if (titleField) titleField.value = `Copy of ${dashboardText(job.title, 'job')}`;
+  if (deadlineField) deadlineField.value = '';
 
   const mode = document.getElementById('jobFormMode');
   if (mode) {
-    mode.style.display = 'block';
+    mode.hidden = false;
     mode.textContent = `Creating a new job from: ${dashboardText(job.title, 'existing job')}`;
   }
   const publishBtn = document.getElementById('publishJobBtn');
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Copied Job";
   const cancelBtn = document.getElementById('cancelEditBtn');
   if (cancelBtn) {
-    cancelBtn.style.display = 'inline-flex';
+    cancelBtn.hidden = false;
     cancelBtn.innerHTML = "<i class='bx bx-x'></i> Clear Copy";
   }
   const autosaveStatus = document.getElementById('jobAutosaveStatus');
@@ -3583,11 +5581,11 @@ function cancelEditJob(silent=false) {
   duplicatingJob = false;
 
   const mode = document.getElementById('jobFormMode');
-  if (mode) mode.style.display = 'none';
+  if (mode) mode.hidden = true;
 
   const cancelBtn = document.getElementById('cancelEditBtn');
   if (cancelBtn) {
-    cancelBtn.style.display = 'none';
+    cancelBtn.hidden = true;
     cancelBtn.innerHTML = "<i class='bx bx-x'></i> Cancel Edit";
   }
 
@@ -3599,8 +5597,10 @@ function cancelEditJob(silent=false) {
   const applyLink = document.getElementById('job_apply_link');
   if (applyLink) applyLink.value = '';
   screeningQuestionsDraft = [];
+  jobFaqsDraft = [];
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderJobFaqs();
   const autosaveStatus = document.getElementById('jobAutosaveStatus');
   if (autosaveStatus) autosaveStatus.textContent = '';
 
@@ -3612,6 +5612,9 @@ function cancelEditJob(silent=false) {
     applyCompanyProfileToJobForm({lock: true});
     if (wasDuplicating) clearLocalJobDraft();
   }
+  updateSalaryFieldsUI();
+  showJobWizardStep(1, {focus: false});
+  renderJobConfirmationPreview();
   updateJobDraftRecovery();
 }
 
@@ -3898,6 +5901,7 @@ function renderRecruiterInbox() {
   document.getElementById('inboxInterviewCount').textContent = String(interviews.length);
   document.getElementById('inboxClosingCount').textContent = String(closingJobs.length);
   document.getElementById('inboxActiveJobsCount').textContent = String(activeJobs.length);
+  setRecruiterInboxShortcutCount(submitted.length);
 
   const attentionCount = submitted.length + interviews.length + closingJobs.length;
   const summary = document.getElementById('recruiterInboxSummary');
@@ -4255,6 +6259,43 @@ function candidateWhatsAppUrl(candidate, job) {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
+function candidateEmailUrl(candidate, job, status) {
+  const email = dashboardText(candidate?.email).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return '';
+
+  const name = dashboardText(candidate?.fullName, 'there');
+  const role = dashboardText(job?.title, 'the role');
+  const company = dashboardText(job?.company || companyProfile?.name, 'our team');
+  const templates = {
+    shortlisted: {
+      subject: `Application update: ${role}`,
+      message: `Thank you for applying for ${role}. We are pleased to let you know that your application has been shortlisted. We will contact you with the next steps shortly.`,
+    },
+    interview: {
+      subject: `Interview invitation: ${role}`,
+      message: `Thank you for your interest in ${role}. We would like to invite you to the interview stage. Please reply to this email so that we can confirm a suitable date and time.`,
+    },
+    offer: {
+      subject: `Application update: ${role}`,
+      message: `We are pleased to let you know that we would like to progress your application for ${role} to the offer stage. We will share the formal details with you shortly.`,
+    },
+    hired: {
+      subject: `Successful application: ${role}`,
+      message: `We are pleased to confirm that your application for ${role} has been successful. Our team will contact you with the onboarding details and next steps.`,
+    },
+    unsuccessful: {
+      subject: `Application outcome: ${role}`,
+      message: `Thank you for the time and effort you invested in applying for ${role}. After careful consideration, we will not be progressing your application further. We appreciate your interest and wish you well with your job search.`,
+    },
+  };
+  const template = templates[status] || {
+    subject: `Your application for ${role}`,
+    message: `Thank you for your application for ${role}. We are writing with an update about your application.`,
+  };
+  const body = `Hi ${name},\n\n${template.message}\n\nKind regards,\n${company}`;
+  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(template.subject)}&body=${encodeURIComponent(body)}`;
+}
+
 async function openRecruiterApplication(applicationId) {
   let application = recruiterApplicationsCache.find(item => item.id === applicationId);
   if (!application) return;
@@ -4283,6 +6324,7 @@ async function openRecruiterApplication(applicationId) {
   const job = application.jobSnapshot || {};
   const answers = Array.isArray(application.answers) ? application.answers : [];
   const whatsappUrl = candidateWhatsAppUrl(candidate, job);
+  const emailUrl = candidateEmailUrl(candidate, job, application.status);
   const modal = document.getElementById("applicationReviewModal");
   const content = document.getElementById("applicationReviewContent");
   if (!modal || !content) return;
@@ -4315,7 +6357,7 @@ async function openRecruiterApplication(applicationId) {
     <div class="application-review-actions">
       <button class="primary-btn" type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-file'></i> Open submitted CV</button>
       <button class="primary-btn btn-secondary" type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download CV</button>
-      <a class="primary-btn btn-secondary" href="mailto:${escapeDashboard(candidate.email)}?subject=${encodeURIComponent(`Your application for ${dashboardText(job.title, "our vacancy")}`)}"><i class='bx bx-envelope'></i> Email candidate</a>
+      ${emailUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(emailUrl)}"><i class='bx bx-envelope'></i> Email status update</a>` : ''}
       ${whatsappUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(whatsappUrl)}" target="_blank" rel="noopener noreferrer"><i class='bx bxl-whatsapp'></i> WhatsApp candidate</a>` : ''}
     </div>
 
@@ -4922,20 +6964,35 @@ window.selectPlan = async function(plan, unlocks) {
 }
 
 function updatePlanBadges() {
-  const planName = effectiveRecruiterPlan().toUpperCase();
+  const activePlan = effectiveRecruiterPlan();
+  const planName = PLAN_CONFIG[activePlan]?.label || "FREE";
   document.getElementById('currentPlanBadge').textContent = `${planName} Plan`;
 
+  const singleJobCredits = Math.max(0, Number(recruiterData?.singleJobCredits || 0));
+  const singleJobCreditStatus = document.getElementById('singleJobCreditStatus');
+  const singleJobOfferBtn = document.getElementById('singleJobOfferBtn');
+  if (singleJobCreditStatus) {
+    singleJobCreditStatus.textContent = activePlan !== 'free'
+      ? 'Vacancy publishing is included in your plan'
+      : singleJobCredits > 0
+        ? `${singleJobCredits} single-job credit${singleJobCredits === 1 ? '' : 's'} ready to use`
+        : 'No subscription required';
+  }
+  if (singleJobOfferBtn) {
+    singleJobOfferBtn.disabled = activePlan !== 'free';
+    singleJobOfferBtn.textContent = activePlan !== 'free' ? 'Included in current plan' : 'Choose single job';
+  }
+
   const buttons = {
-    free: document.getElementById('freePlanBtn'),
     starter: document.getElementById('starterPlanBtn'),
     pro: document.getElementById('proPlanBtn'),
     enterprise: document.getElementById('enterprisePlanBtn')
   };
 
-  Object.values(buttons).forEach(btn => {
+  Object.entries(buttons).forEach(([plan, btn]) => {
     if (btn) {
       btn.disabled = false;
-      btn.textContent = btn.id === 'freePlanBtn' ? 'Current Plan' : 'Upgrade';
+      btn.textContent = PLAN_CONFIG[plan]?.buttonLabel || 'Choose plan';
     }
   });
 
@@ -5368,22 +7425,23 @@ const originalShowSection = window.showSection;
 window.showSection = function(id, el) {
   originalShowSection(id, el);
 
+  const titles = {
+    'dashboard': 'Dashboard',
+    'company': 'Company Profile',
+    'post-job': 'Post a Job',
+    'jobs': 'Manage Jobs',
+    'cvs': 'CV Library',
+    'applications': 'Applications',
+    'job-workspace': 'Vacancy Workspace',
+    'billing': 'Packages',
+    'analytics': 'Analytics',
+    'public-listings': 'View as Member'
+  };
+  const sectionTitle = titles[id] || 'Dashboard';
   const mobileTitle = document.getElementById('mobilePageTitle');
-  if (mobileTitle) {
-    const titles = {
-      'dashboard': 'Dashboard',
-      'company': 'Company Profile',
-      'post-job': 'Post a Job',
-      'jobs': 'Manage Jobs',
-      'cvs': 'CV Library',
-      'applications': 'Applications',
-      'job-workspace': 'Vacancy Workspace',
-      'billing': 'Packages',
-      'analytics': 'Analytics',
-      'public-listings': 'View as Member'
-    };
-    mobileTitle.textContent = titles[id] || 'Dashboard';
-  }
+  const desktopTitle = document.getElementById('desktopPageTitle');
+  if (mobileTitle) mobileTitle.textContent = sectionTitle;
+  if (desktopTitle) desktopTitle.textContent = sectionTitle;
 
   if (window.innerWidth <= 900) closeMobileSidebar();
 

@@ -65,6 +65,12 @@
         text-underline-offset: 3px;
       }
 
+      .cu-cookie-notice__consent {
+        display: block;
+        margin-top: 5px;
+        color: #4b5563;
+      }
+
       .cu-cookie-notice__button {
         min-height: 40px;
         padding: 9px 16px;
@@ -114,6 +120,7 @@
         <strong>Career Unified uses cookies</strong> and browser storage to remember preferences,
         improve features, understand site usage, and support advertising on selected content pages.
         <a href="/privacy" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a>
+        <span class="cu-cookie-notice__consent">By clicking &ldquo;Accept&rdquo;, you agree that cookies and similar browser storage may be stored on your device.</span>
       </p>
       <button class="cu-cookie-notice__button" type="button">Accept</button>
     `;

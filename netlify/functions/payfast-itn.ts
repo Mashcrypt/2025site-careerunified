@@ -19,6 +19,9 @@ const RECRUITER_PLAN: Record<RecruiterPlanId, { amount: string; unlocks: number 
   pro: { amount: "699.00", unlocks: 200 },
   enterprise: { amount: "1499.00", unlocks: -1 },
 };
+const RECRUITER_SINGLE_JOB_PRODUCT = "careerunified-recruiter-single-job";
+const RECRUITER_SINGLE_JOB_PACK_ID = "single_job_30";
+const RECRUITER_SINGLE_JOB_AMOUNT = 199.00;
 
 const PAYFAST_SOURCE_HOSTS = [
   "www.payfast.co.za",
@@ -49,6 +52,9 @@ function isValidPlan(plan: any): plan is PlanId {
 }
 function isRecruiterPlan(plan: any): plan is RecruiterPlanId {
   return plan === "starter" || plan === "pro" || plan === "enterprise";
+}
+function isRecruiterSingleJobPack(value: any): value is typeof RECRUITER_SINGLE_JOB_PACK_ID {
+  return value === RECRUITER_SINGLE_JOB_PACK_ID;
 }
 function isAiCreditPack(value: any): value is typeof AI_CREDIT_PACK_ID {
   return value === AI_CREDIT_PACK_ID;
@@ -246,14 +252,18 @@ export const handler: Handler = async (event) => {
   if (!uid) return ok();
 
   const isRecruiterPayment = product === "careerunified-recruiter";
+  const isRecruiterSingleJobPayment = product === RECRUITER_SINGLE_JOB_PRODUCT;
   const isAiCreditPayment = product === AI_CREDIT_PRODUCT;
   if (isAiCreditPayment && !isAiCreditPack(plan)) return ok();
   if (isRecruiterPayment && !isRecruiterPlan(plan)) return ok();
-  if (!isRecruiterPayment && !isAiCreditPayment && !isValidPlan(plan)) return ok();
+  if (isRecruiterSingleJobPayment && !isRecruiterSingleJobPack(plan)) return ok();
+  if (!isRecruiterPayment && !isRecruiterSingleJobPayment && !isAiCreditPayment && !isValidPlan(plan)) return ok();
 
   const expectedAmount = isAiCreditPayment
     ? AI_CREDIT_PACK_AMOUNT
-    : Number(isRecruiterPayment ? RECRUITER_PLAN[plan as RecruiterPlanId].amount : PLAN_AMOUNT[plan as PlanId]);
+    : isRecruiterSingleJobPayment
+      ? RECRUITER_SINGLE_JOB_AMOUNT
+      : Number(isRecruiterPayment ? RECRUITER_PLAN[plan as RecruiterPlanId].amount : PLAN_AMOUNT[plan as PlanId]);
   if (!Number.isFinite(amount_gross) || Math.abs(amount_gross - expectedAmount) > 0.01) {
     return bad(400, "Amount mismatch");
   }
@@ -266,12 +276,28 @@ export const handler: Handler = async (event) => {
 
   if (payment_status !== "COMPLETE") {
     const status = payment_status === "CANCELLED" ? "cancelled" : "past_due";
-    const targetRef = isRecruiterPayment ? db.doc(`recruiters/${uid}`) : db.doc(`users/${uid}`);
+    const targetRef = isRecruiterPayment || isRecruiterSingleJobPayment
+      ? db.doc(`recruiters/${uid}`)
+      : db.doc(`users/${uid}`);
     if (isAiCreditPayment) {
       await targetRef.set(
         {
           pendingCreditLastFailedStatus: payment_status || null,
           pendingCreditLastFailedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return ok();
+    }
+    if (isRecruiterSingleJobPayment) {
+      await targetRef.set(
+        {
+          pendingSingleJobPack: admin.firestore.FieldValue.delete(),
+          pendingSingleJobPayfastPaymentId: admin.firestore.FieldValue.delete(),
+          pendingSingleJobCreatedAt: admin.firestore.FieldValue.delete(),
+          pendingSingleJobLastFailedStatus: payment_status || null,
+          pendingSingleJobLastFailedAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true }
@@ -287,6 +313,41 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
+    return ok();
+  }
+
+  if (isRecruiterSingleJobPayment) {
+    const recruiterRef = db.doc(`recruiters/${uid}`);
+    await db.runTransaction(async (tx) => {
+      const existing = await tx.get(paymentRef);
+      if (existing.exists) return;
+
+      tx.set(
+        recruiterRef,
+        {
+          singleJobCredits: admin.firestore.FieldValue.increment(1),
+          pendingSingleJobPack: admin.firestore.FieldValue.delete(),
+          pendingSingleJobPayfastPaymentId: admin.firestore.FieldValue.delete(),
+          pendingSingleJobCreatedAt: admin.firestore.FieldValue.delete(),
+          lastSingleJobPaymentRef: data.m_payment_id || data.pf_payment_id || null,
+          lastSingleJobPaymentVerifiedAt: new Date().toISOString(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      tx.set(paymentRef, {
+        product,
+        uid,
+        pack: RECRUITER_SINGLE_JOB_PACK_ID,
+        quantity: 1,
+        amount_gross,
+        payment_status,
+        pf_payment_id: data.pf_payment_id || null,
+        m_payment_id: data.m_payment_id || null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
     return ok();
   }
 

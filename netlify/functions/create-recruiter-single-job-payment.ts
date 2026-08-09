@@ -3,13 +3,9 @@ import crypto from "crypto";
 import { getAdmin } from "./_firebaseAdmin";
 import { checkRateLimit } from "./_rateLimit";
 
-type RecruiterPlanId = "starter" | "pro" | "enterprise";
-
-const PLAN_CONFIG: Record<RecruiterPlanId, { amount: string; label: string; unlocks: number }> = {
-  starter: { amount: "299.00", label: "Starter", unlocks: 50 },
-  pro: { amount: "699.00", label: "Growth", unlocks: 200 },
-  enterprise: { amount: "1499.00", label: "Agency", unlocks: -1 },
-};
+const PRODUCT = "careerunified-recruiter-single-job";
+const PACK_ID = "single_job_30";
+const AMOUNT = "199.00";
 
 const REQUIRED_ENV = [
   "PAYFAST_MERCHANT_ID",
@@ -35,42 +31,27 @@ const PAYFAST_FIELD_ORDER = [
   "custom_str1",
   "custom_str2",
   "custom_str3",
-  "subscription_type",
-  "billing_date",
-  "recurring_amount",
-  "frequency",
-  "cycles",
 ] as const;
 
 function corsHeaders(origin?: string) {
   const allowed = process.env.ALLOWED_ORIGIN || process.env.SITE_URL || "";
   const cleanAllowed = allowed.replace(/\/+$/, "");
   const cleanOrigin = origin?.replace(/\/+$/, "");
-
   return {
     "Access-Control-Allow-Origin": cleanAllowed && cleanOrigin === cleanAllowed ? cleanOrigin : cleanAllowed || "null",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
-    "Vary": "Origin",
+    Vary: "Origin",
   };
 }
 
-function json(statusCode: number, body: any, headers?: Record<string, string>) {
+function json(statusCode: number, body: unknown, headers?: Record<string, string>) {
   return {
     statusCode,
     headers: { "Content-Type": "application/json", ...(headers || {}) },
     body: JSON.stringify(body),
   };
-}
-
-function decodeBody(eventBody: string | null | undefined, isBase64Encoded?: boolean) {
-  if (!eventBody) return "";
-  return isBase64Encoded ? Buffer.from(eventBody, "base64").toString("utf8") : eventBody;
-}
-
-function isRecruiterPlan(plan: unknown): plan is RecruiterPlanId {
-  return plan === "starter" || plan === "pro" || plan === "enterprise";
 }
 
 function encodePayfastValue(value: string) {
@@ -89,19 +70,20 @@ function firstNameFrom(value?: string | null) {
   return value?.trim().split(/\s+/)[0] || undefined;
 }
 
-function validatePayfastMode(headers?: Record<string, string>) {
-  const siteUrl = process.env.SITE_URL || "";
-  if (process.env.PAYFAST_MODE === "live" && !siteUrl.startsWith("https://")) {
-    return json(
-      500,
-      {
-        error: "Invalid PayFast live configuration.",
-        details: "PAYFAST_MODE=live requires SITE_URL to be your deployed HTTPS site URL.",
-      },
-      headers
-    );
-  }
-  return null;
+function timestampToDate(value: any) {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate();
+  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function hasActiveSubscription(recruiter: any) {
+  const periodEnd = timestampToDate(recruiter?.subscriptionCurrentPeriodEnd);
+  return recruiter?.plan && recruiter.plan !== "free"
+    && recruiter?.subscriptionStatus === "active"
+    && !!periodEnd
+    && periodEnd.getTime() > Date.now();
 }
 
 export const handler: Handler = async (event) => {
@@ -112,41 +94,32 @@ export const handler: Handler = async (event) => {
     if (event.httpMethod !== "POST") return json(405, { error: "Method Not Allowed" }, baseHeaders);
 
     const missing = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
-    if (missing.length) {
-      return json(500, { error: "Missing required environment variables.", missing }, baseHeaders);
-    }
+    if (missing.length) return json(500, { error: "Payment is not configured." }, baseHeaders);
 
-    const modeError = validatePayfastMode(baseHeaders);
-    if (modeError) return modeError;
-
-    let body: any;
-    try {
-      body = JSON.parse(decodeBody(event.body, event.isBase64Encoded) || "{}");
-    } catch {
-      return json(400, { error: "Invalid JSON body" }, baseHeaders);
-    }
-
-    const plan = body?.plan;
-    if (!isRecruiterPlan(plan)) {
-      return json(400, { error: "Invalid plan. Use starter | pro | enterprise." }, baseHeaders);
+    const siteUrl = process.env.SITE_URL!.replace(/\/+$/, "");
+    if (process.env.PAYFAST_MODE === "live" && !siteUrl.startsWith("https://")) {
+      return json(500, { error: "Invalid PayFast live configuration." }, baseHeaders);
     }
 
     const authHeader = event.headers.authorization || event.headers.Authorization;
     const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-    if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
+    if (!idToken) return json(401, { error: "Please sign in again." }, baseHeaders);
 
     const admin = getAdmin();
     const decoded = await admin.auth().verifyIdToken(idToken);
-    if (decoded.recruiter !== true) return json(403, { error: "Recruiter access only" }, baseHeaders);
+    if (decoded.recruiter !== true) return json(403, { error: "Recruiter access only." }, baseHeaders);
 
     const recruiterId = decoded.uid;
     const recruiterRef = admin.firestore().doc(`recruiters/${recruiterId}`);
     const recruiterSnap = await recruiterRef.get();
     const recruiter = recruiterSnap.data() || {};
+    if (hasActiveSubscription(recruiter)) {
+      return json(409, { error: "Vacancy publishing is already included in your active plan." }, baseHeaders);
+    }
 
     const rateLimit = await checkRateLimit({
       admin,
-      action: "recruiter-subscription-checkout",
+      action: "recruiter-single-job-checkout",
       identifier: recruiterId,
       limit: 5,
       windowSeconds: 10 * 60,
@@ -154,16 +127,13 @@ export const handler: Handler = async (event) => {
     if (!rateLimit.allowed) {
       return json(
         429,
-        {
-          error: "Too many checkout attempts. Please try again shortly.",
-          retryAfterSeconds: rateLimit.retryAfterSeconds,
-        },
+        { error: "Too many checkout attempts. Please try again shortly." },
         { ...baseHeaders, "Retry-After": String(rateLimit.retryAfterSeconds) }
       );
     }
 
     const email = decoded.email || (recruiter.email as string | undefined);
-    if (!email) return json(400, { error: "Recruiter email not found" }, baseHeaders);
+    if (!email) return json(400, { error: "Recruiter email not found." }, baseHeaders);
 
     const nameFirst =
       firstNameFrom(decoded.name) ||
@@ -172,54 +142,41 @@ export const handler: Handler = async (event) => {
       firstNameFrom(recruiter.companyName as string | undefined) ||
       "Recruiter";
 
-    const siteUrl = process.env.SITE_URL!.replace(/\/+$/, "");
-    const cfg = PLAN_CONFIG[plan];
-    const m_payment_id = `rec_${recruiterId}_${Date.now()}`;
-
+    const paymentId = `recjob_${recruiterId}_${Date.now()}`;
     const fields: Record<string, string> = {
       merchant_id: process.env.PAYFAST_MERCHANT_ID!,
       merchant_key: process.env.PAYFAST_MERCHANT_KEY!,
-      return_url: `${siteUrl}/recruiter-dashboard.html?payment=pending`,
+      return_url: `${siteUrl}/recruiter-dashboard.html?payment=single-job-pending#billing`,
       cancel_url: `${siteUrl}/recruiter-dashboard.html#billing`,
       notify_url: `${siteUrl}/.netlify/functions/payfast-itn`,
       name_first: nameFirst,
       email_address: email,
-      m_payment_id,
-      amount: cfg.amount,
-      item_name: `Career Unified Recruiter ${cfg.label} subscription`,
+      m_payment_id: paymentId,
+      amount: AMOUNT,
+      item_name: "Career Unified single promoted job listing",
       custom_str1: recruiterId,
-      custom_str2: plan,
-      custom_str3: "careerunified-recruiter",
-      subscription_type: "1",
-      recurring_amount: cfg.amount,
-      frequency: "3",
-      cycles: "0",
+      custom_str2: PACK_ID,
+      custom_str3: PRODUCT,
     };
-
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
     await recruiterRef.set(
       {
-        pendingPlan: plan,
-        pendingPayfastPaymentId: m_payment_id,
-        pendingCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        pendingSingleJobPack: PACK_ID,
+        pendingSingleJobPayfastPaymentId: paymentId,
+        pendingSingleJobCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
 
-    const payment_url =
-      process.env.PAYFAST_MODE === "live"
-        ? "https://www.payfast.co.za/eng/process"
-        : "https://sandbox.payfast.co.za/eng/process";
+    const paymentUrl = process.env.PAYFAST_MODE === "live"
+      ? "https://www.payfast.co.za/eng/process"
+      : "https://sandbox.payfast.co.za/eng/process";
 
-    return json(200, { payment_url, fields }, baseHeaders);
-  } catch (error: any) {
-    console.error("CREATE_RECRUITER_SUBSCRIPTION_ERROR", error);
-    return json(
-      500,
-      { error: "Could not start PayFast checkout." },
-      baseHeaders
-    );
+    return json(200, { payment_url: paymentUrl, fields }, baseHeaders);
+  } catch (error) {
+    console.error("CREATE_RECRUITER_SINGLE_JOB_PAYMENT_ERROR", error);
+    return json(500, { error: "Could not start PayFast checkout." }, baseHeaders);
   }
 };

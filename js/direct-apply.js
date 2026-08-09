@@ -31,6 +31,8 @@ let currentUser = null;
 let profile = {};
 let cvs = [];
 const SENSITIVE_SCREENING_PATTERN = /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
+const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
+const GENERIC_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in the country where this position is based?";
 
 function text(value, fallback = "") {
   const output = String(value ?? "").trim();
@@ -171,8 +173,25 @@ function questionInput(question) {
     </div>`;
 }
 
+function countryAwareQuestion(question) {
+  const label = text(question?.label);
+  const isWorkAuthorisation = question?.templateKey === "work_authorisation"
+    || label === LEGACY_WORK_AUTHORISATION_QUESTION
+    || label === GENERIC_WORK_AUTHORISATION_QUESTION;
+  if (!isWorkAuthorisation) return question;
+
+  const country = text(currentJob?.country).slice(0, 120);
+  return {
+    ...question,
+    label: country
+      ? `Are you legally authorised to work in ${country}?`
+      : GENERIC_WORK_AUTHORISATION_QUESTION,
+  };
+}
+
 function applicationQuestions() {
   return (Array.isArray(currentJob.screeningQuestions) ? currentJob.screeningQuestions : [])
+    .map(countryAwareQuestion)
     .filter(question => !SENSITIVE_SCREENING_PATTERN.test(text(question?.label)))
     .slice(0, 8);
 }

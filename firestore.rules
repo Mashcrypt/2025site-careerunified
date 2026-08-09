@@ -19,6 +19,24 @@ service cloud.firestore {
         && (request.auth.token.admin == true || request.auth.uid in ['X3eReX1WGpQSR1svO4JIBFDqFUJ3']);
     }
 
+    function recruiterSingleJobBillingUnchanged() {
+      return request.resource.data.get('singleJobCredits', 0) == resource.data.get('singleJobCredits', 0)
+        && request.resource.data.get('pendingSingleJobPack', null) == resource.data.get('pendingSingleJobPack', null)
+        && request.resource.data.get('pendingSingleJobPayfastPaymentId', null) == resource.data.get('pendingSingleJobPayfastPaymentId', null)
+        && request.resource.data.get('pendingSingleJobCreatedAt', null) == resource.data.get('pendingSingleJobCreatedAt', null)
+        && request.resource.data.get('pendingSingleJobLastFailedStatus', null) == resource.data.get('pendingSingleJobLastFailedStatus', null)
+        && request.resource.data.get('pendingSingleJobLastFailedAt', null) == resource.data.get('pendingSingleJobLastFailedAt', null)
+        && request.resource.data.get('lastSingleJobPaymentRef', null) == resource.data.get('lastSingleJobPaymentRef', null)
+        && request.resource.data.get('lastSingleJobPaymentVerifiedAt', null) == resource.data.get('lastSingleJobPaymentVerifiedAt', null);
+    }
+
+    function jobPromotionUnchanged() {
+      return request.resource.data.get('listingTier', null) == resource.data.get('listingTier', null)
+        && request.resource.data.get('badge', null) == resource.data.get('badge', null)
+        && request.resource.data.get('sponsoredUntil', null) == resource.data.get('sponsoredUntil', null)
+        && request.resource.data.get('singleJobOffer', false) == resource.data.get('singleJobOffer', false);
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) || isRecruiter() || isAdmin();
       allow create, update: if isOwner(userId) || isAdmin();
@@ -39,11 +57,18 @@ service cloud.firestore {
     match /jobs/{jobId} {
       allow read: if true;
       allow create: if isRecruiter()
-        && request.resource.data.recruiterId == request.auth.uid;
+        && request.resource.data.recruiterId == request.auth.uid
+        && request.resource.data.status == 'draft'
+        && request.resource.data.get('listingTier', null) == null
+        && request.resource.data.get('badge', null) == null
+        && request.resource.data.get('sponsoredUntil', null) == null
+        && request.resource.data.get('singleJobOffer', false) == false;
       allow update: if isAdmin()
         || (isRecruiter()
           && resource.data.recruiterId == request.auth.uid
-          && request.resource.data.recruiterId == request.auth.uid);
+          && request.resource.data.recruiterId == request.auth.uid
+          && (resource.data.status != 'draft' || request.resource.data.status == 'draft')
+          && jobPromotionUnchanged());
       allow delete: if isAdmin()
           || (isRecruiter() && resource.data.recruiterId == request.auth.uid);
     }
@@ -69,7 +94,21 @@ service cloud.firestore {
 
     match /recruiters/{recruiterId} {
       allow read: if isOwner(recruiterId) || isAdmin();
-      allow create, update: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+      allow create: if (isOwner(recruiterId)
+          && isRecruiter()
+          && request.resource.data.get('singleJobCredits', 0) == 0
+          && request.resource.data.get('pendingSingleJobPack', null) == null
+          && request.resource.data.get('pendingSingleJobPayfastPaymentId', null) == null
+          && request.resource.data.get('pendingSingleJobCreatedAt', null) == null
+          && request.resource.data.get('pendingSingleJobLastFailedStatus', null) == null
+          && request.resource.data.get('pendingSingleJobLastFailedAt', null) == null
+          && request.resource.data.get('lastSingleJobPaymentRef', null) == null
+          && request.resource.data.get('lastSingleJobPaymentVerifiedAt', null) == null)
+        || isAdmin();
+      allow update: if (isOwner(recruiterId)
+          && isRecruiter()
+          && recruiterSingleJobBillingUnchanged())
+        || isAdmin();
       allow delete: if isAdmin();
 
       match /pipeline/{candidateId} {

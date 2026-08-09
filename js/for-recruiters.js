@@ -2,6 +2,17 @@
   "use strict";
 
   const featureContent = {
+    "ai-matching": {
+      headline: "Surface your best-matched candidates in seconds, not days",
+      body: "Career Unified AI compares each application with your role requirements and highlights the strongest evidence, helping your team build a focused shortlist while keeping every hiring decision in human hands.",
+      bullets: [
+        "Match skills, experience, qualifications, and role requirements",
+        "Clear signals explaining why each candidate is relevant",
+        "Recruiter-controlled shortlists with no automatic rejection"
+      ],
+      image: "/assets/images/recruiter-team.webp",
+      alt: "South African recruiters reviewing AI-matched candidates"
+    },
     applications: {
       headline: "Review the whole application, not just a filename",
       body: "Open the candidate profile, submitted CV, screening answers, and essential-criteria signals together before deciding who should move forward.",

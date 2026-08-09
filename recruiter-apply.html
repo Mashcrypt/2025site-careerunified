@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="Apply to become a recruiter on Career Unified and start posting jobs for South African candidates.">
+  <meta name="description" content="Create a Career Unified recruiter account and submit your company details for review.">
+  <title>Create a Recruiter Account | Career Unified</title>
 
-  <title>Recruiter Application – Career Unified</title>
-
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -17,12 +15,15 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#1b60a9">
+  <meta name="theme-color" content="#1e3a8a">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/recruiter-apply.css">
 
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -30,450 +31,315 @@
     gtag('js', new Date());
     gtag('config', 'G-2Z934XRVXT', { send_page_view: true });
   </script>
-
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      doc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey:            "AIzaSyAEBbnXPlYYf9jbfgLSzfod3r0i5MOAo9M",
-      authDomain:        "career-unified.firebaseapp.com",
-      projectId:         "career-unified",
-      storageBucket:     "career-unified.firebasestorage.app",
-      messagingSenderId: "101656817742",
-      appId:             "1:101656817742:web:22c9a58a822a714e54931f",
-      measurementId:     "G-2Z934XRVXT"
-    };
-
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        alert("Please log in to apply as a recruiter.");
-        window.location.href = "login.html";
-        return;
-      }
-      currentUser = user;
-    });
-
-    window.submitRecruiterApplication = async () => {
-      if (!currentUser) {
-        alert("Authentication not ready. Please wait a moment and try again.");
-        return;
-      }
-
-      const companyName    = document.getElementById("companyName").value.trim();
-      const companyWebsite = document.getElementById("companyWebsite").value.trim();
-      const reason         = document.getElementById("reason").value.trim();
-
-      if (!companyName || !companyWebsite || !reason) {
-        alert("All fields are required.");
-        return;
-      }
-
-      const btn = document.getElementById("submitBtn");
-      btn.disabled     = true;
-      btn.textContent  = "Submitting...";
-
-      try {
-        await addDoc(collection(db, "recruiterApplications"), {
-          userId:          currentUser.uid,
-          email:           currentUser.email,
-          companyName,
-          companyWebsite,
-          reason,
-          status:          "pending",
-          submittedAt:     serverTimestamp()
-        });
-
-        await setDoc(
-          doc(db, "users", currentUser.uid),
-          {
-            role:            "recruiter",
-            recruiterStatus: "pending",
-            companyName,
-            email:           currentUser.email,
-            updatedAt:       serverTimestamp()
-          },
-          { merge: true }
-        );
-
-        alert(
-          "Thank you for your recruiter application!\n\n" +
-          "Approval can take up to 1 hour or 1 business day. " +
-          "If your application is not approved, consider it unsuccessful."
-        );
-
-        window.location.href = "index.html";
-
-      } catch (error) {
-        console.error("Error submitting application:", error);
-        alert("Submission failed. Please try again.");
-        btn.disabled    = false;
-        btn.textContent = "Submit Application";
-      }
-    };
-  </script>
-
-  <style>
-    /* =============================== */
-    /* RESET & BASE                    */
-    /* =============================== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f7f9fc;
-      color: #111827;
-      overflow-x: hidden;
-    }
-
-    /* =============================== */
-    /* HEADER                          */
-    /* =============================== */
-    header {
-      text-align: center;
-      padding: 60px 20px 50px;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: #fff;
-      width: 100%;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-    }
-
-    header p {
-      margin-top: 8px;
-      font-size: 1.1rem;
-      color: #e5e7eb;
-      font-weight: 400;
-    }
-
-    /* =============================== */
-    /* MAIN / FORM CONTAINER           */
-    /* =============================== */
-    main {
-      max-width: 560px;
-      margin: 40px auto;
-      padding: 0 20px 60px;
-    }
-
-    .form-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 36px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    /* =============================== */
-    /* NOTICE BANNER                   */
-    /* =============================== */
-    .notice {
-      background: #e0f2fe;
-      border-left: 4px solid #2563eb;
-      padding: 14px 16px;
-      margin-bottom: 24px;
-      color: #1e3a8a;
-      font-weight: 600;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    /* =============================== */
-    /* FORM ELEMENTS                   */
-    /* =============================== */
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #374151;
-      font-size: 0.95rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-      font-family: 'Poppins', sans-serif;
-      color: #111827;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      background: #fff;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
-      color: #9ca3af;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 120px;
-      line-height: 1.6;
-    }
-
-    /* =============================== */
-    /* SUBMIT BUTTON                   */
-    /* =============================== */
-    #submitBtn {
-      width: 100%;
-      padding: 14px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 6px;
-    }
-
-    #submitBtn:hover:not(:disabled) {
-      background: #1e40af;
-      transform: translateY(-1px);
-    }
-
-    #submitBtn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    /* =============================== */
-    /* FOOTER                          */
-    /* =============================== */
-    .main-footer {
-      text-align: center;
-      padding: 30px 20px;
-      background: #1e3a8a;
-      color: white;
-      width: 100%;
-    }
-
-    .footer-links {
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      color: #facc15;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .footer-links a:hover { text-decoration: underline; }
-
-    /* =============================== */
-    /* MOBILE — max-width: 900px       */
-    /* =============================== */
-    @media (max-width: 900px) {
-      header {
-        padding: 50px 16px 40px;
-      }
-
-      header h1 { font-size: 2rem; }
-      header p  { font-size: 1rem; }
-
-      main { margin: 24px auto; padding: 0 16px 60px; }
-
-      .form-card { padding: 24px 20px; }
-
-      .form-group input,
-      .form-group textarea {
-        font-size: 16px; /* prevents iOS zoom on focus */
-        padding: 14px;
-      }
-
-      #submitBtn { font-size: 16px; padding: 14px; }
-
-      .footer-links { flex-direction: column; gap: 12px; }
-    }
-
-    /* =============================== */
-    /* MOBILE — max-width: 400px       */
-    /* =============================== */
-    @media (max-width: 400px) {
-      header h1     { font-size: 1.75rem; }
-      .form-card    { padding: 20px 16px; }
-      .notice       { font-size: 0.9rem; }
-    }
-  </style>
 </head>
 <body>
-
-  <!-- =============================== -->
-  <!-- NAVIGATION                      -->
-  <!-- =============================== -->
-  <nav class="main-nav">
-
-    <!-- Desktop -->
-    <a href="index.html" class="logo desktop-nav">Career Unified</a>
-    <div class="nav-links desktop-nav">
-      <a href="jobs.html">Jobs</a>
-      <a href="bursaries.html">Bursaries</a>
-      <a href="varsity.html">Varsities</a>
-      <a href="cv-generator.html">Generate CV</a>
-      <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-      <a href="recruiter-apply.html">Apply as Recruiter</a>
-      <a href="saved-items.html">Saved Items</a>
-      <a href="signup.html">Sign Up</a>
-      <a href="login.html">Login</a>
-      <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+  <header class="ra-site-header">
+    <div class="ra-container ra-site-header__inner">
+      <a class="ra-brand" href="/" aria-label="Career Unified home">
+        <span class="ra-brand__mark" aria-hidden="true">CU</span>
+        <span>Career Unified</span>
       </a>
+      <nav class="ra-site-nav" aria-label="Recruiter account navigation">
+        <a href="/for-recruiters">Recruiter overview</a>
+        <a class="ra-site-nav__signin" href="/login.html">Sign in</a>
+      </nav>
     </div>
-
-    <!-- Mobile -->
-    <div class="mobile-nav">
-      <a href="index.html" class="mobile-logo">Career Unified</a>
-      <div class="mobile-nav-right">
-        <a href="account-page.html" class="icon-btn" aria-label="My Account">
-          <svg viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </a>
-        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-          <svg viewBox="0 0 24 24">
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="6"  x2="21" y2="6"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-  </nav>
-
-  <!-- Mobile Slide Menu -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="jobs.html">Jobs</a>
-    <a href="bursaries.html">Bursaries</a>
-    <a href="varsity.html">Varsities</a>
-    <a href="cv-generator.html">Generate CV</a>
-    <a href="/z83-filler">Z83 Filler</a>
-    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="recruiter-apply.html">Apply as Recruiter</a>
-    <a href="saved-items.html">Saved Items</a>
-    <a href="signup.html">Sign Up</a>
-    <a href="login.html">Login</a>
-  </div>
-
-  <!-- =============================== -->
-  <!-- HEADER                          -->
-  <!-- =============================== -->
-  <header>
-    <h1>Recruiter Application</h1>
-    <p>Post jobs and connect with South African candidates</p>
   </header>
 
-  <!-- =============================== -->
-  <!-- MAIN CONTENT                    -->
-  <!-- =============================== -->
-  <main>
-    <div class="form-card">
+  <main class="ra-page">
+    <div class="ra-container">
+      <a class="ra-back-link" href="/for-recruiters"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to recruiter overview</a>
 
-      <div class="notice">
-        Fill out this form to apply as a recruiter. Approval can take up to 1 hour or 1 business day.
-        If your application is not approved within this time, consider it unsuccessful.
+      <div class="ra-heading">
+        <div>
+          <p class="ra-eyebrow">Recruiter onboarding</p>
+          <h1 id="recruiterPageTitle">Create a Recruiter Account</h1>
+          <p id="recruiterPageIntro">Please enter your details below. All fields marked with an asterisk (*) must be completed.</p>
+        </div>
+        <ol class="ra-progress" aria-label="Application sections">
+          <li><span>1</span>Account</li>
+          <li><span>2</span>Company</li>
+          <li><span>3</span>Address</li>
+          <li><span>4</span>Review</li>
+        </ol>
       </div>
 
-      <div class="form-group">
-        <label for="companyName">Company Name</label>
-        <input id="companyName" type="text" placeholder="e.g. Career Unified ">
+      <div class="ra-layout">
+        <form class="ra-form" id="recruiterApplicationForm" novalidate>
+          <div class="ra-form-status" id="formStatus" role="status" aria-live="polite" hidden></div>
+          <div class="ra-account-context" id="accountContext" hidden></div>
+
+          <section class="ra-form-section" aria-labelledby="accountDetailsTitle">
+            <div class="ra-section-heading">
+              <span class="ra-section-heading__icon" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
+              <div>
+                <h2 id="accountDetailsTitle">Account details</h2>
+                <p>These details identify the person responsible for the recruiter account.</p>
+              </div>
+            </div>
+
+            <div class="ra-field-grid">
+              <div class="ra-field">
+                <label for="firstName">First Name <span aria-hidden="true">*</span></label>
+                <input id="firstName" name="firstName" type="text" autocomplete="given-name" maxlength="80" required>
+                <p class="ra-field-error" data-error-for="firstName"></p>
+              </div>
+              <div class="ra-field">
+                <label for="lastName">Last Name <span aria-hidden="true">*</span></label>
+                <input id="lastName" name="lastName" type="text" autocomplete="family-name" maxlength="80" required>
+                <p class="ra-field-error" data-error-for="lastName"></p>
+              </div>
+              <div class="ra-field">
+                <label for="email">Email Address <span aria-hidden="true">*</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" maxlength="160" required>
+                <p class="ra-field-error" data-error-for="email"></p>
+              </div>
+              <div class="ra-field">
+                <label for="confirmEmail">Confirm Email Address <span aria-hidden="true">*</span></label>
+                <input id="confirmEmail" name="confirmEmail" type="email" autocomplete="email" maxlength="160" required>
+                <p class="ra-field-error" data-error-for="confirmEmail"></p>
+              </div>
+              <div class="ra-field ra-field--full" data-new-account-only>
+                <label for="password">Password <span aria-hidden="true">*</span></label>
+                <div class="ra-password-input">
+                  <input id="password" name="password" type="password" autocomplete="new-password" minlength="10" required aria-describedby="passwordRules">
+                  <button type="button" class="ra-password-toggle" data-password-toggle="password" aria-label="Show password"><i class="fa-regular fa-eye" aria-hidden="true"></i></button>
+                </div>
+                <ul class="ra-password-rules" id="passwordRules" aria-label="Password requirements">
+                  <li data-password-rule="length"><i class="fa-solid fa-check" aria-hidden="true"></i> 10 or more characters</li>
+                  <li data-password-rule="upper"><i class="fa-solid fa-check" aria-hidden="true"></i> One uppercase letter</li>
+                  <li data-password-rule="lower"><i class="fa-solid fa-check" aria-hidden="true"></i> One lowercase letter</li>
+                  <li data-password-rule="number"><i class="fa-solid fa-check" aria-hidden="true"></i> One number</li>
+                  <li data-password-rule="special"><i class="fa-solid fa-check" aria-hidden="true"></i> One special character</li>
+                </ul>
+                <p class="ra-field-error" data-error-for="password"></p>
+              </div>
+              <div class="ra-field ra-field--full" data-new-account-only>
+                <label for="confirmPassword">Confirm Password <span aria-hidden="true">*</span></label>
+                <div class="ra-password-input">
+                  <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="10" required>
+                  <button type="button" class="ra-password-toggle" data-password-toggle="confirmPassword" aria-label="Show confirmed password"><i class="fa-regular fa-eye" aria-hidden="true"></i></button>
+                </div>
+                <p class="ra-field-error" data-error-for="confirmPassword"></p>
+              </div>
+              <div class="ra-field ra-field--full">
+                <label for="contactNumber">Contact Number <span aria-hidden="true">*</span></label>
+                <input id="contactNumber" name="contactNumber" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="e.g. 021 973 22 22" required>
+                <p class="ra-field-error" data-error-for="contactNumber"></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="ra-form-section" aria-labelledby="companyDetailsTitle">
+            <div class="ra-section-heading">
+              <span class="ra-section-heading__icon" aria-hidden="true"><i class="fa-regular fa-building"></i></span>
+              <div>
+                <h2 id="companyDetailsTitle">Company details</h2>
+                <p>Tell us which organisation will advertise roles and review applicants.</p>
+              </div>
+            </div>
+
+            <label class="ra-check-row" for="recruitmentAgency">
+              <input id="recruitmentAgency" name="recruitmentAgency" type="checkbox">
+              <span><strong>We are a recruitment agency</strong> recruiting on behalf of a client.</span>
+            </label>
+
+            <div class="ra-field-grid">
+              <div class="ra-field ra-field--full">
+                <label for="companyName">Company Name <span aria-hidden="true">*</span></label>
+                <input id="companyName" name="companyName" type="text" autocomplete="organization" maxlength="160" required>
+                <p class="ra-field-error" data-error-for="companyName"></p>
+              </div>
+
+              <div class="ra-field ra-field--full">
+                <span class="ra-label">Company Logo</span>
+                <div class="ra-logo-upload" id="logoDropzone">
+                  <div class="ra-logo-preview">
+                    <img id="logoPreview" alt="Selected company logo preview" hidden>
+                    <span id="logoPlaceholder" aria-hidden="true"><i class="fa-regular fa-image"></i></span>
+                  </div>
+                  <div class="ra-logo-upload__copy">
+                    <strong>Upload your company logo</strong>
+                    <p>PNG, JPG, or WebP. Maximum 2MB. For clear display, the image must be at least 400 x 200 pixels.</p>
+                    <div class="ra-logo-actions">
+                      <label class="ra-file-button" for="companyLogo"><i class="fa-solid fa-upload" aria-hidden="true"></i> Select image</label>
+                      <button class="ra-text-button" id="removeLogo" type="button" hidden>Remove</button>
+                    </div>
+                    <input class="ra-file-input" id="companyLogo" name="companyLogo" type="file" accept="image/png,image/jpeg,image/webp">
+                    <p class="ra-file-name" id="logoFileName">No file selected</p>
+                    <p class="ra-field-error" id="logoError" aria-live="polite"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ra-field ra-field--full">
+                <label for="companyWebsite">Company's Website</label>
+                <div class="ra-url-input"><span>https://</span><input id="companyWebsite" name="companyWebsite" type="text" autocomplete="url" inputmode="url" maxlength="240" placeholder="www.example.co.za"></div>
+                <p class="ra-field-error" data-error-for="companyWebsite"></p>
+              </div>
+
+              <div class="ra-field ra-field--full">
+                <label class="ra-check-row ra-check-row--compact" for="soleProprietor">
+                  <input id="soleProprietor" name="soleProprietor" type="checkbox">
+                  <span>I am a Sole Proprietor</span>
+                </label>
+              </div>
+              <div class="ra-field ra-field--full">
+                <label for="companyRegistrationNumber">Company Registration Number <span id="registrationRequired" aria-hidden="true">*</span></label>
+                <input id="companyRegistrationNumber" name="companyRegistrationNumber" type="text" maxlength="80" required>
+                <p class="ra-field-hint" id="registrationHint">Required unless you are applying as a sole proprietor.</p>
+                <p class="ra-field-error" data-error-for="companyRegistrationNumber"></p>
+              </div>
+
+              <div class="ra-field ra-field--full">
+                <label for="reason">Hiring and recruitment needs <span aria-hidden="true">*</span></label>
+                <textarea id="reason" name="reason" rows="4" maxlength="1200" placeholder="Tell us about your company, the roles you recruit for, and how you would like candidates to apply." required></textarea>
+                <p class="ra-field-error" data-error-for="reason"></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="ra-form-section" aria-labelledby="addressDetailsTitle">
+            <div class="ra-section-heading ra-section-heading--with-control">
+              <div class="ra-section-heading__title">
+                <span class="ra-section-heading__icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+                <div>
+                  <h2 id="addressDetailsTitle">Address</h2>
+                  <p>Enter the registered or primary business address.</p>
+                </div>
+              </div>
+              <label class="ra-check-row ra-check-row--compact" for="billingAddressSame">
+                <input id="billingAddressSame" name="billingAddressSame" type="checkbox" checked>
+                <span>Billing address is the same</span>
+              </label>
+            </div>
+
+            <div class="ra-address-lookup">
+              <div class="ra-field">
+                <label for="addressLookup">Google Address Lookup</label>
+                <input id="addressLookup" name="addressLookup" type="search" autocomplete="street-address" maxlength="240" placeholder="Enter your address">
+                <p class="ra-field-hint">Use Google Maps to verify the address, then confirm each field below.</p>
+              </div>
+              <a class="ra-map-button" id="addressMapLink" href="https://www.google.com/maps/search/?api=1" target="_blank" rel="noopener noreferrer" aria-disabled="true"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Open Maps</a>
+            </div>
+
+            <div class="ra-field-grid">
+              <div class="ra-field">
+                <label for="buildingNumber">House Number/Building Number <span aria-hidden="true">*</span></label>
+                <input id="buildingNumber" name="buildingNumber" type="text" maxlength="50" required>
+                <p class="ra-field-error" data-error-for="buildingNumber"></p>
+              </div>
+              <div class="ra-field">
+                <label for="street">Street <span aria-hidden="true">*</span></label>
+                <input id="street" name="street" type="text" autocomplete="address-line1" maxlength="160" required>
+                <p class="ra-field-error" data-error-for="street"></p>
+              </div>
+              <div class="ra-field">
+                <label for="suburb">Suburb <span aria-hidden="true">*</span></label>
+                <input id="suburb" name="suburb" type="text" autocomplete="address-level3" maxlength="120" required>
+                <p class="ra-field-error" data-error-for="suburb"></p>
+              </div>
+              <div class="ra-field">
+                <label for="city">City / Town <span aria-hidden="true">*</span></label>
+                <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="120" required>
+                <p class="ra-field-error" data-error-for="city"></p>
+              </div>
+              <div class="ra-field">
+                <label for="province">Province/State <span aria-hidden="true">*</span></label>
+                <select id="province" name="province" autocomplete="address-level1" required>
+                  <option value="">Select a province</option>
+                  <option>Eastern Cape</option><option>Free State</option><option>Gauteng</option>
+                  <option>KwaZulu-Natal</option><option>Limpopo</option><option>Mpumalanga</option>
+                  <option>North West</option><option>Northern Cape</option><option>Western Cape</option>
+                  <option>Outside South Africa</option>
+                </select>
+                <p class="ra-field-error" data-error-for="province"></p>
+              </div>
+              <div class="ra-field">
+                <label for="country">Country <span aria-hidden="true">*</span></label>
+                <select id="country" name="country" autocomplete="country-name" required>
+                  <option value="South Africa" selected>South Africa</option>
+                  <option value="Botswana">Botswana</option><option value="Eswatini">Eswatini</option>
+                  <option value="Lesotho">Lesotho</option><option value="Namibia">Namibia</option>
+                  <option value="Zimbabwe">Zimbabwe</option><option value="Other">Other</option>
+                </select>
+                <p class="ra-field-error" data-error-for="country"></p>
+              </div>
+              <div class="ra-field">
+                <label for="postcode">Postcode <span aria-hidden="true">*</span></label>
+                <input id="postcode" name="postcode" type="text" autocomplete="postal-code" inputmode="numeric" maxlength="12" required>
+                <p class="ra-field-error" data-error-for="postcode"></p>
+              </div>
+            </div>
+
+            <fieldset class="ra-billing-fields" id="billingAddressFields" hidden>
+              <legend>Billing address</legend>
+              <p>Enter the address that should appear on invoices.</p>
+              <div class="ra-field-grid">
+                <div class="ra-field"><label for="billingBuildingNumber">House/Building Number <span aria-hidden="true">*</span></label><input id="billingBuildingNumber" name="billingBuildingNumber" type="text" maxlength="50" data-billing-required><p class="ra-field-error" data-error-for="billingBuildingNumber"></p></div>
+                <div class="ra-field"><label for="billingStreet">Street <span aria-hidden="true">*</span></label><input id="billingStreet" name="billingStreet" type="text" autocomplete="section-billing address-line1" maxlength="160" data-billing-required><p class="ra-field-error" data-error-for="billingStreet"></p></div>
+                <div class="ra-field"><label for="billingSuburb">Suburb <span aria-hidden="true">*</span></label><input id="billingSuburb" name="billingSuburb" type="text" autocomplete="section-billing address-level3" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingSuburb"></p></div>
+                <div class="ra-field"><label for="billingCity">City / Town <span aria-hidden="true">*</span></label><input id="billingCity" name="billingCity" type="text" autocomplete="section-billing address-level2" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingCity"></p></div>
+                <div class="ra-field"><label for="billingProvince">Province/State <span aria-hidden="true">*</span></label><input id="billingProvince" name="billingProvince" type="text" autocomplete="section-billing address-level1" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingProvince"></p></div>
+                <div class="ra-field"><label for="billingCountry">Country <span aria-hidden="true">*</span></label><input id="billingCountry" name="billingCountry" type="text" autocomplete="section-billing country-name" maxlength="120" value="South Africa" data-billing-required><p class="ra-field-error" data-error-for="billingCountry"></p></div>
+                <div class="ra-field"><label for="billingPostcode">Postcode <span aria-hidden="true">*</span></label><input id="billingPostcode" name="billingPostcode" type="text" autocomplete="section-billing postal-code" inputmode="numeric" maxlength="12" data-billing-required><p class="ra-field-error" data-error-for="billingPostcode"></p></div>
+              </div>
+            </fieldset>
+          </section>
+
+          <section class="ra-form-section" aria-labelledby="consentTitle">
+            <div class="ra-section-heading">
+              <span class="ra-section-heading__icon" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></span>
+              <div>
+                <h2 id="consentTitle">Review and consent</h2>
+                <p>Confirm the terms before sending the application for review.</p>
+              </div>
+            </div>
+
+            <label class="ra-check-row ra-terms-row" for="acceptTerms">
+              <input id="acceptTerms" name="acceptTerms" type="checkbox" required>
+              <span>I accept the <a href="/terms" target="_blank" rel="noopener noreferrer">Recruiter Terms</a> and confirm that the information supplied is accurate. <strong aria-hidden="true">*</strong></span>
+            </label>
+            <p class="ra-field-error" data-error-for="acceptTerms"></p>
+
+            <div class="ra-submit-row">
+              <p><i class="fa-solid fa-lock" aria-hidden="true"></i> Your password is handled securely by Firebase Authentication and is never stored in your recruiter application.</p>
+              <button class="ra-submit-button" id="submitBtn" type="submit" disabled>
+                <span>Submit recruiter application</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </section>
+        </form>
+
+        <aside class="ra-aside" aria-label="Recruiter application information">
+          <img src="/assets/images/recruiter-team.webp" alt="South African recruiters reviewing candidate applications together">
+          <div class="ra-aside__content">
+            <h2>What happens next?</h2>
+            <ol>
+              <li><span>1</span><div><strong>We review the company</strong><p>Career Unified checks the organisation and contact details supplied.</p></div></li>
+              <li><span>2</span><div><strong>You receive a decision</strong><p>Most applications are reviewed within one business day.</p></div></li>
+              <li><span>3</span><div><strong>Start recruiting</strong><p>Approved recruiters can complete their employer profile and publish vacancies.</p></div></li>
+            </ol>
+            <div class="ra-aside__note"><i class="fa-regular fa-circle-question" aria-hidden="true"></i><p>Need help before applying? <a href="/contact-us">Contact Career Unified</a>.</p></div>
+          </div>
+        </aside>
       </div>
 
-      <div class="form-group">
-        <label for="companyWebsite">Company Website</label>
-        <input id="companyWebsite" type="url" placeholder="e.g. https://careerunified.com ">
-      </div>
-
-      <div class="form-group">
-        <label for="reason">Why should we approve you?</label>
-        <textarea id="reason" placeholder="Tell us about your company and the types of roles you'll be hiring for..."></textarea>
-      </div>
-
-      <button id="submitBtn" onclick="submitRecruiterApplication()">Submit Application</button>
-
+      <section class="ra-success" id="applicationSuccess" aria-live="polite" hidden>
+        <span aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <p class="ra-eyebrow">Application received</p>
+        <h2>Your recruiter account is awaiting review</h2>
+        <p id="successMessage">Thank you. We will review your company information and contact you using the email address provided.</p>
+        <div><a class="ra-primary-link" href="/">Return home</a><a class="ra-secondary-link" href="/recruiter-dashboard.html">Recruiter sign in</a></div>
+      </section>
     </div>
   </main>
 
-  <!-- =============================== -->
-  <!-- FOOTER                          -->
-  <!-- =============================== -->
-  <footer class="main-footer">
-    <div class="footer-links">
-      <a href="about-us.html">About Us</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="contact-us.html">Contact Us</a>
-    </div>
-    <p>&copy; 2026 Career Unified. All rights reserved.</p>
+  <footer class="ra-footer">
+    <div class="ra-container"><span>&copy; 2026 Career Unified</span><nav aria-label="Legal links"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact-us">Contact</a></nav></div>
   </footer>
 
-  <script>
-    /* =============================== */
-    /* MOBILE NAV                      */
-    /* =============================== */
-    const menuBtn    = document.getElementById('menuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-
-    if (menuBtn) {
-      menuBtn.onclick = () => {
-        const isOpen = mobileMenu.style.display === 'block';
-        mobileMenu.style.display = isOpen ? 'none' : 'block';
-      };
-    }
-
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
-        if (mobileMenu) mobileMenu.style.display = 'none';
-      }
-    });
-  </script>
-
-<script src="/js/cookie-notice.js"></script>
+  <script type="module" src="/js/recruiter-apply.js"></script>
+  <script src="/js/cookie-notice.js"></script>
 </body>
 </html>
-

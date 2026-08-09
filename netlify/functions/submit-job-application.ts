@@ -19,6 +19,7 @@ import {
 type ScreeningQuestion = {
   id: string;
   label: string;
+  templateKey?: string;
   type: string;
   required: boolean;
   options: string[];
@@ -27,6 +28,9 @@ type ScreeningQuestion = {
 
 const SENSITIVE_SCREENING_PATTERN =
   /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
+const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
+const GENERIC_WORK_AUTHORISATION_QUESTION =
+  "Are you legally authorised to work in the country where this position is based?";
 
 function applicationIdFor(jobId: string, candidateId: string) {
   return crypto.createHash("sha256").update(`${jobId}:${candidateId}`).digest("hex").slice(0, 48);
@@ -43,7 +47,7 @@ function isActiveJob(job: Record<string, any>) {
   return deadline.getTime() >= Date.now();
 }
 
-function normalizeQuestions(value: unknown): ScreeningQuestion[] {
+function normalizeQuestions(value: unknown, jobCountry = ""): ScreeningQuestion[] {
   if (!Array.isArray(value)) return [];
 
   return value.slice(0, 8).map((question: any, index) => {
@@ -54,10 +58,19 @@ function normalizeQuestions(value: unknown): ScreeningQuestion[] {
     const options = Array.isArray(question?.options)
       ? question.options.map((option: unknown) => cleanText(option, 120)).filter(Boolean).slice(0, 12)
       : [];
+    const rawLabel = cleanText(question?.label, 240);
+    const isWorkAuthorisation = cleanText(question?.templateKey, 40) === "work_authorisation"
+      || rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION
+      || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION;
 
     return {
       id,
-      label: cleanText(question?.label, 240),
+      label: isWorkAuthorisation
+        ? jobCountry
+          ? `Are you legally authorised to work in ${jobCountry}?`
+          : GENERIC_WORK_AUTHORISATION_QUESTION
+        : rawLabel,
+      templateKey: isWorkAuthorisation ? "work_authorisation" : undefined,
       type,
       required: Boolean(question?.required),
       options,
@@ -189,7 +202,7 @@ export const handler: Handler = async (event) => {
       throw new ApplicationError(400, "Name, verified email, telephone, and location are required.");
     }
 
-    const questions = normalizeQuestions(job.screeningQuestions);
+    const questions = normalizeQuestions(job.screeningQuestions, cleanText(job.country, 120));
     const suppliedAnswers = body.answers && typeof body.answers === "object" ? body.answers : {};
     const answers = questions.map((question) => {
       const answer = normalizeAnswer(suppliedAnswers[question.id]);
