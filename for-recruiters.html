@@ -3,32 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recruiting Tools for South African Employers | Career Unified</title>
-  <meta name="description" content="Advertise jobs, receive structured applications, review CVs, screen candidates, and manage your hiring pipeline with Career Unified recruiter tools.">
+  <title>Recruiting Platform for South African Employers | Career Unified</title>
+  <meta name="description" content="Advertise vacancies, receive structured applications, review CVs and screening answers, and manage candidates in one Career Unified recruiter workspace.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://careerunified.com/for-recruiters">
 
-  <meta property="og:title" content="Recruiting Tools for South African Employers | Career Unified">
-  <meta property="og:description" content="Advertise roles and manage structured applications, screening, CV review, and your hiring pipeline in one workspace.">
+  <meta property="og:title" content="Recruiting Platform for South African Employers | Career Unified">
+  <meta property="og:description" content="A connected workspace for job advertising, direct applications, candidate review, screening, and hiring pipelines.">
   <meta property="og:url" content="https://careerunified.com/for-recruiters">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://careerunified.com/assets/images/recruiter-platform.webp">
+  <meta property="og:image" content="https://careerunified.com/assets/images/recruiter-team.webp">
   <meta property="og:site_name" content="Career Unified">
   <meta property="og:locale" content="en_ZA">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Recruiting Tools for South African Employers | Career Unified">
-  <meta name="twitter:description" content="A clearer way to advertise, review, and move candidates through your hiring process.">
-  <meta name="twitter:image" content="https://careerunified.com/assets/images/recruiter-platform.webp">
+  <meta name="twitter:title" content="Recruiting Platform for South African Employers | Career Unified">
+  <meta name="twitter:description" content="Advertise, review, shortlist, and manage candidates in one recruiter workspace.">
+  <meta name="twitter:image" content="https://careerunified.com/assets/images/recruiter-team.webp">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#1e3a8a">
+  <meta name="theme-color" content="#ffffff">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/css/for-recruiters.css">
 
@@ -36,7 +36,7 @@
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": "Career Unified Recruiter Tools",
+    "name": "Career Unified Recruiter Platform",
     "provider": {
       "@type": "Organization",
       "name": "Career Unified",
@@ -46,7 +46,8 @@
       "@type": "Country",
       "name": "South Africa"
     },
-    "description": "Job advertising and applicant management tools for South African employers.",
+    "serviceType": "Online recruitment and applicant management",
+    "description": "Job advertising, structured applications, screening, CV review, candidate pipelines, and recruiter analytics for South African employers.",
     "url": "https://careerunified.com/for-recruiters"
   }
   </script>
@@ -60,145 +61,366 @@
   </script>
 </head>
 <body>
-  <nav class="recruiter-site-nav" aria-label="Main navigation">
-    <div class="recruiter-nav-inner">
-      <a class="recruiter-brand" href="/">Career Unified</a>
-      <div class="recruiter-nav-links">
-        <a class="recruiter-nav-optional" href="/jobs">Jobs</a>
-        <a class="recruiter-nav-optional" href="/cv-generator/">Career tools</a>
-        <a class="recruiter-login-link" href="/recruiter-dashboard.html">Recruiter login</a>
-        <a class="recruiter-access-link" href="/recruiter-apply.html" data-cro-event="recruiter_nav_apply">Get recruiter access</a>
+  <header class="hf-nav" data-recruiter-nav>
+    <div class="hf-container hf-nav__inner">
+      <a class="hf-brand" href="/" aria-label="Career Unified home">
+        <span class="hf-brand__mark" aria-hidden="true">CU</span>
+        <span>Career Unified</span>
+      </a>
+
+      <nav class="hf-nav__menu" aria-label="Recruiter page navigation">
+        <div class="hf-nav__item">
+          <button class="hf-nav__trigger" type="button" aria-expanded="false">
+            Product <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="hf-nav__dropdown">
+            <a href="#product">Direct applications</a>
+            <a href="#product">Candidate review</a>
+            <a href="#product">Hiring pipeline</a>
+            <a href="#product">Recruiter analytics</a>
+          </div>
+        </div>
+        <div class="hf-nav__item">
+          <button class="hf-nav__trigger" type="button" aria-expanded="false">
+            Solutions <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="hf-nav__dropdown">
+            <a href="#applications">Job advertising</a>
+            <a href="#applications">Screening questions</a>
+            <a href="#applications">Employer profiles</a>
+            <a href="#apply-options">Application options</a>
+          </div>
+        </div>
+        <a href="#workflow">How it works</a>
+        <div class="hf-nav__item">
+          <button class="hf-nav__trigger" type="button" aria-expanded="false">
+            Resources <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="hf-nav__dropdown">
+            <a href="/jobs">Jobs</a>
+            <a href="/cv-generator/">CV Generator</a>
+            <a href="/z83-filler.html">Z83 Filler</a>
+            <a href="/cv-tips">Career guides</a>
+          </div>
+        </div>
+        <a href="#apply-options">Apply options</a>
+      </nav>
+
+      <div class="hf-nav__actions">
+        <a class="hf-nav__signin" href="/recruiter-dashboard.html" data-cro-event="recruiter_nav_login">Sign in</a>
+        <a class="hf-button hf-button--outline hf-nav__demo" href="/contact-us" data-cro-event="recruiter_nav_contact">Contact us</a>
+        <a class="hf-button hf-button--primary hf-nav__primary" href="/recruiter-apply.html" data-cro-event="recruiter_nav_apply">Get recruiter access</a>
       </div>
+
+      <button class="hf-nav__toggle" type="button" aria-expanded="false" aria-controls="recruiterMobileNav" aria-label="Open navigation">
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
     </div>
-  </nav>
+
+    <div class="hf-mobile-nav" id="recruiterMobileNav" hidden>
+      <a href="#product">Product</a>
+      <a href="#applications">Solutions</a>
+      <a href="#workflow">How it works</a>
+      <a href="#apply-options">Apply options</a>
+      <a href="/recruiter-dashboard.html">Recruiter sign in</a>
+      <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_mobile_apply">Get recruiter access</a>
+      <a class="hf-button hf-button--outline" href="/contact-us" data-cro-event="recruiter_mobile_contact">Contact us</a>
+    </div>
+  </header>
 
   <main>
-    <section class="recruiter-product-hero" aria-labelledby="recruiterProductTitle">
-      <div class="recruiter-product-hero-copy">
-        <p class="recruiter-eyebrow">Career Unified for employers</p>
-        <h1 id="recruiterProductTitle">Recruiting tools for South African employers</h1>
-        <p>Advertise your roles, receive better-structured applications, and move candidates from review to hire in one focused workspace.</p>
-        <div class="recruiter-hero-actions">
-          <a class="recruiter-button recruiter-button-primary" href="/recruiter-apply.html" data-cro-event="recruiter_hero_apply">Advertise a job <span aria-hidden="true">&rarr;</span></a>
-          <a class="recruiter-button recruiter-button-secondary" href="/recruiter-dashboard.html" data-cro-event="recruiter_hero_login">Recruiter login</a>
+    <section class="hf-hero" aria-labelledby="recruiterHeroTitle">
+      <div class="hf-container hf-hero__grid">
+        <div class="hf-hero__copy">
+          <p class="hf-pill"><span aria-hidden="true"></span> Recruiting workspace for South Africa</p>
+          <h1 id="recruiterHeroTitle">Find the <em>right candidates,</em><br>without the <em>admin sprawl.</em></h1>
+          <p class="hf-hero__lead">Career Unified gives employers branded job advertising, structured applications, screening answers, CV review, and a clear hiring pipeline in one focused workspace.</p>
+          <div class="hf-hero__actions">
+            <a class="hf-button hf-button--primary hf-button--large" href="/recruiter-apply.html" data-cro-event="recruiter_hero_apply">Get recruiter access</a>
+            <a class="hf-button hf-button--outline hf-button--large" href="#product" data-cro-event="recruiter_hero_product">
+              <i class="fa-regular fa-circle-play" aria-hidden="true"></i> See how it works
+            </a>
+          </div>
+
+          <div class="hf-hero__proof" aria-label="Career Unified recruiter workflow">
+            <div class="hf-proof-steps" aria-hidden="true">
+              <span>AD</span><span>CV</span><span>SQ</span><span>PL</span><span>AN</span>
+            </div>
+            <div>
+              <strong>One connected hiring workspace</strong>
+              <p>Advertise &middot; review &middot; shortlist</p>
+            </div>
+          </div>
         </div>
-        <p class="recruiter-hero-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Recruiter accounts are reviewed to help protect job seekers and employer brands.</p>
-      </div>
-    </section>
 
-    <div class="recruiter-proof" aria-label="Recruiter platform benefits">
-      <span class="recruiter-proof-mobile"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Reviewed recruiter access</span>
-      <span><i class="fa-solid fa-building-circle-check" aria-hidden="true"></i> Branded job adverts</span>
-      <span><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> Structured applications</span>
-      <span><i class="fa-solid fa-user-check" aria-hidden="true"></i> Recruiter-led decisions</span>
-    </div>
+        <div class="hf-hero__product" aria-label="Career Unified recruiter workspace preview">
+          <div class="hf-browser">
+            <div class="hf-browser__bar">
+              <span></span><span></span><span></span>
+              <div></div>
+            </div>
+            <div class="hf-dashboard">
+              <div class="hf-dashboard__stats">
+                <article><strong>3</strong><span>Open roles</span><small>All active</small></article>
+                <article><strong>24</strong><span>Applications</span><small>8 need review</small></article>
+                <article><strong>4</strong><span>Interviews</span><small>This week</small></article>
+              </div>
 
-    <section class="recruiter-section recruiter-workflow" aria-labelledby="workflowTitle">
-      <div class="recruiter-section-heading">
-        <p class="recruiter-eyebrow">One connected workflow</p>
-        <h2 id="workflowTitle">From vacancy to shortlist without the admin sprawl</h2>
-        <p>Keep the work your team repeats every day visible, organised, and ready for the next decision.</p>
-      </div>
+              <div class="hf-candidate-panel">
+                <div class="hf-candidate-panel__head">
+                  <strong>Applications - Finance Graduate</strong>
+                  <span>Screening answers</span>
+                </div>
+                <div class="hf-candidate-row">
+                  <span class="hf-candidate-avatar hf-candidate-avatar--blue">TM</span>
+                  <div><strong>Thandi Mokoena</strong><small>Shortlisted</small></div>
+                  <div class="hf-answer-bar"><span style="width:100%"></span></div>
+                  <b>3/3</b>
+                </div>
+                <div class="hf-candidate-row">
+                  <span class="hf-candidate-avatar hf-candidate-avatar--teal">KM</span>
+                  <div><strong>Karabo Molefe</strong><small>Review</small></div>
+                  <div class="hf-answer-bar"><span style="width:67%"></span></div>
+                  <b>2/3</b>
+                </div>
+                <div class="hf-candidate-row">
+                  <span class="hf-candidate-avatar hf-candidate-avatar--gold">LN</span>
+                  <div><strong>Lerato Nkosi</strong><small>Interview</small></div>
+                  <div class="hf-answer-bar"><span style="width:100%"></span></div>
+                  <b>3/3</b>
+                </div>
+                <div class="hf-candidate-row">
+                  <span class="hf-candidate-avatar hf-candidate-avatar--navy">SN</span>
+                  <div><strong>Sipho Naidoo</strong><small>Submitted</small></div>
+                  <div class="hf-answer-bar"><span style="width:67%"></span></div>
+                  <b>2/3</b>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="recruiter-workflow-grid">
-        <article>
-          <span class="recruiter-step-number">01</span>
-          <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
-          <h3>Advertise</h3>
-          <p>Publish a branded vacancy, choose how candidates apply, and add focused screening questions for the role.</p>
-        </article>
-        <article>
-          <span class="recruiter-step-number">02</span>
-          <i class="fa-solid fa-magnifying-glass-chart" aria-hidden="true"></i>
-          <h3>Review</h3>
-          <p>See CVs, profile details, screening answers, and essential-criteria signals together before opening a shortlist.</p>
-        </article>
-        <article>
-          <span class="recruiter-step-number">03</span>
-          <i class="fa-solid fa-people-arrows" aria-hidden="true"></i>
-          <h3>Move forward</h3>
-          <p>Track candidate stages, add private notes, follow up on WhatsApp, and keep your vacancy team aligned.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="recruiter-ai-band" aria-labelledby="recruiterAiTitle">
-      <div class="recruiter-ai-inner">
-        <div class="recruiter-ai-copy">
-          <p class="recruiter-eyebrow">Useful AI, clear human decisions</p>
-          <h2 id="recruiterAiTitle">More relevant applications before review begins</h2>
-          <p>Job seekers can use Career Unified AI Tailor to align their CV with the requirements in your advert. Your screening questions then collect the role-specific answers your team needs.</p>
-          <p class="recruiter-ai-principle"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> AI improves application relevance. Your team stays in control of every hiring decision.</p>
+          <div class="hf-compliance-card">
+            <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+            <div><strong>POPIA-aware workflow</strong><small><i class="fa-solid fa-check" aria-hidden="true"></i> Consent and access controls</small></div>
+          </div>
         </div>
-        <ol class="recruiter-signal-flow" aria-label="How applications are prepared for review">
-          <li><span>Job requirements</span><strong>Your advert sets the context</strong></li>
-          <li><span>AI-tailored CV</span><strong>Applicants highlight relevant experience</strong></li>
-          <li><span>Structured review</span><strong>You compare answers and evidence</strong></li>
-        </ol>
+      </div>
+
+      <div class="hf-container hf-capability-strip">
+        <p>A connected workflow for every vacancy</p>
+        <div>
+          <span>Branded adverts</span>
+          <span>Direct Apply</span>
+          <span>CV review</span>
+          <span>Screening answers</span>
+          <span>Private notes</span>
+          <span>Pipeline</span>
+          <span>Analytics</span>
+          <span>Candidate profiles</span>
+        </div>
       </div>
     </section>
 
-    <section class="recruiter-section recruiter-tools" aria-labelledby="toolsTitle">
-      <div class="recruiter-section-heading">
-        <p class="recruiter-eyebrow">Built for the work between applications</p>
-        <h2 id="toolsTitle">A practical workspace for every open role</h2>
-      </div>
-
-      <div class="recruiter-tool-grid">
-        <article>
-          <i class="fa-solid fa-inbox" aria-hidden="true"></i>
-          <h3>Recruiter inbox</h3>
-          <p>See new applications and the vacancies that need attention without searching across email threads.</p>
-        </article>
-        <article>
-          <i class="fa-solid fa-table-columns" aria-hidden="true"></i>
-          <h3>Vacancy pipeline</h3>
-          <p>Move candidates through review, interview, offer, and hired stages in a job-specific workspace.</p>
-        </article>
-        <article>
-          <i class="fa-solid fa-address-card" aria-hidden="true"></i>
-          <h3>CV review and notes</h3>
-          <p>Open submitted CVs, compare screening answers, and keep private recruiter notes close to the decision.</p>
-        </article>
-        <article>
-          <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
-          <h3>Hiring analytics</h3>
-          <p>Monitor listing and candidate activity so you can see where each vacancy needs action.</p>
-        </article>
+    <section class="hf-metrics" id="workflow" aria-label="Recruiter workflow capabilities">
+      <div class="hf-container hf-metrics__grid">
+        <article><strong>1</strong><h2>Vacancy workspace</h2><p>from advertising to hire</p></article>
+        <article><strong>6</strong><h2>Candidate stages</h2><p>from submitted to closed</p></article>
+        <article><strong>8</strong><h2>Screening questions</h2><p>available per Direct Apply role</p></article>
+        <article><strong>24/7</strong><h2>Listing access</h2><p>for South African job seekers</p></article>
       </div>
     </section>
 
-    <section class="recruiter-final-cta" aria-labelledby="recruiterCtaTitle">
-      <div>
-        <p class="recruiter-eyebrow">Ready to advertise?</p>
-        <h2 id="recruiterCtaTitle">Give your next vacancy a clearer path to the right candidate.</h2>
+    <section class="hf-section hf-product" id="product" aria-labelledby="productTitle">
+      <div class="hf-container">
+        <div class="hf-section-heading hf-section-heading--center">
+          <p class="hf-section-tag">Product</p>
+          <h2 id="productTitle">Everything your team needs to hire <em>with clarity</em></h2>
+          <p>Purpose-built around the work recruiters repeat for every open role.</p>
+        </div>
+
+        <div class="hf-tabs" role="tablist" aria-label="Recruiter platform features">
+          <button type="button" role="tab" aria-selected="true" data-feature-tab="applications">Applications</button>
+          <button type="button" role="tab" aria-selected="false" data-feature-tab="pipeline">Pipeline</button>
+          <button type="button" role="tab" aria-selected="false" data-feature-tab="analytics">Analytics</button>
+          <button type="button" role="tab" aria-selected="false" data-feature-tab="screening">Screening</button>
+          <button type="button" role="tab" aria-selected="false" data-feature-tab="collaboration">Collaboration</button>
+        </div>
+
+        <div class="hf-product__panel" id="recruiterFeaturePanel" role="tabpanel">
+          <div class="hf-product__copy">
+            <h3 data-feature-headline>Review the whole application, not just a filename</h3>
+            <p data-feature-body>Open the candidate profile, submitted CV, screening answers, and essential-criteria signals together before deciding who should move forward.</p>
+            <ul data-feature-bullets>
+              <li><span><i class="fa-solid fa-check" aria-hidden="true"></i></span> Profile, CV, and job-specific answers in one view</li>
+              <li><span><i class="fa-solid fa-check" aria-hidden="true"></i></span> Clear application status for candidates and recruiters</li>
+              <li><span><i class="fa-solid fa-check" aria-hidden="true"></i></span> Secure submitted-CV access for the vacancy team</li>
+            </ul>
+            <a href="/recruiter-apply.html" data-cro-event="recruiter_product_apply">Request recruiter access <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+          <figure class="hf-product__visual">
+            <img src="/assets/images/recruiter-platform.webp" alt="Career Unified recruiter workspace showing applications and a hiring pipeline" data-feature-image>
+          </figure>
+        </div>
       </div>
-      <div class="recruiter-final-actions">
-        <a class="recruiter-button recruiter-button-light" href="/recruiter-apply.html" data-cro-event="recruiter_footer_apply">Get recruiter access</a>
-        <a class="recruiter-text-link" href="/contact-us">Talk to Career Unified <span aria-hidden="true">&rarr;</span></a>
+    </section>
+
+    <section class="hf-stories" id="applications">
+      <article class="hf-story">
+        <div class="hf-container hf-story__grid">
+          <div class="hf-story__copy">
+            <p class="hf-section-tag">Candidate experience</p>
+            <h2>Make every application easier to review.<br><em>Keep the human context.</em></h2>
+            <p>Candidates reuse their Career Unified profile and CV, then answer the focused questions attached to your vacancy. Your team receives a structured application without asking job seekers to repeat everything from scratch.</p>
+            <div class="hf-story__stat"><strong>3 views</strong><span>Profile, CV, and screening answers</span></div>
+            <a href="/recruiter-apply.html" data-cro-event="recruiter_candidate_apply">Explore Direct Apply <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+          <figure class="hf-story__media">
+            <img src="/assets/images/recruiter-team.webp" alt="South African recruiters reviewing candidates together">
+          </figure>
+        </div>
+      </article>
+
+      <article class="hf-story hf-story--reverse">
+        <div class="hf-container hf-story__grid">
+          <div class="hf-story__copy">
+            <p class="hf-section-tag">Employer presence</p>
+            <h2>Show candidates who is hiring.<br><em>Before they click apply.</em></h2>
+            <p>Add your company logo, profile details, and a clear vacancy description so applicants can understand the employer and role. Choose Career Unified Direct Apply or send candidates to your existing application website.</p>
+            <div class="hf-story__stat"><strong>2 routes</strong><span>Direct Apply or your external application site</span></div>
+            <a href="#apply-options">Compare apply options <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+          <figure class="hf-story__media">
+            <img src="/assets/images/recruiter-platform.webp" alt="Career Unified job advertising and candidate pipeline illustration">
+          </figure>
+        </div>
+      </article>
+    </section>
+
+    <section class="hf-section hf-proof" aria-labelledby="proofTitle">
+      <div class="hf-container">
+        <div class="hf-section-heading hf-section-heading--center">
+          <p class="hf-section-tag">Recruiter workflow</p>
+          <h2 id="proofTitle">Built around better hiring decisions</h2>
+        </div>
+
+        <div class="hf-proof__grid">
+          <article>
+            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
+            <p>Every application keeps the candidate profile, submitted CV, and screening answers together, so reviewers can compare the same evidence.</p>
+            <div class="hf-proof__identity"><span>CV</span><div><strong>Structured review</strong><small>Candidate evidence in one place</small></div></div>
+          </article>
+          <article>
+            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
+            <p>Candidates can see application progress while recruiters manage the next step from shortlist to interview, offer, and hired.</p>
+            <div class="hf-proof__identity"><span>PL</span><div><strong>Clear progress</strong><small>A visible hiring pipeline</small></div></div>
+          </article>
+          <article>
+            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
+            <p>Private notes and stage updates support the decision without replacing recruiter judgement or silently rejecting candidates.</p>
+            <div class="hf-proof__identity"><span>HR</span><div><strong>Human decisions</strong><small>Your hiring team stays in control</small></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="hf-section hf-plans" id="apply-options" aria-labelledby="plansTitle">
+      <div class="hf-container">
+        <div class="hf-section-heading hf-section-heading--center">
+          <p class="hf-section-tag">Application options</p>
+          <h2 id="plansTitle">Choose how candidates apply</h2>
+          <p>Recruiter accounts are reviewed before job publishing begins.</p>
+        </div>
+
+        <div class="hf-plans__grid">
+          <article class="hf-plan-card">
+            <div>
+              <p class="hf-plan-card__name">External apply</p>
+              <h3>Your site</h3>
+              <p>Advertise on Career Unified and send applicants to your existing recruitment portal.</p>
+            </div>
+            <ul>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Branded public vacancy</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Company logo and profile</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> External application link</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Listing activity insights</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Reviewed recruiter account</li>
+            </ul>
+            <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_external_apply">Request access</a>
+          </article>
+
+          <article class="hf-plan-card hf-plan-card--featured">
+            <span class="hf-plan-card__badge">Recommended</span>
+            <div>
+              <p class="hf-plan-card__name">Direct Apply</p>
+              <h3>Career Unified</h3>
+              <p>Receive and manage structured candidate applications inside your recruiter workspace.</p>
+            </div>
+            <ul>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Candidate profile and submitted CV</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Up to eight screening questions</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Essential-criteria signals</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Job-specific hiring pipeline</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Private notes and status updates</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Candidate progress visibility</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Recruiter analytics</li>
+            </ul>
+            <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_direct_apply">Request access</a>
+          </article>
+
+          <article class="hf-plan-card">
+            <div>
+              <p class="hf-plan-card__name">Recruitment partner</p>
+              <h3>Let's talk</h3>
+              <p>Discuss a larger hiring campaign or a workflow that needs hands-on support.</p>
+            </div>
+            <ul>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Multiple vacancy planning</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Application route guidance</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Employer profile setup</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Recruiter onboarding support</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Direct Career Unified contact</li>
+            </ul>
+            <a class="hf-button hf-button--outline" href="/contact-us" data-cro-event="recruiter_partner_contact">Contact us</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="hf-cta" aria-labelledby="recruiterCtaTitle">
+      <div class="hf-container hf-cta__inner">
+        <h2 id="recruiterCtaTitle">Ready to make your next hire <em>clearer?</em></h2>
+        <p>Tell us about your company and how you want candidates to apply.</p>
+        <div>
+          <a class="hf-button hf-button--primary hf-button--large" href="/recruiter-apply.html" data-cro-event="recruiter_footer_apply">Get recruiter access</a>
+          <a class="hf-button hf-button--dark-outline hf-button--large" href="/contact-us" data-cro-event="recruiter_footer_contact">Talk to Career Unified</a>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="recruiter-site-footer">
-    <a href="/">Career Unified</a>
-    <p>&copy; 2026 Career Unified. Built for South African opportunity.</p>
-    <div>
-      <a href="/privacy">Privacy</a>
-      <a href="/terms">Terms</a>
-      <a href="/contact-us">Contact</a>
+  <footer class="hf-footer">
+    <div class="hf-container">
+      <div class="hf-footer__grid">
+        <div class="hf-footer__brand">
+          <a class="hf-brand hf-brand--footer" href="/">
+            <span class="hf-brand__mark" aria-hidden="true">CU</span>
+            <span>Career Unified</span>
+          </a>
+          <p>South African opportunity, career tools, and practical recruiting workflows in one platform.</p>
+        </div>
+        <div><h2>Product</h2><ul><li><a href="#product">Applications</a></li><li><a href="#product">Pipeline</a></li><li><a href="#product">Analytics</a></li><li><a href="#product">Screening</a></li><li><a href="#product">Collaboration</a></li></ul></div>
+        <div><h2>Recruiters</h2><ul><li><a href="/recruiter-apply.html">Request access</a></li><li><a href="/recruiter-dashboard.html">Recruiter login</a></li><li><a href="#apply-options">Apply options</a></li><li><a href="/contact-us">Contact us</a></li></ul></div>
+        <div><h2>Job seekers</h2><ul><li><a href="/jobs">Jobs</a></li><li><a href="/bursaries">Bursaries</a></li><li><a href="/varsity">Varsities</a></li><li><a href="/cv-generator/">CV Generator</a></li><li><a href="/z83-filler.html">Z83 Filler</a></li></ul></div>
+        <div><h2>Company</h2><ul><li><a href="/about-us">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact-us">Contact</a></li></ul></div>
+      </div>
+      <div class="hf-footer__bottom">
+        <span>&copy; 2026 Career Unified. All rights reserved.</span>
+        <div><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/privacy">Cookies</a><a href="/contact-us">Support</a></div>
+      </div>
     </div>
   </footer>
 
-  <script>
-    document.addEventListener('click', (event) => {
-      const target = event.target.closest('[data-cro-event]');
-      if (!target || typeof window.gtag !== 'function') return;
-      window.gtag('event', target.dataset.croEvent, {
-        page_location: window.location.href,
-        link_url: target.href || ''
-      });
-    });
-  </script>
+  <script src="/js/for-recruiters.js"></script>
+  <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

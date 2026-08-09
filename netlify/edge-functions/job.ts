@@ -364,6 +364,7 @@ export default async (request: Request, context: EdgeContext) => {
     .btn.green{background:#16a34a;color:#fff}
     .btn.green:hover{background:#15803d}
     .external-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.3}
+    .ai-tailor-icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2;flex-shrink:0}
     .swipe-hint{display:none}
     @media(max-width:680px){
       body{background:#f4f7fc}
@@ -440,7 +441,7 @@ export default async (request: Request, context: EdgeContext) => {
     <section class="panel actions-panel">
       <div class="actions">
         ${!expired && job.applyLink ? `<a class="btn green" id="apply-job-link" href="${escapeHtml(job.applyLink)}"${directApplication ? "" : ' target="_blank" rel="noopener noreferrer"'}>${directApplication ? "Apply on Career Unified" : 'Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg>'}</a>` : ""}
-        <a class="btn green" id="ai-tailor-link" href="https://careerunified.com/cv-generator/?tab=ai&source=job">AI Tailor CV</a>
+        <a class="btn green" id="ai-tailor-link" href="https://careerunified.com/cv-generator/?tab=ai&source=job"><svg class="ai-tailor-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5a2 2 0 0 0 1.437 1.437l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>AI Tailor CV</a>
       </div>
       ${(previousUrl || nextUrl) ? '<p class="swipe-hint">Swipe right or left to view another job</p>' : ""}
     </section>
