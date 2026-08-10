@@ -342,6 +342,10 @@ img {
   color: var(--ra-error);
 }
 
+#buildingNumberLabel {
+  color: inherit;
+}
+
 .ra-field input,
 .ra-field select,
 .ra-field textarea,
@@ -495,6 +499,28 @@ img {
 
 .ra-check-row--compact {
   margin: 0;
+}
+
+.ra-field .ra-check-row--compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+  color: #334155;
+}
+
+.ra-field .ra-check-row--compact > span {
+  color: #334155;
+  font-weight: 500;
+}
+
+.ra-field .ra-check-row--compact input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  padding: 0;
 }
 
 .ra-check-row input {

@@ -153,6 +153,30 @@
   force = true
 
 [[redirects]]
+  from = "/blog.html"
+  to = "/blog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/guides.html"
+  to = "/guides"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/webinars.html"
+  to = "/webinars"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/case-studies.html"
+  to = "/case-studies"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/cv-tips.html"
   to = "/cv-tips"
   status = 301
@@ -224,6 +248,46 @@
   from = "/for-recruiters"
   to = "/for-recruiters.html"
   status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog/"
+  to = "/blog"
+  status = 301
+
+[[redirects]]
+  from = "/guides"
+  to = "/guides.html"
+  status = 200
+
+[[redirects]]
+  from = "/guides/"
+  to = "/guides"
+  status = 301
+
+[[redirects]]
+  from = "/webinars"
+  to = "/webinars.html"
+  status = 200
+
+[[redirects]]
+  from = "/webinars/"
+  to = "/webinars"
+  status = 301
+
+[[redirects]]
+  from = "/case-studies"
+  to = "/case-studies.html"
+  status = 200
+
+[[redirects]]
+  from = "/case-studies/"
+  to = "/case-studies"
+  status = 301
 
 # ================================
 # CV GENERATOR (NO REDIRECT LOOPS)

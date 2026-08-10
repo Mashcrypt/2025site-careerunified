@@ -225,7 +225,7 @@
 
             <div class="ra-field-grid">
               <div class="ra-field">
-                <label for="buildingNumber">House Number/Building Number <span aria-hidden="true">*</span></label>
+                <label for="buildingNumber"><span id="buildingNumberLabel">Building Number</span> <span aria-hidden="true">*</span></label>
                 <input id="buildingNumber" name="buildingNumber" type="text" maxlength="50" required>
                 <p class="ra-field-error" data-error-for="buildingNumber"></p>
               </div>
@@ -289,7 +289,6 @@
 
           <section class="ra-form-section" aria-labelledby="consentTitle">
             <div class="ra-section-heading">
-              <span class="ra-section-heading__icon" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></span>
               <div>
                 <h2 id="consentTitle">Review and consent</h2>
                 <p>Confirm the terms before sending the application for review.</p>
@@ -303,7 +302,6 @@
             <p class="ra-field-error" data-error-for="acceptTerms"></p>
 
             <div class="ra-submit-row">
-              <p><i class="fa-solid fa-lock" aria-hidden="true"></i> Your password is handled securely by Firebase Authentication and is never stored in your recruiter application.</p>
               <button class="ra-submit-button" id="submitBtn" type="submit" disabled>
                 <span>Submit recruiter application</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
               </button>
@@ -312,7 +310,7 @@
         </form>
 
         <aside class="ra-aside" aria-label="Recruiter application information">
-          <img src="/assets/images/recruiter-team.webp" alt="South African recruiters reviewing candidate applications together">
+          <img src="/assets/images/recruiter-growth-simplicity-welcome.webp" alt="Professional moving from hiring complexity toward a simpler recruitment process">
           <div class="ra-aside__content">
             <h2>What happens next?</h2>
             <ol>

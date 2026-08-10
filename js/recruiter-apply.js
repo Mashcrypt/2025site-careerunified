@@ -44,6 +44,7 @@ const confirmPassword = document.getElementById("confirmPassword");
 const email = document.getElementById("email");
 const confirmEmail = document.getElementById("confirmEmail");
 const soleProprietor = document.getElementById("soleProprietor");
+const buildingNumberLabel = document.getElementById("buildingNumberLabel");
 const registrationNumber = document.getElementById("companyRegistrationNumber");
 const registrationRequired = document.getElementById("registrationRequired");
 const registrationHint = document.getElementById("registrationHint");
@@ -326,6 +327,7 @@ function syncUrlValidity() {
 
 function syncSoleProprietorState() {
   const isSoleProprietor = soleProprietor.checked;
+  buildingNumberLabel.textContent = isSoleProprietor ? "House Number" : "Building Number";
   registrationNumber.required = !isSoleProprietor;
   registrationRequired.hidden = isSoleProprietor;
   registrationHint.textContent = isSoleProprietor

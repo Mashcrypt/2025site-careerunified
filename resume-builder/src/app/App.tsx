@@ -1668,7 +1668,6 @@ export default function App() {
           <a href="/varsity">Varsities</a>
           <a href="/cv-generator/">Generate CV</a>
           <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
-          <a href="/recruiter-apply.html">Apply as Recruiter</a>
           <a href="/saved-items.html">Saved Items</a>
           <a href="/signup.html">Sign Up</a>
           <a href="/login.html">Login</a>
@@ -1725,7 +1724,6 @@ export default function App() {
         <a href="/varsity">Varsities</a>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
-        <a href="/recruiter-apply.html">Apply as Recruiter</a>
         <a href="/saved-items.html">Saved Items</a>
         <a href="/signup.html">Sign Up</a>
         <a href="/login.html">Login</a>

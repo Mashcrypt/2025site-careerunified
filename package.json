@@ -5,7 +5,7 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "npm run build && netlify dev --dir . --functions netlify/functions",
+    "dev": "node scripts/dev.mjs",
     "dev:sanity": "sanity dev",
     "start": "npm run dev",
     "start:sanity": "sanity start",

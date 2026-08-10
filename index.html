@@ -514,7 +514,6 @@
     <a href="/cv-generator/">Generate CV</a>
     <a href="/cv-tips">CV Tips</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="recruiter-apply.html">Apply as Recruiter</a>
     <a href="saved-items.html"> Saved Items</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
@@ -560,7 +559,6 @@
   <a href="/z83-filler">Z83 Filler</a>
   <a href="/cv-tips">CV Tips</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-  <a href="recruiter-apply.html">Apply as Recruiter</a>
   <a href="saved-items.html"> Saved Items</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
@@ -666,7 +664,7 @@
 </section>
 
 <!-- RECRUITER TOOLS -->
-<section class="recruiter-home" aria-labelledby="recruiterHomeTitle">
+<section class="recruiter-home" id="recruiter-tools" aria-labelledby="recruiterHomeTitle">
   <div class="recruiter-home-inner">
     <div class="recruiter-home-copy">
       <h2 id="recruiterHomeTitle">Hire with a clearer view of every candidate.</h2>
@@ -679,33 +677,61 @@
     </div>
 
     <figure class="recruiter-home-visual">
-      <img src="/assets/images/recruiter-team.webp" alt="South African recruiters reviewing candidates together" width="1536" height="1024" loading="lazy">
+      <img src="/assets/images/recruiter-candidate-review.webp" alt="South African recruiters reviewing candidate applications together" width="1536" height="1024" loading="lazy">
       <figcaption>One workspace from vacancy to hire</figcaption>
     </figure>
 
-    <ul class="recruiter-home-benefits">
-      <li>
-        <span class="recruiter-home-icon" aria-hidden="true"><i class="fa-solid fa-bullhorn"></i></span>
-        <div>
-          <h3>Present every role properly</h3>
-          <p>Publish a branded vacancy with your company logo, role details, and a clear application route.</p>
+    <div class="recruiter-journey" data-recruiter-flow style="--journey-progress: 16.667%;">
+      <div class="recruiter-journey-nav" role="tablist" aria-label="Recruiter hiring workflow">
+        <button class="recruiter-journey-step is-active" type="button" role="tab" id="recruiterFlowAdvertiseTab" aria-controls="recruiterFlowAdvertise" aria-selected="true" data-flow-step="0">
+          <span class="recruiter-journey-number">01</span>
+          <span class="recruiter-journey-label"><strong>Publish</strong><small>Make the role clear</small></span>
+          <span class="recruiter-journey-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+        <button class="recruiter-journey-step" type="button" role="tab" id="recruiterFlowReviewTab" aria-controls="recruiterFlowReview" aria-selected="false" tabindex="-1" data-flow-step="1">
+          <span class="recruiter-journey-number">02</span>
+          <span class="recruiter-journey-label"><strong>Review</strong><small>See the whole candidate</small></span>
+          <span class="recruiter-journey-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+        <button class="recruiter-journey-step" type="button" role="tab" id="recruiterFlowHireTab" aria-controls="recruiterFlowHire" aria-selected="false" tabindex="-1" data-flow-step="2">
+          <span class="recruiter-journey-number">03</span>
+          <span class="recruiter-journey-label"><strong>Decide</strong><small>Move the right people forward</small></span>
+          <span class="recruiter-journey-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+
+      <div class="recruiter-journey-focus">
+        <div class="recruiter-journey-panels">
+          <section class="recruiter-journey-panel" id="recruiterFlowAdvertise" role="tabpanel" aria-labelledby="recruiterFlowAdvertiseTab">
+            <p class="recruiter-journey-kicker">From vacancy to a confident first click</p>
+            <h3>A role candidates understand <span>before they apply.</span></h3>
+            <p>Bring your employer brand, requirements, and application route together in one clear vacancy.</p>
+            <div class="recruiter-journey-outcomes" aria-label="Vacancy publishing benefits">
+              <span>Branded vacancy</span><span>Clear requirements</span><span>Flexible apply route</span>
+            </div>
+          </section>
+
+          <section class="recruiter-journey-panel" id="recruiterFlowReview" role="tabpanel" aria-labelledby="recruiterFlowReviewTab" hidden>
+            <p class="recruiter-journey-kicker">Less admin, better comparisons</p>
+            <h3>Every application arrives <span>ready to review.</span></h3>
+            <p>Candidate profiles, CVs, and screening answers stay together, so your team can compare people consistently.</p>
+            <div class="recruiter-journey-outcomes" aria-label="Candidate review benefits">
+              <span>Complete profiles</span><span>CVs in one view</span><span>Screening answers</span>
+            </div>
+          </section>
+
+          <section class="recruiter-journey-panel" id="recruiterFlowHire" role="tabpanel" aria-labelledby="recruiterFlowHireTab" hidden>
+            <p class="recruiter-journey-kicker">A hiring process that keeps moving</p>
+            <h3>Turn promising applicants into <span>clear next steps.</span></h3>
+            <p>Shortlist, add private notes, and update candidates without losing the context behind each decision.</p>
+            <div class="recruiter-journey-outcomes" aria-label="Hiring workflow benefits">
+              <span>Focused shortlists</span><span>Shared notes</span><span>Candidate updates</span>
+            </div>
+          </section>
         </div>
-      </li>
-      <li>
-        <span class="recruiter-home-icon" aria-hidden="true"><i class="fa-solid fa-file-circle-check"></i></span>
-        <div>
-          <h3>Compare consistent applications</h3>
-          <p>Review candidate profiles, CVs, and screening answers together instead of chasing missing information.</p>
-        </div>
-      </li>
-      <li>
-        <span class="recruiter-home-icon" aria-hidden="true"><i class="fa-solid fa-list-check"></i></span>
-        <div>
-          <h3>Keep the hiring process moving</h3>
-          <p>Shortlist, add notes, contact candidates, and manage each vacancy from one recruitment pipeline.</p>
-        </div>
-      </li>
-    </ul>
+
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1106,6 +1132,50 @@ function isCloseTie(best, second) {
   const scoreClose = best.v <= second.v * 1.25;
   const availabilityClose = best.raw <= second.raw + 2;
   return scoreClose || availabilityClose;
+}
+
+/* ================= RECRUITER WORKFLOW ================= */
+const recruiterFlowRoot = document.querySelector('[data-recruiter-flow]');
+if (recruiterFlowRoot) {
+  const recruiterFlowTabs = Array.from(recruiterFlowRoot.querySelectorAll('[role="tab"]'));
+  const recruiterFlowPanels = Array.from(recruiterFlowRoot.querySelectorAll('[role="tabpanel"]'));
+
+  const activateRecruiterFlowStep = (nextIndex, moveFocus = false) => {
+    const index = Math.max(0, Math.min(nextIndex, recruiterFlowTabs.length - 1));
+    const activeTab = recruiterFlowTabs[index];
+
+    recruiterFlowTabs.forEach((tab, tabIndex) => {
+      const isActive = tabIndex === index;
+      tab.classList.toggle('is-active', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+    });
+
+    recruiterFlowPanels.forEach((panel) => {
+      panel.hidden = panel.id !== activeTab.getAttribute('aria-controls');
+    });
+
+    recruiterFlowRoot.style.setProperty('--journey-progress', `${((index * 2 + 1) / (recruiterFlowTabs.length * 2)) * 100}%`);
+    if (moveFocus) activeTab.focus();
+  };
+
+  recruiterFlowTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => activateRecruiterFlowStep(index));
+    tab.addEventListener('pointerenter', (event) => {
+      if (event.pointerType === 'mouse') activateRecruiterFlowStep(index);
+    });
+    tab.addEventListener('keydown', (event) => {
+      let nextIndex = index;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % recruiterFlowTabs.length;
+      else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + recruiterFlowTabs.length) % recruiterFlowTabs.length;
+      else if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = recruiterFlowTabs.length - 1;
+      else return;
+
+      event.preventDefault();
+      activateRecruiterFlowStep(nextIndex, true);
+    });
+  });
 }
 
 async function fetchCountsFromSanity(term) {

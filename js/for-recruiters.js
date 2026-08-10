@@ -10,8 +10,8 @@
         "Clear signals explaining why each candidate is relevant",
         "Recruiter-controlled shortlists with no automatic rejection"
       ],
-      image: "/assets/images/recruiter-team.webp",
-      alt: "South African recruiters reviewing AI-matched candidates"
+      image: "/assets/images/recruiter-illustration-option-1.webp",
+      alt: "Recruiters comparing shortlisted candidate profiles"
     },
     applications: {
       headline: "Review the whole application, not just a filename",

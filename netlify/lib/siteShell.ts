@@ -78,7 +78,6 @@ export function renderSiteNavigation(activeSection: ActiveSection) {
     <a href="/z83-filler">Z83 Filler</a>
     <a href="/cv-tips">CV Tips</a>
     <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
-    <a href="/recruiter-apply.html">Apply as Recruiter</a>
     <a href="/saved-items.html">Saved Items</a>
     <a href="/signup.html">Sign Up</a>
     <a href="/login.html">Login</a>
