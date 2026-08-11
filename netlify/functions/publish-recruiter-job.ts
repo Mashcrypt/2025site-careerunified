@@ -169,12 +169,20 @@ function dateValue(value: any) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function hasActiveSubscription(recruiter: any, now: Date) {
+function hasActiveRecruiterAccess(recruiter: any, now: Date) {
   const end = dateValue(recruiter?.subscriptionCurrentPeriodEnd);
-  return recruiter?.plan && recruiter.plan !== "free"
+  const hasPaidSubscription = recruiter?.plan && recruiter.plan !== "free"
     && recruiter?.subscriptionStatus === "active"
     && !!end
     && end.getTime() > now.getTime();
+
+  const trialEnd = dateValue(recruiter?.trialEndsAt);
+  const hasActiveTrial = recruiter?.plan === "pro"
+    && recruiter?.subscriptionStatus === "trialing"
+    && !!trialEnd
+    && trialEnd.getTime() > now.getTime();
+
+  return hasPaidSubscription || hasActiveTrial;
 }
 
 export const handler: Handler = async (event) => {
@@ -234,9 +242,9 @@ export const handler: Handler = async (event) => {
       if (existing && existing.recruiterId !== decoded.uid) throw new PublishError(403, "You cannot edit this vacancy.");
 
       const alreadyPublished = existing?.status === "active";
-      const subscribed = hasActiveSubscription(recruiter, now);
+      const hasPlanAccess = hasActiveRecruiterAccess(recruiter, now);
       const credits = Math.max(0, Number(recruiter.singleJobCredits || 0));
-      const useSingleJobCredit = !subscribed && !alreadyPublished;
+      const useSingleJobCredit = !hasPlanAccess && !alreadyPublished;
 
       if (useSingleJobCredit && credits < 1) {
         throw new PublishError(402, "Choose the R199 single-job offer or a monthly package before publishing.");

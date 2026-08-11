@@ -249,6 +249,14 @@
     background: #f2f8ff;
   }
 
+  .recruiter-trial-offer {
+    margin-bottom: 18px;
+    border-color: #bfdbfe;
+    background: #f8fbff;
+  }
+
+  .recruiter-trial-offer .recruiter-single-offer-icon { background: #e8f1ff; }
+
   .recruiter-single-offer-icon {
     width: 46px;
     height: 46px;
@@ -1795,6 +1803,61 @@
   .application-review-actions button { display: inline-flex; align-items: center; gap: 6px; }
   .application-note { display: grid; gap: 8px; margin-top: 18px; }
   .application-note textarea { min-height: 96px; }
+  .application-communication {
+    margin-top: 22px;
+    padding: 16px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+  .application-communication-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .application-communication-head h3 { margin: 0; }
+  .application-communication-head p { margin: 5px 0 0; }
+  .application-message-composer {
+    display: grid;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dbeafe;
+  }
+  .application-message-composer[hidden] { display: none; }
+  .application-message-grid {
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    gap: 10px;
+  }
+  .application-message-composer label { display: grid; gap: 6px; color: #334155; font-size: 12px; font-weight: 700; }
+  .application-message-composer input,
+  .application-message-composer select,
+  .application-message-composer textarea {
+    width: 100%;
+    padding: 10px 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+  }
+  .application-message-composer textarea { min-height: 180px; resize: vertical; line-height: 1.5; }
+  .application-message-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .application-message-actions .primary-btn { display: inline-flex; align-items: center; gap: 6px; }
+  .application-message-history { display: grid; gap: 8px; margin-top: 15px; }
+  .application-message-history h4 { margin: 0; font-size: 13px; color: #334155; }
+  .application-message-item {
+    padding: 10px 11px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .application-message-item summary { cursor: pointer; color: #1e3a8a; font-size: 13px; font-weight: 800; }
+  .application-message-item summary span { color: #64748b; font-size: 11px; font-weight: 600; }
+  .application-message-item p { margin: 9px 0 0; color: #334155; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+  .application-message-empty { margin: 0; color: #64748b; font-size: 12px; }
 
   /* ======================================================
      RECRUITER WORK INBOX + VACANCY WORKSPACE
@@ -2100,6 +2163,10 @@
     .screening-toolbar,.screening-config { grid-template-columns: 1fr; }
     .application-detail-grid { grid-template-columns: 1fr; }
     .application-review-panel { padding: 18px; }
+    .application-message-grid { grid-template-columns: 1fr; }
+    .application-communication-head { flex-direction: column; }
+    .application-communication-head .primary-btn,
+    .application-message-actions .primary-btn { width: 100%; justify-content: center; }
     .inbox-kpis,.workspace-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .inbox-kpi:nth-child(2),.workspace-kpi:nth-child(2) { border-right: 0; }
     .inbox-kpi:nth-child(-n+2),.workspace-kpi:nth-child(-n+2) { border-bottom: 1px solid #e5e7eb; }
@@ -3282,6 +3349,27 @@
       <p>Choose the candidate access that matches your hiring volume. Every package includes vacancy publishing, direct applications, screening, and candidate communication tools.</p>
     </div>
 
+    <article class="recruiter-single-offer recruiter-trial-offer">
+      <div class="recruiter-single-offer-icon" aria-hidden="true"><i class='bx bx-rocket'></i></div>
+      <div class="recruiter-single-offer-content">
+        <div class="recruiter-single-offer-title">
+          <span>New recruiter offer</span>
+          <h3>Try Growth free for 7 days</h3>
+        </div>
+        <p>Publish vacancies, collect Direct Apply applications, review candidates, and test your recruitment workflow before choosing a package.</p>
+        <div class="recruiter-single-offer-benefits" aria-label="Free trial benefits">
+          <span><i class='bx bx-check' aria-hidden="true"></i>7 days of Growth tools</span>
+          <span><i class='bx bx-check' aria-hidden="true"></i>200 CV unlocks</span>
+          <span><i class='bx bx-check' aria-hidden="true"></i>No payment method required</span>
+        </div>
+      </div>
+      <div class="recruiter-single-offer-action">
+        <p class="recruiter-single-offer-price"><strong>Free</strong> for 7 days</p>
+        <button class="primary-btn" id="recruiterTrialBtn" type="button" onclick="startRecruiterTrial()">Start free trial</button>
+        <p class="recruiter-single-offer-status" id="recruiterTrialStatus">One trial per recruiter account</p>
+      </div>
+    </article>
+
     <article class="recruiter-single-offer">
       <div class="recruiter-single-offer-icon" aria-hidden="true"><i class='bx bx-briefcase'></i></div>
       <div class="recruiter-single-offer-content">
@@ -4384,8 +4472,53 @@ function isRecruiterSubscriptionActive() {
   return !!periodEnd && periodEnd.getTime() > Date.now();
 }
 
+function isRecruiterTrialActive() {
+  if (!recruiterData || recruiterData.plan !== "pro") return false;
+  if (recruiterData.subscriptionStatus !== "trialing") return false;
+  const trialEnd = toDateValue(recruiterData.trialEndsAt);
+  return !!trialEnd && trialEnd.getTime() > Date.now();
+}
+
+function hasRecruiterPlanAccess() {
+  return isRecruiterSubscriptionActive() || isRecruiterTrialActive();
+}
+
 function effectiveRecruiterPlan() {
-  return isRecruiterSubscriptionActive() ? recruiterData.plan : "free";
+  return hasRecruiterPlanAccess() ? recruiterData.plan : "free";
+}
+
+function trialDaysRemaining() {
+  const trialEnd = toDateValue(recruiterData?.trialEndsAt);
+  if (!trialEnd) return 0;
+  return Math.max(0, Math.ceil((trialEnd.getTime() - Date.now()) / 86_400_000));
+}
+
+function hasRecruiterTrialHistory() {
+  return !!(
+    recruiterData?.trialClaimedAt
+    || recruiterData?.trialStartedAt
+    || recruiterData?.trialEndsAt
+    || recruiterData?.subscriptionCurrentPeriodStart
+    || recruiterData?.subscriptionCurrentPeriodEnd
+  );
+}
+
+let recruiterTrialExpiryTimer = null;
+
+function scheduleRecruiterTrialExpiry() {
+  if (recruiterTrialExpiryTimer) {
+    clearTimeout(recruiterTrialExpiryTimer);
+    recruiterTrialExpiryTimer = null;
+  }
+
+  const trialEnd = toDateValue(recruiterData?.trialEndsAt);
+  if (!isRecruiterTrialActive() || !trialEnd) return;
+
+  recruiterTrialExpiryTimer = setTimeout(async () => {
+    await loadRecruiterData();
+    updatePlanBadges();
+    await loadCVs();
+  }, Math.max(0, trialEnd.getTime() - Date.now() + 1_000));
 }
 
 /* ======================================================
@@ -4425,7 +4558,7 @@ window.startPayFastUpgrade = async function (plan) {
   if (!cfg) return alert("Unknown plan.");
   if (!currentRecruiter) return alert("Please login again.");
 
-  if ((recruiterData?.plan || "free") === plan) {
+  if (isRecruiterSubscriptionActive() && recruiterData?.plan === plan) {
     alert(`You are already on the ${cfg.label} plan.`);
     return;
   }
@@ -4481,6 +4614,65 @@ window.startPayFastUpgrade = async function (plan) {
     if (btn) {
       btn.disabled = false;
       btn.textContent = cfg.buttonLabel;
+    }
+  }
+};
+
+window.startRecruiterTrial = async function () {
+  if (!currentRecruiter) return alert("Please login again.");
+
+  if (isRecruiterTrialActive()) {
+    alert("Your free trial is already active.");
+    return;
+  }
+
+  if (hasRecruiterTrialHistory()) {
+    alert("The free trial is only available once for new recruiter accounts.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "Start your 7-day Growth trial?\n\n" +
+      "You can publish vacancies, collect applications, and use 200 CV unlocks. No payment method is required."
+  );
+  if (!confirmed) return;
+
+  const button = document.getElementById("recruiterTrialBtn");
+  const originalLabel = button?.textContent || "Start free trial";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Starting...";
+    }
+
+    const idToken = await currentRecruiter.getIdToken();
+    const response = await fetch("/.netlify/functions/start-recruiter-trial", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      alert(result?.error || "Could not start the free trial. Please try again.");
+      return;
+    }
+
+    await loadRecruiterData();
+    updatePlanBadges();
+    await loadCVs();
+    showToast("success", "Free trial started", "Growth tools are available for 7 days. You can now publish a vacancy and test the full workflow.", 5200);
+  } catch (error) {
+    console.error("startRecruiterTrial error:", error);
+    alert("Network error starting the free trial. Please try again.");
+  } finally {
+    if (button && !isRecruiterTrialActive()) {
+      button.disabled = false;
+      button.textContent = originalLabel;
     }
   }
 };
@@ -4687,7 +4879,7 @@ async function loadRecruiterData() {
       await setDoc(recruiterRef, recruiterData);
     }
 
-    if (recruiterData.plan !== 'free' && !isRecruiterSubscriptionActive()) {
+    if (recruiterData.plan !== 'free' && !hasRecruiterPlanAccess()) {
       recruiterData = {
         ...recruiterData,
         plan: 'free',
@@ -6259,41 +6451,111 @@ function candidateWhatsAppUrl(candidate, job) {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
-function candidateEmailUrl(candidate, job, status) {
-  const email = dashboardText(candidate?.email).trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return '';
-
-  const name = dashboardText(candidate?.fullName, 'there');
-  const role = dashboardText(job?.title, 'the role');
-  const company = dashboardText(job?.company || companyProfile?.name, 'our team');
+function applicationEmailTemplate(application, type = 'application_update') {
+  const candidate = application?.candidateSnapshot || {};
+  const job = application?.jobSnapshot || {};
+  const name = dashboardText(candidate.fullName, 'there');
+  const role = dashboardText(job.title, 'the role');
+  const company = dashboardText(job.company || companyProfile?.name, 'our recruitment team');
   const templates = {
-    shortlisted: {
+    application_update: {
       subject: `Application update: ${role}`,
-      message: `Thank you for applying for ${role}. We are pleased to let you know that your application has been shortlisted. We will contact you with the next steps shortly.`,
+      message: `Hi ${name},\n\nThank you for applying for ${role} at ${company}. Your application is being reviewed and we will contact you when there is a next step.\n\nKind regards,\n${company}`,
+    },
+    shortlisted: {
+      subject: `You have been shortlisted: ${role}`,
+      message: `Hi ${name},\n\nThank you for applying for ${role}. We are pleased to let you know that your application has been shortlisted. We will be in touch with the next step shortly.\n\nKind regards,\n${company}`,
+    },
+    request_information: {
+      subject: `A quick request about your application: ${role}`,
+      message: `Hi ${name},\n\nThank you for applying for ${role}. Before we continue our review, please reply with the additional information below:\n\n[Add the information you need here]\n\nKind regards,\n${company}`,
     },
     interview: {
       subject: `Interview invitation: ${role}`,
-      message: `Thank you for your interest in ${role}. We would like to invite you to the interview stage. Please reply to this email so that we can confirm a suitable date and time.`,
+      message: `Hi ${name},\n\nThank you for your interest in ${role}. We would like to invite you to an interview. Please reply with your availability and we will confirm the date, time, and format.\n\nKind regards,\n${company}`,
     },
     offer: {
-      subject: `Application update: ${role}`,
-      message: `We are pleased to let you know that we would like to progress your application for ${role} to the offer stage. We will share the formal details with you shortly.`,
+      subject: `Next step for your application: ${role}`,
+      message: `Hi ${name},\n\nWe are pleased to let you know that we would like to progress your application for ${role} to the offer stage. We will share the formal details and next steps with you shortly.\n\nKind regards,\n${company}`,
     },
-    hired: {
-      subject: `Successful application: ${role}`,
-      message: `We are pleased to confirm that your application for ${role} has been successful. Our team will contact you with the onboarding details and next steps.`,
-    },
-    unsuccessful: {
+    outcome: {
       subject: `Application outcome: ${role}`,
-      message: `Thank you for the time and effort you invested in applying for ${role}. After careful consideration, we will not be progressing your application further. We appreciate your interest and wish you well with your job search.`,
+      message: `Hi ${name},\n\nThank you for the time and effort you invested in applying for ${role}. After careful consideration, we will not be progressing your application further. We appreciate your interest and wish you well with your job search.\n\nKind regards,\n${company}`,
+    },
+    custom: {
+      subject: `Your application for ${role}`,
+      message: `Hi ${name},\n\n\n\nKind regards,\n${company}`,
     },
   };
-  const template = templates[status] || {
-    subject: `Your application for ${role}`,
-    message: `Thank you for your application for ${role}. We are writing with an update about your application.`,
-  };
-  const body = `Hi ${name},\n\n${template.message}\n\nKind regards,\n${company}`;
-  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(template.subject)}&body=${encodeURIComponent(body)}`;
+  return templates[type] || templates.application_update;
+}
+
+function applicationMessageDate(value) {
+  const date = toDateValue(value);
+  if (!date) return 'Date unavailable';
+  return date.toLocaleString('en-ZA', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function applicationMessageHistoryMarkup(messages) {
+  const sentMessages = messages.filter(message => message.status === 'sent');
+  if (!sentMessages.length) {
+    return `<div class="application-message-history"><h4>Sent email history</h4><p class="application-message-empty">No messages have been sent through Career Unified yet.</p></div>`;
+  }
+  return `
+    <div class="application-message-history">
+      <h4>Sent email history</h4>
+      ${sentMessages.slice(0, 8).map(message => `
+        <details class="application-message-item">
+          <summary>${escapeDashboard(message.subject, 'Candidate update')} <span>· ${escapeDashboard(applicationMessageDate(message.sentAt || message.createdAt))}</span></summary>
+          <p>${escapeDashboard(message.body)}</p>
+        </details>`).join('')}
+    </div>`;
+}
+
+async function loadRecruiterApplicationMessages(applicationId) {
+  if (!currentRecruiter) return [];
+  const token = await currentRecruiter.getIdToken();
+  const response = await fetch(
+    `/.netlify/functions/get-application-messages?applicationId=${encodeURIComponent(applicationId)}`,
+    {headers: {"Authorization": `Bearer ${token}`}},
+  );
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'Could not load email history.');
+  return Array.isArray(result.messages) ? result.messages : [];
+}
+
+async function postApplicationMessage(applicationId, payload) {
+  const token = await currentRecruiter.getIdToken();
+  const response = await fetch('/.netlify/functions/send-application-message', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({applicationId, ...payload}),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'Could not send this email.');
+  return result;
+}
+
+function nextApplicationMessageId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID().replace(/-/g, '');
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 16)}`;
+}
+
+function populateApplicationMessageForm(application, type) {
+  const template = applicationEmailTemplate(application, type);
+  const subject = document.getElementById('applicationMessageSubject');
+  const message = document.getElementById('applicationMessageBody');
+  if (subject) subject.value = template.subject;
+  if (message) message.value = template.message;
 }
 
 async function openRecruiterApplication(applicationId) {
@@ -6312,11 +6574,20 @@ async function openRecruiterApplication(applicationId) {
   }
 
   let privateNote = "";
-  try {
-    const noteSnapshot = await getDoc(doc(db, "applicationNotes", applicationId));
-    privateNote = noteSnapshot.exists() ? dashboardText(noteSnapshot.data()?.note) : "";
-  } catch (error) {
-    console.error("load application note error:", error);
+  let messageHistory = [];
+  const [noteResult, messageResult] = await Promise.allSettled([
+    getDoc(doc(db, "applicationNotes", applicationId)),
+    loadRecruiterApplicationMessages(applicationId),
+  ]);
+  if (noteResult.status === "fulfilled") {
+    privateNote = noteResult.value.exists() ? dashboardText(noteResult.value.data()?.note) : "";
+  } else {
+    console.error("load application note error:", noteResult.reason);
+  }
+  if (messageResult.status === "fulfilled") {
+    messageHistory = messageResult.value;
+  } else {
+    console.error("load application messages error:", messageResult.reason);
   }
 
   application = recruiterApplicationsCache.find(item => item.id === applicationId) || application;
@@ -6324,7 +6595,7 @@ async function openRecruiterApplication(applicationId) {
   const job = application.jobSnapshot || {};
   const answers = Array.isArray(application.answers) ? application.answers : [];
   const whatsappUrl = candidateWhatsAppUrl(candidate, job);
-  const emailUrl = candidateEmailUrl(candidate, job, application.status);
+  const hasCandidateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dashboardText(candidate.email));
   const modal = document.getElementById("applicationReviewModal");
   const content = document.getElementById("applicationReviewContent");
   if (!modal || !content) return;
@@ -6357,9 +6628,45 @@ async function openRecruiterApplication(applicationId) {
     <div class="application-review-actions">
       <button class="primary-btn" type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-file'></i> Open submitted CV</button>
       <button class="primary-btn btn-secondary" type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download CV</button>
-      ${emailUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(emailUrl)}"><i class='bx bx-envelope'></i> Email status update</a>` : ''}
       ${whatsappUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(whatsappUrl)}" target="_blank" rel="noopener noreferrer"><i class='bx bxl-whatsapp'></i> WhatsApp candidate</a>` : ''}
     </div>
+
+    <section class="application-communication" aria-labelledby="applicationCommunicationTitle">
+      <div class="application-communication-head">
+        <div>
+          <h3 id="applicationCommunicationTitle">Candidate communication</h3>
+          <p class="muted">Send a clear email and keep the candidate-visible history in one place.</p>
+        </div>
+        ${hasCandidateEmail ? `<button class="primary-btn" type="button" data-toggle-application-message="${escapeDashboard(applicationId)}"><i class='bx bx-envelope'></i> Email candidate</button>` : `<span class="muted" style="font-size:12px;">No valid candidate email is available.</span>`}
+      </div>
+      ${hasCandidateEmail ? `
+        <form class="application-message-composer" id="applicationMessageForm" data-application-id="${escapeDashboard(applicationId)}" hidden>
+          <div class="application-message-grid">
+            <label>Email type
+              <select id="applicationMessageType" name="type">
+                <option value="application_update">Application update</option>
+                <option value="shortlisted">Shortlisted</option>
+                <option value="request_information">Request information</option>
+                <option value="interview">Interview invitation</option>
+                <option value="offer">Offer stage</option>
+                <option value="outcome">Application outcome</option>
+                <option value="custom">Write a custom message</option>
+              </select>
+            </label>
+            <label>Subject
+              <input id="applicationMessageSubject" name="subject" maxlength="180" required>
+            </label>
+          </div>
+          <label>Message
+            <textarea id="applicationMessageBody" name="message" maxlength="5000" required></textarea>
+          </label>
+          <div class="application-message-actions">
+            <button class="primary-btn" type="submit"><i class='bx bx-send'></i> Send email</button>
+            <span class="muted" style="font-size:12px;">Sent from Career Unified. Replies go to the company email on your profile.</span>
+          </div>
+        </form>` : ''}
+      ${applicationMessageHistoryMarkup(messageHistory)}
+    </section>
 
     <h3>Screening answers</h3>
     <div class="answer-list">
@@ -6462,6 +6769,41 @@ async function openApplicationCv(applicationId, download = false) {
   }
 }
 
+async function sendRecruiterApplicationMessage(form) {
+  const applicationId = dashboardText(form.dataset.applicationId);
+  const type = dashboardText(form.querySelector('[name="type"]')?.value, 'application_update');
+  const subject = dashboardText(form.querySelector('[name="subject"]')?.value);
+  const message = dashboardText(form.querySelector('[name="message"]')?.value);
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  if (!applicationId || !subject || !message) {
+    showToast('warn', 'Complete the email', 'Add a subject and message before sending.', 3200);
+    return;
+  }
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Sending";
+  }
+
+  try {
+    await postApplicationMessage(applicationId, {
+      type,
+      subject,
+      message,
+      clientMessageId: nextApplicationMessageId(),
+    });
+    showToast('success', 'Email sent', 'The candidate can also see this update in their application history.', 3600);
+    await openRecruiterApplication(applicationId);
+  } catch (error) {
+    showToast('error', 'Email not sent', error.message || 'Could not send this email.', 4200);
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.innerHTML = "<i class='bx bx-send'></i> Send email";
+    }
+  }
+}
+
 document.addEventListener("click", async event => {
   const reviewButton = event.target.closest("[data-review-application]");
   if (reviewButton) {
@@ -6470,6 +6812,18 @@ document.addEventListener("click", async event => {
   }
   if (event.target.closest("[data-close-application-review]")) {
     closeApplicationReview();
+    return;
+  }
+  const messageButton = event.target.closest("[data-toggle-application-message]");
+  if (messageButton) {
+    const form = document.getElementById("applicationMessageForm");
+    if (!form) return;
+    form.hidden = !form.hidden;
+    if (!form.hidden) {
+      const application = recruiterApplicationsCache.find(item => item.id === messageButton.dataset.toggleApplicationMessage);
+      populateApplicationMessageForm(application, "application_update");
+      form.querySelector('[name="message"]')?.focus();
+    }
     return;
   }
   const statusButton = event.target.closest("[data-set-application-status]");
@@ -6492,6 +6846,21 @@ document.addEventListener("click", async event => {
   if (downloadCvButton) {
     await openApplicationCv(downloadCvButton.dataset.downloadApplicationCv, true);
   }
+});
+
+document.addEventListener("change", event => {
+  if (event.target.id !== "applicationMessageType") return;
+  const form = event.target.closest("#applicationMessageForm");
+  const applicationId = dashboardText(form?.dataset.applicationId);
+  const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+  populateApplicationMessageForm(application, event.target.value);
+});
+
+document.addEventListener("submit", async event => {
+  const form = event.target.closest("#applicationMessageForm");
+  if (!form) return;
+  event.preventDefault();
+  await sendRecruiterApplicationMessage(form);
 });
 
 document.getElementById("applicationReviewModal")?.addEventListener("click", event => {
@@ -6966,14 +7335,43 @@ window.selectPlan = async function(plan, unlocks) {
 function updatePlanBadges() {
   const activePlan = effectiveRecruiterPlan();
   const planName = PLAN_CONFIG[activePlan]?.label || "FREE";
-  document.getElementById('currentPlanBadge').textContent = `${planName} Plan`;
+  const isTrial = isRecruiterTrialActive();
+  document.getElementById('currentPlanBadge').textContent = isTrial ? `${planName} Trial` : `${planName} Plan`;
+
+  const recruiterTrialBtn = document.getElementById('recruiterTrialBtn');
+  const recruiterTrialStatus = document.getElementById('recruiterTrialStatus');
+  const trialWasUsed = hasRecruiterTrialHistory();
+  if (recruiterTrialBtn && recruiterTrialStatus) {
+    if (isTrial) {
+      const days = trialDaysRemaining();
+      recruiterTrialBtn.disabled = true;
+      recruiterTrialBtn.textContent = 'Trial active';
+      recruiterTrialStatus.textContent = `${days} day${days === 1 ? '' : 's'} remaining`;
+    } else if (isRecruiterSubscriptionActive()) {
+      recruiterTrialBtn.disabled = true;
+      recruiterTrialBtn.textContent = 'Included in your plan';
+      recruiterTrialStatus.textContent = 'Your current plan already includes these features';
+    } else if (trialWasUsed) {
+      recruiterTrialBtn.disabled = true;
+      recruiterTrialBtn.textContent = 'Trial used';
+      recruiterTrialStatus.textContent = 'Your 7-day trial has already been used';
+    } else {
+      recruiterTrialBtn.disabled = false;
+      recruiterTrialBtn.textContent = 'Start free trial';
+      recruiterTrialStatus.textContent = 'One trial per recruiter account';
+    }
+  }
+
+  scheduleRecruiterTrialExpiry();
 
   const singleJobCredits = Math.max(0, Number(recruiterData?.singleJobCredits || 0));
   const singleJobCreditStatus = document.getElementById('singleJobCreditStatus');
   const singleJobOfferBtn = document.getElementById('singleJobOfferBtn');
   if (singleJobCreditStatus) {
     singleJobCreditStatus.textContent = activePlan !== 'free'
-      ? 'Vacancy publishing is included in your plan'
+      ? isTrial
+        ? `Vacancy publishing is included for ${trialDaysRemaining()} more day${trialDaysRemaining() === 1 ? '' : 's'}`
+        : 'Vacancy publishing is included in your plan'
       : singleJobCredits > 0
         ? `${singleJobCredits} single-job credit${singleJobCredits === 1 ? '' : 's'} ready to use`
         : 'No subscription required';
@@ -6996,10 +7394,12 @@ function updatePlanBadges() {
     }
   });
 
-  const currentBtn = buttons[effectiveRecruiterPlan()];
-  if (currentBtn) {
+  const currentBtn = buttons[activePlan];
+  if (currentBtn && !isTrial) {
     currentBtn.disabled = true;
     currentBtn.textContent = 'Current Plan';
+  } else if (isTrial && buttons.pro) {
+    buttons.pro.textContent = 'Continue with Growth';
   }
 }
 

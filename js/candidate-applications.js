@@ -1,12 +1,5 @@
 import {getApp, getApps} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {getAuth, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const STATUS_COPY = {
   submitted: {
@@ -52,6 +45,7 @@ const STATUS_COPY = {
 };
 
 let applications = [];
+let messagesByApplication = new Map();
 let currentUser = null;
 let hasLoaded = false;
 
@@ -97,6 +91,23 @@ function statusClass(status) {
 function jobUrl(application) {
   const slug = safeText(application.jobSnapshot?.slug);
   return slug ? `/jobs/${encodeURIComponent(slug)}` : "/jobs.html";
+}
+
+function applicationMessagesMarkup(applicationId) {
+  const messages = (messagesByApplication.get(applicationId) || [])
+    .filter(message => message.status === "sent")
+    .slice(0, 6);
+  if (!messages.length) return "";
+
+  return `
+    <section class="candidate-application-messages" aria-label="Messages from the employer">
+      <h4>Updates from the employer</h4>
+      ${messages.map(message => `
+        <details class="candidate-application-message">
+          <summary>${escapeHtml(message.subject, "Application update")} <span>${escapeHtml(formatDate(message.sentAt || message.createdAt))}</span></summary>
+          <p>${escapeHtml(message.body)}</p>
+        </details>`).join("")}
+    </section>`;
 }
 
 function renderApplications() {
@@ -147,6 +158,8 @@ function renderApplications() {
           <span>CV: ${escapeHtml(application.cvSnapshot?.fileName, "Submitted CV")}</span>
         </div>
 
+        ${applicationMessagesMarkup(application.id)}
+
         <div class="candidate-application-actions">
           <a class="btn btn-primary" href="${escapeHtml(jobUrl(application))}">View Job</a>
           <button class="btn btn-secondary" type="button" data-candidate-cv="${escapeHtml(application.id)}">View submitted CV</button>
@@ -162,16 +175,31 @@ async function loadApplications() {
   list.innerHTML = `<p style="color:#6b7280;">Loading your applications...</p>`;
 
   try {
-    const db = getFirestore(getApp());
-    const snapshot = await getDocs(query(
-      collection(db, "applications"),
-      where("candidateId", "==", currentUser.uid),
-    ));
-    applications = snapshot.docs
-      .map(application => ({id: application.id, ...application.data()}))
+    const [applicationsResult, messagesResult] = await Promise.allSettled([
+      applicationRequest("/.netlify/functions/get-candidate-applications")
+        .then(response => response.json()),
+      loadCandidateApplicationMessages(),
+    ]);
+    if (applicationsResult.status !== "fulfilled") throw applicationsResult.reason;
+
+    applications = (Array.isArray(applicationsResult.value?.applications)
+      ? applicationsResult.value.applications
+      : [])
       .sort((left, right) =>
         (toDate(right.submittedAt)?.getTime() || 0) - (toDate(left.submittedAt)?.getTime() || 0)
       );
+    const messages = messagesResult.status === "fulfilled" ? messagesResult.value : [];
+    messagesByApplication = new Map();
+    messages.forEach(data => {
+      if (!data.applicationId || data.status !== "sent") return;
+      const messages = messagesByApplication.get(data.applicationId) || [];
+      messages.push(data);
+      messagesByApplication.set(data.applicationId, messages);
+    });
+    messagesByApplication.forEach(messages => messages.sort((left, right) =>
+      (toDate(right.sentAt || right.createdAt)?.getTime() || 0)
+      - (toDate(left.sentAt || left.createdAt)?.getTime() || 0)
+    ));
     hasLoaded = true;
     renderApplications();
 
@@ -200,6 +228,12 @@ async function applicationRequest(path, options = {}) {
     throw new Error(payload.error || "The application could not be updated.");
   }
   return response;
+}
+
+async function loadCandidateApplicationMessages() {
+  const response = await applicationRequest("/.netlify/functions/get-application-messages");
+  const payload = await response.json().catch(() => ({}));
+  return Array.isArray(payload.messages) ? payload.messages : [];
 }
 
 async function openSubmittedCv(applicationId) {

@@ -78,12 +78,20 @@ function timestampToDate(value: any) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function hasActiveSubscription(recruiter: any) {
+function hasActiveRecruiterAccess(recruiter: any) {
   const periodEnd = timestampToDate(recruiter?.subscriptionCurrentPeriodEnd);
-  return recruiter?.plan && recruiter.plan !== "free"
+  const hasPaidSubscription = recruiter?.plan && recruiter.plan !== "free"
     && recruiter?.subscriptionStatus === "active"
     && !!periodEnd
     && periodEnd.getTime() > Date.now();
+
+  const trialEnd = timestampToDate(recruiter?.trialEndsAt);
+  const hasActiveTrial = recruiter?.plan === "pro"
+    && recruiter?.subscriptionStatus === "trialing"
+    && !!trialEnd
+    && trialEnd.getTime() > Date.now();
+
+  return hasPaidSubscription || hasActiveTrial;
 }
 
 export const handler: Handler = async (event) => {
@@ -113,7 +121,7 @@ export const handler: Handler = async (event) => {
     const recruiterRef = admin.firestore().doc(`recruiters/${recruiterId}`);
     const recruiterSnap = await recruiterRef.get();
     const recruiter = recruiterSnap.data() || {};
-    if (hasActiveSubscription(recruiter)) {
+    if (hasActiveRecruiterAccess(recruiter)) {
       return json(409, { error: "Vacancy publishing is already included in your active plan." }, baseHeaders);
     }
 

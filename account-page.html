@@ -827,6 +827,48 @@
             margin-top: 1rem;
         }
 
+        .candidate-application-messages {
+            display: grid;
+            gap: 0.55rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .candidate-application-messages h4 {
+            margin: 0;
+            color: #334155;
+            font-size: 0.85rem;
+        }
+
+        .candidate-application-message {
+            padding: 0.7rem 0.8rem;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            background: #f8fbff;
+        }
+
+        .candidate-application-message summary {
+            cursor: pointer;
+            color: #1e3a8a;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .candidate-application-message summary span {
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .candidate-application-message p {
+            margin: 0.7rem 0 0;
+            color: #374151;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
         .application-success-note {
             display: none;
             margin: 0.9rem 0 1.2rem;
@@ -3130,7 +3172,7 @@ Platform: ${navigator.platform}
         });
     }
     </script>
-    <script type="module" src="/js/candidate-applications.js"></script>
+    <script type="module" src="/js/candidate-applications.js?v=20260811"></script>
 <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

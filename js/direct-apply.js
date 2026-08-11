@@ -1,13 +1,9 @@
 import {getApp, getApps, initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {getAuth, getIdToken, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
   getFirestore,
-  query,
-  where,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -408,21 +404,20 @@ async function loadApplication(user) {
     if (!available) return;
   }
 
-  const [profileSnap, cvSnap, applicationSnap] = await Promise.all([
-    getDoc(doc(db, "users", user.uid)),
-    getDocs(query(collection(db, "cvs"), where("userId", "==", user.uid))),
-    getDocs(query(collection(db, "applications"), where("candidateId", "==", user.uid))),
-  ]);
-  profile = profileSnap.exists() ? profileSnap.data() : {};
-  const existingApplication = applicationSnap.docs
-    .map(application => ({id: application.id, ...application.data()}))
-    .find(application => application.jobId === jobId);
-  if (existingApplication) {
-    renderExistingApplication(existingApplication);
+  const token = await getIdToken(user);
+  const response = await fetch(
+    `/.netlify/functions/get-direct-application-context?jobId=${encodeURIComponent(jobId)}`,
+    {headers: {Authorization: `Bearer ${token}`}},
+  );
+  const context = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(context.error || "Application details could not be loaded.");
+
+  profile = context.profile && typeof context.profile === "object" ? context.profile : {};
+  if (context.existingApplication) {
+    renderExistingApplication(context.existingApplication);
     return;
   }
-  cvs = cvSnap.docs
-    .map((cvDoc) => ({id: cvDoc.id, ...cvDoc.data()}))
+  cvs = (Array.isArray(context.cvs) ? context.cvs : [])
     .filter((cv) => text(cv.status || "active").toLowerCase() === "active")
     .sort((a, b) => timestampMs(b.uploadedAt) - timestampMs(a.uploadedAt));
   renderForm();

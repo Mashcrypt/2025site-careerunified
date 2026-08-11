@@ -101,15 +101,12 @@ img {
 }
 
 .ra-brand__mark {
-  display: grid;
   width: 42px;
   height: 42px;
-  place-items: center;
+  display: block;
+  flex: 0 0 auto;
   border-radius: 8px;
-  background: var(--ra-blue);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+  object-fit: contain;
 }
 
 .ra-site-nav {
