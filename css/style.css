@@ -763,6 +763,10 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .recruiter-home-slide {
+    transition: none;
+  }
+
   .recruiter-journey-arrow,
   .recruiter-journey-step {
     transition: none;
@@ -827,12 +831,60 @@ a:hover {
   background: #ffffff;
 }
 
-.recruiter-home-visual img {
+.recruiter-home-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.recruiter-home-slide {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
   object-position: center;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.recruiter-home-slide.is-active {
+  opacity: 1;
+}
+
+.recruiter-home-carousel-controls {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  z-index: 2;
+  display: flex;
+  gap: 7px;
+}
+
+.recruiter-home-carousel-controls button {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(23, 53, 116, 0.22);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--recruiter-navy);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.recruiter-home-carousel-controls button:hover {
+  border-color: var(--recruiter-blue);
+  color: var(--recruiter-blue);
+}
+
+.recruiter-home-carousel-controls button:focus-visible {
+  outline: 2px solid var(--recruiter-blue);
+  outline-offset: 2px;
 }
 
 .recruiter-home-visual figcaption {
@@ -846,6 +898,7 @@ a:hover {
   color: var(--recruiter-navy);
   font-size: 12px;
   font-weight: 700;
+  z-index: 2;
 }
 
 /* Hover hint bubble */
@@ -1107,10 +1160,21 @@ a:hover {
   }
 
   .recruiter-home-visual figcaption {
-    right: auto;
+    right: 12px;
     bottom: 12px;
-    left: 12px;
+    left: auto;
+    max-width: calc(100% - 126px);
     font-size: 11px;
+  }
+
+  .recruiter-home-carousel-controls {
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .recruiter-home-carousel-controls button {
+    width: 44px;
+    height: 44px;
   }
 
   .recruiter-journey {

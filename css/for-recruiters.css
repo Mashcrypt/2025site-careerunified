@@ -109,18 +109,13 @@ h4 {
   white-space: nowrap;
 }
 
-.hf-brand__mark {
+.hf-brand__logo {
   width: 34px;
   height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  flex: 0 0 34px;
   border-radius: var(--hf-radius);
-  background: var(--hf-blue);
-  color: #fff;
-  font-family: "Inter", Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
+  object-fit: cover;
 }
 
 .hf-nav__menu {
@@ -1612,10 +1607,10 @@ h4 {
     font-size: 17px;
   }
 
-  .hf-brand__mark {
+  .hf-brand__logo {
     width: 32px;
     height: 32px;
-    font-size: 10px;
+    flex-basis: 32px;
   }
 
   .hf-hero__grid {

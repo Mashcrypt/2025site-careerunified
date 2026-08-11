@@ -676,9 +676,18 @@
       </div>
     </div>
 
-    <figure class="recruiter-home-visual">
-      <img src="/assets/images/recruiter-candidate-review.webp" alt="South African recruiters reviewing candidate applications together" width="1536" height="1024" loading="lazy">
-      <figcaption>One workspace from vacancy to hire</figcaption>
+    <figure class="recruiter-home-visual" data-recruiter-carousel aria-roledescription="carousel" aria-label="Recruiter platform highlights">
+      <div class="recruiter-home-slides">
+        <img class="recruiter-home-slide is-active" src="/assets/images/recruiter-diverse-candidate-search.webp" alt="Recruiter comparing a diverse group of candidates using consistent review criteria" width="1536" height="1024" loading="lazy" data-carousel-caption="Compare candidates with a clearer view" aria-hidden="false">
+        <img class="recruiter-home-slide" src="/assets/images/recruiter-shared-workspace-collaboration.webp" alt="Recruitment team collaborating in one synchronized hiring workspace" width="1536" height="1024" loading="lazy" data-carousel-caption="Keep every recruiter in one shared workspace" aria-hidden="true">
+        <img class="recruiter-home-slide" src="/assets/images/recruiter-structured-application-review.webp" alt="Recruiter reviewing a complete profile, CV, and screening answers together" width="1536" height="1024" loading="lazy" data-carousel-caption="Review complete applications without chasing details" aria-hidden="true">
+        <img class="recruiter-home-slide" src="/assets/images/recruiter-candidate-communication.webp" alt="Recruitment team sending interview, offer, and application updates to candidates" width="1536" height="1024" loading="lazy" data-carousel-caption="Keep every candidate informed" aria-hidden="true">
+      </div>
+      <div class="recruiter-home-carousel-controls">
+        <button type="button" data-carousel-previous aria-label="Show previous recruiter illustration" title="Previous illustration"><span aria-hidden="true">&larr;</span></button>
+        <button type="button" data-carousel-next aria-label="Show next recruiter illustration" title="Next illustration"><span aria-hidden="true">&rarr;</span></button>
+      </div>
+      <figcaption data-carousel-caption aria-live="polite">Compare candidates with a clearer view</figcaption>
     </figure>
 
     <div class="recruiter-journey" data-recruiter-flow style="--journey-progress: 16.667%;">
@@ -1176,6 +1185,57 @@ if (recruiterFlowRoot) {
       activateRecruiterFlowStep(nextIndex, true);
     });
   });
+}
+
+const recruiterCarousel = document.querySelector('[data-recruiter-carousel]');
+if (recruiterCarousel) {
+  const slides = Array.from(recruiterCarousel.querySelectorAll('.recruiter-home-slide'));
+  const caption = recruiterCarousel.querySelector('figcaption[data-carousel-caption]');
+  const previousButton = recruiterCarousel.querySelector('[data-carousel-previous]');
+  const nextButton = recruiterCarousel.querySelector('[data-carousel-next]');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activeIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
+  let rotationTimer;
+
+  const showRecruiterSlide = (nextIndex) => {
+    activeIndex = (nextIndex + slides.length) % slides.length;
+    slides.forEach((slide, index) => {
+      const isActive = index === activeIndex;
+      slide.classList.toggle('is-active', isActive);
+      slide.setAttribute('aria-hidden', String(!isActive));
+    });
+    caption.textContent = slides[activeIndex].dataset.carouselCaption || '';
+  };
+
+  const stopRecruiterCarousel = () => {
+    window.clearInterval(rotationTimer);
+    rotationTimer = undefined;
+  };
+
+  const startRecruiterCarousel = () => {
+    stopRecruiterCarousel();
+    if (!reducedMotion.matches && slides.length > 1 && !document.hidden) {
+      rotationTimer = window.setInterval(() => showRecruiterSlide(activeIndex + 1), 6500);
+    }
+  };
+
+  previousButton.addEventListener('click', () => {
+    showRecruiterSlide(activeIndex - 1);
+    startRecruiterCarousel();
+  });
+  nextButton.addEventListener('click', () => {
+    showRecruiterSlide(activeIndex + 1);
+    startRecruiterCarousel();
+  });
+  recruiterCarousel.addEventListener('pointerenter', stopRecruiterCarousel);
+  recruiterCarousel.addEventListener('pointerleave', startRecruiterCarousel);
+  recruiterCarousel.addEventListener('focusin', stopRecruiterCarousel);
+  recruiterCarousel.addEventListener('focusout', startRecruiterCarousel);
+  reducedMotion.addEventListener('change', startRecruiterCarousel);
+  document.addEventListener('visibilitychange', startRecruiterCarousel);
+
+  showRecruiterSlide(activeIndex);
+  startRecruiterCarousel();
 }
 
 async function fetchCountsFromSanity(term) {
