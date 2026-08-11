@@ -527,6 +527,201 @@
             font-family: inherit;
         }
 
+        .job-preferences-form {
+            max-width: 960px;
+            margin-top: 1.5rem;
+        }
+
+        .job-preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        .preference-add-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 44px;
+            gap: 0.5rem;
+        }
+
+        .preference-add-button {
+            width: 44px;
+            min-height: 44px;
+            border: 1px solid #2563eb;
+            border-radius: 0.5rem;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preference-add-button:hover {
+            background: #1d4ed8;
+        }
+
+        .preference-add-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .preference-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 2rem;
+            margin-top: 0.75rem;
+        }
+
+        .preference-empty {
+            font-size: 0.8125rem;
+            color: #6b7280;
+            padding: 0.25rem 0;
+        }
+
+        .preference-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            min-height: 32px;
+            padding: 0.25rem 0.5rem 0.25rem 0.625rem;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1e3a8a;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .preference-chip button {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: #1d4ed8;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            line-height: 1;
+        }
+
+        .preference-chip button:hover {
+            background: #dbeafe;
+        }
+
+        .preference-options {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .preference-options legend {
+            margin-bottom: 0.625rem;
+            padding: 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .preference-option-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.625rem;
+        }
+
+        .preference-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 40px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .preference-option input {
+            width: 17px;
+            height: 17px;
+            margin: 0;
+            accent-color: #2563eb;
+        }
+
+        .job-alert-toggle {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            cursor: pointer;
+        }
+
+        .job-alert-toggle input {
+            width: 20px;
+            height: 20px;
+            margin: 0.125rem 0 0;
+            accent-color: #2563eb;
+        }
+
+        .job-alert-toggle strong,
+        .job-alert-toggle span {
+            display: block;
+        }
+
+        .job-alert-toggle strong {
+            color: #1f2937;
+            font-size: 0.9375rem;
+        }
+
+        .job-alert-toggle span {
+            margin-top: 0.125rem;
+            color: #6b7280;
+            font-size: 0.8125rem;
+        }
+
+        .job-preferences-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .preference-status {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .preference-status.success {
+            color: #15803d;
+        }
+
+        .preference-status.error {
+            color: #b91c1c;
+        }
+
+        @media (max-width: 700px) {
+            .job-preferences-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .job-preferences-actions {
+                align-items: stretch;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+
         /* Employment Status Buttons */
         .status-grid {
             display: grid;
@@ -1584,10 +1779,78 @@
                 <!-- Job Preferences Tab -->
                 <div id="job-preferences-content" class="tab-content hidden">
                     <h2 class="content-title">Job Preferences</h2>
-                    <p class="content-subtitle">Set your job search preferences and criteria.</p>
-                    <div class="info-box" style="margin-top: 1rem;">
-                        <p>Configure your job alerts, salary expectations, work arrangements, and more.</p>
-                    </div>
+                    <p class="content-subtitle">Tell us what opportunities are most relevant to you.</p>
+
+                    <form id="jobPreferencesForm" class="job-preferences-form">
+                        <div class="job-preferences-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="preferenceRoleInput">Roles you are looking for</label>
+                                <div class="preference-add-row">
+                                    <input id="preferenceRoleInput" class="form-input" type="text" maxlength="80" placeholder="e.g., Graduate Developer">
+                                    <button class="preference-add-button" type="button" id="addPreferenceRole" aria-label="Add role" title="Add role">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                            <path d="M12 5v14"></path>
+                                            <path d="M5 12h14"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div id="preferenceRoleList" class="preference-list" aria-live="polite"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="preferenceLocationInput">Preferred locations</label>
+                                <div class="preference-add-row">
+                                    <input id="preferenceLocationInput" class="form-input" type="text" maxlength="80" placeholder="e.g., Johannesburg or Remote">
+                                    <button class="preference-add-button" type="button" id="addPreferenceLocation" aria-label="Add location" title="Add location">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                            <path d="M12 5v14"></path>
+                                            <path d="M5 12h14"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div id="preferenceLocationList" class="preference-list" aria-live="polite"></div>
+                            </div>
+
+                            <fieldset class="preference-options">
+                                <legend>Employment type</legend>
+                                <div class="preference-option-list">
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Permanent"> Permanent</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Contract"> Contract</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Internship"> Internship</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Learnership"> Learnership</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Graduate Program"> Graduate Program</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceJobType" value="Part-time"> Part-time</label>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="preference-options">
+                                <legend>Work arrangement</legend>
+                                <div class="preference-option-list">
+                                    <label class="preference-option"><input type="checkbox" name="preferenceWorkArrangement" value="On-site"> On-site</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceWorkArrangement" value="Hybrid"> Hybrid</label>
+                                    <label class="preference-option"><input type="checkbox" name="preferenceWorkArrangement" value="Remote"> Remote</label>
+                                </div>
+                            </fieldset>
+
+                            <div class="form-group">
+                                <label class="form-label" for="preferenceSalary">Minimum monthly salary (optional)</label>
+                                <input id="preferenceSalary" class="form-input" type="number" min="0" max="1000000" step="500" inputmode="numeric" placeholder="e.g., 15000">
+                            </div>
+                        </div>
+
+                        <label class="job-alert-toggle" for="preferenceJobAlerts">
+                            <input id="preferenceJobAlerts" type="checkbox">
+                            <span>
+                                <strong>Send me matching job alerts</strong>
+                                <span>Use these preferences when job alerts are available.</span>
+                            </span>
+                        </label>
+
+                        <div class="job-preferences-actions">
+                            <button class="btn btn-primary" type="submit" id="saveJobPreferencesButton">Save preferences</button>
+                            <p id="jobPreferencesStatus" class="preference-status" role="status" aria-live="polite"></p>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Resume Tab -->
@@ -2169,6 +2432,7 @@ Platform: ${navigator.platform}
         yearsOfExperience: '',
         desiredJobTitle: '',
         desiredLocation: '',
+        jobPreferences: null,
         industry: '',
         bio: '',
         profilePhotoURL: '',
@@ -2364,6 +2628,7 @@ Platform: ${navigator.platform}
                     yearsOfExperience: userData.yearsOfExperience || '',
                     desiredJobTitle: userData.desiredJobTitle || '',
                     desiredLocation: userData.desiredLocation || '',
+                    jobPreferences: normaliseJobPreferences(userData.jobPreferences),
                     industry: userData.industry || '',
                     bio: userData.bio || '',
                     profilePhotoURL: userData.profilePhotoURL || currentUser.photoURL || '',
@@ -2375,6 +2640,9 @@ Platform: ${navigator.platform}
                 
                 console.log('Profile data loaded from Firestore');
                 updateProfileView();
+                if (!document.getElementById('job-preferences-content')?.classList.contains('hidden')) {
+                    hydrateJobPreferences();
+                }
 
                 // Update Help Center subscription context (NEW, READ-ONLY)
                 setCUContext(userData);
@@ -2388,6 +2656,9 @@ Platform: ${navigator.platform}
                 // Cache initial data
                 localStorage.setItem('userProfile', JSON.stringify(profileData));
                 updateProfileView();
+                if (!document.getElementById('job-preferences-content')?.classList.contains('hidden')) {
+                    hydrateJobPreferences();
+                }
 
                 // Still set context as free
                 setCUContext({ planId: "free", subscriptionStatus: "inactive" });
@@ -2417,6 +2688,278 @@ Platform: ${navigator.platform}
             .slice(0, maxLength);
         return text || fallback;
     }
+
+    const JOB_PREFERENCE_JOB_TYPES = [
+        'Permanent',
+        'Contract',
+        'Internship',
+        'Learnership',
+        'Graduate Program',
+        'Part-time'
+    ];
+    const JOB_PREFERENCE_WORK_ARRANGEMENTS = ['On-site', 'Hybrid', 'Remote'];
+    const MAX_JOB_PREFERENCE_ITEMS = 8;
+    let jobPreferencesDraft = null;
+
+    function normalisePreferenceItems(value) {
+        const items = Array.isArray(value) ? value : [];
+        const seen = new Set();
+
+        return items.reduce((result, item) => {
+            const text = safeTextValue(item, '', 80);
+            const key = text.toLocaleLowerCase();
+            if (text && !seen.has(key) && result.length < MAX_JOB_PREFERENCE_ITEMS) {
+                seen.add(key);
+                result.push(text);
+            }
+            return result;
+        }, []);
+    }
+
+    function normalisePreferenceSelection(value, allowedValues) {
+        const selections = Array.isArray(value) ? value : [];
+        const allowed = new Set(allowedValues);
+        return [...new Set(selections.filter(item => allowed.has(item)))];
+    }
+
+    function normaliseJobPreferences(value) {
+        const preferences = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+        const rawSalary = preferences.minimumMonthlySalary;
+        const salary = rawSalary === null || rawSalary === undefined || rawSalary === ''
+            ? Number.NaN
+            : Number(rawSalary);
+
+        return {
+            roles: normalisePreferenceItems(preferences.roles),
+            locations: normalisePreferenceItems(preferences.locations),
+            jobTypes: normalisePreferenceSelection(preferences.jobTypes, JOB_PREFERENCE_JOB_TYPES),
+            workArrangements: normalisePreferenceSelection(preferences.workArrangements, JOB_PREFERENCE_WORK_ARRANGEMENTS),
+            minimumMonthlySalary: Number.isFinite(salary) && salary >= 0 && salary <= 1000000
+                ? Math.round(salary)
+                : null,
+            jobAlertsEnabled: preferences.jobAlertsEnabled === true
+        };
+    }
+
+    function preferencesFromProfile() {
+        const preferences = normaliseJobPreferences(profileData.jobPreferences);
+        if (!preferences.roles.length && profileData.desiredJobTitle) {
+            preferences.roles = normalisePreferenceItems([profileData.desiredJobTitle]);
+        }
+        if (!preferences.locations.length && profileData.desiredLocation) {
+            preferences.locations = normalisePreferenceItems([profileData.desiredLocation]);
+        }
+        return preferences;
+    }
+
+    function setJobPreferencesStatus(message = '', type = '') {
+        const status = document.getElementById('jobPreferencesStatus');
+        if (!status) return;
+        status.textContent = message;
+        status.classList.remove('success', 'error');
+        if (type) status.classList.add(type);
+    }
+
+    function preferenceConfig(kind) {
+        return kind === 'role'
+            ? {
+                inputId: 'preferenceRoleInput',
+                listId: 'preferenceRoleList',
+                property: 'roles',
+                emptyMessage: 'Add one or more roles to guide your job search.'
+            }
+            : {
+                inputId: 'preferenceLocationInput',
+                listId: 'preferenceLocationList',
+                property: 'locations',
+                emptyMessage: 'Add cities, provinces, or Remote.'
+            };
+    }
+
+    function renderPreferenceList(kind) {
+        const config = preferenceConfig(kind);
+        const list = document.getElementById(config.listId);
+        if (!list || !jobPreferencesDraft) return;
+
+        list.replaceChildren();
+        const values = jobPreferencesDraft[config.property];
+        if (!values.length) {
+            const empty = document.createElement('span');
+            empty.className = 'preference-empty';
+            empty.textContent = config.emptyMessage;
+            list.appendChild(empty);
+            return;
+        }
+
+        values.forEach((value, index) => {
+            const chip = document.createElement('span');
+            chip.className = 'preference-chip';
+
+            const label = document.createElement('span');
+            label.textContent = value;
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', `Remove ${value}`);
+            remove.title = `Remove ${value}`;
+            remove.textContent = '\u00d7';
+            remove.addEventListener('click', () => {
+                jobPreferencesDraft[config.property].splice(index, 1);
+                renderPreferenceList(kind);
+                setJobPreferencesStatus('');
+            });
+
+            chip.append(label, remove);
+            list.appendChild(chip);
+        });
+    }
+
+    function addPreferenceItem(kind, focusWhenEmpty = true) {
+        const config = preferenceConfig(kind);
+        const input = document.getElementById(config.inputId);
+        if (!input || !jobPreferencesDraft) return false;
+
+        const value = safeTextValue(input.value, '', 80);
+        if (!value) {
+            if (focusWhenEmpty) input.focus();
+            return false;
+        }
+
+        const values = jobPreferencesDraft[config.property];
+        const exists = values.some(item => item.toLocaleLowerCase() === value.toLocaleLowerCase());
+        if (exists) {
+            input.value = '';
+            setJobPreferencesStatus('That preference has already been added.', 'error');
+            return false;
+        }
+
+        if (values.length >= MAX_JOB_PREFERENCE_ITEMS) {
+            setJobPreferencesStatus(`You can save up to ${MAX_JOB_PREFERENCE_ITEMS} ${config.property}.`, 'error');
+            return false;
+        }
+
+        values.push(value);
+        input.value = '';
+        renderPreferenceList(kind);
+        setJobPreferencesStatus('');
+        return true;
+    }
+
+    function getCheckedPreferenceValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+            .map(input => input.value);
+    }
+
+    function hydrateJobPreferences() {
+        jobPreferencesDraft = preferencesFromProfile();
+
+        const roleInput = document.getElementById('preferenceRoleInput');
+        const locationInput = document.getElementById('preferenceLocationInput');
+        const salaryInput = document.getElementById('preferenceSalary');
+        const alertsInput = document.getElementById('preferenceJobAlerts');
+        if (roleInput) roleInput.value = '';
+        if (locationInput) locationInput.value = '';
+        if (salaryInput) salaryInput.value = jobPreferencesDraft.minimumMonthlySalary ?? '';
+        if (alertsInput) alertsInput.checked = jobPreferencesDraft.jobAlertsEnabled;
+
+        document.querySelectorAll('input[name="preferenceJobType"]').forEach(input => {
+            input.checked = jobPreferencesDraft.jobTypes.includes(input.value);
+        });
+        document.querySelectorAll('input[name="preferenceWorkArrangement"]').forEach(input => {
+            input.checked = jobPreferencesDraft.workArrangements.includes(input.value);
+        });
+
+        renderPreferenceList('role');
+        renderPreferenceList('location');
+        setJobPreferencesStatus('');
+    }
+
+    function initialiseJobPreferenceControls() {
+        const form = document.getElementById('jobPreferencesForm');
+        const roleInput = document.getElementById('preferenceRoleInput');
+        const locationInput = document.getElementById('preferenceLocationInput');
+        const addRole = document.getElementById('addPreferenceRole');
+        const addLocation = document.getElementById('addPreferenceLocation');
+        if (!form || !roleInput || !locationInput || !addRole || !addLocation) return;
+
+        addRole.addEventListener('click', () => addPreferenceItem('role'));
+        addLocation.addEventListener('click', () => addPreferenceItem('location'));
+        roleInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addPreferenceItem('role');
+            }
+        });
+        locationInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addPreferenceItem('location');
+            }
+        });
+        form.addEventListener('submit', event => window.saveJobPreferences(event));
+    }
+
+    window.saveJobPreferences = async function(event) {
+        event?.preventDefault();
+        if (!currentUser) {
+            setJobPreferencesStatus('Please log in again before saving your preferences.', 'error');
+            return;
+        }
+
+        if (!jobPreferencesDraft) hydrateJobPreferences();
+        addPreferenceItem('role', false);
+        addPreferenceItem('location', false);
+
+        const salaryInput = document.getElementById('preferenceSalary');
+        const rawSalary = salaryInput?.value.trim() || '';
+        const salary = rawSalary === '' ? null : Number(rawSalary);
+        if (rawSalary && (!Number.isFinite(salary) || salary < 0 || salary > 1000000)) {
+            setJobPreferencesStatus('Enter a monthly salary between R0 and R1,000,000.', 'error');
+            salaryInput?.focus();
+            return;
+        }
+
+        const saveButton = document.getElementById('saveJobPreferencesButton');
+        const preferences = {
+            ...jobPreferencesDraft,
+            jobTypes: normalisePreferenceSelection(getCheckedPreferenceValues('preferenceJobType'), JOB_PREFERENCE_JOB_TYPES),
+            workArrangements: normalisePreferenceSelection(getCheckedPreferenceValues('preferenceWorkArrangement'), JOB_PREFERENCE_WORK_ARRANGEMENTS),
+            minimumMonthlySalary: salary === null ? null : Math.round(salary),
+            jobAlertsEnabled: document.getElementById('preferenceJobAlerts')?.checked === true
+        };
+
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+        }
+        setJobPreferencesStatus('Saving your preferences...');
+
+        try {
+            const desiredJobTitle = preferences.roles[0] || '';
+            const desiredLocation = preferences.locations[0] || '';
+            await setDoc(doc(db, 'users', currentUser.uid), {
+                jobPreferences: preferences,
+                desiredJobTitle,
+                desiredLocation,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+
+            profileData.jobPreferences = preferences;
+            profileData.desiredJobTitle = desiredJobTitle;
+            profileData.desiredLocation = desiredLocation;
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+            updateProfileView();
+            setJobPreferencesStatus('Preferences saved.', 'success');
+        } catch (error) {
+            console.error('Error saving job preferences:', error);
+            setJobPreferencesStatus('Could not save your preferences. Please try again.', 'error');
+        } finally {
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save preferences';
+            }
+        }
+    };
 
     function escapeHtml(value) {
         return safeTextValue(value)
@@ -2681,6 +3224,7 @@ Platform: ${navigator.platform}
             switchTab(tabName);
         });
     });
+    initialiseJobPreferenceControls();
 
     function switchTab(tabName) {
         // Update nav items
@@ -2709,6 +3253,10 @@ Platform: ${navigator.platform}
         // If help tab opened, refresh subscription pill
         if (tabName === "help") {
             if (typeof window.renderPlanPillFromModule === "function") window.renderPlanPillFromModule();
+        }
+
+        if (tabName === 'job-preferences') {
+            hydrateJobPreferences();
         }
     }
 
