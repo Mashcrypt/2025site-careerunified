@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-import admin from "firebase-admin";
+import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
+import { FieldValue, Timestamp, getFirestore } from "firebase-admin/firestore";
 
 const PLAN_AMOUNT = {
-  starter: "29.00",
-  job_seeker: "69.00",
-  career_pro: "149.00",
+  starter: "28.99",
+  job_seeker: "49.00",
+  career_pro: "99.00",
 };
 
 function parseArgs(argv) {
@@ -52,27 +53,27 @@ function parseDateArg(value, fallback) {
 }
 
 function initFirebaseAdmin() {
-  if (admin.apps.length) return admin;
+  if (getApps().length) return getFirestore();
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (projectId && clientEmail && privateKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId,
         clientEmail,
         privateKey: privateKey.replace(/\\n/g, "\n"),
       }),
     });
-    return admin;
+    return getFirestore();
   }
 
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
+  initializeApp({
+    credential: applicationDefault(),
   });
-  return admin;
+  return getFirestore();
 }
 
 async function main() {
@@ -80,30 +81,49 @@ async function main() {
   const uid = requireArg(args, "uid");
   const plan = requirePlan(requireArg(args, "plan"));
   const paymentId = requireArg(args, "payment-id");
+  if (args["confirm-paid"] !== "true") {
+    throw new Error("Payment recovery requires --confirm-paid after verifying the transaction in PayFast.");
+  }
   const amount = args.amount?.trim() || PLAN_AMOUNT[plan];
   const periodStart = parseDateArg(args["period-start"], new Date());
   const periodEnd = parseDateArg(args["period-end"], addBillingPeriod(periodStart));
+  const force = args.force === "true";
 
-  const app = initFirebaseAdmin();
-  const db = app.firestore();
+  const db = initFirebaseAdmin();
   const userRef = db.doc(`users/${uid}`);
-  const paymentRef = db.collection("payfastPayments").doc(paymentId);
+  const payfastPaymentId = args["pf-payment-id"]?.trim() || null;
+  const paymentRef = db.collection("payfastPayments").doc((payfastPaymentId || paymentId).replace(/\//g, "_"));
+  const checkoutRef = db.collection("payfastCheckouts").doc(paymentId.replace(/\//g, "_"));
 
   await db.runTransaction(async (tx) => {
+    const userSnap = await tx.get(userRef);
+    if (!userSnap.exists) throw new Error(`User does not exist: users/${uid}`);
+    const user = userSnap.data() || {};
+
+    if (!force && user.pendingPlan !== plan) {
+      throw new Error(`Pending plan does not match. Firebase has "${user.pendingPlan || "none"}".`);
+    }
+    if (!force && user.pendingPayfastPaymentId !== paymentId) {
+      throw new Error(
+        `Pending payment does not match. Firebase has "${user.pendingPayfastPaymentId || "none"}".`
+      );
+    }
+
     tx.set(
       userRef,
       {
         plan,
         subscriptionStatus: "active",
-        subscriptionCurrentPeriodStart: admin.firestore.Timestamp.fromDate(periodStart),
-        subscriptionCurrentPeriodEnd: admin.firestore.Timestamp.fromDate(periodEnd),
+        subscriptionCurrentPeriodStart: Timestamp.fromDate(periodStart),
+        subscriptionCurrentPeriodEnd: Timestamp.fromDate(periodEnd),
         applicationsUsedThisMonth: 0,
-        pendingPlan: admin.firestore.FieldValue.delete(),
-        pendingPayfastPaymentId: admin.firestore.FieldValue.delete(),
-        pendingCreatedAt: admin.firestore.FieldValue.delete(),
-        lastPaymentRef: paymentId,
+        pendingPlan: FieldValue.delete(),
+        pendingPayfastPaymentId: FieldValue.delete(),
+        pendingCreatedAt: FieldValue.delete(),
+        lastPaymentRef: payfastPaymentId || paymentId,
+        lastPaymentVerifiedAt: new Date().toISOString(),
         payfast: {
-          payment_id: args["pf-payment-id"]?.trim() || null,
+          payment_id: payfastPaymentId,
           m_payment_id: paymentId,
           amount_gross: Number(amount),
           payment_status: "COMPLETE",
@@ -113,7 +133,7 @@ async function main() {
           recoveredBy: "support-script",
           receivedAt: new Date().toISOString(),
         },
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
@@ -126,10 +146,31 @@ async function main() {
         plan,
         amount_gross: Number(amount),
         payment_status: "COMPLETE",
-        pf_payment_id: args["pf-payment-id"]?.trim() || null,
+        pf_payment_id: payfastPaymentId,
         m_payment_id: paymentId,
         manualRecovery: true,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
+        completedAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    tx.set(
+      checkoutRef,
+      {
+        paymentId,
+        uid,
+        plan,
+        product: "careerunified-ai",
+        expectedAmount: Number(amount),
+        currency: "ZAR",
+        status: "complete",
+        lastPaymentStatus: "COMPLETE",
+        lastPfPaymentId: payfastPaymentId,
+        lastAmountGross: Number(amount),
+        manualRecovery: true,
+        updatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );

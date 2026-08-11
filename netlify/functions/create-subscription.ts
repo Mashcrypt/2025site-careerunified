@@ -102,6 +102,10 @@ function firstNameFrom(value?: string | null) {
   return value?.trim().split(/\s+/)[0] || undefined;
 }
 
+function payfastBillingDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function validatePayfastMode(headers?: Record<string, string>) {
   const siteUrl = process.env.SITE_URL || "";
   if (process.env.PAYFAST_MODE === "live" && !siteUrl.startsWith("https://")) {
@@ -210,7 +214,7 @@ export const handler: Handler = async (event) => {
     const fields: Record<string, string> = {
       merchant_id: process.env.PAYFAST_MERCHANT_ID!,
       merchant_key: process.env.PAYFAST_MERCHANT_KEY!,
-      return_url: `${siteUrl}/billing/success`,
+      return_url: `${siteUrl}/billing/success?payment_id=${encodeURIComponent(m_payment_id)}`,
       cancel_url: `${siteUrl}/cv-generator/`,
       notify_url: `${siteUrl}/.netlify/functions/payfast-itn`,
       name_first: nameFirst,
@@ -222,6 +226,7 @@ export const handler: Handler = async (event) => {
       custom_str2: plan,
       custom_str3: "careerunified-ai",
       subscription_type: "1",
+      billing_date: payfastBillingDate(),
       recurring_amount: amount,
       frequency: "3",
       cycles: "0",
@@ -229,7 +234,11 @@ export const handler: Handler = async (event) => {
 
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
-    await userRef.set(
+    const checkoutRef = admin.firestore().collection("payfastCheckouts").doc(m_payment_id);
+    const batch = admin.firestore().batch();
+
+    batch.set(
+      userRef,
       {
         pendingPlan: plan,
         pendingPayfastPaymentId: m_payment_id,
@@ -238,6 +247,21 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
+
+    batch.set(checkoutRef, {
+      paymentId: m_payment_id,
+      uid,
+      plan,
+      product: "careerunified-ai",
+      expectedAmount: Number(amount),
+      currency: "ZAR",
+      status: "pending",
+      mode: process.env.PAYFAST_MODE === "live" ? "live" : "sandbox",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
 
     const payment_url =
       process.env.PAYFAST_MODE === "live"

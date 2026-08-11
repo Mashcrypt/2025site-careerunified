@@ -199,7 +199,11 @@ export const handler: Handler = async (event) => {
 
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
-    await userRef.set(
+    const checkoutRef = admin.firestore().collection("payfastCheckouts").doc(m_payment_id);
+    const batch = admin.firestore().batch();
+
+    batch.set(
+      userRef,
       {
         pendingCreditPack: CREDIT_PACK_ID,
         pendingCreditQuantity: CREDIT_PACK_QUANTITY,
@@ -209,6 +213,21 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
+
+    batch.set(checkoutRef, {
+      paymentId: m_payment_id,
+      uid,
+      plan: CREDIT_PACK_ID,
+      product: CREDIT_PRODUCT,
+      expectedAmount: Number(CREDIT_PACK_AMOUNT),
+      currency: "ZAR",
+      status: "pending",
+      mode: process.env.PAYFAST_MODE === "live" ? "live" : "sandbox",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
 
     const payment_url =
       process.env.PAYFAST_MODE === "live"

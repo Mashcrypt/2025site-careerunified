@@ -191,6 +191,7 @@ export const handler: Handler = async (event) => {
       custom_str2: plan,
       custom_str3: "careerunified-recruiter",
       subscription_type: "1",
+      billing_date: new Date().toISOString().slice(0, 10),
       recurring_amount: cfg.amount,
       frequency: "3",
       cycles: "0",
@@ -198,7 +199,11 @@ export const handler: Handler = async (event) => {
 
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
-    await recruiterRef.set(
+    const checkoutRef = admin.firestore().collection("payfastCheckouts").doc(m_payment_id);
+    const batch = admin.firestore().batch();
+
+    batch.set(
+      recruiterRef,
       {
         pendingPlan: plan,
         pendingPayfastPaymentId: m_payment_id,
@@ -207,6 +212,21 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
+
+    batch.set(checkoutRef, {
+      paymentId: m_payment_id,
+      uid: recruiterId,
+      plan,
+      product: "careerunified-recruiter",
+      expectedAmount: Number(cfg.amount),
+      currency: "ZAR",
+      status: "pending",
+      mode: process.env.PAYFAST_MODE === "live" ? "live" : "sandbox",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
 
     const payment_url =
       process.env.PAYFAST_MODE === "live"

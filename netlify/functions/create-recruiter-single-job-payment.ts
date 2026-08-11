@@ -160,7 +160,11 @@ export const handler: Handler = async (event) => {
     };
     fields.signature = generateSignature(fields, process.env.PAYFAST_PASSPHRASE);
 
-    await recruiterRef.set(
+    const checkoutRef = admin.firestore().collection("payfastCheckouts").doc(paymentId);
+    const batch = admin.firestore().batch();
+
+    batch.set(
+      recruiterRef,
       {
         pendingSingleJobPack: PACK_ID,
         pendingSingleJobPayfastPaymentId: paymentId,
@@ -169,6 +173,21 @@ export const handler: Handler = async (event) => {
       },
       { merge: true }
     );
+
+    batch.set(checkoutRef, {
+      paymentId,
+      uid: recruiterId,
+      plan: PACK_ID,
+      product: PRODUCT,
+      expectedAmount: Number(AMOUNT),
+      currency: "ZAR",
+      status: "pending",
+      mode: process.env.PAYFAST_MODE === "live" ? "live" : "sandbox",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
 
     const paymentUrl = process.env.PAYFAST_MODE === "live"
       ? "https://www.payfast.co.za/eng/process"

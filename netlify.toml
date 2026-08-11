@@ -440,6 +440,9 @@
 
 [functions."ai-tailor"]
   timeout = 26
+
+[functions."payfast-itn"]
+  timeout = 26
 # ================================
 # FOR AUTONOMUS EMAIL FUNCTION
 # ================================
