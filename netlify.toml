@@ -294,19 +294,9 @@
 # ================================
 [[redirects]]
   from = "/cv-generator.html"
-  to = "/cv-generator"
+  to = "/cv-generator/"
   status = 301
   force = true
-
-[[redirects]]
-  from = "/cv-generator"
-  to = "/cv-generator/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/cv-generator/"
-  to = "/cv-generator/index.html"
-  status = 200
 
 # ================================
 # JOBS (Edge Function + SPA)
