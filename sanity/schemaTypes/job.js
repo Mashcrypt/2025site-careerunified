@@ -89,7 +89,8 @@ export default {
           { title: 'Graduate Program', value: 'graduate-program' },
           { title: 'Freelance', value: 'freelance' },
           { title: 'YES Programmes', value: 'yes-programmes' },
-          { title: 'Youth Opportunities', value: 'youth-opportunities' }
+          { title: 'Youth Opportunities', value: 'youth-opportunities' },
+          { title: 'Vacation Work', value: 'vacation-work' }
         ],
         layout: 'radio'
       },
