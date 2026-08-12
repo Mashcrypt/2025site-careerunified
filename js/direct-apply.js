@@ -22,6 +22,7 @@ const db = getFirestore(app);
 const panel = document.getElementById("applicationPanel");
 const summary = document.getElementById("jobSummary");
 const jobId = new URLSearchParams(window.location.search).get("job") || "";
+const APPLICATION_CONFIRMATION_KEY = "careerUnifiedDirectApplyConfirmation";
 let currentJob = null;
 let currentUser = null;
 let profile = {};
@@ -302,6 +303,20 @@ function renderExistingApplication(application) {
     </div>`;
 }
 
+function renderSubmissionSuccess(confirmation) {
+  panel.innerHTML = `
+    <div class="success-view">
+      <div class="success-mark">✓</div>
+      <p class="eyebrow">Application submitted successfully</p>
+      <h1>Your application went through</h1>
+      <p class="intro">Your application for ${escapeHtml(confirmation.jobTitle)} is with ${escapeHtml(confirmation.company)}. Reference: ${escapeHtml(confirmation.applicationId)}</p>
+      <div class="success-actions">
+        <a class="applications-link" href="/account-page.html?tab=applications&submitted=1">View My Applications</a>
+        <a href="/jobs">Browse more jobs</a>
+      </div>
+    </div>`;
+}
+
 function setFormStatus(message, type = "error") {
   const status = document.getElementById("formStatus");
   if (!status) return;
@@ -373,23 +388,31 @@ async function submitApplication(event) {
       }),
     });
     const payload = await response.json().catch(() => ({}));
+    if (response.status === 409 && payload.existingApplication) {
+      renderExistingApplication(payload.existingApplication);
+      return;
+    }
     if (!response.ok) throw new Error(payload.error || "Could not submit your application.");
 
     track("job_application_submitted", {
       application_method: "career_unified_direct",
       screening_result: payload.screeningResult || "review",
     });
-    panel.innerHTML = `
-      <div class="success-view">
-        <div class="success-mark">✓</div>
-        <p class="eyebrow">Application submitted</p>
-        <h1>Your application is with ${escapeHtml(text(currentJob.company, "the recruiter"))}</h1>
-        <p class="intro">You can follow its progress and reopen the submitted job from My Applications.</p>
-        <div class="success-actions">
-          <a class="applications-link" href="/account-page.html?tab=applications&submitted=1">View My Applications</a>
-          <a href="/jobs">Browse more jobs</a>
-        </div>
-      </div>`;
+    const confirmation = {
+      applicationId: text(payload.applicationId),
+      jobId,
+      jobTitle: text(currentJob.title, "Job opportunity"),
+      company: text(currentJob.company, "the recruiter"),
+      submittedAt: new Date().toISOString(),
+    };
+    try {
+      sessionStorage.setItem(APPLICATION_CONFIRMATION_KEY, JSON.stringify(confirmation));
+      window.location.assign(
+        `/application-success.html?application=${encodeURIComponent(confirmation.applicationId)}`,
+      );
+    } catch {
+      renderSubmissionSuccess(confirmation);
+    }
   } catch (error) {
     setFormStatus(error.message || "Could not submit your application. Please try again.");
     button.disabled = false;

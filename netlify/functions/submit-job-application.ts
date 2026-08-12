@@ -26,6 +26,17 @@ type ScreeningQuestion = {
   criteria?: {operator?: string; value?: unknown};
 };
 
+class DuplicateApplicationError extends ApplicationError {
+  applicationId: string;
+  status: string;
+
+  constructor(applicationId: string, status = "submitted") {
+    super(409, "You have already applied for this job.");
+    this.applicationId = applicationId;
+    this.status = cleanText(status || "submitted", 40);
+  }
+}
+
 const SENSITIVE_SCREENING_PATTERN =
   /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
 const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
@@ -236,8 +247,12 @@ export const handler: Handler = async (event) => {
 
     const applicationId = applicationIdFor(jobId, decoded.uid);
     const applicationRef = db.doc(`applications/${applicationId}`);
-    if ((await applicationRef.get()).exists) {
-      throw new ApplicationError(409, "You have already applied for this job.");
+    const existingApplication = await applicationRef.get();
+    if (existingApplication.exists) {
+      throw new DuplicateApplicationError(
+        applicationId,
+        existingApplication.data()?.status,
+      );
     }
 
     const sourceCvPath = storagePathFromCv(cv);
@@ -315,7 +330,9 @@ export const handler: Handler = async (event) => {
     await db.runTransaction(async (transaction: any) => {
       const freshApplication = await transaction.get(applicationRef);
       const freshJob = await transaction.get(jobSnap.ref);
-      if (freshApplication.exists) throw new ApplicationError(409, "You have already applied for this job.");
+      if (freshApplication.exists) {
+        throw new DuplicateApplicationError(applicationId, freshApplication.data()?.status);
+      }
       if (!freshJob.exists || !isActiveJob(freshJob.data() || {})) {
         throw new ApplicationError(410, "Applications for this job are closed.");
       }
@@ -366,6 +383,16 @@ export const handler: Handler = async (event) => {
       }
     }
 
+    if (error instanceof DuplicateApplicationError) {
+      return json(409, origin, {
+        error: error.message,
+        duplicate: true,
+        existingApplication: {
+          id: error.applicationId,
+          status: error.status,
+        },
+      });
+    }
     if (error instanceof ApplicationError) {
       return json(error.statusCode, origin, {error: error.message});
     }

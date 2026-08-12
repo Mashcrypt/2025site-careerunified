@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>Application Submitted | Career Unified</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;letter-spacing:0}
+    body{margin:0;background:#f4f7fc;color:#172033;font-family:Poppins,Arial,sans-serif;line-height:1.6}
+    .confirmation-header{border-bottom:1px solid #dbe2ea;background:#fff}
+    .confirmation-header__inner{width:min(1080px,calc(100% - 32px));min-height:70px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:inline-flex;align-items:center;gap:10px;color:#172033;font-weight:800;text-decoration:none}
+    .brand img{width:38px;height:38px;border-radius:6px}
+    .header-link{color:#1e3a8a;font-size:.88rem;font-weight:700;text-decoration:none}
+    main{width:min(760px,calc(100% - 32px));margin:64px auto 80px}
+    .confirmation{padding:48px;border:1px solid #dbe2ea;border-radius:8px;background:#fff;box-shadow:0 14px 34px rgba(30,58,138,.08);text-align:center}
+    .confirmation-mark{width:72px;height:72px;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#dcfce7;color:#15803d;font-size:2.2rem;font-weight:800}
+    .eyebrow{margin:0 0 8px;color:#15803d;font-size:.8rem;font-weight:800;text-transform:uppercase}
+    h1{margin:0;color:#1e3a8a;font-size:clamp(1.75rem,5vw,2.55rem);line-height:1.2}
+    .intro{max-width:590px;margin:16px auto 0;color:#526077}
+    .application-details{margin:30px 0 0;padding:0;border-top:1px solid #e5e7eb;text-align:left}
+    .application-details div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;padding:15px 0;border-bottom:1px solid #e5e7eb}
+    .application-details dt{color:#64748b;font-size:.78rem;font-weight:700;text-transform:uppercase}
+    .application-details dd{margin:0;color:#1f2937;font-size:.9rem;font-weight:600;overflow-wrap:anywhere}
+    .next-step{margin:26px 0 0;padding:16px 18px;border-left:4px solid #2563eb;background:#eff6ff;color:#1e3a8a;text-align:left;font-size:.88rem}
+    .actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:30px}
+    .actions a{min-height:46px;display:inline-flex;align-items:center;justify-content:center;padding:11px 18px;border:1px solid #bfdbfe;border-radius:6px;color:#1e3a8a;font-weight:700;text-decoration:none}
+    .actions .primary{border-color:#1e3a8a;background:#1e3a8a;color:#fff}
+    .unverified .confirmation-mark{background:#fef3c7;color:#b45309}
+    .unverified .eyebrow{color:#b45309}
+    @media(max-width:560px){
+      main{margin:28px auto 48px}
+      .confirmation{padding:30px 20px}
+      .application-details div{grid-template-columns:1fr;gap:3px}
+      .actions{display:grid}
+      .actions a{width:100%}
+      .header-link{display:none}
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-2Z934XRVXT");
+  </script>
+</head>
+<body>
+  <header class="confirmation-header">
+    <div class="confirmation-header__inner">
+      <a class="brand" href="/"><img src="/android-chrome-192x192.png" alt=""><span>Career Unified</span></a>
+      <a class="header-link" href="/account-page.html?tab=applications">My Applications</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="confirmation" id="confirmation" aria-live="polite">
+      <div class="confirmation-mark" id="confirmationMark" aria-hidden="true">&#10003;</div>
+      <p class="eyebrow" id="confirmationEyebrow">Application submitted successfully</p>
+      <h1 id="confirmationTitle">Your application went through</h1>
+      <p class="intro" id="confirmationMessage">The recruiter has received your application through Career Unified Direct Apply.</p>
+
+      <dl class="application-details" id="applicationDetails">
+        <div><dt>Position</dt><dd id="jobTitle">Loading...</dd></div>
+        <div><dt>Company</dt><dd id="company">Loading...</dd></div>
+        <div><dt>Submitted</dt><dd id="submittedAt">Loading...</dd></div>
+        <div><dt>Application reference</dt><dd id="applicationReference">Loading...</dd></div>
+      </dl>
+
+      <p class="next-step" id="nextStep"><strong>What happens next:</strong> You can track updates from My Applications. The recruiter will contact you directly if they move your application forward.</p>
+      <div class="actions">
+        <a class="primary" href="/account-page.html?tab=applications&amp;submitted=1">View My Applications</a>
+        <a href="/jobs">Browse more jobs</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const storageKey = "careerUnifiedDirectApplyConfirmation";
+      const requestedId = new URLSearchParams(window.location.search).get("application") || "";
+      let confirmation = null;
+
+      try {
+        confirmation = JSON.parse(sessionStorage.getItem(storageKey) || "null");
+      } catch {
+        confirmation = null;
+      }
+
+      const verified = confirmation
+        && typeof confirmation === "object"
+        && confirmation.applicationId
+        && confirmation.applicationId === requestedId;
+
+      if (!verified) {
+        document.getElementById("confirmation").classList.add("unverified");
+        document.getElementById("confirmationMark").textContent = "!";
+        document.getElementById("confirmationEyebrow").textContent = "Confirmation unavailable";
+        document.getElementById("confirmationTitle").textContent = "Check My Applications";
+        document.getElementById("confirmationMessage").textContent = "We could not verify a new application confirmation in this browser. Open My Applications to confirm whether your application was submitted.";
+        document.getElementById("applicationDetails").hidden = true;
+        document.getElementById("nextStep").hidden = true;
+        return;
+      }
+
+      const date = new Date(confirmation.submittedAt);
+      document.getElementById("jobTitle").textContent = confirmation.jobTitle || "Job opportunity";
+      document.getElementById("company").textContent = confirmation.company || "Recruiter";
+      document.getElementById("submittedAt").textContent = Number.isNaN(date.getTime())
+        ? "Just now"
+        : date.toLocaleString("en-ZA", {dateStyle: "medium", timeStyle: "short"});
+      document.getElementById("applicationReference").textContent = confirmation.applicationId;
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "job_application_confirmation_view", {
+          event_category: "direct_application",
+          job_id: confirmation.jobId || "",
+        });
+      }
+    })();
+  </script>
+  <script src="/js/cookie-notice.js"></script>
+</body>
+</html>
