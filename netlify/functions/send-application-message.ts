@@ -2,6 +2,7 @@ import crypto from "crypto";
 import type {Handler} from "@netlify/functions";
 import {getAdmin} from "./_firebaseAdmin";
 import {sendTransactionalEmail} from "./_notify";
+import {userAllowsNotification} from "./_notificationPreferences";
 import {checkRateLimit} from "./_rateLimit";
 import {
   ApplicationError,
@@ -21,6 +22,14 @@ const MESSAGE_TYPES = new Set([
   "offer",
   "outcome",
   "custom",
+]);
+
+const APPLICATION_UPDATE_TYPES = new Set([
+  "application_update",
+  "shortlisted",
+  "interview",
+  "offer",
+  "outcome",
 ]);
 
 function isEmail(value: string) {
@@ -92,6 +101,23 @@ export const handler: Handler = async (event) => {
       throw new ApplicationError(400, "This candidate does not have a valid email address.");
     }
 
+    const candidateId = cleanText(application.candidateId, 180);
+    if (candidateId) {
+      const notificationDecision = await userAllowsNotification({
+        admin,
+        userId: candidateId,
+        channel: "email",
+        updateType: APPLICATION_UPDATE_TYPES.has(type) ? "applicationUpdates" : "recruiterMessages",
+        allowWhenMissing: true,
+      });
+      if (!notificationDecision.allowed) {
+        throw new ApplicationError(
+          409,
+          "This candidate has disabled this type of email notification. The message was not sent.",
+        );
+      }
+    }
+
     const messageRef = db.doc(
       `applicationMessages/${messageIdFor(applicationId, decoded.uid, clientMessageId)}`,
     );
@@ -147,7 +173,7 @@ export const handler: Handler = async (event) => {
     await messageRef.set({
       applicationId,
       recruiterId: application.recruiterId,
-      candidateId: application.candidateId,
+      candidateId,
       jobId: cleanText(application.jobId, 180),
       type,
       channel: "email",

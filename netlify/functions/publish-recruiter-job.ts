@@ -58,21 +58,27 @@ function stringList(value: unknown, itemMax: number, limit: number) {
   return Array.isArray(value) ? value.map((item) => text(item, itemMax)).filter(Boolean).slice(0, limit) : [];
 }
 
+const EMPLOYMENT_EQUITY_TEMPLATE = "employment_equity_self_identification";
+const EMPLOYMENT_EQUITY_OPTIONS = ["Black African", "Coloured", "Indian or Asian", "White", "Other"];
+const EMPLOYMENT_EQUITY_LABEL = "For employment equity reporting, how do you voluntarily self-identify?";
+
 function screeningQuestions(value: unknown) {
   if (!Array.isArray(value)) return [];
   return value.slice(0, 8).map((question: any, index) => {
-    const type = ["yes_no", "number", "single_select", "short_text"].includes(question?.type)
+    const templateKey = text(question?.templateKey, 80);
+    const isEmploymentEquity = templateKey === EMPLOYMENT_EQUITY_TEMPLATE;
+    const type = ["yes_no", "number", "single_select", "multi_select", "short_text"].includes(question?.type)
       ? question.type
       : "short_text";
     const criteriaValue = text(question?.criteria?.value, 120);
     return {
       id: text(question?.id, 80) || `question_${index + 1}`,
-      label: text(question?.label, 240),
-      templateKey: text(question?.templateKey, 80),
-      type,
-      required: question?.required !== false,
-      options: stringList(question?.options, 120, 12),
-      criteria: question?.criteria?.operator && criteriaValue
+      label: isEmploymentEquity ? EMPLOYMENT_EQUITY_LABEL : text(question?.label, 240),
+      templateKey,
+      type: isEmploymentEquity ? "single_select" : type,
+      required: isEmploymentEquity ? false : question?.required !== false,
+      options: isEmploymentEquity ? [...EMPLOYMENT_EQUITY_OPTIONS] : stringList(question?.options, 120, 12),
+      criteria: !isEmploymentEquity && question?.criteria?.operator && criteriaValue
         ? { operator: question.criteria.operator === "gte" ? "gte" : "equals", value: criteriaValue }
         : null,
     };

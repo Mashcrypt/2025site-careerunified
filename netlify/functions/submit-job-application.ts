@@ -42,6 +42,25 @@ const SENSITIVE_SCREENING_PATTERN =
 const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
 const GENERIC_WORK_AUTHORISATION_QUESTION =
   "Are you legally authorised to work in the country where this position is based?";
+const RELATIVES_IN_ORGANISATION_TEMPLATE = "relatives_in_organisation";
+const RELATIVE_DETAIL_TEMPLATE_KEYS = new Set(["relative_full_name", "relative_relationship"]);
+const EMPLOYMENT_EQUITY_TEMPLATE = "employment_equity_self_identification";
+const EMPLOYMENT_EQUITY_OPTIONS = ["Black African", "Coloured", "Indian or Asian", "White", "Other"];
+const EMPLOYMENT_EQUITY_LABEL = "For employment equity reporting, how do you voluntarily self-identify?";
+const SCREENING_TEMPLATE_KEYS = new Set([
+  "work_authorisation",
+  "qualification",
+  "experience",
+  "drivers_licence",
+  "relocation",
+  "notice_period",
+  "travel",
+  "expected_ctc",
+  "home_languages",
+  EMPLOYMENT_EQUITY_TEMPLATE,
+  RELATIVES_IN_ORGANISATION_TEMPLATE,
+  ...RELATIVE_DETAIL_TEMPLATE_KEYS,
+]);
 
 function applicationIdFor(jobId: string, candidateId: string) {
   return crypto.createHash("sha256").update(`${jobId}:${candidateId}`).digest("hex").slice(0, 48);
@@ -63,16 +82,23 @@ function normalizeQuestions(value: unknown, jobCountry = ""): ScreeningQuestion[
 
   return value.slice(0, 8).map((question: any, index) => {
     const id = cleanText(question?.id || `question_${index + 1}`, 80);
-    const type = ["yes_no", "number", "single_select", "short_text"].includes(question?.type)
+    const type = ["yes_no", "number", "single_select", "multi_select", "short_text"].includes(question?.type)
       ? question.type
       : "short_text";
     const options = Array.isArray(question?.options)
       ? question.options.map((option: unknown) => cleanText(option, 120)).filter(Boolean).slice(0, 12)
       : [];
     const rawLabel = cleanText(question?.label, 240);
-    const isWorkAuthorisation = cleanText(question?.templateKey, 40) === "work_authorisation"
+    const requestedTemplateKey = cleanText(question?.templateKey, 80);
+    const templateKey = SCREENING_TEMPLATE_KEYS.has(requestedTemplateKey)
+      ? requestedTemplateKey
+      : rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION
+        ? "work_authorisation"
+        : undefined;
+    const isWorkAuthorisation = templateKey === "work_authorisation"
       || rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION
       || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION;
+    const isEmploymentEquity = templateKey === EMPLOYMENT_EQUITY_TEMPLATE;
 
     return {
       id,
@@ -80,12 +106,14 @@ function normalizeQuestions(value: unknown, jobCountry = ""): ScreeningQuestion[
         ? jobCountry
           ? `Are you legally authorised to work in ${jobCountry}?`
           : GENERIC_WORK_AUTHORISATION_QUESTION
-        : rawLabel,
-      templateKey: isWorkAuthorisation ? "work_authorisation" : undefined,
-      type,
-      required: Boolean(question?.required),
-      options,
-      criteria: question?.criteria && typeof question.criteria === "object"
+        : isEmploymentEquity
+          ? EMPLOYMENT_EQUITY_LABEL
+          : rawLabel,
+      templateKey: isWorkAuthorisation ? "work_authorisation" : templateKey,
+      type: isEmploymentEquity ? "single_select" : type,
+      required: isEmploymentEquity ? false : Boolean(question?.required),
+      options: isEmploymentEquity ? [...EMPLOYMENT_EQUITY_OPTIONS] : options,
+      criteria: !isEmploymentEquity && question?.criteria && typeof question.criteria === "object"
         ? {
             operator: cleanText(question.criteria.operator, 20),
             value: normalizeAnswer(question.criteria.value),
@@ -95,8 +123,17 @@ function normalizeQuestions(value: unknown, jobCountry = ""): ScreeningQuestion[
   }).filter((question) =>
     question.id &&
     question.label &&
-    !SENSITIVE_SCREENING_PATTERN.test(question.label)
+    (question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE || !SENSITIVE_SCREENING_PATTERN.test(question.label))
   );
+}
+
+function normalizeNumericAnswer(value: unknown, questionLabel: string) {
+  const answer = normalizeAnswer(value);
+  if (!hasAnswer(answer)) return "";
+  if (typeof answer !== "string" || !/^\d{1,12}$/.test(answer)) {
+    throw new ApplicationError(400, `Use numbers only for: ${questionLabel}`);
+  }
+  return answer;
 }
 
 function answerMatches(question: ScreeningQuestion, answer: unknown) {
@@ -215,27 +252,45 @@ export const handler: Handler = async (event) => {
 
     const questions = normalizeQuestions(job.screeningQuestions, cleanText(job.country, 120));
     const suppliedAnswers = body.answers && typeof body.answers === "object" ? body.answers : {};
+    const relativesQuestion = questions.find(
+      (question) => question.templateKey === RELATIVES_IN_ORGANISATION_TEMPLATE,
+    );
+    const relativesAnswer = relativesQuestion
+      ? normalizeAnswer(suppliedAnswers[relativesQuestion.id])
+      : "";
     const answers = questions.map((question) => {
-      const answer = normalizeAnswer(suppliedAnswers[question.id]);
-      if (question.required && !hasAnswer(answer)) {
+      const isConditionalRelativeDetail = RELATIVE_DETAIL_TEMPLATE_KEYS.has(question.templateKey || "");
+      const shouldIncludeQuestion = !isConditionalRelativeDetail || relativesAnswer === "Yes";
+      const answer = shouldIncludeQuestion
+        ? question.type === "number"
+          ? normalizeNumericAnswer(suppliedAnswers[question.id], question.label)
+          : normalizeAnswer(suppliedAnswers[question.id])
+        : "";
+      if (shouldIncludeQuestion && question.required && !hasAnswer(answer)) {
         throw new ApplicationError(400, `Please answer: ${question.label}`);
       }
       if (
-        question.type === "single_select" &&
+        shouldIncludeQuestion &&
+        ["single_select", "multi_select"].includes(question.type) &&
         hasAnswer(answer) &&
-        question.options.length &&
-        !question.options.map((option) => option.toLowerCase()).includes(cleanText(answer, 200).toLowerCase())
+        question.options.length
       ) {
-        throw new ApplicationError(400, `Select a valid answer for: ${question.label}`);
+        const selectedAnswers = Array.isArray(answer) ? answer : [answer];
+        const allowedOptions = new Set(question.options.map((option) => option.toLowerCase()));
+        const validShape = question.type === "multi_select" ? Array.isArray(answer) : selectedAnswers.length === 1;
+        if (!validShape || !selectedAnswers.every((value) => allowedOptions.has(cleanText(value, 200).toLowerCase()))) {
+          throw new ApplicationError(400, `Select a valid answer for: ${question.label}`);
+        }
       }
       return {
         questionId: question.id,
         label: question.label,
         type: question.type,
         answer,
+        visibleToCandidate: shouldIncludeQuestion,
         essentialMatch: answerMatches(question, answer),
       };
-    });
+    }).filter((answer) => answer.visibleToCandidate);
 
     const essentialAnswers = answers.filter((answer) => answer.essentialMatch !== null);
     const essentialMatched = essentialAnswers.filter((answer) => answer.essentialMatch === true).length;

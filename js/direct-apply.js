@@ -30,6 +30,23 @@ let cvs = [];
 const SENSITIVE_SCREENING_PATTERN = /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
 const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
 const GENERIC_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in the country where this position is based?";
+const RELATIVES_IN_ORGANISATION_TEMPLATE = "relatives_in_organisation";
+const RELATIVE_DETAIL_TEMPLATE_KEYS = new Set(["relative_full_name", "relative_relationship"]);
+const EMPLOYMENT_EQUITY_TEMPLATE = "employment_equity_self_identification";
+const SCREENING_TEMPLATE_KEYS = new Set([
+  "work_authorisation",
+  "qualification",
+  "experience",
+  "drivers_licence",
+  "relocation",
+  "notice_period",
+  "travel",
+  "expected_ctc",
+  "home_languages",
+  EMPLOYMENT_EQUITY_TEMPLATE,
+  RELATIVES_IN_ORGANISATION_TEMPLATE,
+  ...RELATIVE_DETAIL_TEMPLATE_KEYS,
+]);
 
 function text(value, fallback = "") {
   const output = String(value ?? "").trim();
@@ -129,10 +146,15 @@ function questionInput(question) {
   const id = `question_${question.id}`;
   const required = question.required ? " required" : "";
   const requiredMark = question.required ? ' <span class="required">*</span>' : "";
+  const isRelativeDetail = RELATIVE_DETAIL_TEMPLATE_KEYS.has(question.templateKey);
+  const conditionalAttributes = isRelativeDetail
+    ? ` data-relative-detail="true" data-question-template="${escapeHtml(question.templateKey)}" hidden`
+    : "";
+  const conditionalClass = isRelativeDetail ? " conditional-question" : "";
 
   if (question.type === "yes_no") {
     return `
-      <div class="question field">
+      <div class="question field${conditionalClass}"${conditionalAttributes}>
         <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
         <select id="${escapeHtml(id)}" name="screening_${escapeHtml(question.id)}"${required}>
           <option value="">Select an answer</option>
@@ -143,43 +165,122 @@ function questionInput(question) {
   }
 
   if (question.type === "single_select") {
+    const savedEthnicity = question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE
+      ? text(profile.ethnicity)
+      : "";
     const options = (Array.isArray(question.options) ? question.options : [])
-      .map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`)
+      .map((option) => {
+        const selected = text(option) === savedEthnicity ? " selected" : "";
+        return `<option value="${escapeHtml(option)}"${selected}>${escapeHtml(option)}</option>`;
+      })
       .join("");
+    const help = question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE
+      ? "Voluntary and shared with the employer for employment equity reporting only. You may change it or leave it blank."
+      : "";
     return `
-      <div class="question field">
+      <div class="question field${conditionalClass}"${conditionalAttributes}>
         <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
         <select id="${escapeHtml(id)}" name="screening_${escapeHtml(question.id)}"${required}>
           <option value="">Select an answer</option>${options}
         </select>
+        ${help ? `<p class="help">${help}</p>` : ""}
+      </div>`;
+  }
+
+  if (question.type === "multi_select") {
+    const savedHomeLanguages = question.templateKey === "home_languages"
+      ? new Set((Array.isArray(profile.homeLanguages) ? profile.homeLanguages : [])
+        .map((language) => text(language).toLowerCase())
+        .filter(Boolean))
+      : new Set();
+    const options = (Array.isArray(question.options) ? question.options : [])
+      .map((option) => {
+        const selected = savedHomeLanguages.has(text(option).toLowerCase()) ? " selected" : "";
+        return `<option value="${escapeHtml(option)}"${selected}>${escapeHtml(option)}</option>`;
+      })
+      .join("");
+    const help = question.templateKey === "home_languages"
+      ? "Pre-filled from your profile. Adjust the languages for this application if needed."
+      : "Select every option that applies.";
+    return `
+      <div class="question field${conditionalClass}"${conditionalAttributes}>
+        <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
+        <select id="${escapeHtml(id)}" class="multi-select" name="screening_${escapeHtml(question.id)}" multiple size="6"${required}>
+          ${options}
+        </select>
+        <p class="help">${help}</p>
       </div>`;
   }
 
   if (question.type === "number") {
     return `
-      <div class="question field">
+      <div class="question field${conditionalClass}"${conditionalAttributes}>
         <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
-        <input id="${escapeHtml(id)}" name="screening_${escapeHtml(question.id)}" type="number" min="0" step="1"${required}>
+        <input id="${escapeHtml(id)}" name="screening_${escapeHtml(question.id)}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" data-numeric-answer="true"${required}>
+        <p class="help">Numbers only</p>
       </div>`;
   }
 
   return `
-    <div class="question field">
+    <div class="question field${conditionalClass}"${conditionalAttributes}>
       <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
       <textarea id="${escapeHtml(id)}" name="screening_${escapeHtml(question.id)}" maxlength="1200"${required}></textarea>
     </div>`;
 }
 
+function relativeOrganisationQuestion(questions) {
+  return questions.find(question => question.templateKey === RELATIVES_IN_ORGANISATION_TEMPLATE);
+}
+
+function configureRelativeQuestionFlow(form, questions) {
+  const relativesQuestion = relativeOrganisationQuestion(questions);
+  const detailCards = Array.from(form.querySelectorAll("[data-relative-detail='true']"));
+  if (!relativesQuestion || !detailCards.length) return;
+
+  const relativesField = form.elements[`screening_${relativesQuestion.id}`];
+  if (!(relativesField instanceof HTMLSelectElement)) return;
+
+  const updateRelativeDetails = () => {
+    const shouldShowDetails = relativesField.value === "Yes";
+    detailCards.forEach(card => {
+      card.hidden = !shouldShowDetails;
+      card.querySelectorAll("input, select, textarea").forEach(field => {
+        field.disabled = !shouldShowDetails;
+        if (!shouldShowDetails) field.value = "";
+      });
+    });
+  };
+
+  relativesField.addEventListener("change", updateRelativeDetails);
+  updateRelativeDetails();
+}
+
+function configureNumericQuestionInputs(form) {
+  form.querySelectorAll("[data-numeric-answer='true']").forEach((field) => {
+    field.addEventListener("input", () => {
+      const numericValue = field.value.replace(/\D+/g, "").slice(0, 12);
+      if (field.value !== numericValue) field.value = numericValue;
+    });
+  });
+}
+
 function countryAwareQuestion(question) {
   const label = text(question?.label);
-  const isWorkAuthorisation = question?.templateKey === "work_authorisation"
+  const requestedTemplateKey = text(question?.templateKey).slice(0, 80);
+  const templateKey = SCREENING_TEMPLATE_KEYS.has(requestedTemplateKey)
+    ? requestedTemplateKey
+    : label === LEGACY_WORK_AUTHORISATION_QUESTION || label === GENERIC_WORK_AUTHORISATION_QUESTION
+      ? "work_authorisation"
+      : "";
+  const isWorkAuthorisation = templateKey === "work_authorisation"
     || label === LEGACY_WORK_AUTHORISATION_QUESTION
     || label === GENERIC_WORK_AUTHORISATION_QUESTION;
-  if (!isWorkAuthorisation) return question;
+  if (!isWorkAuthorisation) return {...question, templateKey};
 
   const country = text(currentJob?.country).slice(0, 120);
   return {
     ...question,
+    templateKey: "work_authorisation",
     label: country
       ? `Are you legally authorised to work in ${country}?`
       : GENERIC_WORK_AUTHORISATION_QUESTION,
@@ -189,7 +290,7 @@ function countryAwareQuestion(question) {
 function applicationQuestions() {
   return (Array.isArray(currentJob.screeningQuestions) ? currentJob.screeningQuestions : [])
     .map(countryAwareQuestion)
-    .filter(question => !SENSITIVE_SCREENING_PATTERN.test(text(question?.label)))
+    .filter(question => question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE || !SENSITIVE_SCREENING_PATTERN.test(text(question?.label)))
     .slice(0, 8);
 }
 
@@ -283,6 +384,9 @@ function renderForm() {
     document.getElementById("newCvWrap").hidden = cvSelect.value !== "__upload";
   });
   document.getElementById("directApplicationForm").addEventListener("submit", submitApplication);
+  const applicationForm = document.getElementById("directApplicationForm");
+  configureRelativeQuestionFlow(applicationForm, questions);
+  configureNumericQuestionInputs(applicationForm);
   track("job_application_started", {application_method: "career_unified_direct"});
 }
 
@@ -361,7 +465,10 @@ async function submitApplication(event) {
     const answers = {};
     applicationQuestions().forEach((question) => {
       const field = form.elements[`screening_${question.id}`];
-      answers[question.id] = field ? field.value : "";
+      if (!field || field.disabled) return;
+      answers[question.id] = question.type === "multi_select" && field instanceof HTMLSelectElement
+        ? Array.from(field.selectedOptions, (option) => option.value)
+        : field.value;
     });
 
     const response = await fetch("/.netlify/functions/submit-job-application", {

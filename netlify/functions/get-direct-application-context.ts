@@ -11,6 +11,41 @@ import {
 } from "./_applicationUtils";
 
 const MAX_CV_CHOICES = 50;
+const EMPLOYMENT_EQUITY_OPTIONS = new Set([
+  "Black African",
+  "Coloured",
+  "Indian or Asian",
+  "White",
+  "Other",
+]);
+const OFFICIAL_SOUTH_AFRICAN_LANGUAGES = new Set([
+  "Afrikaans",
+  "English",
+  "isiNdebele",
+  "isiXhosa",
+  "isiZulu",
+  "Sepedi",
+  "Sesotho",
+  "Setswana",
+  "siSwati",
+  "Tshivenda",
+  "Xitsonga",
+  "South African Sign Language (SASL)",
+]);
+
+function homeLanguages(value: unknown) {
+  const values = Array.isArray(value) ? value : [];
+  return [...new Set(
+    values
+      .map((language) => cleanText(language, 80))
+      .filter((language) => OFFICIAL_SOUTH_AFRICAN_LANGUAGES.has(language)),
+  )].slice(0, OFFICIAL_SOUTH_AFRICAN_LANGUAGES.size);
+}
+
+function employmentEquitySelfIdentification(value: unknown) {
+  const selection = cleanText(value, 80);
+  return EMPLOYMENT_EQUITY_OPTIONS.has(selection) ? selection : "";
+}
 
 function timestampValue(value: any) {
   if (!value) return "";
@@ -84,6 +119,8 @@ export const handler: Handler = async (event) => {
       location: cleanText(profileData.location, 160),
       degreeType: cleanText(profileData.degreeType || profileData.highestQualification, 160),
       highestQualification: cleanText(profileData.highestQualification, 160),
+      homeLanguages: homeLanguages(profileData.homeLanguages),
+      ethnicity: employmentEquitySelfIdentification(profileData.ethnicity),
     };
 
     const cvs = cvsSnap.docs.map((cvSnap) => {

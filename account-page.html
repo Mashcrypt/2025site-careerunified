@@ -22,6 +22,18 @@
             box-sizing: border-box;
         }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f7f9fc;
@@ -719,6 +731,238 @@
                 align-items: stretch;
                 flex-direction: column;
                 gap: 0.75rem;
+            }
+        }
+
+        .notification-form {
+            max-width: 960px;
+            margin-top: 1.5rem;
+        }
+
+        .notification-master {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 0 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notification-master > div > strong,
+        .notification-master > div > span {
+            display: block;
+        }
+
+        .notification-master > div > strong {
+            color: #111827;
+            font-size: 1rem;
+        }
+
+        .notification-master > div > span {
+            margin-top: 0.2rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .notification-switch {
+            position: relative;
+            flex: 0 0 auto;
+            width: 46px;
+            height: 26px;
+        }
+
+        .notification-switch input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        .notification-switch-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: #9ca3af;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-switch-track::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+            transition: transform 0.2s;
+        }
+
+        .notification-switch input:checked + .notification-switch-track {
+            background: #2563eb;
+        }
+
+        .notification-switch input:checked + .notification-switch-track::after {
+            transform: translateX(20px);
+        }
+
+        .notification-switch input:focus-visible + .notification-switch-track {
+            outline: 3px solid rgba(37, 99, 235, 0.25);
+            outline-offset: 2px;
+        }
+
+        .notification-section {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notification-section:last-of-type {
+            border-bottom: 0;
+        }
+
+        .notification-section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .notification-section h3 {
+            margin: 0;
+            color: #111827;
+            font-size: 1rem;
+        }
+
+        .notification-section-hint,
+        .notification-selection-count {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .notification-option-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.65rem;
+        }
+
+        .notification-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            min-width: 0;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            line-height: 1.35;
+            font-size: 0.85rem;
+        }
+
+        .notification-option:has(input:checked) {
+            border-color: #60a5fa;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .notification-option input {
+            flex: 0 0 auto;
+            width: 17px;
+            height: 17px;
+            margin: 0.05rem 0 0;
+            accent-color: #2563eb;
+        }
+
+        .notification-search {
+            position: relative;
+            margin-bottom: 0.75rem;
+        }
+
+        .notification-search svg {
+            position: absolute;
+            top: 50%;
+            left: 0.85rem;
+            width: 18px;
+            height: 18px;
+            color: #6b7280;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .notification-search .form-input {
+            padding-left: 2.65rem;
+        }
+
+        .notification-industry-grid {
+            max-height: 255px;
+            overflow-y: auto;
+            padding: 0.15rem 0.25rem 0.15rem 0;
+            scrollbar-gutter: stable;
+        }
+
+        .notification-no-results {
+            grid-column: 1 / -1;
+            margin: 0;
+            padding: 1rem;
+            color: #6b7280;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .notification-delivery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem 1.5rem;
+        }
+
+        .notification-channel-list {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.5rem;
+        }
+
+        .notification-note {
+            margin: 1rem 0 0;
+            color: #6b7280;
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 900px) {
+            .notification-option-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .notification-option-grid,
+            .notification-delivery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-master,
+            .notification-section-header,
+            .notification-actions {
+                align-items: flex-start;
+            }
+
+            .notification-actions {
+                flex-direction: column;
+            }
+
+            .notification-actions .btn {
+                width: 100%;
             }
         }
 
@@ -1562,6 +1806,20 @@
                         </div>
                     </div>
 
+                    <div id="applicationDetails" class="info-section info-section-blue hidden">
+                        <h3>Application Details</h3>
+                        <div class="grid grid-cols-2">
+                            <div>
+                                <p style="color: #6b7280; font-size: 0.875rem;">Home Languages</p>
+                                <p style="font-weight: 500; color: #111827;" id="viewHomeLanguages">Not specified</p>
+                            </div>
+                            <div>
+                                <p style="color: #6b7280; font-size: 0.875rem;">Ethnicity</p>
+                                <p style="font-weight: 500; color: #111827;" id="viewEthnicity">Not specified</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="studentInfo" class="info-section info-section-blue hidden">
                         <h3>Education Details</h3>
                         <div class="grid grid-cols-2">
@@ -1697,6 +1955,43 @@
                                 <button type="button" class="status-btn" data-status="open-for-job" onclick="setEmploymentStatus('open-for-job')">Open for Job</button>
                                 <button type="button" class="status-btn" data-status="unemployed" onclick="setEmploymentStatus('unemployed')">Unemployed</button>
                                 <button type="button" class="status-btn" data-status="student" onclick="setEmploymentStatus('student')">Student</button>
+                            </div>
+                        </div>
+
+                        <div class="info-section info-section-blue">
+                            <h3>Application Details</h3>
+                            <p style="margin: 0 0 1rem; color: #64748b; font-size: 0.875rem;">Optional details that save time when an employer asks for them. You can always change an answer for a specific application.</p>
+                            <div class="grid grid-cols-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="inputHomeLanguages">Home Languages</label>
+                                    <select id="inputHomeLanguages" class="form-select" multiple size="6" aria-describedby="homeLanguagesHelp">
+                                        <option value="Afrikaans">Afrikaans</option>
+                                        <option value="English">English</option>
+                                        <option value="isiNdebele">isiNdebele</option>
+                                        <option value="isiXhosa">isiXhosa</option>
+                                        <option value="isiZulu">isiZulu</option>
+                                        <option value="Sepedi">Sepedi</option>
+                                        <option value="Sesotho">Sesotho</option>
+                                        <option value="Setswana">Setswana</option>
+                                        <option value="siSwati">siSwati</option>
+                                        <option value="Tshivenda">Tshivenda</option>
+                                        <option value="Xitsonga">Xitsonga</option>
+                                        <option value="South African Sign Language (SASL)">South African Sign Language (SASL)</option>
+                                    </select>
+                                    <p id="homeLanguagesHelp" style="margin: 0.5rem 0 0; color: #64748b; font-size: 0.8rem;">Select every language that applies.</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="inputEthnicity">Ethnicity <span style="font-weight: 400; color: #64748b;">(optional)</span></label>
+                                    <select id="inputEthnicity" class="form-select" aria-describedby="ethnicityHelp">
+                                        <option value="">Prefer not to say</option>
+                                        <option value="Black African">Black African</option>
+                                        <option value="Coloured">Coloured</option>
+                                        <option value="Indian or Asian">Indian or Asian</option>
+                                        <option value="White">White</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <p id="ethnicityHelp" style="margin: 0.5rem 0 0; color: #64748b; font-size: 0.8rem;">Used only to prefill an employer's optional employment equity self-identification question. You can change it or leave it blank for each application.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -1945,30 +2240,98 @@
 
                 <!-- Notifications Tab -->
                 <div id="notifications-content" class="tab-content hidden">
-                    <h2 class="content-title">Notification Settings</h2>
-                    <div class="settings-card" style="margin-top: 1.5rem;">
-                        <div class="setting-item">
+                    <h2 class="content-title">Manage Notifications</h2>
+                    <p class="content-subtitle">Choose what Career Unified should notify you about.</p>
+
+                    <form id="notificationPreferencesForm" class="notification-form">
+                        <div class="notification-master">
                             <div>
-                                <p style="font-weight: 500; color: #111827;">Email notifications</p>
-                                <p style="font-size: 0.875rem; color: #6b7280;">Receive job alerts and updates</p>
+                                <strong>Personalised alerts</strong>
+                                <span>Pause or resume the opportunity alerts selected below.</span>
                             </div>
-                            <input type="checkbox" class="checkbox" checked>
+                            <label class="notification-switch" for="notificationEnabled">
+                                <input id="notificationEnabled" type="checkbox" role="switch">
+                                <span class="notification-switch-track" aria-hidden="true"></span>
+                            </label>
                         </div>
-                        <div class="setting-item">
-                            <div>
-                                <p style="font-weight: 500; color: #111827;">SMS notifications</p>
-                                <p style="font-size: 0.875rem; color: #6b7280;">Get text messages for urgent updates</p>
+
+                        <section class="notification-section" aria-labelledby="notification-opportunities-title">
+                            <div class="notification-section-header">
+                                <h3 id="notification-opportunities-title">Opportunity types</h3>
+                                <span id="notificationOpportunityCount" class="notification-selection-count">0 selected</span>
                             </div>
-                            <input type="checkbox" class="checkbox">
-                        </div>
-                        <div class="setting-item">
-                            <div>
-                                <p style="font-weight: 500; color: #111827;">Push notifications</p>
-                                <p style="font-size: 0.875rem; color: #6b7280;">Browser and mobile push notifications</p>
+                            <div class="notification-option-grid">
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Jobs"> Jobs</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Internships"> Internships</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Learnerships"> Learnerships</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Graduate Programmes"> Graduate Programmes</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="YES Programmes"> YES Programmes</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Youth Opportunities"> Youth Opportunities</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Vacation Work"> Vacation Work</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Matric Opportunities"> Matric Opportunities</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Entry-level / No Experience"> Entry-level / No Experience</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Part-time Jobs"> Part-time Jobs</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Government Vacancies"> Government Vacancies</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="Bursaries"> Bursaries</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationOpportunity" value="University Applications"> University Applications</label>
                             </div>
-                            <input type="checkbox" class="checkbox" checked>
+                        </section>
+
+                        <section class="notification-section" aria-labelledby="notification-industries-title">
+                            <div class="notification-section-header">
+                                <h3 id="notification-industries-title">Industries</h3>
+                                <span id="notificationIndustryCount" class="notification-selection-count">0 selected</span>
+                            </div>
+                            <div class="notification-search">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                <label class="sr-only" for="notificationIndustrySearch">Search industries</label>
+                                <input id="notificationIndustrySearch" class="form-input" type="search" placeholder="Search industries" autocomplete="off">
+                            </div>
+                            <div id="notificationIndustryGrid" class="notification-option-grid notification-industry-grid"></div>
+                        </section>
+
+                        <section class="notification-section" aria-labelledby="notification-delivery-title">
+                            <div class="notification-section-header">
+                                <h3 id="notification-delivery-title">Delivery and timing</h3>
+                                <span class="notification-section-hint">Choose one or both channels</span>
+                            </div>
+                            <div class="notification-delivery-grid">
+                                <div class="notification-channel-list">
+                                    <label class="notification-option"><input type="checkbox" name="notificationChannel" value="email"> Email alerts</label>
+                                    <label class="notification-option"><input type="checkbox" name="notificationChannel" value="inApp"> In-account updates</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="notificationFrequency">Alert frequency</label>
+                                    <select id="notificationFrequency" class="form-select">
+                                        <option value="instant">As soon as a match is found</option>
+                                        <option value="daily">Daily digest</option>
+                                        <option value="weekly">Weekly digest</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="notification-section" aria-labelledby="notification-updates-title">
+                            <div class="notification-section-header">
+                                <h3 id="notification-updates-title">Useful updates</h3>
+                            </div>
+                            <div class="notification-option-grid">
+                                <label class="notification-option"><input type="checkbox" name="notificationUpdate" value="deadlineReminders"> Closing-date reminders</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationUpdate" value="applicationUpdates"> Application status updates</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationUpdate" value="recruiterMessages"> Recruiter messages</label>
+                                <label class="notification-option"><input type="checkbox" name="notificationUpdate" value="careerGuides"> Career guides and events</label>
+                            </div>
+                            <p class="notification-note">Essential account, security, billing, and service messages may still be sent when required.</p>
+                        </section>
+
+                        <div class="notification-actions">
+                            <button class="btn btn-primary" type="submit" id="saveNotificationPreferencesButton">Save notification settings</button>
+                            <p id="notificationPreferencesStatus" class="preference-status" role="status" aria-live="polite"></p>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- Help Tab (UPDATED) -->
@@ -2432,7 +2795,10 @@ Platform: ${navigator.platform}
         yearsOfExperience: '',
         desiredJobTitle: '',
         desiredLocation: '',
+        homeLanguages: [],
+        ethnicity: '',
         jobPreferences: null,
+        notificationPreferences: null,
         industry: '',
         bio: '',
         profilePhotoURL: '',
@@ -2440,6 +2806,28 @@ Platform: ${navigator.platform}
     };
 
     let currentUser = null;
+
+    const OFFICIAL_SOUTH_AFRICAN_LANGUAGES = [
+        'Afrikaans',
+        'English',
+        'isiNdebele',
+        'isiXhosa',
+        'isiZulu',
+        'Sepedi',
+        'Sesotho',
+        'Setswana',
+        'siSwati',
+        'Tshivenda',
+        'Xitsonga',
+        'South African Sign Language (SASL)'
+    ];
+    const ETHNICITY_OPTIONS = ['Black African', 'Coloured', 'Indian or Asian', 'White', 'Other'];
+
+    function normaliseHomeLanguages(value) {
+        const allowed = new Set(OFFICIAL_SOUTH_AFRICAN_LANGUAGES);
+        const selected = Array.isArray(value) ? value : [];
+        return [...new Set(selected.map(language => String(language || '').trim()).filter(language => allowed.has(language)))];
+    }
 
     function profileInitials(name) {
         return String(name || 'User')
@@ -2628,7 +3016,10 @@ Platform: ${navigator.platform}
                     yearsOfExperience: userData.yearsOfExperience || '',
                     desiredJobTitle: userData.desiredJobTitle || '',
                     desiredLocation: userData.desiredLocation || '',
+                    homeLanguages: normaliseHomeLanguages(userData.homeLanguages),
+                    ethnicity: ETHNICITY_OPTIONS.includes(userData.ethnicity) ? userData.ethnicity : '',
                     jobPreferences: normaliseJobPreferences(userData.jobPreferences),
+                    notificationPreferences: normaliseNotificationPreferences(userData.notificationPreferences),
                     industry: userData.industry || '',
                     bio: userData.bio || '',
                     profilePhotoURL: userData.profilePhotoURL || currentUser.photoURL || '',
@@ -2642,6 +3033,9 @@ Platform: ${navigator.platform}
                 updateProfileView();
                 if (!document.getElementById('job-preferences-content')?.classList.contains('hidden')) {
                     hydrateJobPreferences();
+                }
+                if (!document.getElementById('notifications-content')?.classList.contains('hidden')) {
+                    hydrateNotificationPreferences();
                 }
 
                 // Update Help Center subscription context (NEW, READ-ONLY)
@@ -2658,6 +3052,9 @@ Platform: ${navigator.platform}
                 updateProfileView();
                 if (!document.getElementById('job-preferences-content')?.classList.contains('hidden')) {
                     hydrateJobPreferences();
+                }
+                if (!document.getElementById('notifications-content')?.classList.contains('hidden')) {
+                    hydrateNotificationPreferences();
                 }
 
                 // Still set context as free
@@ -2698,6 +3095,60 @@ Platform: ${navigator.platform}
         'Part-time'
     ];
     const JOB_PREFERENCE_WORK_ARRANGEMENTS = ['On-site', 'Hybrid', 'Remote'];
+    const NOTIFICATION_OPPORTUNITY_TYPES = [
+        'Jobs',
+        'Internships',
+        'Learnerships',
+        'Graduate Programmes',
+        'YES Programmes',
+        'Youth Opportunities',
+        'Vacation Work',
+        'Matric Opportunities',
+        'Entry-level / No Experience',
+        'Part-time Jobs',
+        'Government Vacancies',
+        'Bursaries',
+        'University Applications'
+    ];
+    const NOTIFICATION_INDUSTRIES = [
+        'Accounting & Finance',
+        'Administration & Office Support',
+        'Agriculture & Environmental',
+        'Automotive',
+        'Banking & Investment',
+        'Call Centre & Customer Service',
+        'Construction & Built Environment',
+        'Creative, Media & Design',
+        'Education & Training',
+        'Engineering',
+        'Government & Public Service',
+        'Healthcare & Medical',
+        'Hospitality & Tourism',
+        'Human Resources',
+        'Information Technology',
+        'Insurance',
+        'Legal',
+        'Logistics & Supply Chain',
+        'Manufacturing & Production',
+        'Marketing & Communications',
+        'Mining',
+        'Procurement & Purchasing',
+        'Property & Real Estate',
+        'Retail & FMCG',
+        'Sales & Business Development',
+        'Science & Research',
+        'Security & Emergency Services',
+        'Transport & Aviation',
+        'General / Any Industry'
+    ];
+    const NOTIFICATION_CHANNELS = ['email', 'inApp'];
+    const NOTIFICATION_UPDATE_TYPES = [
+        'deadlineReminders',
+        'applicationUpdates',
+        'recruiterMessages',
+        'careerGuides'
+    ];
+    const NOTIFICATION_FREQUENCIES = ['instant', 'daily', 'weekly'];
     const MAX_JOB_PREFERENCE_ITEMS = 8;
     let jobPreferencesDraft = null;
 
@@ -2738,6 +3189,25 @@ Platform: ${navigator.platform}
                 ? Math.round(salary)
                 : null,
             jobAlertsEnabled: preferences.jobAlertsEnabled === true
+        };
+    }
+
+    function normaliseNotificationPreferences(value) {
+        const preferences = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+        const frequency = NOTIFICATION_FREQUENCIES.includes(preferences.frequency)
+            ? preferences.frequency
+            : 'daily';
+
+        return {
+            enabled: preferences.enabled === true,
+            opportunityTypes: normalisePreferenceSelection(
+                preferences.opportunityTypes,
+                NOTIFICATION_OPPORTUNITY_TYPES
+            ),
+            industries: normalisePreferenceSelection(preferences.industries, NOTIFICATION_INDUSTRIES),
+            channels: normalisePreferenceSelection(preferences.channels, NOTIFICATION_CHANNELS),
+            frequency,
+            updates: normalisePreferenceSelection(preferences.updates, NOTIFICATION_UPDATE_TYPES)
         };
     }
 
@@ -2957,6 +3427,218 @@ Platform: ${navigator.platform}
             if (saveButton) {
                 saveButton.disabled = false;
                 saveButton.textContent = 'Save preferences';
+            }
+        }
+    };
+
+    let notificationPreferencesDraft = null;
+
+    function notificationPreferencesFromProfile() {
+        const hasSavedPreferences = profileData.notificationPreferences
+            && typeof profileData.notificationPreferences === 'object';
+        const preferences = normaliseNotificationPreferences(profileData.notificationPreferences);
+
+        if (!hasSavedPreferences && profileData.jobPreferences?.jobAlertsEnabled === true) {
+            preferences.enabled = true;
+            preferences.opportunityTypes = ['Jobs'];
+            preferences.channels = ['email'];
+        }
+
+        if (!preferences.industries.length && NOTIFICATION_INDUSTRIES.includes(profileData.industry)) {
+            preferences.industries = [profileData.industry];
+        }
+        return preferences;
+    }
+
+    function setNotificationPreferencesStatus(message = '', type = '') {
+        const status = document.getElementById('notificationPreferencesStatus');
+        if (!status) return;
+        status.textContent = message;
+        status.classList.remove('success', 'error');
+        if (type) status.classList.add(type);
+    }
+
+    function updateNotificationSelectionCounts() {
+        const opportunityCount = document.getElementById('notificationOpportunityCount');
+        const industryCount = document.getElementById('notificationIndustryCount');
+        const selectedOpportunities = getCheckedPreferenceValues('notificationOpportunity').length;
+        const selectedIndustries = notificationPreferencesDraft?.industries.length || 0;
+        if (opportunityCount) {
+            opportunityCount.textContent = `${selectedOpportunities} selected`;
+        }
+        if (industryCount) {
+            industryCount.textContent = `${selectedIndustries} selected`;
+        }
+    }
+
+    function renderNotificationIndustries(searchTerm = '') {
+        const grid = document.getElementById('notificationIndustryGrid');
+        if (!grid || !notificationPreferencesDraft) return;
+
+        const term = safeTextValue(searchTerm, '', 80).toLocaleLowerCase();
+        const matchingIndustries = NOTIFICATION_INDUSTRIES.filter(industry =>
+            industry.toLocaleLowerCase().includes(term)
+        );
+        grid.replaceChildren();
+
+        if (!matchingIndustries.length) {
+            const empty = document.createElement('p');
+            empty.className = 'notification-no-results';
+            empty.textContent = 'No industries match your search.';
+            grid.appendChild(empty);
+            return;
+        }
+
+        matchingIndustries.forEach(industry => {
+            const label = document.createElement('label');
+            label.className = 'notification-option';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = 'notificationIndustry';
+            input.value = industry;
+            input.checked = notificationPreferencesDraft.industries.includes(industry);
+            input.addEventListener('change', () => {
+                const selected = new Set(notificationPreferencesDraft.industries);
+                if (input.checked) selected.add(industry);
+                else selected.delete(industry);
+                notificationPreferencesDraft.industries = NOTIFICATION_INDUSTRIES.filter(item => selected.has(item));
+                updateNotificationSelectionCounts();
+                setNotificationPreferencesStatus('');
+            });
+
+            const text = document.createElement('span');
+            text.textContent = industry;
+            label.append(input, text);
+            grid.appendChild(label);
+        });
+    }
+
+    function hydrateNotificationPreferences() {
+        notificationPreferencesDraft = notificationPreferencesFromProfile();
+        const enabled = document.getElementById('notificationEnabled');
+        const frequency = document.getElementById('notificationFrequency');
+        const industrySearch = document.getElementById('notificationIndustrySearch');
+        if (enabled) enabled.checked = notificationPreferencesDraft.enabled;
+        if (frequency) frequency.value = notificationPreferencesDraft.frequency;
+        if (industrySearch) industrySearch.value = '';
+
+        document.querySelectorAll('input[name="notificationOpportunity"]').forEach(input => {
+            input.checked = notificationPreferencesDraft.opportunityTypes.includes(input.value);
+        });
+        document.querySelectorAll('input[name="notificationChannel"]').forEach(input => {
+            input.checked = notificationPreferencesDraft.channels.includes(input.value);
+        });
+        document.querySelectorAll('input[name="notificationUpdate"]').forEach(input => {
+            input.checked = notificationPreferencesDraft.updates.includes(input.value);
+        });
+
+        renderNotificationIndustries();
+        updateNotificationSelectionCounts();
+        setNotificationPreferencesStatus('');
+    }
+
+    function initialiseNotificationPreferenceControls() {
+        const form = document.getElementById('notificationPreferencesForm');
+        const industrySearch = document.getElementById('notificationIndustrySearch');
+        if (!form || !industrySearch) return;
+
+        form.addEventListener('submit', event => window.saveNotificationPreferences(event));
+        industrySearch.addEventListener('input', event => {
+            renderNotificationIndustries(event.target.value);
+        });
+        document.querySelectorAll('input[name="notificationOpportunity"]').forEach(input => {
+            input.addEventListener('change', () => {
+                updateNotificationSelectionCounts();
+                setNotificationPreferencesStatus('');
+            });
+        });
+        form.addEventListener('change', () => setNotificationPreferencesStatus(''));
+    }
+
+    window.saveNotificationPreferences = async function(event) {
+        event?.preventDefault();
+        if (!currentUser) {
+            setNotificationPreferencesStatus('Please log in again before saving notification settings.', 'error');
+            return;
+        }
+        if (!notificationPreferencesDraft) hydrateNotificationPreferences();
+
+        const preferences = {
+            enabled: document.getElementById('notificationEnabled')?.checked === true,
+            opportunityTypes: normalisePreferenceSelection(
+                getCheckedPreferenceValues('notificationOpportunity'),
+                NOTIFICATION_OPPORTUNITY_TYPES
+            ),
+            industries: normalisePreferenceSelection(
+                notificationPreferencesDraft.industries,
+                NOTIFICATION_INDUSTRIES
+            ),
+            channels: normalisePreferenceSelection(
+                getCheckedPreferenceValues('notificationChannel'),
+                NOTIFICATION_CHANNELS
+            ),
+            frequency: NOTIFICATION_FREQUENCIES.includes(document.getElementById('notificationFrequency')?.value)
+                ? document.getElementById('notificationFrequency').value
+                : 'daily',
+            updates: normalisePreferenceSelection(
+                getCheckedPreferenceValues('notificationUpdate'),
+                NOTIFICATION_UPDATE_TYPES
+            )
+        };
+
+        if (preferences.enabled && !preferences.opportunityTypes.length) {
+            setNotificationPreferencesStatus('Choose at least one opportunity type before enabling alerts.', 'error');
+            document.querySelector('input[name="notificationOpportunity"]')?.focus();
+            return;
+        }
+        if (preferences.enabled && !preferences.channels.length) {
+            setNotificationPreferencesStatus('Choose email alerts, in-account updates, or both.', 'error');
+            document.querySelector('input[name="notificationChannel"]')?.focus();
+            return;
+        }
+
+        const saveButton = document.getElementById('saveNotificationPreferencesButton');
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+        }
+        setNotificationPreferencesStatus('Saving your notification settings...');
+
+        try {
+            await setDoc(doc(db, 'users', currentUser.uid), {
+                notificationPreferences: preferences,
+                notificationPreferencesUpdatedAt: new Date().toISOString(),
+                notificationsOptedOutAt: preferences.enabled ? null : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+
+            notificationPreferencesDraft = preferences;
+            profileData.notificationPreferences = preferences;
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+            setNotificationPreferencesStatus(
+                preferences.enabled ? 'Notification settings saved.' : 'Personalised alerts paused.',
+                'success'
+            );
+
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'notification_preferences_saved', {
+                    alerts_enabled: preferences.enabled,
+                    opportunity_type_count: preferences.opportunityTypes.length,
+                    industry_count: preferences.industries.length,
+                    email_enabled: preferences.channels.includes('email'),
+                    in_app_enabled: preferences.channels.includes('inApp'),
+                    alert_frequency: preferences.frequency,
+                    update_type_count: preferences.updates.length
+                });
+            }
+        } catch (error) {
+            console.error('Error saving notification preferences:', error);
+            setNotificationPreferencesStatus('Could not save notification settings. Please try again.', 'error');
+        } finally {
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save notification settings';
             }
         }
     };
@@ -3225,6 +3907,7 @@ Platform: ${navigator.platform}
         });
     });
     initialiseJobPreferenceControls();
+    initialiseNotificationPreferenceControls();
 
     function switchTab(tabName) {
         // Update nav items
@@ -3257,6 +3940,9 @@ Platform: ${navigator.platform}
 
         if (tabName === 'job-preferences') {
             hydrateJobPreferences();
+        }
+        if (tabName === 'notifications') {
+            hydrateNotificationPreferences();
         }
     }
 
@@ -3297,6 +3983,14 @@ Platform: ${navigator.platform}
         setInputValue('inputDesiredJob', profileData.desiredJobTitle);
         setInputValue('inputDesiredLocation', profileData.desiredLocation);
         setInputValue('inputBio', profileData.bio);
+        setInputValue('inputEthnicity', profileData.ethnicity);
+        const homeLanguagesInput = document.getElementById('inputHomeLanguages');
+        if (homeLanguagesInput instanceof HTMLSelectElement) {
+            const selectedLanguages = new Set(normaliseHomeLanguages(profileData.homeLanguages));
+            Array.from(homeLanguagesInput.options).forEach(option => {
+                option.selected = selectedLanguages.has(option.value);
+            });
+        }
         
         setEmploymentStatus(profileData.employmentStatus);
     }
@@ -3551,6 +4245,12 @@ Platform: ${navigator.platform}
         profileData.desiredJobTitle = getInputValue('inputDesiredJob');
         profileData.desiredLocation = getInputValue('inputDesiredLocation');
         profileData.bio = getInputValue('inputBio');
+        const homeLanguagesInput = document.getElementById('inputHomeLanguages');
+        profileData.homeLanguages = homeLanguagesInput instanceof HTMLSelectElement
+            ? normaliseHomeLanguages(Array.from(homeLanguagesInput.selectedOptions, option => option.value))
+            : [];
+        const ethnicity = getInputValue('inputEthnicity');
+        profileData.ethnicity = ETHNICITY_OPTIONS.includes(ethnicity) ? ethnicity : '';
 
         try {
             // Save to Firestore
@@ -3602,11 +4302,20 @@ Platform: ${navigator.platform}
         const studentInfo = document.getElementById('studentInfo');
         const professionalInfo = document.getElementById('professionalInfo');
         const careerPreferences = document.getElementById('careerPreferences');
+        const applicationDetails = document.getElementById('applicationDetails');
         const bioSection = document.getElementById('bioSection');
 
         if (studentInfo) studentInfo.classList.add('hidden');
         if (professionalInfo) professionalInfo.classList.add('hidden');
         if (careerPreferences) careerPreferences.classList.add('hidden');
+        if (applicationDetails) applicationDetails.classList.add('hidden');
+
+        const homeLanguages = normaliseHomeLanguages(profileData.homeLanguages);
+        if ((homeLanguages.length || profileData.ethnicity) && applicationDetails) {
+            applicationDetails.classList.remove('hidden');
+            setText('viewHomeLanguages', homeLanguages.join(', '));
+            setText('viewEthnicity', profileData.ethnicity);
+        }
 
         if (profileData.employmentStatus === 'student') {
             if (studentInfo) studentInfo.classList.remove('hidden');

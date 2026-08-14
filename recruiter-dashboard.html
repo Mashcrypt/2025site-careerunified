@@ -908,9 +908,9 @@
     gap: 12px;
     margin-bottom: 18px;
     padding: 14px;
-    border-left: 4px solid #16a34a;
-    background: #f0fdf4;
-    color: #166534;
+    border-left: 4px solid #2563eb;
+    background: #eff6ff;
+    color: #1e3a8a;
   }
   .direct-apply-value i { font-size: 24px; }
   .screening-toolbar {
@@ -976,8 +976,8 @@
   .main.post-job-open .stats { display: none; }
 
   #post-job {
-    --job-wizard-accent: #245d57;
-    --job-wizard-accent-dark: #194843;
+    --job-wizard-accent: #2563eb;
+    --job-wizard-accent-dark: #1d4ed8;
     --job-wizard-border: #e2e8f0;
     --job-wizard-surface: #f8fafc;
   }
@@ -1493,7 +1493,7 @@
     font-weight: 700;
     cursor: pointer;
   }
-  .job-inline-add-button:hover { border-color: var(--job-wizard-accent); background: #f4f8f7; }
+  .job-inline-add-button:hover { border-color: var(--job-wizard-accent); background: #eff6ff; }
 
   .custom-screening-question {
     margin: 18px 0;
@@ -2963,6 +2963,12 @@
                     <option value="relocation">Willingness to relocate</option>
                     <option value="notice_period">Notice period</option>
                     <option value="travel">Willingness to travel</option>
+                    <option value="expected_ctc">Expected annual CTC</option>
+                    <option value="home_languages">Home languages</option>
+                    <option value="employment_equity_self_identification">Employment equity self-identification</option>
+                    <option value="relatives_in_organisation">Relatives in the organisation</option>
+                    <option value="relative_full_name">Relative's full name</option>
+                    <option value="relative_relationship">Relationship to relative</option>
                   </select>
                 </div>
                 <button type="button" class="job-inline-add-button" id="addScreeningTemplateBtn"><i class='bx bx-plus'></i> Add Question</button>
@@ -3754,8 +3760,68 @@ const SCREENING_QUESTION_LIBRARY = {
     required: false,
     options: [],
     criteria: null
+  },
+  expected_ctc: {
+    label: "What is your expected annual CTC (ZAR)?",
+    type: "number",
+    required: true,
+    options: [],
+    criteria: null
+  },
+  home_languages: {
+    label: "Which official South African languages are your home languages?",
+    type: "multi_select",
+    required: false,
+    options: [
+      "Afrikaans",
+      "English",
+      "isiNdebele",
+      "isiXhosa",
+      "isiZulu",
+      "Sepedi",
+      "Sesotho",
+      "Setswana",
+      "siSwati",
+      "Tshivenda",
+      "Xitsonga",
+      "South African Sign Language (SASL)"
+    ],
+    criteria: null
+  },
+  employment_equity_self_identification: {
+    label: "For employment equity reporting, how do you voluntarily self-identify?",
+    type: "single_select",
+    required: false,
+    options: ["Black African", "Coloured", "Indian or Asian", "White", "Other"],
+    criteria: null
+  },
+  relatives_in_organisation: {
+    label: "Do you have any relatives currently working within this organisation?",
+    type: "yes_no",
+    required: true,
+    options: [],
+    criteria: null
+  },
+  relative_full_name: {
+    label: "If yes, provide the relative's full name and surname.",
+    type: "short_text",
+    required: false,
+    options: [],
+    criteria: null
+  },
+  relative_relationship: {
+    label: "If yes, what is your relationship to the relative?",
+    type: "short_text",
+    required: false,
+    options: [],
+    criteria: null
   }
 };
+
+const SCREENING_TEMPLATE_KEYS = new Set(Object.keys(SCREENING_QUESTION_LIBRARY));
+const EMPLOYMENT_EQUITY_TEMPLATE = "employment_equity_self_identification";
+const EMPLOYMENT_EQUITY_OPTIONS = ["Black African", "Coloured", "Indian or Asian", "White", "Other"];
+const EMPLOYMENT_EQUITY_LABEL = "For employment equity reporting, how do you voluntarily self-identify?";
 
 const SENSITIVE_SCREENING_PATTERN = /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
 
@@ -3829,23 +3895,34 @@ function questionId(prefix = "question") {
 }
 
 function normalizeScreeningQuestion(question, index = 0) {
-  const type = ["yes_no", "number", "single_select", "short_text"].includes(question?.type)
+  const type = ["yes_no", "number", "single_select", "multi_select", "short_text"].includes(question?.type)
     ? question.type
     : "short_text";
   const rawLabel = dashboardText(question?.label).slice(0, 240);
-  const isWorkAuthorisation = question?.templateKey === "work_authorisation"
+  const requestedTemplateKey = dashboardText(question?.templateKey).slice(0, 80);
+  const templateKey = SCREENING_TEMPLATE_KEYS.has(requestedTemplateKey)
+    ? requestedTemplateKey
+    : rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION
+      ? "work_authorisation"
+      : "";
+  const isWorkAuthorisation = templateKey === "work_authorisation"
     || rawLabel === LEGACY_WORK_AUTHORISATION_QUESTION
     || rawLabel === GENERIC_WORK_AUTHORISATION_QUESTION;
+  const isEmploymentEquity = templateKey === EMPLOYMENT_EQUITY_TEMPLATE;
   return {
     id: dashboardText(question?.id, `question_${index + 1}`).slice(0, 80),
-    label: isWorkAuthorisation ? workAuthorisationQuestionLabel() : rawLabel,
-    templateKey: isWorkAuthorisation ? "work_authorisation" : "",
-    type,
-    required: question?.required !== false,
-    options: Array.isArray(question?.options)
+    label: isEmploymentEquity
+      ? EMPLOYMENT_EQUITY_LABEL
+      : isWorkAuthorisation ? workAuthorisationQuestionLabel() : rawLabel,
+    templateKey: isWorkAuthorisation ? "work_authorisation" : templateKey,
+    type: isEmploymentEquity ? "single_select" : type,
+    required: isEmploymentEquity ? false : question?.required !== false,
+    options: isEmploymentEquity
+      ? [...EMPLOYMENT_EQUITY_OPTIONS]
+      : Array.isArray(question?.options)
       ? question.options.map(option => dashboardText(option).slice(0, 120)).filter(Boolean).slice(0, 12)
       : [],
-    criteria: question?.criteria?.operator && dashboardText(question.criteria.value)
+    criteria: !isEmploymentEquity && question?.criteria?.operator && dashboardText(question.criteria.value)
       ? {
           operator: question.criteria.operator === "gte" ? "gte" : "equals",
           value: dashboardText(question.criteria.value).slice(0, 120)
@@ -3856,6 +3933,9 @@ function normalizeScreeningQuestion(question, index = 0) {
 
 function criterionControl(question) {
   const currentValue = dashboardText(question.criteria?.value);
+  if (question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE) {
+    return `<div class="form-group" style="margin:0;"><label>Review method</label><input value="Voluntary equity reporting only" disabled></div>`;
+  }
   if (question.type === "yes_no") {
     return `
       <div class="form-group" style="margin:0;">
@@ -3908,19 +3988,20 @@ function renderScreeningQuestions() {
       <div class="screening-config">
         <div class="form-group" style="margin:0;">
           <label>Question</label>
-          <input data-question-field="label" type="text" maxlength="240" value="${escapeDashboard(question.label)}">
+          <input data-question-field="label" type="text" maxlength="240" value="${escapeDashboard(question.label)}"${question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE ? " disabled" : ""}>
         </div>
         <div class="form-group" style="margin:0;">
           <label>Type of Answer</label>
-          <select data-question-field="type">
+          <select data-question-field="type"${question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE ? " disabled" : ""}>
             <option value="short_text"${question.type === "short_text" ? " selected" : ""}>Short Answer</option>
             <option value="yes_no"${question.type === "yes_no" ? " selected" : ""}>Yes / No</option>
             <option value="number"${question.type === "number" ? " selected" : ""}>Number</option>
             <option value="single_select"${question.type === "single_select" ? " selected" : ""}>Multiple Choice</option>
+            <option value="multi_select"${question.type === "multi_select" ? " selected" : ""}>Select All That Apply</option>
           </select>
         </div>
       </div>
-      ${question.type === "single_select" ? `
+      ${["single_select", "multi_select"].includes(question.type) && question.templateKey !== EMPLOYMENT_EQUITY_TEMPLATE ? `
         <div class="form-group screening-options-field">
           <label>Answer options</label>
           <input data-question-field="options" type="text" value="${escapeDashboard(question.options.join(", "))}" placeholder="Option one, Option two, Option three">
@@ -3929,7 +4010,7 @@ function renderScreeningQuestions() {
       <div class="screening-config screening-criteria-config">
         ${criterionControl(question)}
         <label class="screening-check">
-          <input data-question-field="required" type="checkbox"${question.required ? " checked" : ""}>
+          <input data-question-field="required" type="checkbox"${question.required ? " checked" : ""}${question.templateKey === EMPLOYMENT_EQUITY_TEMPLATE ? " disabled" : ""}>
           Candidate must answer this question
         </label>
       </div>
@@ -4008,7 +4089,7 @@ function setupApplicationBuilder() {
       );
       return;
     }
-    if (type === "single_select" && options.length < 2) {
+    if (["single_select", "multi_select"].includes(type) && options.length < 2) {
       showToast("warn", "Options required", "Add at least two multiple-choice options.", 3500);
       return;
     }
@@ -4040,10 +4121,10 @@ function setupApplicationBuilder() {
       }
     }
     if (field === "type") {
-      question.type = ["yes_no", "number", "single_select", "short_text"].includes(event.target.value)
+      question.type = ["yes_no", "number", "single_select", "multi_select", "short_text"].includes(event.target.value)
         ? event.target.value
         : "short_text";
-      if (question.type !== "single_select") question.options = [];
+      if (!["single_select", "multi_select"].includes(question.type)) question.options = [];
       question.criteria = null;
       renderScreeningQuestions();
     }
@@ -4276,22 +4357,22 @@ function validateJobWizardStep(step) {
     const invalidQuestion = screeningQuestionsDraft.find(question => {
       const label = dashboardText(question.label);
       return !label
-        || SENSITIVE_SCREENING_PATTERN.test(label)
-        || (question.type === 'single_select' && question.options.length < 2);
+        || (question.templateKey !== EMPLOYMENT_EQUITY_TEMPLATE && SENSITIVE_SCREENING_PATTERN.test(label))
+        || (["single_select", "multi_select"].includes(question.type) && question.options.length < 2);
     });
     if (invalidQuestion) {
       if (currentJobWizardStep !== step) showJobWizardStep(step, {focus: false});
       const label = dashboardText(invalidQuestion.label);
       const message = !label
         ? 'Each screening question needs a question.'
-        : SENSITIVE_SCREENING_PATTERN.test(label)
+        : invalidQuestion.templateKey !== EMPLOYMENT_EQUITY_TEMPLATE && SENSITIVE_SCREENING_PATTERN.test(label)
           ? 'Use role-specific screening questions and do not request sensitive personal information.'
           : 'Multiple-choice questions need at least two answer options.';
       showToast('warn', 'Review the screening question', message, 5200);
       const card = document.querySelector(`[data-question-id="${CSS.escape(invalidQuestion.id)}"]`);
       const field = !label
         ? card?.querySelector('[data-question-field="label"]')
-        : invalidQuestion.type === 'single_select' && invalidQuestion.options.length < 2
+        : ["single_select", "multi_select"].includes(invalidQuestion.type) && invalidQuestion.options.length < 2
           ? card?.querySelector('[data-question-field="options"]')
           : card?.querySelector('[data-question-field="label"]');
       field?.focus();
