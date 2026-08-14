@@ -687,16 +687,54 @@
     color: #1e3a8a;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    position: relative;
+    width: 36px;
     min-height: 36px;
-    padding: 8px 10px;
+    padding: 8px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 17px;
     transition: .2s;
   }
   .actions button:hover { background: #e0e7ff; }
+  .actions button svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .actions button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.25);
+    outline-offset: 2px;
+  }
+  .actions button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 10;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: #1e3a8a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(2px);
+    transition: opacity .15s ease, transform .15s ease;
+  }
+  .actions button:hover::after,
+  .actions button:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   .public-listings-grid {
     display: grid;
@@ -2127,6 +2165,7 @@
       margin-right: 12px;
     }
     .actions { justify-content: flex-end; }
+    .actions button { width: 44px; min-height: 44px; }
     .public-listing-card {
       grid-template-columns: 1fr;
       align-items: stretch;
@@ -5983,11 +6022,11 @@ async function loadManageJobs() {
         <div data-label="Status"><span class="${statusClass}">${(j.status || "active").toUpperCase()}</span></div>
 
         <div data-label="Actions" class="actions">
-          <button title="Open vacancy workspace" data-action="workspace" data-id="${escapeDashboard(j.id)}"><i class='bx bx-layout' aria-hidden="true"></i>Manage</button>
-          <button title="View job" data-action="view" data-id="${escapeDashboard(j.id)}"><i class='bx bx-show' aria-hidden="true"></i>View</button>
-          <button title="Edit job" data-action="edit" data-id="${escapeDashboard(j.id)}"><i class='bx bx-edit' aria-hidden="true"></i>Edit</button>
-          <button title="Duplicate job" data-action="duplicate" data-id="${escapeDashboard(j.id)}"><i class='bx bx-copy' aria-hidden="true"></i>Duplicate</button>
-          <button title="Delete job" data-action="delete" data-id="${escapeDashboard(j.id)}"><i class='bx bx-trash' aria-hidden="true"></i>Delete</button>
+          <button type="button" aria-label="Open vacancy workspace" data-tooltip="Manage" data-action="workspace" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></button>
+          <button type="button" aria-label="View job" data-tooltip="View" data-action="view" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg></button>
+          <button type="button" aria-label="Edit job" data-tooltip="Edit" data-action="edit" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.2-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m13.8 7.2 3 3"></path></svg></button>
+          <button type="button" aria-label="Duplicate job" data-tooltip="Duplicate" data-action="duplicate" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="1.5"></rect><path d="M15 9V5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v8A1.5 1.5 0 0 0 5.5 15H9"></path></svg></button>
+          <button type="button" aria-label="Delete job" data-tooltip="Delete" data-action="delete" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M10 11v5"></path><path d="M14 11v5"></path><path d="M6 7l1 13h10l1-13"></path><path d="M9 7V4h6v3"></path></svg></button>
         </div>
       `;
 
