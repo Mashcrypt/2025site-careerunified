@@ -19,10 +19,12 @@
     *{box-sizing:border-box}
     body{margin:0;background:#f4f7fc;color:#111827;font-family:Poppins,Arial,sans-serif;line-height:1.5}
     a{color:#1d4ed8}
-    .apply-header{background:#1e3a8a;color:#fff}
+    .apply-header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e8edf6}
     .header-inner{width:min(1180px,calc(100% - 32px));min-height:68px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
-    .brand{color:#fff;text-decoration:none;font-weight:800;font-size:1.15rem}
-    .back-link{color:#dbeafe;text-decoration:none;font-weight:600;font-size:.9rem}
+    .brand{display:inline-flex;align-items:center;gap:10px;color:#111827;text-decoration:none;font-weight:700;font-size:1.1rem;white-space:nowrap}
+    .brand-logo{width:34px;height:34px;display:block;flex:0 0 34px;border-radius:6px;object-fit:cover}
+    .back-link{display:inline-flex;align-items:center;min-height:40px;padding:0 8px;color:#374151;text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
+    .back-link:hover,.back-link:focus-visible{color:#1d4ed8}
     .apply-layout{width:min(1180px,calc(100% - 32px));margin:28px auto 56px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
     .apply-panel,.job-summary{background:#fff;border:1px solid #dbeafe;border-radius:8px;box-shadow:0 10px 30px rgba(30,58,138,.08)}
     .apply-panel{padding:28px}
@@ -95,6 +97,10 @@
     }
     @media(max-width:560px){
       .header-inner,.apply-layout{width:min(100% - 20px,1180px)}
+      .header-inner{gap:12px}
+      .brand{gap:8px;font-size:1rem}
+      .brand-logo{width:32px;height:32px;flex-basis:32px}
+      .back-link{padding:0;font-size:.8rem}
       .apply-panel,.job-summary{padding:18px}
       .grid{grid-template-columns:1fr}
       .field.full{grid-column:auto}
@@ -106,7 +112,10 @@
 <body>
   <header class="apply-header">
     <div class="header-inner">
-      <a class="brand" href="/">Career Unified</a>
+      <a class="brand" href="/" aria-label="Career Unified home">
+        <img class="brand-logo" src="/android-chrome-192x192.png" alt="" width="34" height="34">
+        <span>Career Unified</span>
+      </a>
       <a class="back-link" id="backToJob" href="/jobs">Back to jobs</a>
     </div>
   </header>
@@ -130,7 +139,7 @@
     </aside>
   </main>
 
-  <script type="module" src="/js/direct-apply.js?v=20260814-2"></script>
+  <script type="module" src="/js/direct-apply.js?v=20260814-3"></script>
   <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

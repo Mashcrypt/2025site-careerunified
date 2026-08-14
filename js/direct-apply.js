@@ -143,8 +143,7 @@ function renderSummary() {
       <div><span>Location</span><strong>${escapeHtml(location || "Not specified")}</strong></div>
       <div><span>Job type</span><strong>${escapeHtml(text(currentJob.type, "Not specified"))}</strong></div>
       <div><span>Closing date</span><strong>${escapeHtml(formatDate(currentJob.deadline))}</strong></div>
-    </div>
-    <p class="trust">Your application is shared only with ${escapeHtml(company)} for this vacancy. You can track its status from your Career Unified profile.</p>`;
+    </div>`;
 }
 
 function questionInput(question) {
