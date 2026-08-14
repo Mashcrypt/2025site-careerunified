@@ -394,6 +394,41 @@
       color: #1f2937;
       font-size: 0.92rem;
     }
+    .company-socials {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -2px 0 14px;
+    }
+    .company-socials-label {
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 2px;
+    }
+    .company-socials a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      color: #1e40af;
+      background: #eff6ff;
+      text-decoration: none;
+    }
+    .company-socials a:hover,
+    .company-socials a:focus-visible {
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+    .company-socials a:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.25);
+      outline-offset: 2px;
+    }
+    .company-socials i { font-size: 16px; }
     .jobs-preview p           { margin: 8px 0; color: #4b5563; }
     .jobs-preview strong      { color: #1f2937; }
 
@@ -1316,6 +1351,35 @@
       return output;
     }
 
+    const COMPANY_SOCIAL_PLATFORMS = [
+      { key: 'facebook', label: 'Facebook', icon: 'fa-facebook-f', hosts: ['facebook.com', 'www.facebook.com', 'm.facebook.com'] },
+      { key: 'instagram', label: 'Instagram', icon: 'fa-instagram', hosts: ['instagram.com', 'www.instagram.com'] },
+      { key: 'twitter', label: 'X (Twitter)', icon: 'fa-x-twitter', hosts: ['x.com', 'www.x.com', 'mobile.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'] },
+      { key: 'linkedin', label: 'LinkedIn', icon: 'fa-linkedin-in', hosts: ['linkedin.com', 'www.linkedin.com'] }
+    ];
+
+    function validCompanySocialUrl(value, hosts) {
+      const raw = safeText(value);
+      if (!raw) return '';
+      try {
+        const url = new URL(raw);
+        return url.protocol === 'https:' && hosts.includes(url.hostname.toLowerCase()) ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
+
+    function renderCompanySocials(job) {
+      const links = job?.company?.socialLinks || job?.companySocialLinks || {};
+      const companyName = safeText(job?.company?.name, 'this company');
+      const socialLinks = COMPANY_SOCIAL_PLATFORMS.map(platform => {
+        const url = validCompanySocialUrl(links[platform.key], platform.hosts);
+        if (!url) return '';
+        return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" aria-label="Follow ${escapeHtml(companyName)} on ${platform.label}" title="${platform.label}"><i class="fa-brands ${platform.icon}" aria-hidden="true"></i></a>`;
+      }).filter(Boolean).join('');
+      return socialLinks ? `<div class="company-socials"><span class="company-socials-label">Follow this company</span>${socialLinks}</div>` : '';
+    }
+
     function getClosingDateLabel(job) {
       return safeText(job?.deadlineText) || safeText(job?.deadline) || 'Not specified';
     }
@@ -1535,6 +1599,9 @@
       const title       = cleanJobTitle(data.title || data.jobTitle);
       const companyName = safeText(data.company?.name) || safeText(data.companyName) || safeText(data.company) || 'Confidential';
       const logoUrl     = safeText(data.company?.logoUrl) || safeText(data.logoUrl) || safeText(data.logo) || '';
+      const companySocialLinks = data.companySocialLinks && typeof data.companySocialLinks === 'object'
+        ? data.companySocialLinks
+        : {};
       const location    = safeText(data.location) || [safeText(data.city), safeText(data.country)].filter(Boolean).join(', ') || 'South Africa';
       const description = safeText(data.description) || safeText(data.jobDescription) || safeText(data.desc) || 'Description not provided.';
       const salary      = safeText(data.salary) || safeText(data.salaryRange) || '';
@@ -1565,7 +1632,7 @@
         jobType: safeText(data.type || data.jobType || data.employmentType, 'FULL_TIME'),
         category, listingTier: listingTier || '', badge: badge || '',
         sponsoredUntil: toISODateString(data.sponsoredUntil) || null,
-        applyLink, applicationMethod, company: { name: companyName, logoUrl }, _source: 'firestore',
+        applyLink, applicationMethod, company: { name: companyName, logoUrl, socialLinks: companySocialLinks }, _source: 'firestore',
         createdAt: toISODateString(data.createdAt || data.created_at) || postedISO || null
       };
     }
@@ -1803,6 +1870,7 @@
               <div class="preview-meta-card"><span>Salary</span><strong>${job.salary    || 'Not specified'}</strong></div>
               <div class="preview-meta-card"><span>Closing</span><strong>${getClosingDateLabel(job)}</strong></div>
             </div>
+            ${renderCompanySocials(job)}
             <div class="job-desc">${formatDescriptionHtml(job.description)}</div>
             <div class="job-action-buttons">
               <button class="apply-btn" type="button" onclick="openExternalApply('${escapeInlineArg(job.applyLink)}')">

@@ -49,6 +49,34 @@ function optionalUrl(value: unknown) {
   }
 }
 
+const COMPANY_SOCIAL_HOSTS = {
+  facebook: new Set(["facebook.com", "www.facebook.com", "m.facebook.com"]),
+  instagram: new Set(["instagram.com", "www.instagram.com"]),
+  twitter: new Set(["x.com", "www.x.com", "mobile.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com"]),
+  linkedin: new Set(["linkedin.com", "www.linkedin.com"]),
+};
+
+function companySocialUrl(value: unknown, allowedHosts: Set<string>) {
+  const raw = text(value, 2000);
+  if (!raw) return "";
+  try {
+    const url = new URL(raw);
+    return url.protocol === "https:" && allowedHosts.has(url.hostname.toLowerCase()) ? url.toString() : "";
+  } catch {
+    return "";
+  }
+}
+
+function companySocialLinks(value: unknown) {
+  const links = value && typeof value === "object" ? value as Record<string, unknown> : {};
+  return {
+    facebook: companySocialUrl(links.facebook, COMPANY_SOCIAL_HOSTS.facebook),
+    instagram: companySocialUrl(links.instagram, COMPANY_SOCIAL_HOSTS.instagram),
+    twitter: companySocialUrl(links.twitter, COMPANY_SOCIAL_HOSTS.twitter),
+    linkedin: companySocialUrl(links.linkedin, COMPANY_SOCIAL_HOSTS.linkedin),
+  };
+}
+
 function numberOrNull(value: unknown) {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
@@ -150,6 +178,7 @@ function cleanJob(value: any) {
     email,
     website: optionalUrl(value?.website),
     logo: optionalUrl(value?.logo),
+    companySocialLinks: companySocialLinks(value?.companySocialLinks),
     companyProfileVersion: text(value?.companyProfileVersion, 120),
     deadline: text(value?.deadline, 80),
     applicationMethod,

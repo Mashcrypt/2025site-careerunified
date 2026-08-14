@@ -679,16 +679,21 @@
   .status.active { color: #065f46; background: #d1fae5; }
   .status.draft { color: #92400e; background: #ffedd5; }
 
-  .actions { display: flex; gap: 8px; justify-content:flex-end; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content:flex-end; }
 
   .actions button {
     border: none;
     background: #eef2ff;
     color: #1e3a8a;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 36px;
     padding: 8px 10px;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
+    font-weight: 700;
     transition: .2s;
   }
   .actions button:hover { background: #e0e7ff; }
@@ -902,17 +907,6 @@
     border-radius: 8px;
     background: #f8fbff;
   }
-  .direct-apply-value {
-    display: grid;
-    grid-template-columns: 32px minmax(0, 1fr);
-    gap: 12px;
-    margin-bottom: 18px;
-    padding: 14px;
-    border-left: 4px solid #2563eb;
-    background: #eff6ff;
-    color: #1e3a8a;
-  }
-  .direct-apply-value i { font-size: 24px; }
   .screening-toolbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1262,8 +1256,6 @@
     border: 0;
     background: transparent;
   }
-
-  #post-job .direct-apply-value { border-left-color: var(--job-wizard-accent); }
 
   #post-job .screening-question-card {
     border: 0;
@@ -2458,6 +2450,30 @@
 
           <div class="row">
             <div class="form-group">
+              <label>Facebook <span style="color:#64748b">(optional)</span></label>
+              <input type="url" id="cp_facebook" placeholder="https://www.facebook.com/yourcompany">
+            </div>
+
+            <div class="form-group">
+              <label>Instagram <span style="color:#64748b">(optional)</span></label>
+              <input type="url" id="cp_instagram" placeholder="https://www.instagram.com/yourcompany">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>X (Twitter) <span style="color:#64748b">(optional)</span></label>
+              <input type="url" id="cp_twitter" placeholder="https://x.com/yourcompany">
+            </div>
+
+            <div class="form-group">
+              <label>LinkedIn <span style="color:#64748b">(optional)</span></label>
+              <input type="url" id="cp_linkedin" placeholder="https://www.linkedin.com/company/yourcompany">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
               <label>HQ City</label>
               <input type="text" name="city" id="cp_city" placeholder="e.g. Johannesburg">
             </div>
@@ -2719,7 +2735,6 @@
                 <p class="job-wizard-kicker">Step 1</p>
                 <h3>Basic Information</h3>
               </div>
-              <span class="pill" id="jobCompanyAutofillPill"><i class='bx bx-buildings'></i> Company auto-fill: OFF</span>
             </div>
 
             <div class="job-form-grid">
@@ -2944,14 +2959,6 @@
             </div>
 
             <div class="direct-apply-settings" id="directApplySettings">
-              <div class="direct-apply-value">
-                <i class='bx bx-check-shield'></i>
-                <div>
-                  <strong>Career Unified Direct Apply</strong>
-                  <div>Applicants reuse their profile and CV. Answers support human review and do not silently reject candidates.</div>
-                </div>
-              </div>
-
               <div class="screening-toolbar">
                 <div class="form-group">
                   <label for="screeningTemplate">Question library</label>
@@ -5022,7 +5029,6 @@ async function loadCompanyProfile() {
 function updateCompanyPills() {
   const pill = document.getElementById('companyPill');
   const dashPill = document.getElementById('companyProfileStatusPill');
-  const jobPill = document.getElementById('jobCompanyAutofillPill');
 
   const ok = !!(companyProfile && companyProfile.name && companyProfile.email);
 
@@ -5044,14 +5050,6 @@ function updateCompanyPills() {
     dashPill.style.borderColor = ok ? '#bfdbfe' : '#fed7aa';
   }
 
-  if (jobPill) {
-    jobPill.innerHTML = ok
-      ? `<i class='bx bx-buildings'></i> Company auto-fill: ON`
-      : `<i class='bx bx-buildings'></i> Company auto-fill: OFF`;
-    jobPill.style.background = ok ? '#dbeafe' : '#f3f4f6';
-    jobPill.style.color = ok ? '#1e3a8a' : '#374151';
-    jobPill.style.borderColor = ok ? '#bfdbfe' : '#e5e7eb';
-  }
 }
 
 function getCompanyFormValue() {
@@ -5061,6 +5059,12 @@ function getCompanyFormValue() {
     size: document.getElementById('cp_size')?.value?.trim() || "",
     email: document.getElementById('cp_email')?.value?.trim() || "",
     website: normalizeUrl(document.getElementById('cp_website')?.value || ""),
+    socialLinks: {
+      facebook: normalizeUrl(document.getElementById('cp_facebook')?.value || ""),
+      instagram: normalizeUrl(document.getElementById('cp_instagram')?.value || ""),
+      twitter: normalizeUrl(document.getElementById('cp_twitter')?.value || ""),
+      linkedin: normalizeUrl(document.getElementById('cp_linkedin')?.value || "")
+    },
     city: document.getElementById('cp_city')?.value?.trim() || "",
     country: document.getElementById('cp_country')?.value?.trim() || "",
     logo: normalizeUrl(document.getElementById('cp_logo')?.value || ""),
@@ -5076,6 +5080,10 @@ function setCompanyForm(p) {
   document.getElementById('cp_size').value = p?.size || "";
   document.getElementById('cp_email').value = p?.email || "";
   document.getElementById('cp_website').value = p?.website || "";
+  document.getElementById('cp_facebook').value = p?.socialLinks?.facebook || "";
+  document.getElementById('cp_instagram').value = p?.socialLinks?.instagram || "";
+  document.getElementById('cp_twitter').value = p?.socialLinks?.twitter || "";
+  document.getElementById('cp_linkedin').value = p?.socialLinks?.linkedin || "";
   document.getElementById('cp_city').value = p?.city || "";
   document.getElementById('cp_country').value = p?.country || "";
   document.getElementById('cp_logo').value = p?.logo || "";
@@ -5245,7 +5253,7 @@ function setupCompanyLogoUpload() {
 }
 
 function bindCompanyPreviewLive() {
-  const ids = ['cp_name','cp_industry','cp_size','cp_email','cp_website','cp_city','cp_country','cp_logo','cp_about','cp_contactName'];
+  const ids = ['cp_name','cp_industry','cp_size','cp_email','cp_website','cp_facebook','cp_instagram','cp_twitter','cp_linkedin','cp_city','cp_country','cp_logo','cp_about','cp_contactName'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -5262,13 +5270,13 @@ function prefillCompanyFromAccount(silent=false) {
   renderCompanyPreview(getCompanyFormValue());
 }
 
-async function syncCompanyLogoUrlToJobs(logo) {
+async function syncCompanyPublicFieldsToJobs(updates) {
   const jobsSnapshot = await getDocs(query(
     collection(db, "jobs"),
     where("recruiterId", "==", currentRecruiter.uid)
   ));
   await Promise.all(jobsSnapshot.docs.map(job => updateDoc(job.ref, {
-    logo,
+    ...updates,
     updatedAt: serverTimestamp()
   })));
   return jobsSnapshot.size;
@@ -5281,6 +5289,7 @@ async function saveCompanyProfile() {
   try {
     const p = getCompanyFormValue();
     const previousLogo = companyProfile?.logo || "";
+    const previousSocialLinks = companyProfile?.socialLinks || {};
 
     if (!p.name || !p.email) {
       showToast('warn', 'Missing required fields', 'Company Name and Company Email are required.', 4200);
@@ -5303,24 +5312,30 @@ async function saveCompanyProfile() {
     updateCompanyPills();
     applyCompanyProfileToJobForm({ lock: true });
 
-    let logoSyncFailed = false;
-    if (p.logo !== previousLogo) {
+    const companyJobUpdates = {};
+    if (p.logo !== previousLogo) companyJobUpdates.logo = p.logo;
+    if (JSON.stringify(p.socialLinks) !== JSON.stringify(previousSocialLinks)) {
+      companyJobUpdates.companySocialLinks = p.socialLinks;
+    }
+
+    let companyJobSyncFailed = false;
+    if (Object.keys(companyJobUpdates).length) {
       try {
-        await syncCompanyLogoUrlToJobs(p.logo);
+        await syncCompanyPublicFieldsToJobs(companyJobUpdates);
         await loadManageJobs();
       } catch (syncError) {
-        logoSyncFailed = true;
-        console.error("company logo URL sync error:", syncError);
+        companyJobSyncFailed = true;
+        console.error("company job details sync error:", syncError);
       }
     }
 
     showToast(
-      logoSyncFailed ? 'warn' : 'success',
+      companyJobSyncFailed ? 'warn' : 'success',
       'Saved',
-      logoSyncFailed
-        ? 'Company profile saved, but some existing job logos could not be refreshed.'
+      companyJobSyncFailed
+        ? 'Company profile saved, but some existing job details could not be refreshed.'
         : 'Company profile saved. Job posts will auto-fill automatically.',
-      logoSyncFailed ? 5200 : 3500
+      companyJobSyncFailed ? 5200 : 3500
     );
   } catch (err) {
     console.error("saveCompanyProfile error:", err);
@@ -5640,6 +5655,7 @@ async function saveJob(status) {
     companyIndustry: companyProfile.industry || "",
     companySize: companyProfile.size || "",
     companyAbout: companyProfile.about || "",
+    companySocialLinks: companyProfile.socialLinks || {},
     companyHQCity: companyProfile.city || "",
     companyHQCountry: companyProfile.country || "",
     companyContactName: companyProfile.contactName || ""
@@ -5967,11 +5983,11 @@ async function loadManageJobs() {
         <div data-label="Status"><span class="${statusClass}">${(j.status || "active").toUpperCase()}</span></div>
 
         <div data-label="Actions" class="actions">
-          <button title="Open vacancy workspace" data-action="workspace" data-id="${escapeDashboard(j.id)}"><i class='bx bx-layout'></i></button>
-          <button title="View" data-action="view" data-id="${escapeDashboard(j.id)}"><i class='bx bx-show'></i></button>
-          <button title="Edit" data-action="edit" data-id="${escapeDashboard(j.id)}"><i class='bx bx-edit'></i></button>
-          <button title="Duplicate" data-action="duplicate" data-id="${escapeDashboard(j.id)}"><i class='bx bx-copy'></i></button>
-          <button title="Delete" data-action="delete" data-id="${escapeDashboard(j.id)}"><i class='bx bx-trash'></i></button>
+          <button title="Open vacancy workspace" data-action="workspace" data-id="${escapeDashboard(j.id)}"><i class='bx bx-layout' aria-hidden="true"></i>Manage</button>
+          <button title="View job" data-action="view" data-id="${escapeDashboard(j.id)}"><i class='bx bx-show' aria-hidden="true"></i>View</button>
+          <button title="Edit job" data-action="edit" data-id="${escapeDashboard(j.id)}"><i class='bx bx-edit' aria-hidden="true"></i>Edit</button>
+          <button title="Duplicate job" data-action="duplicate" data-id="${escapeDashboard(j.id)}"><i class='bx bx-copy' aria-hidden="true"></i>Duplicate</button>
+          <button title="Delete job" data-action="delete" data-id="${escapeDashboard(j.id)}"><i class='bx bx-trash' aria-hidden="true"></i>Delete</button>
         </div>
       `;
 
