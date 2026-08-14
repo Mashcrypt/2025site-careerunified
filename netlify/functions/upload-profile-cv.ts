@@ -2,6 +2,7 @@ import type { Handler } from "@netlify/functions";
 import Busboy from "busboy";
 import { randomUUID } from "crypto";
 import { getAdmin } from "./_firebaseAdmin";
+import {deletePrivateCv, savePrivateCv} from "./_privateCvStore";
 import { checkRateLimit } from "./_rateLimit";
 
 type ParsedFile = {
@@ -216,52 +217,86 @@ export const handler: Handler = async (event) => {
     const bucket = admin.storage().bucket(bucketName);
     const now = Date.now();
     const cleanName = safeFilename(uploaded.filename, detectedType);
-    const storagePath = `cvs/${decoded.uid}/${now}_${cleanName}`;
+    let storagePath = `cvs/${decoded.uid}/${now}_${cleanName}`;
+    let blobKey = "";
+    let storageProvider: "firebase" | "netlify_blobs" = "firebase";
     const downloadToken = randomUUID();
     const contentType = ALLOWED_CONTENT_TYPES[detectedType];
 
-    await bucket.file(storagePath).save(uploaded.buffer, {
-      resumable: false,
-      metadata: {
-        contentType,
-        cacheControl: "private, max-age=0, no-store",
+    try {
+      await bucket.file(storagePath).save(uploaded.buffer, {
+        resumable: false,
         metadata: {
-          firebaseStorageDownloadTokens: downloadToken,
-          ownerUid: decoded.uid,
-          validatedBy: "upload-profile-cv",
+          contentType,
+          cacheControl: "private, max-age=0, no-store",
+          metadata: {
+            firebaseStorageDownloadTokens: downloadToken,
+            ownerUid: decoded.uid,
+            validatedBy: "upload-profile-cv",
+          },
         },
-      },
-    });
+      });
+    } catch {
+      storageProvider = "netlify_blobs";
+      storagePath = "";
+      blobKey = `profiles/${decoded.uid}/${now}_${randomUUID()}`;
+      try {
+        await savePrivateCv(blobKey, uploaded.buffer, {
+          ownerUid: decoded.uid,
+          contentType,
+          fileName: cleanName,
+          size: uploaded.buffer.length,
+          validatedBy: "upload-profile-cv",
+        });
+      } catch {
+        throw new PublicError(503, "CV upload is temporarily unavailable. Please try again shortly.");
+      }
+    }
 
-    const cvURL = `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(
-      bucketName
-    )}/o/${encodeURIComponent(storagePath)}?alt=media&token=${encodeURIComponent(downloadToken)}`;
+    const cvURL = storageProvider === "firebase"
+      ? `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(
+          bucketName
+        )}/o/${encodeURIComponent(storagePath)}?alt=media&token=${encodeURIComponent(downloadToken)}`
+      : "";
     const cvId = `${decoded.uid}_${now}`;
     const uploadedAt = new Date(now).toISOString();
     const fullName = safeText(decoded.name || decoded.email || "Anonymous User", 120) || "Anonymous User";
 
-    await admin.firestore().doc(`cvs/${cvId}`).set({
-      userId: decoded.uid,
-      userEmail: decoded.email || "",
-      fullName,
-      cvURL,
-      cvFileName: cleanName,
-      cvFilePath: storagePath,
-      uploadedAt,
-      status: "active",
-      viewCount: 0,
-      unlocked: false,
-      contentType,
-      size: uploaded.buffer.length,
-      validated: true,
-      validationMethod: "magic-bytes",
-    });
+    try {
+      await admin.firestore().doc(`cvs/${cvId}`).set({
+        userId: decoded.uid,
+        userEmail: decoded.email || "",
+        fullName,
+        cvURL,
+        cvFileName: cleanName,
+        cvFilePath: storagePath,
+        blobKey,
+        storageProvider,
+        uploadedAt,
+        status: "active",
+        viewCount: 0,
+        unlocked: false,
+        contentType,
+        size: uploaded.buffer.length,
+        validated: true,
+        validationMethod: "magic-bytes",
+      });
+    } catch (error) {
+      if (storageProvider === "netlify_blobs") {
+        await deletePrivateCv(blobKey).catch(() => undefined);
+      } else {
+        await bucket.file(storagePath).delete({ignoreNotFound: true}).catch(() => undefined);
+      }
+      throw error;
+    }
 
     return json(200, origin, {
       id: cvId,
       cvURL,
       cvFileName: cleanName,
       cvFilePath: storagePath,
+      blobKey,
+      storageProvider,
       uploadedAt,
     });
   } catch (error: any) {
@@ -269,6 +304,6 @@ export const handler: Handler = async (event) => {
       return json(error.statusCode, origin, { error: error.message });
     }
 
-    return json(500, origin, { error: "CV upload failed. Please try again with a different PDF or DOCX file." });
+    return json(500, origin, { error: "CV upload could not be completed. Please try again shortly." });
   }
 };

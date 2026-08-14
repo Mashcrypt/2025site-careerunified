@@ -15,6 +15,7 @@ import {
   safeFilename,
   storagePathFromCv,
 } from "./_applicationUtils";
+import {copyPrivateCv, deletePrivateCv} from "./_privateCvStore";
 
 type ScreeningQuestion = {
   id: string;
@@ -165,6 +166,7 @@ export const handler: Handler = async (event) => {
   }
 
   let copiedCvPath = "";
+  let copiedCvBlobKey = "";
   let applicationCreated = false;
 
   try {
@@ -177,10 +179,6 @@ export const handler: Handler = async (event) => {
       decoded = await admin.auth().verifyIdToken(token);
     } catch {
       throw new ApplicationError(401, "Your login session has expired. Please log in again.");
-    }
-
-    if (decoded.recruiter === true) {
-      throw new ApplicationError(403, "Recruiter accounts cannot submit candidate applications.");
     }
 
     const rateLimit = await checkRateLimit({
@@ -311,7 +309,8 @@ export const handler: Handler = async (event) => {
     }
 
     const sourceCvPath = storagePathFromCv(cv);
-    if (!sourceCvPath) {
+    const sourceCvBlobKey = cleanText(cv.blobKey, 800);
+    if (!sourceCvPath && !sourceCvBlobKey) {
       throw new ApplicationError(400, "Please upload this CV again before applying.");
     }
 
@@ -320,18 +319,32 @@ export const handler: Handler = async (event) => {
     const bucket = admin.storage().bucket(bucketName);
     const cvFileName = safeFilename(cv.cvFileName);
     const cvSnapshotId = crypto.randomUUID();
-    copiedCvPath = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}_${cvFileName}`;
-    await bucket.file(sourceCvPath).copy(bucket.file(copiedCvPath));
-    await bucket.file(copiedCvPath).setMetadata({
-      contentType: cleanText(cv.contentType, 120) || "application/octet-stream",
-      cacheControl: "private, max-age=0, no-store",
-      metadata: {
+    const cvContentType = cleanText(cv.contentType, 120) || "application/octet-stream";
+    if (sourceCvBlobKey) {
+      copiedCvBlobKey = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}`;
+      const copied = await copyPrivateCv(sourceCvBlobKey, copiedCvBlobKey, {
         candidateId: decoded.uid,
         recruiterId,
         jobId,
         applicationId,
-      },
-    });
+        contentType: cvContentType,
+        fileName: cvFileName,
+      });
+      if (!copied) throw new ApplicationError(400, "Please upload this CV again before applying.");
+    } else {
+      copiedCvPath = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}_${cvFileName}`;
+      await bucket.file(sourceCvPath).copy(bucket.file(copiedCvPath));
+      await bucket.file(copiedCvPath).setMetadata({
+        contentType: cvContentType,
+        cacheControl: "private, max-age=0, no-store",
+        metadata: {
+          candidateId: decoded.uid,
+          recruiterId,
+          jobId,
+          applicationId,
+        },
+      });
+    }
 
     const now = admin.firestore.Timestamp.now();
     const application = {
@@ -368,7 +381,9 @@ export const handler: Handler = async (event) => {
         cvId,
         fileName: cvFileName,
         storagePath: copiedCvPath,
-        contentType: cleanText(cv.contentType, 120) || "application/octet-stream",
+        blobKey: copiedCvBlobKey,
+        storageProvider: copiedCvBlobKey ? "netlify_blobs" : "firebase",
+        contentType: cvContentType,
         size: Number(cv.size || 0),
       },
       answers,
@@ -436,6 +451,9 @@ export const handler: Handler = async (event) => {
       } catch {
         // Cleanup is best-effort; never expose storage details to the client.
       }
+    }
+    if (copiedCvBlobKey && !applicationCreated) {
+      await deletePrivateCv(copiedCvBlobKey).catch(() => undefined);
     }
 
     if (error instanceof DuplicateApplicationError) {

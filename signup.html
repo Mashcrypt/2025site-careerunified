@@ -95,62 +95,6 @@ body {
 }
 
 /* =========================================================
-   ROLE SELECTOR
-========================================================= */
-.role-selector-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  text-align: left;
-  display: block;
-  margin-bottom: 10px;
-}
-
-.role-selector {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.role-card {
-  padding: 16px 12px;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  background: #ffffff;
-}
-
-.role-card h4 {
-  margin: 0 0 4px 0;
-  font-size: 0.95rem;
-  color: #111827;
-  font-weight: 600;
-}
-
-.role-card p {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.role-card.active {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-
-.role-card.active h4 {
-  color: #2563eb;
-}
-
-.role-card:hover {
-  border-color: #93c5fd;
-  transform: translateY(-1px);
-}
-
-/* =========================================================
    FORM GROUPS
 ========================================================= */
 .form-group {
@@ -427,23 +371,6 @@ button:disabled {
     margin-bottom: 20px;
   }
 
-  .role-selector {
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .role-card {
-    padding: 14px 10px;
-  }
-
-  .role-card h4 {
-    font-size: 0.875rem;
-  }
-
-  .role-card p {
-    font-size: 0.75rem;
-  }
-
   .form-group {
     margin-bottom: 14px;
   }
@@ -470,15 +397,6 @@ button:disabled {
     font-size: 0.813rem;
   }
 
-  .role-selector {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .role-card {
-    padding: 12px;
-  }
-
   .signup-container input,
   button {
     font-size: 15px;
@@ -497,8 +415,7 @@ button:disabled {
 }
 
 button:focus-visible,
-input:focus-visible,
-.role-card:focus-visible {
+input:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
@@ -514,25 +431,12 @@ input:focus-visible,
   </div>
 
   <h2>Create your account</h2>
-  <div class="subtitle">Choose how you want to use Career Unified</div>
-
-  <!-- ROLE SELECTOR -->
-  <label class="role-selector-label">I am a:</label>
-  <div class="role-selector">
-    <div class="role-card active" data-role="user" tabindex="0">
-      <h4>Job Seeker</h4>
-      <p>Find jobs & apply</p>
-    </div>
-    <div class="role-card" data-role="recruiter" tabindex="0">
-      <h4>Recruiter</h4>
-      <p>Post & manage jobs</p>
-    </div>
-  </div>
+  <div class="subtitle">Create your Career Unified account</div>
 
   <!-- Full Name -->
   <div class="form-group">
     <label class="form-label" for="fullName">Full name</label>
-    <input type="text" id="fullName" placeholder="John Doe" autocomplete="name">
+    <input type="text" id="fullName" autocomplete="name">
   </div>
 
   <!-- Email -->
@@ -696,23 +600,8 @@ function calculatePasswordStrength(password) {
   }
 }
 
-/* ================= ROLE SELECTION ================= */
-let selectedRole = "user";
-
-document.querySelectorAll('.role-card').forEach(card => {
-  card.onclick = () => {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    selectedRole = card.dataset.role;
-  };
-  
-  // Keyboard support
-  card.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      card.click();
-    }
-  });
-});
+/* ================= ACCOUNT ROLE ================= */
+const selectedRole = "user";
 
 /* ================= PASSWORD TOGGLE ================= */
 document.getElementById('togglePassword').onclick = () => {

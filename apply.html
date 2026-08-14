@@ -42,8 +42,12 @@
     label,.field-label{font-weight:700;font-size:.87rem;color:#374151}
     .required{color:#dc2626}
     input,select,textarea{width:100%;min-height:46px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:11px 12px;color:#111827;font:inherit;font-size:.92rem}
-    .question select.multi-select{min-height:184px;padding:6px 8px}
-    .question select.multi-select option{padding:7px 8px}
+    .choice-grid{display:flex;flex-wrap:wrap;gap:8px}
+    .choice-pill{display:inline-flex;align-items:center;min-height:40px;cursor:pointer}
+    .choice-pill input{position:absolute;opacity:0;pointer-events:none}
+    .choice-pill span{display:inline-flex;align-items:center;min-height:40px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#334155;font-size:.86rem;font-weight:600;transition:border-color .16s ease,background .16s ease,color .16s ease}
+    .choice-pill input:checked + span{border-color:#2563eb;background:#eff6ff;color:#1e3a8a}
+    .choice-pill input:focus-visible + span{outline:3px solid rgba(37,99,235,.16);outline-offset:2px}
     textarea{min-height:130px;resize:vertical}
     input:focus,select:focus,textarea:focus{outline:3px solid rgba(37,99,235,.16);border-color:#2563eb}
     .help{margin:0;color:#64748b;font-size:.78rem}

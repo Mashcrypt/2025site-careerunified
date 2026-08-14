@@ -200,8 +200,13 @@ function questionInput(question) {
       : new Set();
     const options = (Array.isArray(question.options) ? question.options : [])
       .map((option) => {
-        const selected = savedHomeLanguages.has(text(option).toLowerCase()) ? " selected" : "";
-        return `<option value="${escapeHtml(option)}"${selected}>${escapeHtml(option)}</option>`;
+        const optionId = `${id}_${text(option).toLowerCase().replace(/[^a-z0-9]+/g, "_")}`;
+        const checked = savedHomeLanguages.has(text(option).toLowerCase()) ? " checked" : "";
+        return `
+          <label class="choice-pill" for="${escapeHtml(optionId)}">
+            <input id="${escapeHtml(optionId)}" type="checkbox" name="screening_${escapeHtml(question.id)}" value="${escapeHtml(option)}"${checked}>
+            <span>${escapeHtml(option)}</span>
+          </label>`;
       })
       .join("");
     const help = question.templateKey === "home_languages"
@@ -209,10 +214,10 @@ function questionInput(question) {
       : "Select every option that applies.";
     return `
       <div class="question field${conditionalClass}"${conditionalAttributes}>
-        <label for="${escapeHtml(id)}">${escapeHtml(question.label)}${requiredMark}</label>
-        <select id="${escapeHtml(id)}" class="multi-select" name="screening_${escapeHtml(question.id)}" multiple size="6"${required}>
+        <div class="field-label" id="${escapeHtml(id)}_label">${escapeHtml(question.label)}${requiredMark}</div>
+        <div class="choice-grid" role="group" aria-labelledby="${escapeHtml(id)}_label" data-multi-answer="${escapeHtml(question.id)}" data-required="${question.required ? "true" : "false"}">
           ${options}
-        </select>
+        </div>
         <p class="help">${help}</p>
       </div>`;
   }
@@ -469,11 +474,24 @@ async function submitApplication(event) {
 
     const answers = {};
     applicationQuestions().forEach((question) => {
+      if (question.type === "multi_select") {
+        const fieldName = `screening_${question.id}`;
+        const checkedOptions = Array.from(form.querySelectorAll("input[type='checkbox']:checked"))
+          .filter((option) => option.name === fieldName);
+        const values = checkedOptions.map((option) => option.value);
+        if (question.required && !values.length) {
+          const group = Array.from(form.querySelectorAll("[data-multi-answer]"))
+            .find((element) => element.dataset.multiAnswer === question.id);
+          group?.scrollIntoView({block: "center", behavior: "smooth"});
+          throw new Error(`Please select at least one option for: ${text(question.label)}`);
+        }
+        answers[question.id] = values;
+        return;
+      }
+
       const field = form.elements[`screening_${question.id}`];
       if (!field || field.disabled) return;
-      answers[question.id] = question.type === "multi_select" && field instanceof HTMLSelectElement
-        ? Array.from(field.selectedOptions, (option) => option.value)
-        : field.value;
+      answers[question.id] = field.value;
     });
 
     const response = await fetch("/.netlify/functions/submit-job-application", {

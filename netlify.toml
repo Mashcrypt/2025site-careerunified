@@ -384,16 +384,16 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
-# CSS/JS: cache 1 week (you may update these)
+# CSS/JS: revalidate on every visit so deployments cannot mix new HTML with stale assets
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 # HTML pages: always revalidate (important for fresh SEO content)
 [[headers]]

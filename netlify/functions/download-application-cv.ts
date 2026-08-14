@@ -1,5 +1,6 @@
 import type {Handler} from "@netlify/functions";
 import {getAdmin} from "./_firebaseAdmin";
+import {readPrivateCv} from "./_privateCvStore";
 import {
   ApplicationError,
   bearerToken,
@@ -44,12 +45,19 @@ export const handler: Handler = async (event) => {
       (decoded.recruiter === true && application.recruiterId === decoded.uid);
     if (!allowed) throw new ApplicationError(403, "You do not have access to this CV.");
 
+    const blobKey = cleanText(application.cvSnapshot?.blobKey, 800);
     const path = cleanText(application.cvSnapshot?.storagePath, 800);
-    if (!path.startsWith("applications/")) throw new ApplicationError(404, "Application CV not found.");
-
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`;
-    const [buffer] = await admin.storage().bucket(bucketName).file(path).download();
+    let buffer: Buffer;
+    if (blobKey.startsWith("applications/")) {
+      const stored = await readPrivateCv(blobKey);
+      if (!stored) throw new ApplicationError(404, "Application CV not found.");
+      buffer = stored;
+    } else {
+      if (!path.startsWith("applications/")) throw new ApplicationError(404, "Application CV not found.");
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`;
+      [buffer] = await admin.storage().bucket(bucketName).file(path).download();
+    }
     const fileName = safeFilename(application.cvSnapshot?.fileName);
     const contentType = cleanText(application.cvSnapshot?.contentType, 120) || "application/octet-stream";
     const disposition = event.queryStringParameters?.download === "1" ? "attachment" : "inline";
@@ -73,4 +81,3 @@ export const handler: Handler = async (event) => {
     return json(500, origin, {error: "Could not open this CV. Please try again."});
   }
 };
-

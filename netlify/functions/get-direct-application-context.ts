@@ -80,10 +80,6 @@ export const handler: Handler = async (event) => {
       throw new ApplicationError(401, "Your login session has expired. Please log in again.");
     }
 
-    if (decoded.recruiter === true) {
-      throw new ApplicationError(403, "Recruiter accounts cannot submit candidate applications.");
-    }
-
     const jobId = cleanText(event.queryStringParameters?.jobId, 160);
     if (!jobId) throw new ApplicationError(400, "A valid job is required.");
 

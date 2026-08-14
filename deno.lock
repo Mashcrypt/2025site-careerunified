@@ -11,6 +11,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@netlify/blobs@^10.7.9",
         "npm:@netlify/functions@^5.2.0",
         "npm:@sanity/eslint-config-studio@6",
         "npm:@sanity/vision@^6.1.0",
