@@ -1,9 +1,14 @@
 import {getApp, getApps, initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {getAuth, getIdToken, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  limit,
+  query,
+  where,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -539,8 +544,14 @@ async function loadApplication(user) {
     `/.netlify/functions/get-direct-application-context?jobId=${encodeURIComponent(jobId)}`,
     {headers: {Authorization: `Bearer ${token}`}},
   );
-  const context = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(context.error || "Application details could not be loaded.");
+  let context = await response.json().catch(() => ({}));
+  if (response.status === 404) {
+    // Keep Direct Apply available if a static Netlify deploy omits the context function.
+    context = await loadApplicationContextFromFirestore(user);
+    track("direct_apply_context_fallback", {reason: "function_not_found"});
+  } else if (!response.ok) {
+    throw new Error(context.error || "Application details could not be loaded.");
+  }
 
   profile = context.profile && typeof context.profile === "object" ? context.profile : {};
   if (context.existingApplication) {
@@ -551,6 +562,45 @@ async function loadApplication(user) {
     .filter((cv) => text(cv.status || "active").toLowerCase() === "active")
     .sort((a, b) => timestampMs(b.uploadedAt) - timestampMs(a.uploadedAt));
   renderForm();
+}
+
+async function loadApplicationContextFromFirestore(user) {
+  const [profileSnap, cvsSnap, applicationsSnap] = await Promise.all([
+    getDoc(doc(db, "users", user.uid)),
+    getDocs(query(
+      collection(db, "cvs"),
+      where("userId", "==", user.uid),
+      limit(50),
+    )),
+    getDocs(query(
+      collection(db, "applications"),
+      where("candidateId", "==", user.uid),
+      limit(200),
+    )),
+  ]);
+
+  const profileData = profileSnap.exists() ? profileSnap.data() : {};
+  const existingSnap = applicationsSnap.docs.find((applicationSnap) => (
+    text(applicationSnap.data()?.jobId) === jobId
+  ));
+  const existingData = existingSnap?.data() || null;
+
+  return {
+    profile: {
+      name: text(profileData.name),
+      email: text(profileData.email),
+      phone: text(profileData.phone),
+      location: text(profileData.location),
+      degreeType: text(profileData.degreeType || profileData.highestQualification),
+      highestQualification: text(profileData.highestQualification),
+      homeLanguages: Array.isArray(profileData.homeLanguages) ? profileData.homeLanguages : [],
+      ethnicity: text(profileData.ethnicity),
+    },
+    cvs: cvsSnap.docs.map((cvSnap) => ({id: cvSnap.id, ...cvSnap.data()})),
+    existingApplication: existingSnap && existingData
+      ? {id: existingSnap.id, status: text(existingData.status, "submitted")}
+      : null,
+  };
 }
 
 async function loadJob() {
@@ -587,6 +637,6 @@ onAuthStateChanged(auth, async (user) => {
     await loadApplication(user);
   } catch (error) {
     console.error("DIRECT_APPLY_LOAD_ERROR", error);
-    showError("Application details could not be loaded. Please refresh and try again.");
+    showError(error?.message || "Application details could not be loaded. Please refresh and try again.");
   }
 });
