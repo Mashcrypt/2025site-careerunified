@@ -217,10 +217,12 @@
             <div class="ra-address-lookup">
               <div class="ra-field">
                 <label for="addressLookup">Google Address Lookup</label>
-                <input id="addressLookup" name="addressLookup" type="search" autocomplete="street-address" maxlength="240" placeholder="Enter your address">
+                <div class="ra-address-lookup__controls">
+                  <input id="addressLookup" name="addressLookup" type="search" autocomplete="street-address" maxlength="240" placeholder="Enter your address">
+                  <a class="ra-map-button" id="addressMapLink" href="https://www.google.com/maps/search/?api=1" target="_blank" rel="noopener noreferrer" aria-disabled="true"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Open Maps</a>
+                </div>
                 <p class="ra-field-hint">Use Google Maps to verify the address, then confirm each field below.</p>
               </div>
-              <a class="ra-map-button" id="addressMapLink" href="https://www.google.com/maps/search/?api=1" target="_blank" rel="noopener noreferrer" aria-disabled="true"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Open Maps</a>
             </div>
 
             <div class="ra-field-grid">

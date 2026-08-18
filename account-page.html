@@ -241,6 +241,10 @@
             font-weight: 500;
         }
 
+        .nav-item-link {
+            text-decoration: none;
+        }
+
         .nav-item-content {
             display: flex;
             align-items: center;
@@ -542,65 +546,6 @@
         .job-preferences-form {
             max-width: 960px;
             margin-top: 1.5rem;
-        }
-
-        .saved-items-preference-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            max-width: 960px;
-            min-height: 64px;
-            margin-top: 1.25rem;
-            padding: 0.875rem 1rem;
-            border: 1px solid #bfdbfe;
-            border-radius: 0.625rem;
-            background: #eff6ff;
-            color: #1e3a8a;
-            text-decoration: none;
-        }
-
-        .saved-items-preference-link:hover,
-        .saved-items-preference-link:focus-visible {
-            background: #dbeafe;
-        }
-
-        .saved-items-preference-link:focus-visible {
-            outline: 3px solid rgba(37, 99, 235, 0.25);
-            outline-offset: 2px;
-        }
-
-        .saved-items-preference-link-copy {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            min-width: 0;
-        }
-
-        .saved-items-preference-link svg {
-            width: 20px;
-            height: 20px;
-            flex: 0 0 auto;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .saved-items-preference-link-copy strong,
-        .saved-items-preference-description {
-            display: block;
-        }
-
-        .saved-items-preference-link-copy strong {
-            font-size: 0.9375rem;
-        }
-
-        .saved-items-preference-description {
-            margin-top: 0.125rem;
-            color: #64748b;
-            font-size: 0.8125rem;
         }
 
         .job-preferences-grid {
@@ -1754,6 +1699,18 @@
                         </svg>
                     </button>
 
+                    <a class="nav-item nav-item-link" href="/saved-items.html">
+                        <div class="nav-item-content">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"></path>
+                            </svg>
+                            <span>Saved Items</span>
+                        </div>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+
                     <button class="nav-item" data-tab="resume">
                         <div class="nav-item-content">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2134,14 +2091,6 @@
                 <div id="job-preferences-content" class="tab-content hidden">
                     <h2 class="content-title">Job Preferences</h2>
                     <p class="content-subtitle">Tell us what opportunities are most relevant to you.</p>
-
-                    <a class="saved-items-preference-link" href="/saved-items.html">
-                        <span class="saved-items-preference-link-copy">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"></path></svg>
-                            <span><strong>Saved Items</strong><span class="saved-items-preference-description">View your bookmarked jobs and bursaries.</span></span>
-                        </span>
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
-                    </a>
 
                     <form id="jobPreferencesForm" class="job-preferences-form">
                         <div class="job-preferences-grid">
@@ -3967,7 +3916,7 @@ Platform: ${navigator.platform}
     };
 
     // Tab switching functionality
-    document.querySelectorAll('.nav-item').forEach(button => {
+    document.querySelectorAll('.nav-item[data-tab]').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
             switchTab(tabName);

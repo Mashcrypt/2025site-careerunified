@@ -16,6 +16,7 @@ import {
   storagePathFromCv,
 } from "./_applicationUtils";
 import {copyPrivateCv, deletePrivateCv} from "./_privateCvStore";
+import {enqueuePartnerWebhook} from "./_partnerWebhooks";
 
 type ScreeningQuestion = {
   id: string;
@@ -434,6 +435,20 @@ export const handler: Handler = async (event) => {
         {merge: true},
       );
     }
+
+    await enqueuePartnerWebhook({
+      recruiterId,
+      event: "application.received",
+      data: {
+        applicationId,
+        jobId,
+        status: "submitted",
+        screeningResult,
+        submittedAt: now.toDate().toISOString(),
+      },
+    }).catch((error) => {
+      console.error("APPLICATION_WEBHOOK_ENQUEUE_ERROR", error);
+    });
 
     return json(201, origin, {
       applicationId,

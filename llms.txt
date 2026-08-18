@@ -1,0 +1,12 @@
+# Career Unified
+
+> Career Unified is a South African careers platform for jobs, bursaries, CV tools, Direct Apply recruitment, and approved partner integrations.
+
+Website: https://careerunified.com/
+Jobs: https://careerunified.com/jobs
+Bursaries: https://careerunified.com/bursaries
+CV tools: https://careerunified.com/cv-generator/
+Recruiter platform: https://careerunified.com/for-recruiters
+Partner API documentation: https://careerunified.com/api/
+Partner API machine-readable guide: https://careerunified.com/api/llms.txt
+OpenAPI contract: https://careerunified.com/api/openapi.yaml

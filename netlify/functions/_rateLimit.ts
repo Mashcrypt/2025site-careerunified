@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import net from "net";
 
 type RateLimitOptions = {
   admin: any;
@@ -82,7 +83,15 @@ export async function checkRateLimit({
 }
 
 export function clientIpFromHeaders(headers: Record<string, string | undefined>) {
+  const netlifyIp = headers["x-nf-client-connection-ip"] || headers["X-Nf-Client-Connection-Ip"];
   const forwarded = headers["x-forwarded-for"] || headers["X-Forwarded-For"];
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return headers["client-ip"] || headers["Client-Ip"] || "unknown";
+  const clientIp = headers["client-ip"] || headers["Client-Ip"];
+  const candidates = [netlifyIp, forwarded?.split(",")[0], clientIp];
+
+  for (const candidate of candidates) {
+    const value = String(candidate || "").trim().replace(/^\[|\]$/g, "");
+    if (net.isIP(value)) return value;
+  }
+
+  return "unknown";
 }

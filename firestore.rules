@@ -19,8 +19,107 @@ service cloud.firestore {
         && (request.auth.token.admin == true || request.auth.uid in ['X3eReX1WGpQSR1svO4JIBFDqFUJ3']);
     }
 
-    function recruiterSingleJobBillingUnchanged() {
-      return request.resource.data.get('singleJobCredits', 0) == resource.data.get('singleJobCredits', 0)
+    function userServerFieldsUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'plan',
+        'subscriptionStatus',
+        'subscriptionCurrentPeriodStart',
+        'subscriptionCurrentPeriodEnd',
+        'applicationsUsedThisMonth',
+        'freeResumeTailorsUsed',
+        'freeResumeUsed',
+        'freeCoverLettersUsed',
+        'freeCoverUsed',
+        'aiTailorCredits',
+        'aiTailorCreditsUsed',
+        'totalAiTailorCreditsPurchased',
+        'pendingPlan',
+        'pendingPayfastPaymentId',
+        'pendingCreatedAt',
+        'pendingCreditPack',
+        'pendingCreditQuantity',
+        'pendingCreditPayfastPaymentId',
+        'pendingCreditCreatedAt',
+        'pendingCreditLastFailedStatus',
+        'pendingCreditLastFailedAt',
+        'lastPaymentRef',
+        'lastPaymentVerifiedAt',
+        'lastCreditPaymentRef',
+        'lastCreditPaymentVerifiedAt',
+        'payfast',
+        'payfastCredits',
+        'payfastLastStatus',
+        'payfastLastStatusAt',
+        'payfastLastFailedStatus',
+        'payfastLastFailedAt',
+        'profilePhotoURL',
+        'profilePhotoPath',
+        'profilePhotoUpdatedAt',
+        'admin',
+        'isAdmin',
+        'permissions'
+      ]);
+    }
+
+    function newUserHasNoServerFields() {
+      return !request.resource.data.keys().hasAny([
+        'plan',
+        'subscriptionStatus',
+        'subscriptionCurrentPeriodStart',
+        'subscriptionCurrentPeriodEnd',
+        'applicationsUsedThisMonth',
+        'freeResumeTailorsUsed',
+        'freeResumeUsed',
+        'freeCoverLettersUsed',
+        'freeCoverUsed',
+        'aiTailorCredits',
+        'aiTailorCreditsUsed',
+        'totalAiTailorCreditsPurchased',
+        'pendingPlan',
+        'pendingPayfastPaymentId',
+        'pendingCreatedAt',
+        'pendingCreditPack',
+        'pendingCreditQuantity',
+        'pendingCreditPayfastPaymentId',
+        'pendingCreditCreatedAt',
+        'lastPaymentRef',
+        'lastPaymentVerifiedAt',
+        'lastCreditPaymentRef',
+        'lastCreditPaymentVerifiedAt',
+        'payfast',
+        'payfastCredits',
+        'profilePhotoURL',
+        'profilePhotoPath',
+        'profilePhotoUpdatedAt',
+        'admin',
+        'isAdmin',
+        'permissions'
+      ]);
+    }
+
+    function recruiterBillingUnchanged() {
+      return request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free')
+        && request.resource.data.get('subscriptionStatus', 'inactive') == resource.data.get('subscriptionStatus', 'inactive')
+        && request.resource.data.get('subscriptionCurrentPeriodStart', null) == resource.data.get('subscriptionCurrentPeriodStart', null)
+        && request.resource.data.get('subscriptionCurrentPeriodEnd', null) == resource.data.get('subscriptionCurrentPeriodEnd', null)
+        && request.resource.data.get('trialPlan', null) == resource.data.get('trialPlan', null)
+        && request.resource.data.get('trialStartedAt', null) == resource.data.get('trialStartedAt', null)
+        && request.resource.data.get('trialEndsAt', null) == resource.data.get('trialEndsAt', null)
+        && request.resource.data.get('trialClaimedAt', null) == resource.data.get('trialClaimedAt', null)
+        && request.resource.data.get('unlocksRemaining', 0) == resource.data.get('unlocksRemaining', 0)
+        && request.resource.data.get('totalUnlocks', 0) == resource.data.get('totalUnlocks', 0)
+        && request.resource.data.get('unlockedCVs', []) == resource.data.get('unlockedCVs', [])
+        && request.resource.data.get('pendingPlan', null) == resource.data.get('pendingPlan', null)
+        && request.resource.data.get('pendingPayfastPaymentId', null) == resource.data.get('pendingPayfastPaymentId', null)
+        && request.resource.data.get('pendingCreatedAt', null) == resource.data.get('pendingCreatedAt', null)
+        && request.resource.data.get('lastPaymentRef', null) == resource.data.get('lastPaymentRef', null)
+        && request.resource.data.get('lastPaymentVerifiedAt', null) == resource.data.get('lastPaymentVerifiedAt', null)
+        && request.resource.data.get('payfast', null) == resource.data.get('payfast', null)
+        && request.resource.data.get('payfastLastStatus', null) == resource.data.get('payfastLastStatus', null)
+        && request.resource.data.get('payfastLastStatusAt', null) == resource.data.get('payfastLastStatusAt', null)
+        && request.resource.data.get('payfastLastFailedStatus', null) == resource.data.get('payfastLastFailedStatus', null)
+        && request.resource.data.get('payfastLastFailedAt', null) == resource.data.get('payfastLastFailedAt', null)
+        && request.resource.data.get('singleJobCredits', 0) == resource.data.get('singleJobCredits', 0)
         && request.resource.data.get('pendingSingleJobPack', null) == resource.data.get('pendingSingleJobPack', null)
         && request.resource.data.get('pendingSingleJobPayfastPaymentId', null) == resource.data.get('pendingSingleJobPayfastPaymentId', null)
         && request.resource.data.get('pendingSingleJobCreatedAt', null) == resource.data.get('pendingSingleJobCreatedAt', null)
@@ -38,8 +137,9 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isOwner(userId) || isRecruiter() || isAdmin();
-      allow create, update: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if (isOwner(userId) && newUserHasNoServerFields()) || isAdmin();
+      allow update: if (isOwner(userId) && userServerFieldsUnchanged()) || isAdmin();
       allow delete: if isAdmin();
 
       match /saved/{savedId} {
@@ -48,14 +148,16 @@ service cloud.firestore {
     }
 
     match /cvs/{cvId} {
-      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isRecruiter() || isAdmin();
+      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
     }
 
     match /jobs/{jobId} {
-      allow read: if true;
+      allow read: if resource.data.status == 'active'
+        || (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+        || isAdmin();
       allow create: if isRecruiter()
         && request.resource.data.recruiterId == request.auth.uid
         && request.resource.data.status == 'draft'
@@ -96,7 +198,17 @@ service cloud.firestore {
       allow read: if isOwner(recruiterId) || isAdmin();
       allow create: if (isOwner(recruiterId)
           && isRecruiter()
+          && request.resource.data.get('plan', 'free') == 'free'
+          && request.resource.data.get('subscriptionStatus', 'inactive') == 'inactive'
           && request.resource.data.get('singleJobCredits', 0) == 0
+          && request.resource.data.get('unlocksRemaining', 10) == 10
+          && request.resource.data.get('totalUnlocks', 10) == 10
+          && request.resource.data.get('unlockedCVs', []) == []
+          && request.resource.data.get('trialStartedAt', null) == null
+          && request.resource.data.get('trialEndsAt', null) == null
+          && request.resource.data.get('trialClaimedAt', null) == null
+          && request.resource.data.get('subscriptionCurrentPeriodStart', null) == null
+          && request.resource.data.get('subscriptionCurrentPeriodEnd', null) == null
           && request.resource.data.get('pendingSingleJobPack', null) == null
           && request.resource.data.get('pendingSingleJobPayfastPaymentId', null) == null
           && request.resource.data.get('pendingSingleJobCreatedAt', null) == null
@@ -107,7 +219,7 @@ service cloud.firestore {
         || isAdmin();
       allow update: if (isOwner(recruiterId)
           && isRecruiter()
-          && recruiterSingleJobBillingUnchanged())
+          && recruiterBillingUnchanged())
         || isAdmin();
       allow delete: if isAdmin();
 

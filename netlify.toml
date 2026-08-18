@@ -56,6 +56,20 @@
   status = 200
   force = true
 
+# Versioned partner API. The route is forwarded as a query parameter so
+# function routing remains stable across direct and proxied Netlify requests.
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/api-v1?route=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/v1"
+  to = "/.netlify/functions/api-v1"
+  status = 200
+  force = true
+
 [[edge_functions]]
   function = "home"
   path = "/"
@@ -405,6 +419,16 @@
   for = "/guides/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/api/openapi.yaml"
+  [headers.values]
+    Content-Type = "application/yaml; charset=utf-8"
 
 # Sitemap + robots: short cache so Google sees updates fast
 [[headers]]

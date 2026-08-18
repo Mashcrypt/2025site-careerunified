@@ -1342,9 +1342,13 @@ export default function App() {
 </body>
 </html>`;
 
+      const token = await getFirebaseAuth().currentUser?.getIdToken();
       const res = await fetch('/.netlify/functions/export-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ html, fileName: fileSafeName }),
       });
 

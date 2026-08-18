@@ -1578,7 +1578,7 @@
     async function fetchRecruiterJobs() {
       if (typeof firebase === 'undefined' || !firebase.firestore) return [];
       try {
-        const snap = await firebase.firestore().collection('jobs').orderBy('createdAt', 'desc').limit(300).get();
+        const snap = await firebase.firestore().collection('jobs').where('status', '==', 'active').limit(300).get();
         const list = [];
         snap.forEach(doc => { const n = normalizeRecruiterJob(doc.id, doc.data() || {}); if (n) list.push(n); });
         return list;
@@ -1648,7 +1648,11 @@
 
     async function fetchFirestoreJobBySlug(slug) {
       try {
-        const snap = await firebase.firestore().collection('jobs').where('slug', '==', slugify(slug)).limit(1).get();
+        const snap = await firebase.firestore().collection('jobs')
+          .where('status', '==', 'active')
+          .where('slug', '==', slugify(slug))
+          .limit(1)
+          .get();
         if (snap.empty) return null;
         const doc = snap.docs[0];
         return normalizeRecruiterJob(doc.id, doc.data() || {});

@@ -9,6 +9,7 @@ import {
   json,
   parseJsonBody,
 } from "./_applicationUtils";
+import {enqueuePartnerWebhook} from "./_partnerWebhooks";
 
 const RECRUITER_STATUSES = new Set([
   "viewed",
@@ -97,6 +98,21 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    if (requestedStatus && (isRecruiterOwner || isAdmin)) {
+      await enqueuePartnerWebhook({
+        recruiterId: application.recruiterId,
+        event: "application.stage_changed",
+        data: {
+          applicationId,
+          jobId: application.jobId,
+          previousStatus: application.status || null,
+          status: requestedStatus,
+        },
+      }).catch((error) => {
+        console.error("APPLICATION_WEBHOOK_ENQUEUE_ERROR", error);
+      });
+    }
+
     return json(200, origin, {
       applicationId,
       status: requestedStatus || application.status,
@@ -110,4 +126,3 @@ export const handler: Handler = async (event) => {
     return json(500, origin, {error: "Could not update this application. Please try again."});
   }
 };
-

@@ -73,6 +73,7 @@ function staticEntries(): SitemapEntry[] {
     {loc: `${SITE_URL}/z83-filler`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/guides/how-to-complete-z83-form`, lastmod: "2026-07-18", changefreq: "monthly", priority: "0.85"},
     {loc: `${SITE_URL}/for-recruiters`, lastmod: "2026-08-08", changefreq: "monthly", priority: "0.75"},
+    {loc: `${SITE_URL}/api/`, lastmod: "2026-08-18", changefreq: "monthly", priority: "0.7"},
     {loc: `${SITE_URL}/blog`, lastmod: "2026-08-10", changefreq: "weekly", priority: "0.75"},
     {loc: `${SITE_URL}/guides`, lastmod: "2026-08-10", changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/webinars`, lastmod: "2026-08-10", changefreq: "monthly", priority: "0.55"},

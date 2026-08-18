@@ -1,0 +1,62 @@
+# Career Unified Partner API
+
+> The Career Unified Partner API lets approved organisations distribute opportunities, publish and manage vacancies, retrieve Direct Apply applications, update recruitment stages, and receive signed recruitment events.
+
+Base URL: https://careerunified.com/api/v1
+Human documentation: https://careerunified.com/api/
+OpenAPI 3.1 contract: https://careerunified.com/api/openapi.yaml
+Integration guide: https://careerunified.com/api/README.md
+
+## Start here
+
+- Introduction: https://careerunified.com/api/#introduction
+- Quickstart: https://careerunified.com/api/#quickstart
+- Authentication: https://careerunified.com/api/#authentication
+- Pagination: https://careerunified.com/api/#pagination
+- Webhooks: https://careerunified.com/api/#webhooks
+- Errors and limits: https://careerunified.com/api/#errors
+
+## Public discovery
+
+- GET /jobs: https://careerunified.com/api/#list-jobs
+- GET /jobs/{slug-or-id}: https://careerunified.com/api/#get-job
+- GET /bursaries: https://careerunified.com/api/#list-bursaries
+- GET /bursaries/{slug-or-id}: https://careerunified.com/api/#get-bursary
+
+Public discovery never exposes recruiter email addresses, candidate records, CVs, application answers, partner credentials, or internal storage identifiers.
+
+## Protected jobs
+
+- POST /jobs: https://careerunified.com/api/#create-job
+- PATCH /jobs/{jobId}: https://careerunified.com/api/#update-job
+- POST /jobs/{jobId}/close: https://careerunified.com/api/#close-job
+
+Every POST /jobs request requires an Idempotency-Key header. API job publishing follows the same recruiter package and single-job-credit rules as the Career Unified dashboard.
+
+## Protected applications
+
+- GET /jobs/{jobId}/applications: https://careerunified.com/api/#list-applications
+- GET /applications/{applicationId}: https://careerunified.com/api/#get-application
+- PATCH /applications/{applicationId}: https://careerunified.com/api/#update-application
+
+Application access is restricted to the recruiter organisation linked to the API client. CV binary delivery and private recruiter notes stay inside Career Unified's authenticated recruiter workflow.
+
+## Webhook endpoints
+
+- POST /webhooks: https://careerunified.com/api/#create-webhook
+- GET /webhooks: https://careerunified.com/api/#list-webhooks
+- DELETE /webhooks/{webhookId}: https://careerunified.com/api/#delete-webhook
+
+Supported events: job.published, job.updated, job.closed, application.received, application.stage_changed.
+
+Webhook deliveries are signed with HMAC-SHA256. Verify X-Career-Unified-Signature against `<X-Career-Unified-Timestamp>.<raw-request-body>`, reject stale timestamps, and process stable event IDs idempotently.
+
+## Authentication and scopes
+
+Partner keys use the format `cu_live_<client-id>.<secret>` and must remain in a server-side secret manager. Send a key with `X-API-Key` or `Authorization: Bearer`.
+
+Scopes: jobs:read, jobs:write, applications:read, applications:write, webhooks:manage.
+
+## Operations
+
+All responses include X-Request-Id and X-API-Version. Errors use `{ "error": { "code", "message", "requestId" } }`. Respect Retry-After on HTTP 429 responses and use exponential backoff with jitter for retryable failures.

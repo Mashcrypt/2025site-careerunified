@@ -67,19 +67,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .guide-link:hover { border-color: var(--blue); color: var(--blue); background: var(--white); }
 .eyebrow, .section-kicker { color: var(--blue) !important; text-transform: uppercase; font-size: .76rem; font-weight: 800; }
-.privacy-note {
-  width: min(1380px, calc(100% - 36px));
-  margin: 20px auto 0;
-  padding: 14px 17px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  border-left: 4px solid var(--success);
-  background: #ecf8f1;
-  color: #24553a;
-}
-.privacy-note i { font-size: 1.2rem; }
-
 .cv-prefill-panel[hidden] { display: none; }
 .cv-prefill-panel {
   width: min(1380px, calc(100% - 36px));
@@ -273,7 +260,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
   .nav-links { gap: 12px 18px; }
   .page-header { align-items: flex-start; flex-direction: column; }
   .guide-link { width: 100%; }
-  .workspace, .privacy-note, .cv-prefill-panel { width: min(100% - 22px, 1380px); }
+  .workspace, .cv-prefill-panel { width: min(100% - 22px, 1380px); }
   .cv-prefill-panel { align-items: stretch; flex-direction: column; }
   .cv-prefill-panel button { width: 100%; margin-left: 0; }
   .form-panel, .preview-panel { padding: 15px; }

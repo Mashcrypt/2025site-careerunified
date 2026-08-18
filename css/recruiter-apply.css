@@ -667,15 +667,18 @@ img {
 }
 
 .ra-address-lookup {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 12px;
   margin-bottom: 20px;
 }
 
+.ra-address-lookup__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 12px;
+}
+
 .ra-address-lookup .ra-field-hint {
-  margin-bottom: 0;
+  margin: 7px 0 0;
 }
 
 .ra-map-button {
@@ -1084,11 +1087,15 @@ img {
   }
 
   .ra-address-lookup {
+    margin-bottom: 20px;
+  }
+
+  .ra-address-lookup__controls {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .ra-map-button {
-    justify-self: start;
+    width: 100%;
   }
 
   .ra-submit-row {

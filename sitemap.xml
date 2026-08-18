@@ -85,4 +85,11 @@
     <priority>0.3</priority>
   </url>
 
+  <url>
+    <loc>https://careerunified.com/api/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

@@ -655,6 +655,13 @@ document.querySelectorAll("[data-password-toggle]").forEach((button) => {
 soleProprietor.addEventListener("change", syncSoleProprietorState);
 billingAddressSame.addEventListener("change", syncBillingAddressState);
 addressLookup.addEventListener("input", updateAddressMapLink);
+addressMapLink.addEventListener("click", (event) => {
+  updateAddressMapLink();
+  if (!addressLookup.value.trim()) {
+    event.preventDefault();
+    addressLookup.focus();
+  }
+});
 logoInput.addEventListener("change", () => selectLogo(logoInput.files?.[0]));
 removeLogoButton.addEventListener("click", clearLogoSelection);
 signInLink.addEventListener("click", () => {
