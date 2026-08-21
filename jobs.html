@@ -239,6 +239,35 @@
     .job-card p            { margin: 4px 0; font-size: 0.9rem; color: #6b7280; }
     .job-card strong       { color: #374151; font-weight: 600; }
 
+    .job-card .company-logo-frame {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 80px;
+      height: 80px;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid #e5edfb;
+      border-radius: 6px;
+      overflow: hidden;
+      color: #1e3a8a;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .job-card .company-logo {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 6px;
+      object-fit: contain;
+      object-position: center;
+      background: #fff;
+    }
+
     .job-badge {
       position: absolute;
       top: 12px;
@@ -274,26 +303,17 @@
     .job-new-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #16a34a, #0ea5e9);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
       line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 6px 14px rgba(14, 165, 233, 0.22);
     }
 
-    .job-new-badge::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #bbf7d0;
-      box-shadow: 0 0 0 3px rgba(187, 247, 208, 0.28);
+    .job-new-badge img {
+      display: block;
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
     }
 
     .preview-header {
@@ -1566,12 +1586,17 @@
 
     function getJobLogo(job) {
       if (job._source === 'firestore') return job.company?.logoUrl || job.companyLogo || job.logo || '';
-      return window.sanityClient?.imageUrl(job.company?.logo)?.width(200).height(200).fit('crop').url() || '';
+      return window.sanityClient?.imageUrl(job.company?.logo)?.width(512).url() || '';
     }
 
     function getJobCardLogo(job) {
       if (job._source === 'firestore') return job.company?.logoUrl || job.companyLogo || job.logo || '';
-      return window.sanityClient?.imageUrl(job.company?.logo)?.width(80).height(80).fit('crop').url() || '';
+      return window.sanityClient?.imageUrl(job.company?.logo)?.width(160).url() || '';
+    }
+
+    function getCompanyInitials(name) {
+      const words = String(name || 'Company').trim().split(/\s+/).filter(Boolean);
+      return words.slice(0, 2).map(word => word.charAt(0)).join('').toUpperCase() || 'CO';
     }
 
     /* ── FIRESTORE JOBS ── */
@@ -1756,14 +1781,19 @@
         if (index === selectedIndex) li.classList.add('selected');
 
         const logoUrl   = getJobCardLogo(job);
+        const companyName = job.company?.name || 'Company';
+        const logoInitials = getCompanyInitials(companyName);
         const badgeText = job.badge || (job.listingTier === 'premier' ? 'Premier' : '') || (job.listingTier === 'sponsored' ? 'Sponsored' : '');
-        const newBadge  = isNewJob(job) ? '<span class="job-new-badge">New</span>' : '';
+        const newBadge  = isNewJob(job) ? '<span class="job-new-badge" title="New job" aria-label="New job"><img src="/assets/images/icons8-new-64.png" alt="" width="34" height="34"></span>' : '';
         const badgeHtml = [newBadge, badgeText ? `<span class="job-badge">${badgeText}</span>` : ''].filter(Boolean).join('');
 
         li.innerHTML = `
           ${badgeHtml ? `<div class="job-card-badges">${badgeHtml}</div>` : ''}
           <div class="job-row">
-            <img src="${escapeHtml(logoUrl || '/android-chrome-192x192.png')}" class="company-logo" alt="${escapeHtml(job.company?.name || 'Company')} logo" width="80" height="80" loading="lazy" onerror="this.onerror=null;this.src='/android-chrome-192x192.png'">
+            <div class="company-logo-frame" aria-label="${escapeHtml(companyName)} logo">
+              <span aria-hidden="true">${escapeHtml(logoInitials)}</span>
+              ${logoUrl ? `<img src="${escapeHtml(logoUrl)}" class="company-logo" alt="" width="80" height="80" loading="lazy" onerror="this.remove()">` : ''}
+            </div>
             <div>
               ${job.slug
                 ? `<a class="job-title-link" href="/jobs/${encodeURIComponent(job.slug)}"><h3>${job.title}</h3></a>`
