@@ -82,6 +82,7 @@ function staticEntries(): SitemapEntry[] {
     {loc: `${SITE_URL}/contact-us`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.5"},
     {loc: `${SITE_URL}/privacy`, lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3"},
     {loc: `${SITE_URL}/terms`, lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3"},
+    {loc: `${SITE_URL}/paia-manual`, lastmod: "2026-08-21", changefreq: "yearly", priority: "0.3"},
   ];
 }
 
