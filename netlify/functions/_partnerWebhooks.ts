@@ -3,7 +3,15 @@ import dns from 'dns/promises'
 import https from 'https'
 import net from 'net'
 import {getAdmin} from './_firebaseAdmin'
-import {ApiError, cleanStringArray, cleanText, safeUrl, timestampToIso} from './_apiV1'
+import {
+  ApiEnvironment,
+  ApiError,
+  cleanStringArray,
+  cleanText,
+  createUsageAlert,
+  safeUrl,
+  timestampToIso,
+} from './_apiV1'
 
 export const PARTNER_WEBHOOK_EVENTS = new Set([
   'job.published',
@@ -16,6 +24,11 @@ export const PARTNER_WEBHOOK_EVENTS = new Set([
 const MAX_ENDPOINTS_PER_ORGANIZATION = 10
 const MAX_ATTEMPTS = 6
 const DELIVERY_TIMEOUT_MS = 5000
+const PROCESSING_LEASE_MS = 2 * 60 * 1000
+
+function normalizedEnvironment(value: unknown): ApiEnvironment {
+  return cleanText(value, 20).toLowerCase() === 'test' ? 'test' : 'live'
+}
 
 function masterKey() {
   const source = process.env.PARTNER_API_SIGNING_SECRET || ''
@@ -53,7 +66,7 @@ function decryptSecret(value: Record<string, unknown>) {
   ]).toString('utf8')
 }
 
-function isPrivateIp(address: string) {
+export function isPrivateIp(address: string): boolean {
   const normalized = address.toLowerCase().split('%')[0]
   if (!net.isIP(normalized)) return true
   if (net.isIPv4(normalized)) {
@@ -148,6 +161,7 @@ export async function createWebhookEndpoint(options: {
   recruiterId: string
   organizationId: string
   clientId: string
+  environment: ApiEnvironment
   url: unknown
   events: unknown
   description?: unknown
@@ -160,8 +174,11 @@ export async function createWebhookEndpoint(options: {
     .limit(MAX_ENDPOINTS_PER_ORGANIZATION + 1)
     .get()
   if (
-    existing.docs.filter((doc) => doc.data()?.active === true).length >=
-    MAX_ENDPOINTS_PER_ORGANIZATION
+    existing.docs.filter(
+      (doc) =>
+        doc.data()?.active === true &&
+        normalizedEnvironment(doc.data()?.environment) === options.environment,
+    ).length >= MAX_ENDPOINTS_PER_ORGANIZATION
   ) {
     throw new ApiError(
       409,
@@ -178,6 +195,7 @@ export async function createWebhookEndpoint(options: {
     recruiterId: options.recruiterId,
     organizationId: options.organizationId,
     createdByClientId: options.clientId,
+    environment: options.environment,
     url,
     events,
     description: cleanText(options.description, 240),
@@ -192,34 +210,55 @@ export async function createWebhookEndpoint(options: {
   }
 }
 
-export async function listWebhookEndpoints(recruiterId: string) {
+export async function listWebhookEndpoints(recruiterId: string, environment: ApiEnvironment) {
   const snapshot = await getAdmin()
     .firestore()
     .collection('apiWebhookEndpoints')
     .where('recruiterId', '==', recruiterId)
     .limit(MAX_ENDPOINTS_PER_ORGANIZATION + 10)
     .get()
-  return snapshot.docs.map((doc) => {
-    const data = doc.data() || {}
-    return {
-      id: doc.id,
-      url: cleanText(data.url, 2000),
-      description: cleanText(data.description, 240) || null,
-      events: cleanStringArray(data.events, 80, PARTNER_WEBHOOK_EVENTS.size),
-      active: data.active === true,
-      createdAt: timestampToIso(data.createdAt),
-      lastDeliveredAt: timestampToIso(data.lastDeliveredAt),
-    }
-  })
+  return snapshot.docs
+    .filter((doc) => normalizedEnvironment(doc.data()?.environment) === environment)
+    .map((doc) => {
+      const data = doc.data() || {}
+      return {
+        id: doc.id,
+        url: cleanText(data.url, 2000),
+        description: cleanText(data.description, 240) || null,
+        events: cleanStringArray(data.events, 80, PARTNER_WEBHOOK_EVENTS.size),
+        active: data.active === true,
+        createdAt: timestampToIso(data.createdAt),
+        lastDeliveredAt: timestampToIso(data.lastDeliveredAt),
+      }
+    })
 }
 
-export async function disableWebhookEndpoint(recruiterId: string, endpointId: string) {
+async function ownedWebhookEndpoint(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  endpointId: string,
+) {
   const admin = getAdmin()
   const ref = admin.firestore().doc(`apiWebhookEndpoints/${endpointId}`)
   const snapshot = await ref.get()
-  if (!snapshot.exists || snapshot.data()?.recruiterId !== recruiterId) {
+  if (
+    !snapshot.exists ||
+    snapshot.data()?.recruiterId !== recruiterId ||
+    normalizedEnvironment(snapshot.data()?.environment) !== environment
+  ) {
     throw new ApiError(404, 'webhook_not_found', 'The webhook endpoint was not found.')
   }
+  return snapshot
+}
+
+export async function disableWebhookEndpoint(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  endpointId: string,
+) {
+  const admin = getAdmin()
+  const snapshot = await ownedWebhookEndpoint(recruiterId, environment, endpointId)
+  const ref = snapshot.ref
   await ref.set(
     {
       active: false,
@@ -229,11 +268,66 @@ export async function disableWebhookEndpoint(recruiterId: string, endpointId: st
   )
 }
 
-function dispatchSignature(eventId: string) {
-  return crypto.createHmac('sha256', masterKey()).update(eventId, 'utf8').digest('hex')
+export async function rotateWebhookSecret(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  endpointId: string,
+) {
+  const admin = getAdmin()
+  const snapshot = await ownedWebhookEndpoint(recruiterId, environment, endpointId)
+  const signingSecret = `whsec_${crypto.randomBytes(32).toString('base64url')}`
+  await snapshot.ref.set(
+    {
+      signingSecret: encryptSecret(signingSecret),
+      secretRotatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    {merge: true},
+  )
+  return {signingSecret, rotatedAt: new Date().toISOString()}
 }
 
-async function triggerBackgroundDispatch(eventId: string) {
+export async function listWebhookDeliveries(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  endpointId: string,
+) {
+  await ownedWebhookEndpoint(recruiterId, environment, endpointId)
+  const snapshot = await getAdmin()
+    .firestore()
+    .collection('apiWebhookDeliveries')
+    .where('endpointId', '==', endpointId)
+    .limit(100)
+    .get()
+  return snapshot.docs
+    .map((doc) => {
+      const data = doc.data() || {}
+      return {
+        id: doc.id,
+        eventId: cleanText(data.eventId, 180),
+        event: cleanText(data.event, 80),
+        ok: data.ok === true,
+        responseStatus: Number(data.responseStatus || 0),
+        attempt: Number(data.attempt || 0),
+        attemptedAt: timestampToIso(data.attemptedAt),
+        environment: normalizedEnvironment(data.environment),
+      }
+    })
+    .filter((delivery) => delivery.environment === environment)
+    .sort((left, right) =>
+      String(right.attemptedAt || '').localeCompare(String(left.attemptedAt || '')),
+    )
+    .slice(0, 50)
+}
+
+function dispatchSignature(eventId: string, environment: ApiEnvironment) {
+  return crypto
+    .createHmac('sha256', masterKey())
+    .update(`${environment}:${eventId}`, 'utf8')
+    .digest('hex')
+}
+
+async function triggerBackgroundDispatch(eventId: string, environment: ApiEnvironment) {
   const siteUrl = (process.env.URL || process.env.SITE_URL || '').replace(/\/+$/, '')
   if (!siteUrl || /localhost|127\.0\.0\.1/i.test(siteUrl)) return
   try {
@@ -241,9 +335,9 @@ async function triggerBackgroundDispatch(eventId: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Career-Unified-Dispatch': dispatchSignature(eventId),
+        'X-Career-Unified-Dispatch': dispatchSignature(eventId, environment),
       },
-      body: JSON.stringify({eventId}),
+      body: JSON.stringify({eventId, environment}),
     })
   } catch {
     // The event remains queued and is retried when the next event triggers the worker.
@@ -252,12 +346,15 @@ async function triggerBackgroundDispatch(eventId: string) {
 
 export async function enqueuePartnerWebhook(options: {
   recruiterId: string
+  environment?: ApiEnvironment
+  clientId?: string
   event: string
   data: Record<string, unknown>
 }) {
   if (!PARTNER_WEBHOOK_EVENTS.has(options.event) || !options.recruiterId) return null
   const admin = getAdmin()
   const db = admin.firestore()
+  const environment = options.environment || 'live'
   const endpoints = await db
     .collection('apiWebhookEndpoints')
     .where('recruiterId', '==', options.recruiterId)
@@ -267,6 +364,7 @@ export async function enqueuePartnerWebhook(options: {
     const endpoint = doc.data() || {}
     return (
       endpoint.active === true &&
+      normalizedEnvironment(endpoint.environment) === environment &&
       Array.isArray(endpoint.events) &&
       endpoint.events.includes(options.event)
     )
@@ -277,6 +375,8 @@ export async function enqueuePartnerWebhook(options: {
   const now = admin.firestore.Timestamp.now()
   await ref.set({
     recruiterId: options.recruiterId,
+    environment,
+    clientId: cleanText(options.clientId, 160),
     event: options.event,
     data: options.data,
     status: 'pending',
@@ -286,12 +386,12 @@ export async function enqueuePartnerWebhook(options: {
     updatedAt: now,
     nextAttemptAt: now,
   })
-  await triggerBackgroundDispatch(ref.id)
+  await triggerBackgroundDispatch(ref.id, environment)
   return ref.id
 }
 
-function verifyDispatchRequest(eventId: string, signature: string) {
-  const expected = dispatchSignature(eventId)
+function verifyDispatchRequest(eventId: string, environment: ApiEnvironment, signature: string) {
+  const expected = dispatchSignature(eventId, environment)
   const left = Buffer.from(signature || '', 'utf8')
   const right = Buffer.from(expected, 'utf8')
   return left.length === right.length && crypto.timingSafeEqual(left, right)
@@ -352,8 +452,74 @@ async function deliver(
   })
 }
 
-export async function processWebhookQueue(eventId: string, signature: string) {
-  if (!verifyDispatchRequest(eventId, signature)) {
+export async function sendWebhookTest(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  endpointId: string,
+) {
+  const admin = getAdmin()
+  const snapshot = await ownedWebhookEndpoint(recruiterId, environment, endpointId)
+  if (snapshot.data()?.active !== true) {
+    throw new ApiError(409, 'webhook_disabled', 'Enable the webhook endpoint before testing it.')
+  }
+  const eventId = `test_${crypto.randomUUID()}`
+  const result = await deliver(snapshot.data() || {}, eventId, 'test.ping', {
+    message: 'Career Unified webhook connection test',
+    environment,
+  })
+  await admin.firestore().collection('apiWebhookDeliveries').add({
+    eventId,
+    endpointId,
+    recruiterId,
+    environment,
+    event: 'test.ping',
+    ok: result.ok,
+    responseStatus: result.status,
+    attempt: 1,
+    attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+  })
+  return {eventId, delivered: result.ok, responseStatus: result.status}
+}
+
+export async function replayWebhookEvent(
+  recruiterId: string,
+  environment: ApiEnvironment,
+  eventId: string,
+) {
+  const admin = getAdmin()
+  const ref = admin.firestore().doc(`apiWebhookEvents/${eventId}`)
+  const snapshot = await ref.get()
+  const data = snapshot.data() || {}
+  if (
+    !snapshot.exists ||
+    data.recruiterId !== recruiterId ||
+    normalizedEnvironment(data.environment) !== environment
+  ) {
+    throw new ApiError(404, 'webhook_event_not_found', 'The webhook event was not found.')
+  }
+  const now = admin.firestore.Timestamp.now()
+  await ref.set(
+    {
+      status: 'pending',
+      attempts: 0,
+      deliveredEndpointIds: [],
+      nextAttemptAt: now,
+      replayedAt: now,
+      leaseUntil: null,
+      updatedAt: now,
+    },
+    {merge: true},
+  )
+  await triggerBackgroundDispatch(eventId, environment)
+  return {id: eventId, status: 'pending'}
+}
+
+export async function processWebhookQueue(
+  eventId: string,
+  environment: ApiEnvironment,
+  signature: string,
+) {
+  if (!verifyDispatchRequest(eventId, environment, signature)) {
     throw new ApiError(
       401,
       'invalid_dispatch_signature',
@@ -367,16 +533,38 @@ export async function processWebhookQueue(eventId: string, signature: string) {
 export async function processPendingWebhooks() {
   const admin = getAdmin()
   const db = admin.firestore()
-  const queued = await db
-    .collection('apiWebhookEvents')
-    .where('status', '==', 'pending')
-    .limit(25)
-    .get()
+  const [pending, processing] = await Promise.all([
+    db.collection('apiWebhookEvents').where('status', '==', 'pending').limit(25).get(),
+    db.collection('apiWebhookEvents').where('status', '==', 'processing').limit(25).get(),
+  ])
+  const queued = [...pending.docs, ...processing.docs]
   const now = Date.now()
-  for (const eventDoc of queued.docs) {
-    const queuedEvent = eventDoc.data() || {}
-    const nextAttempt = timestampToIso(queuedEvent.nextAttemptAt)
-    if (nextAttempt && new Date(nextAttempt).getTime() > now) continue
+  for (const eventDoc of queued) {
+    const claimed = await db.runTransaction(async (transaction) => {
+      const fresh = await transaction.get(eventDoc.ref)
+      if (!fresh.exists) return null
+      const data = fresh.data() || {}
+      const nextAttempt = timestampToIso(data.nextAttemptAt)
+      const leaseUntil = timestampToIso(data.leaseUntil)
+      const pendingAndDue =
+        data.status === 'pending' && (!nextAttempt || new Date(nextAttempt).getTime() <= now)
+      const abandoned =
+        data.status === 'processing' && (!leaseUntil || new Date(leaseUntil).getTime() <= now)
+      if (!pendingAndDue && !abandoned) return null
+      transaction.set(
+        fresh.ref,
+        {
+          status: 'processing',
+          leaseUntil: admin.firestore.Timestamp.fromMillis(now + PROCESSING_LEASE_MS),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+      )
+      return data
+    })
+    if (!claimed) continue
+    const queuedEvent = claimed
+    const environment = normalizedEnvironment(queuedEvent.environment)
 
     const endpoints = await db
       .collection('apiWebhookEndpoints')
@@ -388,6 +576,7 @@ export async function processPendingWebhooks() {
       const endpoint = doc.data() || {}
       return (
         endpoint.active === true &&
+        normalizedEnvironment(endpoint.environment) === environment &&
         Array.isArray(endpoint.events) &&
         endpoint.events.includes(queuedEvent.event) &&
         !deliveredIds.has(doc.id)
@@ -408,6 +597,18 @@ export async function processPendingWebhooks() {
             {
               lastDeliveredAt: admin.firestore.FieldValue.serverTimestamp(),
               updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+              consecutiveFailures: 0,
+            },
+            {merge: true},
+          )
+        }
+        if (!result.ok) {
+          await endpointDoc.ref.set(
+            {
+              consecutiveFailures: admin.firestore.FieldValue.increment(1),
+              lastFailureAt: admin.firestore.FieldValue.serverTimestamp(),
+              lastFailureStatus: result.status,
+              updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             },
             {merge: true},
           )
@@ -417,8 +618,10 @@ export async function processPendingWebhooks() {
           endpointId: endpointDoc.id,
           recruiterId: queuedEvent.recruiterId,
           event: queuedEvent.event,
+          environment,
           ok: result.ok,
           responseStatus: result.status,
+          attempt: Number(queuedEvent.attempts || 0) + 1,
           attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
         })
         return result
@@ -437,10 +640,23 @@ export async function processPendingWebhooks() {
         attempts,
         deliveredEndpointIds: [...deliveredIds],
         nextAttemptAt,
+        leaseUntil: null,
         ...(allDelivered ? {deliveredAt: admin.firestore.FieldValue.serverTimestamp()} : {}),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       {merge: true},
     )
+    if (exhausted && !allDelivered) {
+      await createUsageAlert({
+        admin,
+        clientId: cleanText(queuedEvent.clientId, 160) || 'webhook',
+        recruiterId: cleanText(queuedEvent.recruiterId, 160),
+        organizationId: cleanText(queuedEvent.recruiterId, 160),
+        type: 'webhook_delivery_failed',
+        severity: 'critical',
+        message: `Webhook event ${eventDoc.id} failed after ${attempts} delivery attempts.`,
+        dedupeKey: `${eventDoc.id}_webhook_delivery_failed`,
+      })
+    }
   }
 }

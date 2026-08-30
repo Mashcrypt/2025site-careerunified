@@ -23,6 +23,7 @@
         "npm:firebase-admin@14",
         "npm:mammoth@^1.6.0",
         "npm:netlify-cli@^26.1.0",
+        "npm:pdf-lib@^1.17.1",
         "npm:pdf-parse@^1.1.1",
         "npm:prettier@^3.5.0",
         "npm:puppeteer-core@^22.15.0",

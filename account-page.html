@@ -41,6 +41,75 @@
             line-height: 1.6;
         }
 
+        .main-nav {
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid rgba(203, 213, 225, 0.85);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            backdrop-filter: blur(14px);
+        }
+
+        .main-nav a {
+            color: #334155;
+        }
+
+        .main-nav .nav-links a:hover,
+        .main-nav .nav-links a:focus-visible,
+        .main-nav .mobile-menu a:hover,
+        .main-nav .mobile-menu a:focus-visible {
+            color: #2563eb;
+        }
+
+        .logo,
+        .mobile-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            display: block;
+            overflow: hidden;
+            border-radius: 8px;
+            flex: 0 0 34px;
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .brand-text {
+            color: #0f172a;
+        }
+
+        .main-nav .icon-btn {
+            color: #334155;
+            border-color: rgba(191, 219, 254, 0.95);
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .main-nav .icon-btn:hover,
+        .main-nav .icon-btn:focus-visible {
+            color: #2563eb;
+            border-color: #93c5fd;
+            background: #eff6ff;
+        }
+
+        .mobile-menu {
+            background: rgba(255, 255, 255, 0.98);
+            border-bottom: 1px solid rgba(203, 213, 225, 0.85);
+        }
+
+        .mobile-menu a {
+            color: #334155;
+        }
+
         .container {
             width: 100%;
             min-height: 100vh;
@@ -78,6 +147,13 @@
             .sidebar {
                 width: 320px;
                 display: block !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo,
+            .mobile-logo {
+                gap: 10px;
             }
         }
 
@@ -630,6 +706,71 @@
             background: #dbeafe;
         }
 
+        .language-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .language-select {
+            min-height: 52px;
+            border-radius: 0.95rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+        }
+
+        .language-select:disabled {
+            cursor: not-allowed;
+            color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .language-selection-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 2.25rem;
+        }
+
+        .language-selection-empty {
+            color: #64748b;
+            font-size: 0.84rem;
+        }
+
+        .language-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            min-height: 32px;
+            padding: 0.3rem 0.65rem 0.3rem 0.8rem;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .language-chip button {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: #1d4ed8;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .language-chip button:hover {
+            background: #dbeafe;
+        }
+
         .preference-options {
             margin: 0;
             padding: 0;
@@ -742,6 +883,67 @@
             max-width: 960px;
             margin-top: 1.5rem;
         }
+
+        .notification-inbox {
+            max-width: 960px;
+            margin-top: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notification-inbox-header,
+        .notification-inbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .notification-inbox-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .notification-mark-read {
+            border: 0;
+            background: transparent;
+            color: #185FA5;
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .notification-inbox-list {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .notification-inbox-item {
+            min-height: 58px;
+            padding: 0.75rem 0.875rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .notification-inbox-item.unread {
+            border-color: #bfdbfe;
+            background: #eff6ff;
+        }
+
+        .notification-inbox-item strong,
+        .notification-inbox-item span {
+            display: block;
+        }
+
+        .notification-inbox-item strong { font-size: 0.875rem; }
+        .notification-inbox-item span { margin-top: 0.2rem; color: #64748b; font-size: 0.78rem; }
+        .notification-inbox-arrow { flex: 0 0 auto; color: #185FA5; font-size: 1rem; }
+        .notification-inbox-empty { margin: 0.75rem 0 0; color: #64748b; font-size: 0.85rem; }
 
         .notification-master {
             display: flex;
@@ -1263,6 +1465,53 @@
             font-size: 0.8rem;
         }
 
+        .candidate-interview-details {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            background: #eff6ff;
+        }
+
+        .candidate-interview-details h4 {
+            margin: 0;
+            color: #1e3a8a;
+            font-size: 0.95rem;
+        }
+
+        .candidate-interview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem 1.25rem;
+        }
+
+        .candidate-interview-item span {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .candidate-interview-item strong,
+        .candidate-interview-item a {
+            color: #1e3a8a;
+            font-size: 0.85rem;
+            overflow-wrap: anywhere;
+        }
+
+        .candidate-interview-notes {
+            margin: 0;
+            color: #374151;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
         .candidate-application-actions {
             display: flex;
             flex-wrap: wrap;
@@ -1310,6 +1559,12 @@
             font-size: 0.85rem;
             line-height: 1.5;
             white-space: pre-wrap;
+        }
+
+        @media (max-width: 640px) {
+            .candidate-interview-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .application-success-note {
@@ -1587,7 +1842,12 @@
     <!-- NAVIGATION (Using same nav structure) -->
     <nav class="main-nav">
         <!-- DESKTOP VIEW -->
-        <a href="index.html" class="logo desktop-nav">Career Unified</a>
+        <a href="index.html" class="logo desktop-nav" aria-label="Career Unified home">
+            <span class="brand-mark" aria-hidden="true">
+                <img src="/android-chrome-192x192.png" alt="">
+            </span>
+            <span class="brand-text">Career Unified</span>
+        </a>
 
         <div class="nav-links desktop-nav">
             <a href="jobs.html">Jobs</a>
@@ -1610,7 +1870,12 @@
         <!-- MOBILE VIEW -->
         <div class="mobile-nav">
             <!-- Clickable Logo -->
-            <a href="index.html" class="mobile-logo">Career Unified</a>
+            <a href="index.html" class="mobile-logo" aria-label="Career Unified home">
+                <span class="brand-mark" aria-hidden="true">
+                    <img src="/android-chrome-192x192.png" alt="">
+                </span>
+                <span class="brand-text">Career Unified</span>
+            </a>
             
             <div class="mobile-nav-right">
                 <!-- Account Icon - Direct Link -->
@@ -1980,21 +2245,13 @@
                             <div class="grid grid-cols-2">
                                 <div class="form-group">
                                     <label class="form-label" for="inputHomeLanguages">Home Languages</label>
-                                    <select id="inputHomeLanguages" class="form-select" multiple size="6" aria-describedby="homeLanguagesHelp">
-                                        <option value="Afrikaans">Afrikaans</option>
-                                        <option value="English">English</option>
-                                        <option value="isiNdebele">isiNdebele</option>
-                                        <option value="isiXhosa">isiXhosa</option>
-                                        <option value="isiZulu">isiZulu</option>
-                                        <option value="Sepedi">Sepedi</option>
-                                        <option value="Sesotho">Sesotho</option>
-                                        <option value="Setswana">Setswana</option>
-                                        <option value="siSwati">siSwati</option>
-                                        <option value="Tshivenda">Tshivenda</option>
-                                        <option value="Xitsonga">Xitsonga</option>
-                                        <option value="South African Sign Language (SASL)">South African Sign Language (SASL)</option>
-                                    </select>
-                                    <p id="homeLanguagesHelp" style="margin: 0.5rem 0 0; color: #64748b; font-size: 0.8rem;">Select every language that applies.</p>
+                                    <div class="language-picker" aria-describedby="homeLanguagesHelp">
+                                        <select id="inputHomeLanguages" class="form-select language-select">
+                                            <option value="">Select a language</option>
+                                        </select>
+                                    </div>
+                                    <div id="selectedHomeLanguages" class="language-selection-summary" aria-live="polite"></div>
+                                    <p id="homeLanguagesHelp" style="margin: 0.5rem 0 0; color: #64748b; font-size: 0.8rem;">Choose every language that applies. You can select more than one.</p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="inputEthnicity">Ethnicity <span style="font-weight: 400; color: #64748b;">(optional)</span></label>
@@ -2258,6 +2515,15 @@
                 <div id="notifications-content" class="tab-content hidden">
                     <h2 class="content-title">Manage Notifications</h2>
                     <p class="content-subtitle">Choose what Career Unified should notify you about.</p>
+
+                    <section class="notification-inbox" aria-labelledby="notification-inbox-title">
+                        <div class="notification-inbox-header">
+                            <h3 id="notification-inbox-title">Recent updates</h3>
+                            <button id="markAllNotificationsRead" class="notification-mark-read" type="button">Mark all as read</button>
+                        </div>
+                        <div id="notificationInboxList" class="notification-inbox-list" aria-live="polite"></div>
+                        <p id="notificationInboxEmpty" class="notification-inbox-empty">No personalised updates yet.</p>
+                    </section>
 
                     <form id="notificationPreferencesForm" class="notification-form">
                         <div class="notification-master">
@@ -2777,7 +3043,7 @@ Platform: ${navigator.platform}
         signOut,
         updatePassword
     } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, setDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -2822,6 +3088,63 @@ Platform: ${navigator.platform}
     };
 
     let currentUser = null;
+    let notificationInboxLoadedFor = '';
+
+    function notificationDate(value) {
+        const date = value?.toDate ? value.toDate() : new Date(value || 0);
+        return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en-ZA', {day: 'numeric', month: 'short'}).format(date);
+    }
+
+    async function loadNotificationInbox(force = false) {
+        const list = document.getElementById('notificationInboxList');
+        const empty = document.getElementById('notificationInboxEmpty');
+        const markAll = document.getElementById('markAllNotificationsRead');
+        if (!currentUser || !list || !empty || (!force && notificationInboxLoadedFor === currentUser.uid)) return;
+        list.innerHTML = '';
+        empty.textContent = 'Loading updates...';
+        empty.hidden = false;
+        try {
+            const snapshot = await getDocs(query(collection(db, 'users', currentUser.uid, 'notifications'), orderBy('createdAt', 'desc'), limit(30)));
+            notificationInboxLoadedFor = currentUser.uid;
+            empty.hidden = !snapshot.empty;
+            empty.textContent = 'No personalised updates yet.';
+            markAll.hidden = snapshot.empty || !snapshot.docs.some(item => item.data().read !== true);
+            snapshot.docs.forEach(item => {
+                const data = item.data();
+                const link = document.createElement('a');
+                link.className = `notification-inbox-item${data.read === true ? '' : ' unread'}`;
+                const safeUrl = String(data.url || '');
+                link.href = (safeUrl.startsWith('/') || safeUrl.startsWith('https://careerunified.com/')) ? safeUrl : '#';
+                const text = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = String(data.title || 'Career Unified update');
+                const message = document.createElement('span');
+                message.textContent = [data.message, notificationDate(data.createdAt)].filter(Boolean).join(' · ');
+                const arrow = document.createElement('span');
+                arrow.className = 'notification-inbox-arrow';
+                arrow.setAttribute('aria-hidden', 'true');
+                arrow.textContent = '→';
+                text.append(title, message);
+                link.append(text, arrow);
+                link.addEventListener('click', () => setDoc(item.ref, {read: true, readAt: new Date()}, {merge: true}));
+                list.appendChild(link);
+            });
+        } catch (error) {
+            empty.hidden = false;
+            empty.textContent = 'Updates could not be loaded right now.';
+            if (markAll) markAll.hidden = true;
+        }
+    }
+
+    document.getElementById('markAllNotificationsRead')?.addEventListener('click', async () => {
+        if (!currentUser) return;
+        const snapshot = await getDocs(query(collection(db, 'users', currentUser.uid, 'notifications'), orderBy('createdAt', 'desc'), limit(30)));
+        const batch = writeBatch(db);
+        snapshot.docs.filter(item => item.data().read !== true).forEach(item => batch.set(item.ref, {read: true, readAt: new Date()}, {merge: true}));
+        await batch.commit();
+        notificationInboxLoadedFor = '';
+        await loadNotificationInbox(true);
+    });
 
     const OFFICIAL_SOUTH_AFRICAN_LANGUAGES = [
         'Afrikaans',
@@ -2835,7 +3158,7 @@ Platform: ${navigator.platform}
         'siSwati',
         'Tshivenda',
         'Xitsonga',
-        'South African Sign Language (SASL)'
+        'South African Sign Language'
     ];
     const ETHNICITY_OPTIONS = ['Black African', 'Coloured', 'Indian or Asian', 'White', 'Other'];
 
@@ -2843,6 +3166,72 @@ Platform: ${navigator.platform}
         const allowed = new Set(OFFICIAL_SOUTH_AFRICAN_LANGUAGES);
         const selected = Array.isArray(value) ? value : [];
         return [...new Set(selected.map(language => String(language || '').trim()).filter(language => allowed.has(language)))];
+    }
+
+    function renderHomeLanguagePicker() {
+        const picker = document.getElementById('inputHomeLanguages');
+        const summary = document.getElementById('selectedHomeLanguages');
+        if (!(picker instanceof HTMLSelectElement) || !summary) return;
+
+        const selected = new Set(normaliseHomeLanguages(profileData.homeLanguages));
+        const available = OFFICIAL_SOUTH_AFRICAN_LANGUAGES.filter(language => !selected.has(language));
+        picker.innerHTML = '';
+        summary.innerHTML = '';
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.selected = true;
+        if (available.length) {
+            placeholder.textContent = 'Select a language';
+        } else {
+            placeholder.textContent = 'All languages selected';
+        }
+        picker.appendChild(placeholder);
+
+        available.forEach(language => {
+            const option = document.createElement('option');
+            option.value = language;
+            option.textContent = language;
+            picker.appendChild(option);
+        });
+        picker.disabled = !available.length;
+        picker.onchange = () => {
+            if (!picker.value) return;
+            toggleHomeLanguage(picker.value);
+            picker.value = '';
+        };
+
+        if (!selected.size) {
+            const empty = document.createElement('span');
+            empty.className = 'language-selection-empty';
+            empty.textContent = 'No languages selected yet.';
+            summary.appendChild(empty);
+            return;
+        }
+
+        Array.from(selected).forEach(language => {
+            const chip = document.createElement('span');
+            chip.className = 'language-chip';
+            chip.innerHTML = `<span>${language}</span>`;
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', `Remove ${language}`);
+            remove.innerHTML = '&times;';
+            remove.addEventListener('click', () => toggleHomeLanguage(language));
+
+            chip.appendChild(remove);
+            summary.appendChild(chip);
+        });
+    }
+
+    function toggleHomeLanguage(language) {
+        const selected = new Set(normaliseHomeLanguages(profileData.homeLanguages));
+        if (selected.has(language)) selected.delete(language);
+        else selected.add(language);
+
+        profileData.homeLanguages = normaliseHomeLanguages(Array.from(selected));
+        renderHomeLanguagePicker();
     }
 
     function profileInitials(name) {
@@ -3959,6 +4348,7 @@ Platform: ${navigator.platform}
         }
         if (tabName === 'notifications') {
             hydrateNotificationPreferences();
+            loadNotificationInbox();
         }
     }
 
@@ -4000,13 +4390,7 @@ Platform: ${navigator.platform}
         setInputValue('inputDesiredLocation', profileData.desiredLocation);
         setInputValue('inputBio', profileData.bio);
         setInputValue('inputEthnicity', profileData.ethnicity);
-        const homeLanguagesInput = document.getElementById('inputHomeLanguages');
-        if (homeLanguagesInput instanceof HTMLSelectElement) {
-            const selectedLanguages = new Set(normaliseHomeLanguages(profileData.homeLanguages));
-            Array.from(homeLanguagesInput.options).forEach(option => {
-                option.selected = selectedLanguages.has(option.value);
-            });
-        }
+        renderHomeLanguagePicker();
         
         setEmploymentStatus(profileData.employmentStatus);
     }
@@ -4261,10 +4645,7 @@ Platform: ${navigator.platform}
         profileData.desiredJobTitle = getInputValue('inputDesiredJob');
         profileData.desiredLocation = getInputValue('inputDesiredLocation');
         profileData.bio = getInputValue('inputBio');
-        const homeLanguagesInput = document.getElementById('inputHomeLanguages');
-        profileData.homeLanguages = homeLanguagesInput instanceof HTMLSelectElement
-            ? normaliseHomeLanguages(Array.from(homeLanguagesInput.selectedOptions, option => option.value))
-            : [];
+        profileData.homeLanguages = normaliseHomeLanguages(profileData.homeLanguages);
         const ethnicity = getInputValue('inputEthnicity');
         profileData.ethnicity = ETHNICITY_OPTIONS.includes(ethnicity) ? ethnicity : '';
 

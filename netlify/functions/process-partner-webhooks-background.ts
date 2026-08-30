@@ -8,12 +8,13 @@ export const handler: Handler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}')
     const eventId = cleanText(body.eventId, 180)
+    const environment = cleanText(body.environment, 20) === 'test' ? 'test' : 'live'
     const signature = cleanText(
       event.headers['x-career-unified-dispatch'] || event.headers['X-Career-Unified-Dispatch'],
       128,
     )
     if (!eventId || !signature) return {statusCode: 401, body: 'Unauthorized'}
-    await processWebhookQueue(eventId, signature)
+    await processWebhookQueue(eventId, environment, signature)
     return {statusCode: 202, body: 'Accepted'}
   } catch (error) {
     if (error instanceof ApiError) return {statusCode: error.statusCode, body: error.message}

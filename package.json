@@ -12,7 +12,9 @@
     "build:cv": "node scripts/build-cv-generator.mjs",
     "build": "node scripts/build-cv-generator.mjs",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy"
+    "deploy-graphql": "sanity graphql deploy",
+    "test": "npm run test:api",
+    "test:api": "tsc -p tsconfig.api-tests.json && node --test .api-test-dist/tests/api-contract.test.js"
   },
   "keywords": [
     "sanity"
@@ -23,6 +25,7 @@
     "busboy": "^1.6.0",
     "firebase-admin": "^14.0.0",
     "mammoth": "^1.6.0",
+    "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "puppeteer-core": "^22.15.0",
     "react": "^19.1",

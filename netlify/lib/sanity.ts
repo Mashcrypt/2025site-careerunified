@@ -139,8 +139,8 @@ export async function getActiveJobs(limit = 200) {
   const jobs = await querySanity(
     `*[_type == "job" && (!defined(deadline) || deadline >= $today)]
       | order(posted desc)[0...${limit}]{
-        _id, title, "slug": coalesce(slug.current, _id), location, salary,
-        posted, deadline, deadlineText, jobType, category, "companyName": company->name,
+        _id, _createdAt, _updatedAt, title, "slug": coalesce(slug.current, _id), location, salary,
+        posted, deadline, deadlineText, jobType, category, description, "companyName": company->name,
         "companyLogo": company->logo.asset->url
       }`,
     {today: today()},
@@ -163,8 +163,8 @@ export async function getActiveBursaries(limit = 200) {
   return querySanity(
     `*[_type == "bursary" && (!defined(deadline) || deadline >= $today)]
       | order(deadline asc)[0...${limit}]{
-        _id, name, "slug": coalesce(slug.current, _id), provider, faculty, faculties,
-        deadline
+        _id, _createdAt, _updatedAt, name, "slug": coalesce(slug.current, _id), provider, faculty, faculties,
+        deadline, description
       }`,
     {today: today()},
   );
@@ -187,4 +187,12 @@ export async function getUniversities(limit = 200) {
 export async function getUniversityBySlug(slug: string) {
   const universities = await getUniversities();
   return universities.find((university: Record<string, unknown>) => university.slug === slug) || null;
+}
+
+export async function getCareerGuides(limit = 50) {
+  return querySanity(
+    `*[_type == "cvTip"] | order(_updatedAt desc)[0...${limit}]{
+      _id, _createdAt, _updatedAt, title, category
+    }`,
+  );
 }

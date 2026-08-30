@@ -358,6 +358,85 @@ img {
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
+.ra-city-combobox {
+  position: relative;
+}
+
+.ra-city-combobox input {
+  padding-right: 48px;
+}
+
+.ra-city-combobox__toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  transform: translateY(-50%);
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+}
+
+.ra-city-combobox__toggle:hover,
+.ra-city-combobox__toggle:focus-visible {
+  background: #eef2ff;
+  color: var(--ra-blue-dark);
+}
+
+.ra-city-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid #d9e1ec;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+.ra-city-suggestion {
+  display: grid;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid #eef2f7;
+  background: #fff;
+  color: #1f2937;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ra-city-suggestion:last-child {
+  border-bottom: 0;
+}
+
+.ra-city-suggestion:hover,
+.ra-city-suggestion:focus-visible,
+.ra-city-suggestion.is-active {
+  background: #eff6ff;
+  color: var(--ra-blue-dark);
+}
+
+.ra-city-suggestion strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ra-city-suggestion span {
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 12px;
+}
+
 .ra-field textarea {
   min-height: 118px;
   resize: vertical;

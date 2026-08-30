@@ -82,6 +82,67 @@ let createdAccountThisAttempt = false;
 let selectedLogo = null;
 let logoObjectUrl = "";
 let formStarted = false;
+const cityAutocompleteState = new Map();
+
+const CITY_SUGGESTIONS = [
+  {city: "Pretoria", province: "Gauteng", country: "South Africa"},
+  {city: "Johannesburg", province: "Gauteng", country: "South Africa"},
+  {city: "Soweto", province: "Gauteng", country: "South Africa"},
+  {city: "Midrand", province: "Gauteng", country: "South Africa"},
+  {city: "Sandton", province: "Gauteng", country: "South Africa"},
+  {city: "Benoni", province: "Gauteng", country: "South Africa"},
+  {city: "Boksburg", province: "Gauteng", country: "South Africa"},
+  {city: "Germiston", province: "Gauteng", country: "South Africa"},
+  {city: "Roodepoort", province: "Gauteng", country: "South Africa"},
+  {city: "Vereeniging", province: "Gauteng", country: "South Africa"},
+  {city: "Bloemfontein", province: "Free State", country: "South Africa"},
+  {city: "Welkom", province: "Free State", country: "South Africa"},
+  {city: "Bethlehem", province: "Free State", country: "South Africa"},
+  {city: "Kroonstad", province: "Free State", country: "South Africa"},
+  {city: "Durban", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Pietermaritzburg", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Richards Bay", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Newcastle", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Empangeni", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Port Shepstone", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Cape Town", province: "Western Cape", country: "South Africa"},
+  {city: "Bellville", province: "Western Cape", country: "South Africa"},
+  {city: "Paarl", province: "Western Cape", country: "South Africa"},
+  {city: "Stellenbosch", province: "Western Cape", country: "South Africa"},
+  {city: "George", province: "Western Cape", country: "South Africa"},
+  {city: "Worcester", province: "Western Cape", country: "South Africa"},
+  {city: "East London", province: "Eastern Cape", country: "South Africa"},
+  {city: "Gqeberha", province: "Eastern Cape", country: "South Africa"},
+  {city: "Port Elizabeth", province: "Eastern Cape", country: "South Africa"},
+  {city: "Mthatha", province: "Eastern Cape", country: "South Africa"},
+  {city: "Komani", province: "Eastern Cape", country: "South Africa"},
+  {city: "Queenstown", province: "Eastern Cape", country: "South Africa"},
+  {city: "Bhisho", province: "Eastern Cape", country: "South Africa"},
+  {city: "Polokwane", province: "Limpopo", country: "South Africa"},
+  {city: "Tzaneen", province: "Limpopo", country: "South Africa"},
+  {city: "Thohoyandou", province: "Limpopo", country: "South Africa"},
+  {city: "Mokopane", province: "Limpopo", country: "South Africa"},
+  {city: "Mbombela", province: "Mpumalanga", country: "South Africa"},
+  {city: "Nelspruit", province: "Mpumalanga", country: "South Africa"},
+  {city: "Witbank", province: "Mpumalanga", country: "South Africa"},
+  {city: "Emalahleni", province: "Mpumalanga", country: "South Africa"},
+  {city: "Secunda", province: "Mpumalanga", country: "South Africa"},
+  {city: "Kimberley", province: "Northern Cape", country: "South Africa"},
+  {city: "Upington", province: "Northern Cape", country: "South Africa"},
+  {city: "Kuruman", province: "Northern Cape", country: "South Africa"},
+  {city: "Rustenburg", province: "North West", country: "South Africa"},
+  {city: "Mahikeng", province: "North West", country: "South Africa"},
+  {city: "Klerksdorp", province: "North West", country: "South Africa"},
+  {city: "Potchefstroom", province: "North West", country: "South Africa"},
+  {city: "Mthatha", province: "Eastern Cape", country: "South Africa"},
+  {city: "Bloemhof", province: "North West", country: "South Africa"},
+  {city: "Gaborone", province: "South-East District", country: "Botswana"},
+  {city: "Lobatse", province: "South-East District", country: "Botswana"},
+  {city: "Windhoek", province: "Khomas", country: "Namibia"},
+  {city: "Maseru", province: "Maseru", country: "Lesotho"},
+  {city: "Mbabane", province: "Hhohho", country: "Eswatini"},
+  {city: "Harare", province: "Harare", country: "Zimbabwe"},
+];
 
 function track(eventName, parameters = {}) {
   if (typeof window.gtag === "function") {
@@ -109,6 +170,180 @@ function clearStatus() {
   formStatus.textContent = "";
   formStatus.className = "ra-form-status";
   formStatus.hidden = true;
+}
+
+function escapeSelectorValue(value) {
+  if (window.CSS?.escape) return window.CSS.escape(value);
+  return String(value).replace(/(["\\#.:,[\]>+~*=() ])/g, "\\$1");
+}
+
+function placeLabel(place) {
+  return [place.city, place.province, place.country].filter(Boolean).join(", ");
+}
+
+function queryCities(term) {
+  const normalized = String(term || "").trim().toLowerCase();
+  if (!normalized) return [];
+  return CITY_SUGGESTIONS
+    .map((place) => ({
+      ...place,
+      haystack: `${place.city} ${place.province} ${place.country}`.toLowerCase(),
+    }))
+    .filter((place) => place.haystack.includes(normalized))
+    .slice(0, 8);
+}
+
+function closeCitySuggestions(input) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state) return;
+  state.panel.hidden = true;
+  state.panel.replaceChildren();
+  state.activeIndex = -1;
+  input.setAttribute("aria-expanded", "false");
+}
+
+function applyCitySuggestion(input, suggestion) {
+  const state = cityAutocompleteState.get(input.id);
+  const scope = state?.scope || "main";
+  input.value = suggestion.city;
+
+  const provinceField = document.getElementById(scope === "billing" ? "billingProvince" : "province");
+  const countryField = document.getElementById(scope === "billing" ? "billingCountry" : "country");
+
+  if (provinceField) {
+    if (provinceField.tagName === "SELECT") {
+      const option = Array.from(provinceField.options).find((item) => item.value === suggestion.province || item.text === suggestion.province);
+      provinceField.value = option ? option.value : suggestion.province;
+    } else {
+      provinceField.value = suggestion.province;
+    }
+    clearFieldError(provinceField);
+  }
+
+  if (countryField) {
+    if (countryField.tagName === "SELECT") {
+      const option = Array.from(countryField.options).find((item) => item.value === suggestion.country || item.text === suggestion.country);
+      if (option) countryField.value = option.value;
+    } else {
+      countryField.value = suggestion.country;
+    }
+    clearFieldError(countryField);
+  }
+
+  clearFieldError(input);
+  closeCitySuggestions(input);
+}
+
+function renderCitySuggestions(input, suggestions) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state) return;
+  state.suggestions = suggestions;
+  state.activeIndex = suggestions.length ? 0 : -1;
+  state.panel.replaceChildren();
+
+  if (!suggestions.length) {
+    closeCitySuggestions(input);
+    return;
+  }
+
+  suggestions.forEach((suggestion, index) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = "ra-city-suggestion";
+    if (index === state.activeIndex) option.classList.add("is-active");
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", index === state.activeIndex ? "true" : "false");
+    option.innerHTML = `<strong>${suggestion.city}</strong><span>${placeLabel(suggestion)}</span>`;
+    option.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+      applyCitySuggestion(input, suggestion);
+    });
+    option.addEventListener("mouseenter", () => {
+      state.activeIndex = index;
+      Array.from(state.panel.children).forEach((child, childIndex) => {
+        child.classList.toggle("is-active", childIndex === index);
+        child.setAttribute("aria-selected", childIndex === index ? "true" : "false");
+      });
+    });
+    state.panel.append(option);
+  });
+
+  state.panel.hidden = false;
+  input.setAttribute("aria-expanded", "true");
+}
+
+function syncCitySuggestions(input, openOnEmpty = false) {
+  const term = input.value.trim();
+  const suggestions = openOnEmpty && !term ? CITY_SUGGESTIONS.slice(0, 8) : queryCities(term);
+  renderCitySuggestions(input, suggestions);
+}
+
+function moveCitySuggestion(input, direction) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state?.suggestions?.length) return;
+  state.activeIndex = (state.activeIndex + direction + state.suggestions.length) % state.suggestions.length;
+  Array.from(state.panel.children).forEach((child, childIndex) => {
+    child.classList.toggle("is-active", childIndex === state.activeIndex);
+    child.setAttribute("aria-selected", childIndex === state.activeIndex ? "true" : "false");
+  });
+}
+
+function setupCityAutocomplete(inputId, options = {}) {
+  const input = document.getElementById(inputId);
+  if (!(input instanceof HTMLInputElement)) return;
+
+  const panel = document.getElementById(options.panelId);
+  const toggle = document.querySelector(`[data-city-toggle="${escapeSelectorValue(inputId)}"]`);
+  if (!panel || !toggle) return;
+
+  cityAutocompleteState.set(inputId, {
+    panel,
+    toggle,
+    scope: options.scope || "main",
+    suggestions: [],
+    activeIndex: -1,
+  });
+
+  input.addEventListener("input", () => syncCitySuggestions(input));
+  input.addEventListener("focus", () => {
+    if (input.value.trim().length >= 2) syncCitySuggestions(input);
+  });
+  input.addEventListener("keydown", (event) => {
+    const state = cityAutocompleteState.get(inputId);
+    if (!state) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (state.panel.hidden) {
+        syncCitySuggestions(input, true);
+        return;
+      }
+      moveCitySuggestion(input, 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!state.panel.hidden) moveCitySuggestion(input, -1);
+    } else if (event.key === "Enter") {
+      if (!state.panel.hidden && state.suggestions[state.activeIndex]) {
+        event.preventDefault();
+        applyCitySuggestion(input, state.suggestions[state.activeIndex]);
+      }
+    } else if (event.key === "Escape") {
+      closeCitySuggestions(input);
+    }
+  });
+  input.addEventListener("blur", () => {
+    window.setTimeout(() => closeCitySuggestions(input), 120);
+  });
+
+  toggle.addEventListener("click", () => {
+    const state = cityAutocompleteState.get(inputId);
+    if (!state) return;
+    if (state.panel.hidden) {
+      input.focus();
+      syncCitySuggestions(input, true);
+    } else {
+      closeCitySuggestions(input);
+    }
+  });
 }
 
 function setAccountContext(message, link) {
@@ -690,3 +925,5 @@ syncSoleProprietorState();
 syncBillingAddressState();
 updateAddressMapLink();
 updatePasswordRules();
+setupCityAutocomplete("city", {panelId: "citySuggestions", scope: "main"});
+setupCityAutocomplete("billingCity", {panelId: "billingCitySuggestions", scope: "billing"});

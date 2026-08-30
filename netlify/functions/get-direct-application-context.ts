@@ -9,8 +9,16 @@ import {
   corsHeaders,
   json,
 } from "./_applicationUtils";
+import {countryNameForCode, normalizeCountryCode} from "./_countryOptions";
 
 const MAX_CV_CHOICES = 50;
+const GENDER_OPTIONS = new Set([
+  "Female",
+  "Male",
+  "Non-binary",
+  "Another gender",
+  "Prefer not to say",
+]);
 const EMPLOYMENT_EQUITY_OPTIONS = new Set([
   "Black African",
   "Coloured",
@@ -30,7 +38,7 @@ const OFFICIAL_SOUTH_AFRICAN_LANGUAGES = new Set([
   "siSwati",
   "Tshivenda",
   "Xitsonga",
-  "South African Sign Language (SASL)",
+  "South African Sign Language",
 ]);
 
 function homeLanguages(value: unknown) {
@@ -45,6 +53,11 @@ function homeLanguages(value: unknown) {
 function employmentEquitySelfIdentification(value: unknown) {
   const selection = cleanText(value, 80);
   return EMPLOYMENT_EQUITY_OPTIONS.has(selection) ? selection : "";
+}
+
+function genderSelection(value: unknown) {
+  const selection = cleanText(value, 80);
+  return GENDER_OPTIONS.has(selection) ? selection : "";
 }
 
 function timestampValue(value: any) {
@@ -108,6 +121,7 @@ export const handler: Handler = async (event) => {
     ]);
 
     const profileData = profileSnap.exists ? profileSnap.data() || {} : {};
+    const nationalityCode = normalizeCountryCode(profileData.nationalityCode);
     const profile = {
       name: cleanText(profileData.name, 120),
       email: cleanText(profileData.email, 180),
@@ -115,6 +129,11 @@ export const handler: Handler = async (event) => {
       location: cleanText(profileData.location, 160),
       degreeType: cleanText(profileData.degreeType || profileData.highestQualification, 160),
       highestQualification: cleanText(profileData.highestQualification, 160),
+      nationality: nationalityCode
+        ? countryNameForCode(nationalityCode)
+        : cleanText(profileData.nationality, 100),
+      nationalityCode,
+      gender: genderSelection(profileData.gender),
       homeLanguages: homeLanguages(profileData.homeLanguages),
       ethnicity: employmentEquitySelfIdentification(profileData.ethnicity),
     };

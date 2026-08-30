@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Partner API Portal | Career Unified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./portal.css" />
+  </head>
+  <body>
+    <main class="portal-shell">
+      <header class="portal-header">
+        <a href="/api/" class="brand">Career Unified <span>Partner API</span></a>
+        <nav aria-label="Partner API navigation">
+          <a href="/api/">Documentation</a>
+          <a href="/api/status.html">Status</a>
+          <a href="/api/partner-governance.html">Policies</a>
+        </nav>
+        <button id="signInButton" type="button">Sign in</button>
+      </header>
+
+      <section class="portal-intro">
+        <p class="eyebrow">Approved organisations</p>
+        <h1>Your API workspace</h1>
+        <p>Review credentials, usage, alerts, invoices, and planned rotations in one place.</p>
+        <span id="identity">Sign in with your approved recruiter account.</span>
+      </section>
+
+      <div id="notice" class="notice" role="status">Waiting for authentication.</div>
+      <section id="workspace" hidden>
+        <div class="summary" id="summary"></div>
+        <div class="client-list" id="clientList"></div>
+      </section>
+
+      <dialog id="secretDialog">
+        <form method="dialog">
+          <button class="dialog-close" value="close" aria-label="Close">&times;</button>
+          <p class="eyebrow">Secret shown once</p>
+          <h2>Store the new key now</h2>
+          <p>The previous key remains active until the displayed grace period ends.</p>
+          <pre id="rotatedKey"></pre>
+          <button id="copyRotatedKey" type="button">Copy key</button>
+        </form>
+      </dialog>
+    </main>
+    <script type="module" src="./portal.js"></script>
+  </body>
+</html>

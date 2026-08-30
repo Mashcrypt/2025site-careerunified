@@ -1663,7 +1663,14 @@ export default function App() {
       <nav className="main-nav">
         {/* DESKTOP VIEW */}
         <a href="/" className="logo desktop-nav">
-          Career Unified
+          <img
+            className="main-nav-brand-mark"
+            src="/android-chrome-192x192.png"
+            alt=""
+            width={34}
+            height={34}
+          />
+          <span>Career Unified</span>
         </a>
 
         <div className="nav-links desktop-nav">
@@ -1693,7 +1700,14 @@ export default function App() {
         {/* MOBILE VIEW */}
         <div className="mobile-nav">
           <a href="/" className="mobile-logo">
-            Career Unified
+            <img
+              className="main-nav-brand-mark"
+              src="/android-chrome-192x192.png"
+              alt=""
+              width={30}
+              height={30}
+            />
+            <span>Career Unified</span>
           </a>
 
           <div className="mobile-nav-right">

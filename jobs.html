@@ -219,6 +219,119 @@
       gap: 12px;
     }
 
+    .job-pagination {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      align-items: center;
+      gap: 14px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      background: #f8fbff;
+    }
+
+    .job-pagination[hidden] { display: none; }
+
+    .job-pagination-center {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .job-pagination-pages {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    .job-pagination-button,
+    .job-pagination-page {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 40px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      font: 600 0.85rem/1 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .job-pagination-button:hover:not(:disabled),
+    .job-pagination-page:hover:not([aria-current="page"]) {
+      border-color: #2563eb;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .job-pagination-page[aria-current="page"] {
+      border-color: #2563eb;
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .job-pagination-button:focus-visible,
+    .job-pagination-page:focus-visible,
+    .job-pagination-size:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.2);
+      outline-offset: 2px;
+    }
+
+    .job-pagination-button:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .job-pagination-button svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.25;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .job-pagination-ellipsis {
+      min-width: 22px;
+      color: #64748b;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .job-pagination-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    .job-pagination-size {
+      height: 34px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e293b;
+      font: 600 0.78rem/1 'Poppins', sans-serif;
+      cursor: pointer;
+    }
+
+    .job-pagination-total strong { color: #1e3a8a; }
+    .job-pagination-mobile-status { display: none; color: #1e3a8a; font-size: 0.85rem; font-weight: 600; }
+
     .job-card {
       background: #fff;
       border-radius: 10px;
@@ -558,10 +671,10 @@
       flex-shrink: 0;
     }
 
-    .apply-btn { background: #16a34a; }
-    .apply-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
-    .ai-tailor-btn { background: #16a34a; }
-    .ai-tailor-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+    .apply-btn { background: #2563eb; }
+    .apply-btn:hover { background: #1e40af; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+    .ai-tailor-btn { background: #2563eb; }
+    .ai-tailor-btn:hover { background: #1e40af; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
 
     .apply-modal-backdrop {
       position: fixed;
@@ -751,11 +864,21 @@
       .job-card p     { font-size: 0.85rem; }
       .jobs-preview h2 { font-size: 1.3rem; }
       .jobs-preview p  { font-size: 0.9rem; }
+      .job-pagination { grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 8px; padding: 12px 10px; }
+      .job-pagination-button { width: 44px; height: 44px; flex-basis: 44px; }
       .close-preview-btn svg { width: 24px; height: 24px; }
       .footer-links   { flex-direction: column; gap: 8px; }
       .footer-links a { font-size: 14px; }
       .scroll-actions { right: 14px; bottom: 16px; gap: 8px; }
       .scroll-btn { width: 42px; height: 42px; }
+    }
+
+    @media (max-width: 600px) {
+      .job-pagination-page,
+      .job-pagination-ellipsis { display: none; }
+      .job-pagination-mobile-status { display: inline; }
+      .job-pagination-meta { gap: 6px; font-size: 0.72rem; }
+      .job-pagination-size { height: 36px; font-size: 0.75rem; }
     }
 
     @media (max-width: 400px) {
@@ -1005,6 +1128,27 @@
       <ul class="jobs-list" id="jobList" aria-label="Job listings" aria-live="polite">
         <!-- SSR_JOB_LIST -->
       </ul>
+      <nav class="job-pagination" id="jobPagination" aria-label="Job results pages" hidden>
+        <button class="job-pagination-button" id="jobPagePrevious" type="button" aria-label="Previous page" title="Previous page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="job-pagination-center">
+          <div class="job-pagination-pages" id="jobPaginationPages"></div>
+          <span class="job-pagination-mobile-status" id="jobPaginationMobileStatus" aria-live="polite"></span>
+          <div class="job-pagination-meta">
+            <label for="jobsPerPage">Results per page:</label>
+            <select class="job-pagination-size" id="jobsPerPage" aria-label="Results per page">
+              <option value="12" selected>12</option>
+              <option value="24">24</option>
+              <option value="48">48</option>
+            </select>
+            <span class="job-pagination-total">Total: <strong id="jobPaginationTotal">0</strong></span>
+          </div>
+        </div>
+        <button class="job-pagination-button" id="jobPageNext" type="button" aria-label="Next page" title="Next page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </nav>
     </div>
 
     <!-- Right: Job Preview -->
@@ -1038,10 +1182,10 @@
     <nav class="footer-grid" aria-label="Footer navigation">
       <div class="footer-column"><h3>Opportunities</h3><a href="/jobs">Jobs</a><a href="/bursaries">Bursaries</a><a href="/varsity">Varsities</a><a href="saved-items.html">Saved Items</a></div>
       <div class="footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/cv-tips">CV Tips</a><a href="/cv-tips#interview-prep">Interview Prep</a><a href="/z83-filler">Z83 Filler</a></div>
-      <div class="footer-column"><h3>Company</h3><a href="/about-us">About Us</a><a href="/contact-us">Contact Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/paia-manual">PAIA Manual</a></div>
+      <div class="footer-column"><h3>Company</h3><a href="/about-us">About Us</a><a href="/contact-us">Contact Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/paia-manual">PAIA</a></div>
     </nav>
   </div>
-  <div class="footer-links"><a href="/about-us">About Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/paia-manual">PAIA Manual</a><a href="/contact-us">Contact Us</a></div>
+  <div class="footer-links"><a href="/about-us">About Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/paia-manual">PAIA</a><a href="/contact-us">Contact Us</a></div>
   <div class="footer-socials">
     <a href="https://whatsapp.com/channel/0029Vb7j7C7GJP89qB7k6e3i" target="_blank" aria-label="WhatsApp Channel"><i class="fab fa-whatsapp"></i></a>
     <a href="https://www.linkedin.com/company/career-unified" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -1072,10 +1216,19 @@
   <script>
     const jobList    = document.getElementById('jobList');
     const jobPreview = document.getElementById('jobPreview');
+    const jobPagination = document.getElementById('jobPagination');
+    const jobPaginationPages = document.getElementById('jobPaginationPages');
+    const jobPaginationTotal = document.getElementById('jobPaginationTotal');
+    const jobPaginationMobileStatus = document.getElementById('jobPaginationMobileStatus');
+    const jobPagePrevious = document.getElementById('jobPagePrevious');
+    const jobPageNext = document.getElementById('jobPageNext');
+    const jobsPerPageSelect = document.getElementById('jobsPerPage');
 
     let jobs          = [];
     let selectedIndex = null;
     let filteredJobs  = [];
+    let currentPage   = 1;
+    let jobsPerPage   = Number(jobsPerPageSelect?.value) || 12;
     let openedFromURL = false;
     let currentPreviewJob = null;
     let searchTrackingTimer = null;
@@ -1207,6 +1360,8 @@
         sessionStorage.setItem(JOBS_VIEW_STATE_KEY, JSON.stringify({
           search: document.getElementById('jobSearch')?.value || '',
           category: document.getElementById('categoryFilter')?.value || 'all',
+          page: currentPage,
+          jobsPerPage,
           scrollY: window.scrollY || document.documentElement.scrollTop || 0
         }));
       } catch {}
@@ -1221,6 +1376,13 @@
         const category = document.getElementById('categoryFilter');
         if (restoreSearch && search && typeof state.search === 'string') search.value = state.search;
         if (restoreCategory && category && typeof state.category === 'string') category.value = state.category;
+        const restoredPageSize = Number(state.jobsPerPage);
+        if ([12, 24, 48].includes(restoredPageSize)) {
+          jobsPerPage = restoredPageSize;
+          if (jobsPerPageSelect) jobsPerPageSelect.value = String(restoredPageSize);
+        }
+        const restoredPage = Number(state.page);
+        currentPage = Number.isInteger(restoredPage) && restoredPage > 0 ? restoredPage : 1;
       } catch {}
     }
 
@@ -1732,6 +1894,72 @@
       }
     }
 
+    function getPaginationItems(totalPages) {
+      if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+      }
+      if (currentPage <= 4) return [1, 2, 3, 4, 5, 'ellipsis-end', totalPages];
+      if (currentPage >= totalPages - 3) {
+        return [1, 'ellipsis-start', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      }
+      return [1, 'ellipsis-start', currentPage - 1, currentPage, currentPage + 1, 'ellipsis-end', totalPages];
+    }
+
+    function renderJobPagination() {
+      const totalResults = filteredJobs.length;
+      const totalPages = Math.max(1, Math.ceil(totalResults / jobsPerPage));
+      currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+
+      if (jobPagination) jobPagination.hidden = totalResults === 0;
+      if (jobPaginationTotal) jobPaginationTotal.textContent = String(totalResults);
+      if (jobPaginationMobileStatus) {
+        jobPaginationMobileStatus.textContent = `Page ${currentPage} of ${totalPages}`;
+      }
+      if (jobPagePrevious) jobPagePrevious.disabled = currentPage === 1;
+      if (jobPageNext) jobPageNext.disabled = currentPage === totalPages;
+      if (!jobPaginationPages) return;
+
+      jobPaginationPages.innerHTML = '';
+      getPaginationItems(totalPages).forEach(item => {
+        if (typeof item !== 'number') {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'job-pagination-ellipsis';
+          ellipsis.textContent = '…';
+          ellipsis.setAttribute('aria-hidden', 'true');
+          jobPaginationPages.appendChild(ellipsis);
+          return;
+        }
+
+        const button = document.createElement('button');
+        button.className = 'job-pagination-page';
+        button.type = 'button';
+        button.textContent = String(item);
+        button.setAttribute('aria-label', `Page ${item}`);
+        if (item === currentPage) button.setAttribute('aria-current', 'page');
+        button.addEventListener('click', () => changeJobsPage(item));
+        jobPaginationPages.appendChild(button);
+      });
+    }
+
+    function scrollToJobResults() {
+      const jobsLeft = document.querySelector('.jobs-left');
+      if (window.innerWidth > 900 && jobsLeft) {
+        jobsLeft.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      document.querySelector('.job-results-summary')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function changeJobsPage(page) {
+      const totalPages = Math.max(1, Math.ceil(filteredJobs.length / jobsPerPage));
+      const nextPage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+      if (nextPage === currentPage) return;
+      currentPage = nextPage;
+      renderJobs();
+      saveJobsViewState();
+      requestAnimationFrame(scrollToJobResults);
+    }
+
     /* ── RENDER ── */
     function renderJobs() {
       const searchTerm = (document.getElementById('jobSearch')?.value || '').toLowerCase();
@@ -1758,6 +1986,7 @@
       jobList.innerHTML = '';
       const resultCount = document.getElementById('jobResultCount');
       if (resultCount) resultCount.textContent = String(filteredJobs.length);
+      renderJobPagination();
 
       if (filteredJobs.length === 0) {
         jobList.innerHTML = `
@@ -1771,7 +2000,11 @@
         return;
       }
 
-      filteredJobs.forEach((job, index) => {
+      const pageStart = (currentPage - 1) * jobsPerPage;
+      const visibleJobs = filteredJobs.slice(pageStart, pageStart + jobsPerPage);
+
+      visibleJobs.forEach((job, pageIndex) => {
+        const index = pageStart + pageIndex;
         const li      = document.createElement('li');
         li.className  = 'job-card';
         li.dataset.id      = job._id;
@@ -1861,6 +2094,7 @@
     function openJob(job) {
       history.replaceState({ careerUnifiedView: 'job' }, '', `/jobs/${job.slug}`);
       selectedIndex = filteredJobs.findIndex(j => j._id === job._id);
+      if (selectedIndex >= 0) currentPage = Math.floor(selectedIndex / jobsPerPage) + 1;
       showPreview(job, 'left');
       const logoUrl = getJobLogo(job) || 'https://careerunified.com/android-chrome-512x512.png';
       injectMeta(job, logoUrl);
@@ -2041,6 +2275,7 @@
 
     /* ── FILTER HOOKS ── */
     document.getElementById('jobSearch')?.addEventListener('input', event => {
+      currentPage = 1;
       renderJobs();
       clearTimeout(searchTrackingTimer);
       searchTrackingTimer = setTimeout(() => {
@@ -2054,6 +2289,7 @@
       }, 800);
     });
     document.getElementById('categoryFilter')?.addEventListener('change', event => {
+      currentPage = 1;
       renderJobs();
       trackCroEvent('job_filter', {
         category: event.target.value,
@@ -2061,10 +2297,23 @@
       });
     });
     document.getElementById('sortBtn')?.addEventListener('click', () => {
+      currentPage = 1;
       filteredJobs.sort((a, b) => getDeadlineSortTime(a) - getDeadlineSortTime(b));
       jobs = filteredJobs.slice();
       renderJobs();
       trackCroEvent('job_sort', { sort_by: 'deadline' });
+    });
+
+    jobPagePrevious?.addEventListener('click', () => changeJobsPage(currentPage - 1));
+    jobPageNext?.addEventListener('click', () => changeJobsPage(currentPage + 1));
+    jobsPerPageSelect?.addEventListener('change', event => {
+      const nextPageSize = Number(event.target.value);
+      if (![12, 24, 48].includes(nextPageSize)) return;
+      jobsPerPage = nextPageSize;
+      currentPage = 1;
+      renderJobs();
+      saveJobsViewState();
+      requestAnimationFrame(scrollToJobResults);
     });
 
     document.querySelector('.footer-alert-form')?.addEventListener('submit', () => {
@@ -2105,6 +2354,7 @@
     function goToNextJob() {
       if (selectedIndex === null || selectedIndex >= filteredJobs.length - 1) return;
       selectedIndex++;
+      currentPage = Math.floor(selectedIndex / jobsPerPage) + 1;
       history.replaceState({ careerUnifiedView: 'job' }, '', `/jobs/${filteredJobs[selectedIndex].slug}`);
       showPreview(filteredJobs[selectedIndex], 'left');
       renderJobs();
@@ -2113,6 +2363,7 @@
     function goToPreviousJob() {
       if (selectedIndex === null || selectedIndex <= 0) return;
       selectedIndex--;
+      currentPage = Math.floor(selectedIndex / jobsPerPage) + 1;
       history.replaceState({ careerUnifiedView: 'job' }, '', `/jobs/${filteredJobs[selectedIndex].slug}`);
       showPreview(filteredJobs[selectedIndex], 'right');
       renderJobs();

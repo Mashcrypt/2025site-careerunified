@@ -96,19 +96,45 @@ export const handler: Handler = async (event) => {
     }
 
     const candidate = application.candidateSnapshot || {};
-    const candidateEmail = cleanText(candidate.email, 254).toLowerCase();
-    if (!isEmail(candidateEmail)) {
-      throw new ApplicationError(400, "This candidate does not have a valid email address.");
+    const candidateId = cleanText(application.candidateId, 180);
+    let candidateEmail = cleanText(candidate.email, 254).toLowerCase();
+
+    if (!isEmail(candidateEmail) && candidateId) {
+      const [authResult, profileResult] = await Promise.allSettled([
+        admin.auth().getUser(candidateId),
+        db.doc(`users/${candidateId}`).get(),
+      ]);
+      const authEmail = authResult.status === "fulfilled"
+        ? cleanText(authResult.value?.email, 254).toLowerCase()
+        : "";
+      const profileEmail = profileResult.status === "fulfilled"
+        ? cleanText(profileResult.value?.data()?.email, 254).toLowerCase()
+        : "";
+      candidateEmail = isEmail(authEmail) ? authEmail : profileEmail;
+
+      if (isEmail(candidateEmail)) {
+        await applicationRef.update({
+          "candidateSnapshot.email": candidateEmail,
+          updatedAt: admin.firestore.Timestamp.now(),
+        });
+      }
     }
 
-    const candidateId = cleanText(application.candidateId, 180);
+    if (!isEmail(candidateEmail)) {
+      throw new ApplicationError(
+        400,
+        "This candidate does not have a valid account email. Ask them to update their Career Unified profile.",
+      );
+    }
+
     if (candidateId) {
+      const isApplicationUpdate = APPLICATION_UPDATE_TYPES.has(type);
       const notificationDecision = await userAllowsNotification({
         admin,
         userId: candidateId,
         channel: "email",
-        updateType: APPLICATION_UPDATE_TYPES.has(type) ? "applicationUpdates" : "recruiterMessages",
-        allowWhenMissing: true,
+        updateType: isApplicationUpdate ? "applicationUpdates" : "recruiterMessages",
+        allowWhenMissing: isApplicationUpdate,
       });
       if (!notificationDecision.allowed) {
         throw new ApplicationError(

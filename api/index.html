@@ -1,259 +1,453 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrate Career Unified jobs, bursaries, Direct Apply applications, and recruitment webhooks with the Career Unified Partner API.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://careerunified.com/api/">
-  <title>Career Unified API Documentation</title>
-  <link rel="icon" href="../favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="./docs.css">
-</head>
-<body>
-  <a class="skip-link" href="#docs-content">Skip to documentation</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Integrate Career Unified jobs, bursaries, Direct Apply applications, and recruitment webhooks with the Career Unified Partner API."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://careerunified.com/api/" />
+    <title>Career Unified API Documentation</title>
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./docs.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#docs-content">Skip to documentation</a>
 
-  <header class="docs-header">
-    <div class="docs-brand">
-      <button class="icon-button mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docsSidebar" aria-expanded="false">
-        <i class="fa-solid fa-bars" aria-hidden="true"></i>
-      </button>
-      <a class="brand-link" href="./" aria-label="Career Unified API documentation home">
-        <img src="../android-chrome-192x192.png" alt="" width="30" height="30">
-        <span>Career Unified</span>
-        <span class="brand-divider" aria-hidden="true"></span>
-        <span class="brand-product">Developers</span>
-      </a>
-    </div>
-
-    <nav class="header-primary-nav" aria-label="Documentation sections">
-      <a href="#introduction" data-doc-link="introduction">Docs</a>
-      <a href="#quickstart" data-doc-link="quickstart">Guides</a>
-      <a href="#list-jobs" data-doc-link="list-jobs">API Reference</a>
-    </nav>
-
-    <button class="docs-search-trigger" id="searchTrigger" type="button" aria-haspopup="dialog">
-      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      <span>Search documentation</span>
-      <kbd>Ctrl K</kbd>
-    </button>
-
-    <nav class="header-actions" aria-label="Documentation actions">
-      <a class="status-link" href="./#status" data-doc-link="status">
-        <span class="status-dot" aria-hidden="true"></span>
-        API live
-      </a>
-      <a class="header-link" href="../contact-us.html">Support</a>
-      <a class="header-button" href="./openapi.yaml" target="_blank" rel="noopener">
-        OpenAPI
-        <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-      </a>
-    </nav>
-  </header>
-
-  <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
-
-  <div class="docs-layout">
-    <aside class="docs-sidebar" id="docsSidebar" aria-label="Documentation navigation">
-      <div class="version-select" aria-label="Current API version">
-        <span class="version-mark">v1</span>
-        <span>
-          <strong>Partner API</strong>
-          <small>Current version</small>
-        </span>
-        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    <header class="docs-header">
+      <div class="docs-brand">
+        <button
+          class="icon-button mobile-menu-button"
+          id="mobileMenuButton"
+          type="button"
+          aria-label="Open documentation navigation"
+          aria-controls="docsSidebar"
+          aria-expanded="false"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+        <a class="brand-link" href="./" aria-label="Career Unified API documentation home">
+          <img src="../android-chrome-192x192.png" alt="" width="30" height="30" />
+          <span>Career Unified</span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand-product">Developers</span>
+        </a>
       </div>
 
-      <nav class="sidebar-nav">
-        <section class="nav-group" aria-labelledby="nav-start">
-          <h2 id="nav-start">Get started</h2>
-          <a href="#introduction" data-doc-link="introduction" class="is-active">
-            <i class="fa-regular fa-compass" aria-hidden="true"></i>
-            Introduction
-          </a>
-          <a href="#quickstart" data-doc-link="quickstart">
-            <i class="fa-solid fa-bolt" aria-hidden="true"></i>
-            Quickstart
-          </a>
-          <a href="#authentication" data-doc-link="authentication">
-            <i class="fa-solid fa-key" aria-hidden="true"></i>
-            Authentication
-          </a>
-        </section>
-
-        <section class="nav-group" aria-labelledby="nav-guides">
-          <h2 id="nav-guides">Guides</h2>
-          <a href="#pagination" data-doc-link="pagination">
-            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-            Pagination
-          </a>
-          <a href="#webhooks" data-doc-link="webhooks">
-            <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
-            Webhooks
-          </a>
-          <a href="#errors" data-doc-link="errors">
-            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-            Errors and limits
-          </a>
-        </section>
-
-        <section class="nav-group" aria-labelledby="nav-reference">
-          <h2 id="nav-reference">API reference</h2>
-          <details open>
-            <summary>
-              <span><i class="fa-solid fa-briefcase" aria-hidden="true"></i> Jobs</span>
-              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-            </summary>
-            <div class="nav-subgroup">
-              <a href="#list-jobs" data-doc-link="list-jobs"><span class="method method-get">GET</span> List jobs</a>
-              <a href="#get-job" data-doc-link="get-job"><span class="method method-get">GET</span> Retrieve a job</a>
-              <a href="#create-job" data-doc-link="create-job"><span class="method method-post">POST</span> Create a job</a>
-              <a href="#update-job" data-doc-link="update-job"><span class="method method-patch">PATCH</span> Update a job</a>
-              <a href="#close-job" data-doc-link="close-job"><span class="method method-post">POST</span> Close a job</a>
-            </div>
-          </details>
-          <details open>
-            <summary>
-              <span><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Applications</span>
-              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-            </summary>
-            <div class="nav-subgroup">
-              <a href="#list-applications" data-doc-link="list-applications"><span class="method method-get">GET</span> List applications</a>
-              <a href="#get-application" data-doc-link="get-application"><span class="method method-get">GET</span> Retrieve application</a>
-              <a href="#update-application" data-doc-link="update-application"><span class="method method-patch">PATCH</span> Update stage</a>
-            </div>
-          </details>
-          <details>
-            <summary>
-              <span><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Bursaries</span>
-              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-            </summary>
-            <div class="nav-subgroup">
-              <a href="#list-bursaries" data-doc-link="list-bursaries"><span class="method method-get">GET</span> List bursaries</a>
-              <a href="#get-bursary" data-doc-link="get-bursary"><span class="method method-get">GET</span> Retrieve bursary</a>
-            </div>
-          </details>
-          <details>
-            <summary>
-              <span><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> Webhook endpoints</span>
-              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-            </summary>
-            <div class="nav-subgroup">
-              <a href="#create-webhook" data-doc-link="create-webhook"><span class="method method-post">POST</span> Create endpoint</a>
-              <a href="#list-webhooks" data-doc-link="list-webhooks"><span class="method method-get">GET</span> List endpoints</a>
-              <a href="#delete-webhook" data-doc-link="delete-webhook"><span class="method method-delete">DEL</span> Disable endpoint</a>
-            </div>
-          </details>
-        </section>
-
-        <section class="nav-group" aria-labelledby="nav-resources">
-          <h2 id="nav-resources">Resources</h2>
-          <a href="#status" data-doc-link="status">
-            <i class="fa-solid fa-signal" aria-hidden="true"></i>
-            API status
-          </a>
-          <a href="./openapi.yaml" target="_blank" rel="noopener">
-            <i class="fa-solid fa-code" aria-hidden="true"></i>
-            OpenAPI 3.1
-          </a>
-          <a href="./llms.txt" target="_blank" rel="noopener">
-            <i class="fa-solid fa-robot" aria-hidden="true"></i>
-            llms.txt
-          </a>
-        </section>
+      <nav class="header-primary-nav" aria-label="Documentation sections">
+        <a href="#introduction" data-doc-link="introduction">Docs</a>
+        <a href="#quickstart" data-doc-link="quickstart">Guides</a>
+        <a href="#list-jobs" data-doc-link="list-jobs">API Reference</a>
       </nav>
 
-      <div class="sidebar-footer">
-        <p>Need an integration reviewed?</p>
-        <a href="../contact-us.html">Contact Career Unified <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-      </div>
-    </aside>
+      <button class="docs-search-trigger" id="searchTrigger" type="button" aria-haspopup="dialog">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <span>Search documentation</span>
+        <kbd>Ctrl K</kbd>
+      </button>
 
-    <main class="docs-main" id="docs-content" tabindex="-1">
-      <article class="doc-page is-visible" data-doc-page="introduction" data-title="Introduction" data-description="Start building with the Career Unified Partner API.">
-        <div class="doc-grid landing-grid">
-          <div class="doc-copy">
-            <p class="eyebrow">CAREER UNIFIED PARTNER API</p>
-            <h1>Build connected recruitment experiences</h1>
-            <p class="lead">Publish opportunities, receive structured applications, and keep hiring systems in sync through one secure API built for South African recruitment.</p>
-            <div class="hero-actions">
-              <a class="primary-action" href="#quickstart" data-doc-link="quickstart">Make your first request <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-              <a class="secondary-action" href="./openapi.yaml" target="_blank" rel="noopener">View OpenAPI spec</a>
+      <nav class="header-actions" aria-label="Documentation actions">
+        <a class="header-link" href="../contact-us.html">Support</a>
+        <a class="header-link" href="./portal.html">Portal</a>
+        <a class="header-link" href="./admin.html">Admin</a>
+        <a class="header-button" href="./openapi.yaml" target="_blank" rel="noopener">
+          OpenAPI
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </header>
+
+    <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
+
+    <div class="docs-layout">
+      <aside class="docs-sidebar" id="docsSidebar" aria-label="Documentation navigation">
+        <div class="version-select" aria-label="Current API version">
+          <span class="version-mark">v1</span>
+          <span>
+            <strong>Partner API</strong>
+            <small>Current version</small>
+          </span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </div>
+
+        <nav class="sidebar-nav">
+          <section class="nav-group" aria-labelledby="nav-start">
+            <h2 id="nav-start">Get started</h2>
+            <a href="#introduction" data-doc-link="introduction" class="is-active">
+              <i class="fa-regular fa-compass" aria-hidden="true"></i>
+              Introduction
+            </a>
+            <a href="#quickstart" data-doc-link="quickstart">
+              <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+              Quickstart
+            </a>
+            <a href="#authentication" data-doc-link="authentication">
+              <i class="fa-solid fa-key" aria-hidden="true"></i>
+              Authentication
+            </a>
+          </section>
+
+          <section class="nav-group" aria-labelledby="nav-guides">
+            <h2 id="nav-guides">Guides</h2>
+            <a href="#pagination" data-doc-link="pagination">
+              <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+              Pagination
+            </a>
+            <a href="#webhooks" data-doc-link="webhooks">
+              <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
+              Webhooks
+            </a>
+            <a href="#errors" data-doc-link="errors">
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+              Errors and limits
+            </a>
+          </section>
+
+          <section class="nav-group" aria-labelledby="nav-reference">
+            <h2 id="nav-reference">API reference</h2>
+            <details open>
+              <summary>
+                <span><i class="fa-solid fa-briefcase" aria-hidden="true"></i> Jobs</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
+              <div class="nav-subgroup">
+                <a href="#list-jobs" data-doc-link="list-jobs"
+                  ><span class="method method-get">GET</span> List jobs</a
+                >
+                <a href="#get-job" data-doc-link="get-job"
+                  ><span class="method method-get">GET</span> Retrieve a job</a
+                >
+                <a href="#create-job" data-doc-link="create-job"
+                  ><span class="method method-post">POST</span> Create a job</a
+                >
+                <a href="#update-job" data-doc-link="update-job"
+                  ><span class="method method-patch">PATCH</span> Update a job</a
+                >
+                <a href="#close-job" data-doc-link="close-job"
+                  ><span class="method method-post">POST</span> Close a job</a
+                >
+              </div>
+            </details>
+            <details open>
+              <summary>
+                <span><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Applications</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
+              <div class="nav-subgroup">
+                <a href="#list-applications" data-doc-link="list-applications"
+                  ><span class="method method-get">GET</span> List applications</a
+                >
+                <a href="#get-application" data-doc-link="get-application"
+                  ><span class="method method-get">GET</span> Retrieve application</a
+                >
+                <a href="#update-application" data-doc-link="update-application"
+                  ><span class="method method-patch">PATCH</span> Update stage</a
+                >
+                <a href="#create-test-application" data-doc-link="create-test-application"
+                  ><span class="method method-post">POST</span> Sandbox application</a
+                >
+              </div>
+            </details>
+            <details>
+              <summary>
+                <span><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Bursaries</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
+              <div class="nav-subgroup">
+                <a href="#list-bursaries" data-doc-link="list-bursaries"
+                  ><span class="method method-get">GET</span> List bursaries</a
+                >
+                <a href="#get-bursary" data-doc-link="get-bursary"
+                  ><span class="method method-get">GET</span> Retrieve bursary</a
+                >
+              </div>
+            </details>
+            <details>
+              <summary>
+                <span
+                  ><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> Webhook
+                  endpoints</span
+                >
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
+              <div class="nav-subgroup">
+                <a href="#create-webhook" data-doc-link="create-webhook"
+                  ><span class="method method-post">POST</span> Create endpoint</a
+                >
+                <a href="#list-webhooks" data-doc-link="list-webhooks"
+                  ><span class="method method-get">GET</span> List endpoints</a
+                >
+                <a href="#webhook-deliveries" data-doc-link="webhook-deliveries"
+                  ><span class="method method-get">GET</span> Delivery history</a
+                >
+                <a href="#rotate-webhook" data-doc-link="rotate-webhook"
+                  ><span class="method method-post">POST</span> Rotate secret</a
+                >
+                <a href="#test-webhook" data-doc-link="test-webhook"
+                  ><span class="method method-post">POST</span> Send test</a
+                >
+                <a href="#replay-webhook" data-doc-link="replay-webhook"
+                  ><span class="method method-post">POST</span> Replay event</a
+                >
+                <a href="#delete-webhook" data-doc-link="delete-webhook"
+                  ><span class="method method-delete">DEL</span> Disable endpoint</a
+                >
+              </div>
+            </details>
+            <details>
+              <summary>
+                <span
+                  ><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Administration</span
+                >
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
+              <div class="nav-subgroup">
+                <a href="#list-api-clients" data-doc-link="list-api-clients"
+                  ><span class="method method-get">GET</span> List clients</a
+                >
+                <a href="#create-api-client" data-doc-link="create-api-client"
+                  ><span class="method method-post">POST</span> Create client</a
+                >
+                <a href="#get-api-client" data-doc-link="get-api-client"
+                  ><span class="method method-get">GET</span> Usage and alerts</a
+                >
+                <a href="#rotate-api-client" data-doc-link="rotate-api-client"
+                  ><span class="method method-post">POST</span> Rotate key</a
+                >
+                <a href="#download-api-usage" data-doc-link="download-api-usage"
+                  ><span class="method method-get">GET</span> Usage CSV</a
+                >
+                <a href="#revoke-api-client" data-doc-link="revoke-api-client"
+                  ><span class="method method-delete">DEL</span> Revoke client</a
+                >
+              </div>
+            </details>
+          </section>
+
+          <section class="nav-group" aria-labelledby="nav-resources">
+            <h2 id="nav-resources">Resources</h2>
+            <a href="#status" data-doc-link="status">
+              <i class="fa-solid fa-signal" aria-hidden="true"></i>
+              API status
+            </a>
+            <a href="./openapi.yaml" target="_blank" rel="noopener">
+              <i class="fa-solid fa-code" aria-hidden="true"></i>
+              OpenAPI 3.1
+            </a>
+            <a href="./llms.txt" target="_blank" rel="noopener">
+              <i class="fa-solid fa-robot" aria-hidden="true"></i>
+              llms.txt
+            </a>
+            <a href="./portal.html">
+              <i class="fa-solid fa-building-shield" aria-hidden="true"></i>
+              Partner portal
+            </a>
+            <a href="./status.html">
+              <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
+              System status
+            </a>
+            <a href="./partner-governance.html">
+              <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+              Partner governance
+            </a>
+          </section>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p>Need an integration reviewed?</p>
+          <a href="../contact-us.html"
+            >Contact Career Unified <i class="fa-solid fa-arrow-right" aria-hidden="true"></i
+          ></a>
+        </div>
+      </aside>
+
+      <main class="docs-main" id="docs-content" tabindex="-1">
+        <article
+          class="doc-page is-visible"
+          data-doc-page="introduction"
+          data-title="Introduction"
+          data-description="Start building with the Career Unified Partner API."
+        >
+          <div class="doc-grid landing-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">CAREER UNIFIED PARTNER API</p>
+              <h1>Build connected recruitment experiences</h1>
+              <p class="lead">
+                Publish opportunities, receive structured applications, and keep hiring systems in
+                sync through one secure API built for South African recruitment.
+              </p>
+              <div class="hero-actions">
+                <a class="primary-action" href="#quickstart" data-doc-link="quickstart"
+                  >Make your first request <i class="fa-solid fa-arrow-right" aria-hidden="true"></i
+                ></a>
+                <a class="secondary-action" href="./openapi.yaml" target="_blank" rel="noopener"
+                  >View OpenAPI spec</a
+                >
+              </div>
+
+              <section class="content-section" aria-labelledby="choose-path">
+                <h2 id="choose-path">Choose your integration path</h2>
+                <p>
+                  Start with the outcome you need. Each path leads to the relevant guide and
+                  reference.
+                </p>
+                <div class="path-list">
+                  <a href="#list-jobs" data-doc-link="list-jobs">
+                    <span class="path-icon"
+                      ><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i
+                    ></span>
+                    <span
+                      ><strong>Distribute opportunities</strong
+                      ><small
+                        >Read active jobs and bursaries for approved discovery experiences.</small
+                      ></span
+                    >
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+                  <a href="#create-job" data-doc-link="create-job">
+                    <span class="path-icon"
+                      ><i class="fa-solid fa-briefcase" aria-hidden="true"></i
+                    ></span>
+                    <span
+                      ><strong>Publish from your ATS</strong
+                      ><small
+                        >Create, update, and close vacancies without duplicate
+                        administration.</small
+                      ></span
+                    >
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+                  <a href="#list-applications" data-doc-link="list-applications">
+                    <span class="path-icon"
+                      ><i class="fa-solid fa-users" aria-hidden="true"></i
+                    ></span>
+                    <span
+                      ><strong>Synchronise applications</strong
+                      ><small
+                        >Retrieve Direct Apply submissions and keep candidate stages current.</small
+                      ></span
+                    >
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+                  <a href="#webhooks" data-doc-link="webhooks">
+                    <span class="path-icon"
+                      ><i class="fa-solid fa-wave-square" aria-hidden="true"></i
+                    ></span>
+                    <span
+                      ><strong>React to recruitment events</strong
+                      ><small
+                        >Receive signed notifications when jobs or applications change.</small
+                      ></span
+                    >
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+                </div>
+              </section>
+
+              <section class="content-section" aria-labelledby="core-principles">
+                <h2 id="core-principles">Designed for reliable partner workflows</h2>
+                <div class="principle-grid">
+                  <div>
+                    <i class="fa-solid fa-building-shield" aria-hidden="true"></i
+                    ><strong>Organisation isolation</strong>
+                    <p>Every key is linked to one approved recruiter organisation.</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i
+                    ><strong>Narrow permissions</strong>
+                    <p>Scopes grant only the actions each integration needs.</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-rotate" aria-hidden="true"></i
+                    ><strong>Safe retries</strong>
+                    <p>Idempotency prevents duplicate jobs and duplicate credit usage.</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-fingerprint" aria-hidden="true"></i
+                    ><strong>Signed events</strong>
+                    <p>Webhook signatures let your system verify every delivery.</p>
+                  </div>
+                </div>
+              </section>
             </div>
 
-            <div class="availability-note">
-              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-              <div><strong>Public discovery is available now.</strong><span>Partner write access is issued to approved recruiter organisations.</span></div>
-            </div>
-
-            <section class="content-section" aria-labelledby="choose-path">
-              <h2 id="choose-path">Choose your integration path</h2>
-              <p>Start with the outcome you need. Each path leads to the relevant guide and reference.</p>
-              <div class="path-list">
-                <a href="#list-jobs" data-doc-link="list-jobs">
-                  <span class="path-icon"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span>
-                  <span><strong>Distribute opportunities</strong><small>Read active jobs and bursaries for approved discovery experiences.</small></span>
-                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </a>
-                <a href="#create-job" data-doc-link="create-job">
-                  <span class="path-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
-                  <span><strong>Publish from your ATS</strong><small>Create, update, and close vacancies without duplicate administration.</small></span>
-                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </a>
-                <a href="#list-applications" data-doc-link="list-applications">
-                  <span class="path-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
-                  <span><strong>Synchronise applications</strong><small>Retrieve Direct Apply submissions and keep candidate stages current.</small></span>
-                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </a>
-                <a href="#webhooks" data-doc-link="webhooks">
-                  <span class="path-icon"><i class="fa-solid fa-wave-square" aria-hidden="true"></i></span>
-                  <span><strong>React to recruitment events</strong><small>Receive signed notifications when jobs or applications change.</small></span>
-                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </a>
-              </div>
-            </section>
-
-            <section class="content-section" aria-labelledby="core-principles">
-              <h2 id="core-principles">Designed for reliable partner workflows</h2>
-              <div class="principle-grid">
-                <div><i class="fa-solid fa-building-shield" aria-hidden="true"></i><strong>Organisation isolation</strong><p>Every key is linked to one approved recruiter organisation.</p></div>
-                <div><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><strong>Narrow permissions</strong><p>Scopes grant only the actions each integration needs.</p></div>
-                <div><i class="fa-solid fa-rotate" aria-hidden="true"></i><strong>Safe retries</strong><p>Idempotency prevents duplicate jobs and duplicate credit usage.</p></div>
-                <div><i class="fa-solid fa-fingerprint" aria-hidden="true"></i><strong>Signed events</strong><p>Webhook signatures let your system verify every delivery.</p></div>
-              </div>
-            </section>
-          </div>
-
-          <aside class="code-rail" aria-label="API request example">
-            <div class="code-window sticky-code">
-              <div class="code-window-header">
-                <span>List active jobs</span>
-                <button class="copy-button" type="button" data-copy-target="introCode"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button>
-              </div>
-              <div class="code-tabs" role="tablist" aria-label="Code language">
-                <button class="is-active" type="button" role="tab" aria-selected="true" data-code-tab="curl" data-code-group="intro">cURL</button>
-                <button type="button" role="tab" aria-selected="false" data-code-tab="node" data-code-group="intro">Node.js</button>
-                <button type="button" role="tab" aria-selected="false" data-code-tab="python" data-code-group="intro">Python</button>
-              </div>
-              <pre id="introCode" data-code-panel="curl" data-code-group="intro"><code><span class="token-command">curl</span> <span class="token-string">"https://careerunified.com/api/v1/jobs?limit=3"</span></code></pre>
-              <pre hidden data-code-panel="node" data-code-group="intro"><code><span class="token-keyword">const</span> response = <span class="token-keyword">await</span> fetch(
+            <aside class="code-rail" aria-label="API request example">
+              <div class="code-window sticky-code">
+                <div class="code-window-header">
+                  <span>List active jobs</span>
+                  <button class="copy-button" type="button" data-copy-target="introCode">
+                    <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                  </button>
+                </div>
+                <div class="code-tabs" role="tablist" aria-label="Code language">
+                  <button
+                    class="is-active"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    data-code-tab="curl"
+                    data-code-group="intro"
+                  >
+                    cURL
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    data-code-tab="node"
+                    data-code-group="intro"
+                  >
+                    Node.js
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    data-code-tab="python"
+                    data-code-group="intro"
+                  >
+                    Python
+                  </button>
+                </div>
+                <pre
+                  id="introCode"
+                  data-code-panel="curl"
+                  data-code-group="intro"
+                ><code><span class="token-command">curl</span> <span class="token-string">"https://careerunified.com/api/v1/jobs?limit=3"</span></code></pre>
+                <pre
+                  hidden
+                  data-code-panel="node"
+                  data-code-group="intro"
+                ><code><span class="token-keyword">const</span> response = <span class="token-keyword">await</span> fetch(
   <span class="token-string">'https://careerunified.com/api/v1/jobs?limit=3'</span>
 )
 
 <span class="token-keyword">const</span> { data } = <span class="token-keyword">await</span> response.json()</code></pre>
-              <pre hidden data-code-panel="python" data-code-group="intro"><code><span class="token-keyword">import</span> requests
+                <pre
+                  hidden
+                  data-code-panel="python"
+                  data-code-group="intro"
+                ><code><span class="token-keyword">import</span> requests
 
 response = requests.get(
     <span class="token-string">"https://careerunified.com/api/v1/jobs"</span>,
     params={<span class="token-string">"limit"</span>: <span class="token-number">3</span>},
 )
 jobs = response.json()[<span class="token-string">"data"</span>]</code></pre>
-              <div class="response-label">Response</div>
-              <pre class="response-code"><code>{
+                <div class="response-label">Response</div>
+                <pre class="response-code"><code>{
   <span class="token-key">"data"</span>: [
     {
       <span class="token-key">"id"</span>: <span class="token-string">"job_8f4c..."</span>,
@@ -268,71 +462,330 @@ jobs = response.json()[<span class="token-string">"data"</span>]</code></pre>
     <span class="token-key">"nextCursor"</span>: <span class="token-string">"eyJ2Ijox..."</span>
   }
 }</code></pre>
-            </div>
-          </aside>
-        </div>
-      </article>
-
-      <article class="doc-page" data-doc-page="quickstart" data-title="Quickstart" data-description="Make your first Career Unified API request in minutes.">
-        <div class="doc-grid">
-          <div class="doc-copy">
-            <p class="eyebrow">GET STARTED</p>
-            <h1>Make your first request</h1>
-            <p class="lead">Read public opportunities immediately, then add an approved partner key when your integration needs to publish or manage recruitment data.</p>
-            <div class="step-list">
-              <section id="quickstart-base-url">
-                <span class="step-number">1</span>
-                <div><h2>Use the versioned base URL</h2><p>All current API requests begin with the same HTTPS base URL.</p><div class="inline-code-row"><code>https://careerunified.com/api/v1</code><button type="button" data-copy-text="https://careerunified.com/api/v1" aria-label="Copy base URL"><i class="fa-regular fa-copy" aria-hidden="true"></i></button></div></div>
-              </section>
-              <section id="quickstart-public">
-                <span class="step-number">2</span>
-                <div><h2>Test public discovery</h2><p>The jobs and bursaries discovery endpoints do not require authentication.</p><div class="code-window compact"><div class="code-window-header"><span>Terminal</span><button class="copy-button" type="button" data-copy-target="quickPublic"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="quickPublic"><code>curl "https://careerunified.com/api/v1/jobs?limit=5"</code></pre></div></div>
-              </section>
-              <section id="quickstart-authenticated">
-                <span class="step-number">3</span>
-                <div><h2>Add your partner key</h2><p>Approved organisations receive a scoped API key. Keep it on your server and send it with each protected request.</p><div class="code-window compact"><div class="code-window-header"><span>Authenticated request</span><button class="copy-button" type="button" data-copy-target="quickAuth"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="quickAuth"><code>curl "https://careerunified.com/api/v1/webhooks" \
-  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"</code></pre></div></div>
-              </section>
-              <section id="quickstart-production">
-                <span class="step-number">4</span>
-                <div><h2>Prepare for production</h2><p>Use a secret manager, handle pagination, respect <code>Retry-After</code>, and verify every webhook signature before processing its payload.</p></div>
-              </section>
-            </div>
-            <div class="next-page"><span>Next</span><a href="#authentication" data-doc-link="authentication">Authentication <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+              </div>
+            </aside>
           </div>
-          <aside class="page-toc" aria-label="On this page"><strong>On this page</strong><a href="#quickstart-base-url">Base URL</a><a href="#quickstart-public">Public discovery</a><a href="#quickstart-authenticated">Partner key</a><a href="#quickstart-production">Production checklist</a></aside>
-        </div>
-      </article>
+        </article>
 
-      <article class="doc-page" data-doc-page="authentication" data-title="Authentication" data-description="Authenticate securely with scoped Career Unified partner API keys.">
-        <div class="doc-grid">
-          <div class="doc-copy">
-            <p class="eyebrow">SECURITY</p>
-            <h1>Authentication</h1>
-            <p class="lead">Partner endpoints use organisation-bound API keys. Public discovery endpoints can be read without a key.</p>
-            <div class="callout callout-warning"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><div><strong>Keep keys on your server</strong><p>Never expose a partner key in browser JavaScript, mobile applications, source control, Sanity, or public environment variables.</p></div></div>
-            <section class="content-section" id="auth-header"><h2>Send an API key</h2><p>Use the <code>X-API-Key</code> header. Bearer authentication is also supported for server integrations that standardise on the Authorization header.</p><div class="code-window compact"><div class="code-window-header"><span>Recommended</span><button class="copy-button" type="button" data-copy-target="authHeaderCode"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="authHeaderCode"><code>X-API-Key: cu_live_&lt;client-id&gt;.&lt;secret&gt;</code></pre></div></section>
-            <section class="content-section" id="auth-scopes"><h2>Scopes</h2><p>Each API client receives only the permissions required for its integration.</p><div class="table-wrap"><table><thead><tr><th>Scope</th><th>Allows</th></tr></thead><tbody><tr><td><code>jobs:read</code></td><td>Reserved protected listing integrations</td></tr><tr><td><code>jobs:write</code></td><td>Create, update, and close organisation jobs</td></tr><tr><td><code>applications:read</code></td><td>Read applications for organisation jobs</td></tr><tr><td><code>applications:write</code></td><td>Move applications through recruitment stages</td></tr><tr><td><code>webhooks:manage</code></td><td>Create, inspect, and disable webhook endpoints</td></tr></tbody></table></div></section>
-            <section class="content-section" id="auth-isolation"><h2>Organisation isolation</h2><p>An API client is permanently linked to its approved recruiter organisation. Supplying another recruiter or company identifier does not grant access to that organisation's data.</p></section>
-            <section class="content-section" id="auth-key-lifecycle"><h2>Key lifecycle</h2><p>Keys are displayed once when created. Contact Career Unified to rotate or revoke a compromised key. Revocation does not affect recruiter login credentials.</p></section>
+        <article
+          class="doc-page"
+          data-doc-page="quickstart"
+          data-title="Quickstart"
+          data-description="Make your first Career Unified API request in minutes."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">GET STARTED</p>
+              <h1>Make your first request</h1>
+              <p class="lead">
+                Read public opportunities immediately, then add an approved partner key when your
+                integration needs to publish or manage recruitment data.
+              </p>
+              <div class="step-list">
+                <section id="quickstart-base-url">
+                  <span class="step-number">1</span>
+                  <div>
+                    <h2>Use the versioned base URL</h2>
+                    <p>All current API requests begin with the same HTTPS base URL.</p>
+                    <div class="inline-code-row">
+                      <code>https://careerunified.com/api/v1</code
+                      ><button
+                        type="button"
+                        data-copy-text="https://careerunified.com/api/v1"
+                        aria-label="Copy base URL"
+                      >
+                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                </section>
+                <section id="quickstart-public">
+                  <span class="step-number">2</span>
+                  <div>
+                    <h2>Test public discovery</h2>
+                    <p>The jobs and bursaries discovery endpoints do not require authentication.</p>
+                    <div class="code-window compact">
+                      <div class="code-window-header">
+                        <span>Terminal</span
+                        ><button class="copy-button" type="button" data-copy-target="quickPublic">
+                          <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                        </button>
+                      </div>
+                      <pre
+                        id="quickPublic"
+                      ><code>curl "https://careerunified.com/api/v1/jobs?limit=5"</code></pre>
+                    </div>
+                  </div>
+                </section>
+                <section id="quickstart-authenticated">
+                  <span class="step-number">3</span>
+                  <div>
+                    <h2>Add your partner key</h2>
+                    <p>
+                      Approved organisations receive a scoped API key. Keep it on your server and
+                      send it with each protected request.
+                    </p>
+                    <div class="code-window compact">
+                      <div class="code-window-header">
+                        <span>Authenticated request</span
+                        ><button class="copy-button" type="button" data-copy-target="quickAuth">
+                          <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                        </button>
+                      </div>
+                      <pre id="quickAuth"><code>curl "https://careerunified.com/api/v1/webhooks" \
+  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"</code></pre>
+                    </div>
+                  </div>
+                </section>
+                <section id="quickstart-production">
+                  <span class="step-number">4</span>
+                  <div>
+                    <h2>Prepare for production</h2>
+                    <p>
+                      Use a secret manager, handle pagination, respect <code>Retry-After</code>, and
+                      verify every webhook signature before processing its payload.
+                    </p>
+                  </div>
+                </section>
+              </div>
+              <div class="next-page">
+                <span>Next</span
+                ><a href="#authentication" data-doc-link="authentication"
+                  >Authentication <i class="fa-solid fa-arrow-right" aria-hidden="true"></i
+                ></a>
+              </div>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#quickstart-base-url">Base URL</a
+              ><a href="#quickstart-public">Public discovery</a
+              ><a href="#quickstart-authenticated">Partner key</a
+              ><a href="#quickstart-production">Production checklist</a>
+            </aside>
           </div>
-          <aside class="page-toc" aria-label="On this page"><strong>On this page</strong><a href="#auth-header">Send a key</a><a href="#auth-scopes">Scopes</a><a href="#auth-isolation">Organisation isolation</a><a href="#auth-key-lifecycle">Key lifecycle</a></aside>
-        </div>
-      </article>
+        </article>
 
-      <article class="doc-page" data-doc-page="pagination" data-title="Pagination" data-description="Navigate Career Unified list endpoints with opaque cursors.">
-        <div class="doc-grid"><div class="doc-copy"><p class="eyebrow">GUIDES</p><h1>Pagination</h1><p class="lead">List endpoints use opaque cursor pagination so integrations can move through results without relying on database offsets.</p><section class="content-section" id="pagination-request"><h2>Request a page</h2><p>Set <code>limit</code> between 1 and 100. Pass the returned <code>nextCursor</code> unchanged to request the next page.</p><div class="code-window compact"><div class="code-window-header"><span>Second page</span><button class="copy-button" type="button" data-copy-target="paginationCode"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="paginationCode"><code>GET /api/v1/jobs?limit=25&amp;cursor=eyJ2IjoxLCJvZmZzZXQiOjI1fQ</code></pre></div></section><section class="content-section" id="pagination-response"><h2>Read the metadata</h2><div class="code-window compact"><div class="code-window-header"><span>Response metadata</span></div><pre><code>{
+        <article
+          class="doc-page"
+          data-doc-page="authentication"
+          data-title="Authentication"
+          data-description="Authenticate securely with scoped Career Unified partner API keys."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">SECURITY</p>
+              <h1>Authentication</h1>
+              <p class="lead">
+                Partner endpoints use organisation-bound API keys. Public discovery endpoints can be
+                read without a key.
+              </p>
+              <div class="callout callout-warning">
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                <div>
+                  <strong>Keep keys on your server</strong>
+                  <p>
+                    Never expose a partner key in browser JavaScript, mobile applications, source
+                    control, Sanity, or public environment variables.
+                  </p>
+                </div>
+              </div>
+              <section class="content-section" id="auth-header">
+                <h2>Send an API key</h2>
+                <p>
+                  Use the <code>X-API-Key</code> header. Bearer authentication is also supported for
+                  server integrations that standardise on the Authorization header.
+                </p>
+                <div class="code-window compact">
+                  <div class="code-window-header">
+                    <span>Recommended</span
+                    ><button class="copy-button" type="button" data-copy-target="authHeaderCode">
+                      <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="authHeaderCode"
+                  ><code>X-API-Key: cu_live_&lt;client-id&gt;.&lt;secret&gt;</code></pre>
+                </div>
+                <p>
+                  Use <code>cu_test_</code> sandbox keys for pilot testing and
+                  <code>cu_live_</code> keys for approved production traffic.
+                </p>
+              </section>
+              <section class="content-section" id="auth-scopes">
+                <h2>Scopes</h2>
+                <p>Each API client receives only the permissions required for its integration.</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Scope</th>
+                        <th>Allows</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>jobs:read</code></td>
+                        <td>Reserved protected listing integrations</td>
+                      </tr>
+                      <tr>
+                        <td><code>jobs:write</code></td>
+                        <td>Create, update, and close organisation jobs</td>
+                      </tr>
+                      <tr>
+                        <td><code>applications:read</code></td>
+                        <td>Read applications for organisation jobs</td>
+                      </tr>
+                      <tr>
+                        <td><code>applications:write</code></td>
+                        <td>Move applications through recruitment stages</td>
+                      </tr>
+                      <tr>
+                        <td><code>webhooks:manage</code></td>
+                        <td>Create, inspect, and disable webhook endpoints</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+              <section class="content-section" id="auth-isolation">
+                <h2>Organisation isolation</h2>
+                <p>
+                  An API client is permanently linked to its approved recruiter organisation.
+                  Supplying another recruiter or company identifier does not grant access to that
+                  organisation's data.
+                </p>
+              </section>
+              <section class="content-section" id="auth-key-lifecycle">
+                <h2>Key lifecycle</h2>
+                <p>
+                  Keys are displayed once when created or rotated. Career Unified administrators can
+                  create, rotate, revoke, review usage, download usage reports, and monitor quota
+                  alerts in the protected <a href="./admin.html">API admin console</a>. Revocation
+                  does not affect recruiter login credentials.
+                </p>
+              </section>
+              <section class="content-section" id="auth-quotas">
+                <h2>Quotas and alerts</h2>
+                <p>
+                  Each API client has a per-minute limit and a monthly quota linked to its approved
+                  plan. The API records daily and monthly usage, returns <code>429</code> with
+                  <code>Retry-After</code> when limits are exceeded, and raises alerts for unusual
+                  activity such as repeated rate-limit hits or 80% monthly quota usage.
+                </p>
+              </section>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#auth-header">Send a key</a
+              ><a href="#auth-scopes">Scopes</a><a href="#auth-isolation">Organisation isolation</a
+              ><a href="#auth-key-lifecycle">Key lifecycle</a><a href="#auth-quotas">Quotas</a>
+            </aside>
+          </div>
+        </article>
+
+        <article
+          class="doc-page"
+          data-doc-page="pagination"
+          data-title="Pagination"
+          data-description="Navigate Career Unified list endpoints with opaque cursors."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">GUIDES</p>
+              <h1>Pagination</h1>
+              <p class="lead">
+                List endpoints use opaque cursor pagination so integrations can move through results
+                without relying on database offsets.
+              </p>
+              <section class="content-section" id="pagination-request">
+                <h2>Request a page</h2>
+                <p>
+                  Set <code>limit</code> between 1 and 100. Pass the returned
+                  <code>nextCursor</code> unchanged to request the next page.
+                </p>
+                <div class="code-window compact">
+                  <div class="code-window-header">
+                    <span>Second page</span
+                    ><button class="copy-button" type="button" data-copy-target="paginationCode">
+                      <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="paginationCode"
+                  ><code>GET /api/v1/jobs?limit=25&amp;cursor=eyJ2IjoxLCJvZmZzZXQiOjI1fQ</code></pre>
+                </div>
+              </section>
+              <section class="content-section" id="pagination-response">
+                <h2>Read the metadata</h2>
+                <div class="code-window compact">
+                  <div class="code-window-header"><span>Response metadata</span></div>
+                  <pre><code>{
   "meta": {
     "total": 58,
     "limit": 25,
     "hasMore": true,
     "nextCursor": "eyJ2IjoxLCJvZmZzZXQiOjI1fQ"
   }
-}</code></pre></div><p>Stop when <code>hasMore</code> is false or <code>nextCursor</code> is null. Cursors are implementation details and should not be decoded or modified.</p></section></div><aside class="page-toc" aria-label="On this page"><strong>On this page</strong><a href="#pagination-request">Request a page</a><a href="#pagination-response">Response metadata</a></aside></div>
-      </article>
+}</code></pre>
+                </div>
+                <p>
+                  Stop when <code>hasMore</code> is false or <code>nextCursor</code> is null.
+                  Cursors are implementation details and should not be decoded or modified.
+                </p>
+              </section>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#pagination-request">Request a page</a
+              ><a href="#pagination-response">Response metadata</a>
+            </aside>
+          </div>
+        </article>
 
-      <article class="doc-page" data-doc-page="webhooks" data-title="Webhooks" data-description="Receive and verify signed Career Unified recruitment events.">
-        <div class="doc-grid"><div class="doc-copy"><p class="eyebrow">EVENTS</p><h1>Webhooks</h1><p class="lead">Receive signed notifications when your jobs or Direct Apply applications change, then retrieve authorised details through the API.</p><section class="content-section" id="webhook-events"><h2>Supported events</h2><div class="event-list"><div><code>job.published</code><span>A partner job was published.</span></div><div><code>job.updated</code><span>A partner job was changed.</span></div><div><code>job.closed</code><span>A partner job stopped accepting applications.</span></div><div><code>application.received</code><span>A Direct Apply application was submitted.</span></div><div><code>application.stage_changed</code><span>An application's recruitment stage changed.</span></div></div></section><section class="content-section" id="webhook-signature"><h2>Verify each signature</h2><p>Compute an HMAC-SHA256 digest over the timestamp, a period, and the exact raw request body. Compare it with the hexadecimal value after <code>v1=</code>.</p><div class="code-window compact"><div class="code-window-header"><span>Node.js</span><button class="copy-button" type="button" data-copy-target="webhookVerify"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="webhookVerify"><code>import crypto from 'node:crypto'
+        <article
+          class="doc-page"
+          data-doc-page="webhooks"
+          data-title="Webhooks"
+          data-description="Receive and verify signed Career Unified recruitment events."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">EVENTS</p>
+              <h1>Webhooks</h1>
+              <p class="lead">
+                Receive signed notifications when your jobs or Direct Apply applications change,
+                then retrieve authorised details through the API.
+              </p>
+              <section class="content-section" id="webhook-events">
+                <h2>Supported events</h2>
+                <div class="event-list">
+                  <div><code>job.published</code><span>A partner job was published.</span></div>
+                  <div><code>job.updated</code><span>A partner job was changed.</span></div>
+                  <div>
+                    <code>job.closed</code
+                    ><span>A partner job stopped accepting applications.</span>
+                  </div>
+                  <div>
+                    <code>application.received</code
+                    ><span>A Direct Apply application was submitted.</span>
+                  </div>
+                  <div>
+                    <code>application.stage_changed</code
+                    ><span>An application's recruitment stage changed.</span>
+                  </div>
+                </div>
+              </section>
+              <section class="content-section" id="webhook-signature">
+                <h2>Verify each signature</h2>
+                <p>
+                  Compute an HMAC-SHA256 digest over the timestamp, a period, and the exact raw
+                  request body. Compare it with the hexadecimal value after <code>v1=</code>.
+                </p>
+                <div class="code-window compact">
+                  <div class="code-window-header">
+                    <span>Node.js</span
+                    ><button class="copy-button" type="button" data-copy-target="webhookVerify">
+                      <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                    </button>
+                  </div>
+                  <pre id="webhookVerify"><code>import crypto from 'node:crypto'
 
 const signed = `${timestamp}.${rawBody}`
 const expected = crypto
@@ -344,45 +797,207 @@ const received = signature.replace('v1=', '')
 const valid = crypto.timingSafeEqual(
   Buffer.from(expected),
   Buffer.from(received)
-)</code></pre></div></section><section class="content-section" id="webhook-delivery"><h2>Delivery behavior</h2><p>Events are queued, retried with backoff, and carry a stable event identifier. Return a successful 2xx response quickly, then process the event asynchronously and idempotently.</p><div class="callout callout-info"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><div><strong>Reject stale timestamps</strong><p>Use the timestamp header to prevent replay. A five-minute tolerance is a practical default.</p></div></div></section></div><aside class="page-toc" aria-label="On this page"><strong>On this page</strong><a href="#webhook-events">Events</a><a href="#webhook-signature">Verify signatures</a><a href="#webhook-delivery">Delivery behavior</a></aside></div>
-      </article>
+)</code></pre>
+                </div>
+              </section>
+              <section class="content-section" id="webhook-delivery">
+                <h2>Delivery behavior</h2>
+                <p>
+                  Events are queued, retried with backoff, and carry a stable event identifier.
+                  Return a successful 2xx response quickly, then process the event asynchronously
+                  and idempotently.
+                </p>
+                <div class="callout callout-info">
+                  <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                  <div>
+                    <strong>Reject stale timestamps</strong>
+                    <p>
+                      Use the timestamp header to prevent replay. A five-minute tolerance is a
+                      practical default.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#webhook-events">Events</a
+              ><a href="#webhook-signature">Verify signatures</a
+              ><a href="#webhook-delivery">Delivery behavior</a>
+            </aside>
+          </div>
+        </article>
 
-      <article class="doc-page" data-doc-page="errors" data-title="Errors and limits" data-description="Handle Career Unified API errors and rate limits reliably.">
-        <div class="doc-grid"><div class="doc-copy"><p class="eyebrow">OPERATIONS</p><h1>Errors and limits</h1><p class="lead">All API errors use a stable envelope and include a request identifier for support and audit tracing.</p><section class="content-section" id="error-envelope"><h2>Error envelope</h2><div class="code-window compact"><div class="code-window-header"><span>Example</span></div><pre><code>{
+        <article
+          class="doc-page"
+          data-doc-page="errors"
+          data-title="Errors and limits"
+          data-description="Handle Career Unified API errors and rate limits reliably."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">OPERATIONS</p>
+              <h1>Errors and limits</h1>
+              <p class="lead">
+                All API errors use a stable envelope and include a request identifier for support
+                and audit tracing.
+              </p>
+              <section class="content-section" id="error-envelope">
+                <h2>Error envelope</h2>
+                <div class="code-window compact">
+                  <div class="code-window-header"><span>Example</span></div>
+                  <pre><code>{
   "error": {
     "code": "insufficient_scope",
     "message": "The applications:read scope is required.",
     "requestId": "req_2c81..."
   }
-}</code></pre></div></section><section class="content-section" id="error-statuses"><h2>HTTP status codes</h2><div class="table-wrap"><table><thead><tr><th>Status</th><th>Meaning</th><th>Recommended action</th></tr></thead><tbody><tr><td><code>400</code></td><td>Invalid request</td><td>Correct the parameters or payload.</td></tr><tr><td><code>401</code></td><td>Invalid or missing key</td><td>Check the server-side credential.</td></tr><tr><td><code>403</code></td><td>Scope or tenant denied</td><td>Request the required approved access.</td></tr><tr><td><code>404</code></td><td>Resource unavailable</td><td>Verify the identifier and organisation.</td></tr><tr><td><code>409</code></td><td>Idempotency conflict</td><td>Use the original payload or a new key.</td></tr><tr><td><code>429</code></td><td>Rate limit exceeded</td><td>Wait for <code>Retry-After</code>.</td></tr><tr><td><code>500</code></td><td>Unexpected server error</td><td>Retry safely and quote the request ID.</td></tr></tbody></table></div></section><section class="content-section" id="error-retries"><h2>Safe retries</h2><p>Retry transient <code>429</code> and <code>5xx</code> responses with exponential backoff and jitter. Include an <code>Idempotency-Key</code> on every job creation request.</p></section></div><aside class="page-toc" aria-label="On this page"><strong>On this page</strong><a href="#error-envelope">Error envelope</a><a href="#error-statuses">Status codes</a><a href="#error-retries">Safe retries</a></aside></div>
-      </article>
+}</code></pre>
+                </div>
+              </section>
+              <section class="content-section" id="error-statuses">
+                <h2>HTTP status codes</h2>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Meaning</th>
+                        <th>Recommended action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>400</code></td>
+                        <td>Invalid request</td>
+                        <td>Correct the parameters or payload.</td>
+                      </tr>
+                      <tr>
+                        <td><code>401</code></td>
+                        <td>Invalid or missing key</td>
+                        <td>Check the server-side credential.</td>
+                      </tr>
+                      <tr>
+                        <td><code>403</code></td>
+                        <td>Scope or tenant denied</td>
+                        <td>Request the required approved access.</td>
+                      </tr>
+                      <tr>
+                        <td><code>404</code></td>
+                        <td>Resource unavailable</td>
+                        <td>Verify the identifier and organisation.</td>
+                      </tr>
+                      <tr>
+                        <td><code>409</code></td>
+                        <td>Idempotency conflict</td>
+                        <td>Use the original payload or a new key.</td>
+                      </tr>
+                      <tr>
+                        <td><code>429</code></td>
+                        <td>Rate limit exceeded</td>
+                        <td>Wait for <code>Retry-After</code>.</td>
+                      </tr>
+                      <tr>
+                        <td><code>500</code></td>
+                        <td>Unexpected server error</td>
+                        <td>Retry safely and quote the request ID.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+              <section class="content-section" id="error-retries">
+                <h2>Safe retries</h2>
+                <p>
+                  Retry transient <code>429</code> and <code>5xx</code> responses with exponential
+                  backoff and jitter. Include an <code>Idempotency-Key</code> on every job creation
+                  request.
+                </p>
+              </section>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#error-envelope">Error envelope</a
+              ><a href="#error-statuses">Status codes</a><a href="#error-retries">Safe retries</a>
+            </aside>
+          </div>
+        </article>
 
-      <div id="referencePages"></div>
+        <div id="referencePages"></div>
 
-      <article class="doc-page" data-doc-page="status" data-title="API status" data-description="Check the current Career Unified API version and availability.">
-        <div class="doc-grid"><div class="doc-copy"><p class="eyebrow">RESOURCES</p><h1>API status</h1><p class="lead">Use the lightweight status endpoint to confirm API routing and version availability.</p><div class="status-panel"><span class="status-dot" aria-hidden="true"></span><div><strong>Career Unified Partner API</strong><span>Available · Version v1</span></div></div><section class="content-section"><h2>Check programmatically</h2><div class="code-window compact"><div class="code-window-header"><span>Request</span><button class="copy-button" type="button" data-copy-target="statusCode"><i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span></button></div><pre id="statusCode"><code>curl https://careerunified.com/api/v1/status</code></pre></div><div class="code-window compact"><div class="code-window-header"><span>Response</span></div><pre><code>{
+        <article
+          class="doc-page"
+          data-doc-page="status"
+          data-title="API status"
+          data-description="Check the current Career Unified API version and availability."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">RESOURCES</p>
+              <h1>API status</h1>
+              <p class="lead">
+                Use the lightweight status endpoint to confirm API routing and version availability.
+              </p>
+              <div class="status-panel">
+                <span class="status-dot" aria-hidden="true"></span>
+                <div>
+                  <strong>Career Unified Partner API</strong><span>Available - Version v1</span>
+                </div>
+              </div>
+              <section class="content-section">
+                <h2>Check programmatically</h2>
+                <div class="code-window compact">
+                  <div class="code-window-header">
+                    <span>Request</span
+                    ><button class="copy-button" type="button" data-copy-target="statusCode">
+                      <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="statusCode"
+                  ><code>curl https://careerunified.com/api/v1/status</code></pre>
+                </div>
+                <div class="code-window compact">
+                  <div class="code-window-header"><span>Response</span></div>
+                  <pre><code>{
   "data": {
     "status": "available",
     "version": "v1"
   }
-}</code></pre></div></section></div></div>
-      </article>
-    </main>
-  </div>
-
-  <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      <label class="sr-only" id="searchTitle" for="docsSearch">Search documentation</label>
-      <input id="docsSearch" type="search" placeholder="Search guides and API reference" autocomplete="off">
-      <button type="button" id="closeSearch" aria-label="Close search">Esc</button>
+}</code></pre>
+                </div>
+              </section>
+            </div>
+          </div>
+        </article>
+      </main>
     </div>
-    <div class="search-results" id="searchResults" role="listbox" aria-label="Documentation results">
-      <p class="search-hint">Search for authentication, jobs, applications, webhooks, or errors.</p>
-    </div>
-  </dialog>
 
-  <div class="copy-toast" id="copyToast" role="status" aria-live="polite">Copied to clipboard</div>
-  <script src="./docs.js" defer></script>
-</body>
+    <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <label class="sr-only" id="searchTitle" for="docsSearch">Search documentation</label>
+        <input
+          id="docsSearch"
+          type="search"
+          placeholder="Search guides and API reference"
+          autocomplete="off"
+        />
+        <button type="button" id="closeSearch" aria-label="Close search">Esc</button>
+      </div>
+      <div
+        class="search-results"
+        id="searchResults"
+        role="listbox"
+        aria-label="Documentation results"
+      >
+        <p class="search-hint">
+          Search for authentication, jobs, applications, webhooks, or errors.
+        </p>
+      </div>
+    </dialog>
+
+    <div class="copy-toast" id="copyToast" role="status" aria-live="polite">
+      Copied to clipboard
+    </div>
+    <script src="./docs.js" defer></script>
+  </body>
 </html>

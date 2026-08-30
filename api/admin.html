@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>API Admin | Career Unified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body>
+    <main class="api-admin-shell">
+      <section class="hero">
+        <div>
+          <a class="back-link" href="/api/">Career Unified API</a>
+          <h1>Partner API admin</h1>
+          <p>
+            Create approved organisation keys, rotate secrets, review usage, and export reports.
+          </p>
+          <p class="admin-links">
+            <a href="./status.html">System status</a>
+            <a href="./portal.html">Partner portal</a>
+            <a href="./partner-governance.html">Partner policies</a>
+          </p>
+        </div>
+        <div class="auth-panel">
+          <span id="adminIdentity">Not signed in</span>
+          <button id="signInButton" type="button">Sign in with Google</button>
+          <button id="refreshButton" type="button" hidden>Refresh</button>
+        </div>
+      </section>
+
+      <section class="notice" id="statusNotice" role="status">
+        Sign in with an administrator account to manage API clients.
+      </section>
+
+      <section class="admin-grid" id="adminWorkspace" hidden>
+        <form class="panel create-panel" id="clientForm">
+          <div class="panel-heading">
+            <span>New client</span>
+            <h2>Create API key</h2>
+            <p>The full key is shown once. Store it in the partner's server-side secret manager.</p>
+          </div>
+
+          <label>
+            Client name
+            <input name="name" type="text" placeholder="Example ATS production" required />
+          </label>
+
+          <label>
+            Recruiter organisation UID
+            <input name="recruiterId" type="text" placeholder="Firebase recruiter uid" required />
+          </label>
+
+          <div class="two-column">
+            <label>
+              Environment
+              <select name="environment">
+                <option value="test">Test sandbox</option>
+                <option value="live">Live production</option>
+              </select>
+            </label>
+            <label>
+              API plan
+              <select name="apiPlan">
+                <option value="pilot">Pilot</option>
+                <option value="starter">Starter</option>
+                <option value="growth">Growth</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="two-column">
+            <label>
+              Rate limit / minute
+              <input
+                name="rateLimitPerMinute"
+                type="number"
+                min="30"
+                max="5000"
+                step="1"
+                value="600"
+              />
+            </label>
+            <label>
+              Monthly quota
+              <input
+                name="monthlyQuota"
+                type="number"
+                min="0"
+                max="5000000"
+                step="1"
+                placeholder="Use plan default"
+              />
+            </label>
+          </div>
+
+          <div class="two-column">
+            <label>
+              Billing mode
+              <select name="billingMode">
+                <option value="included">Included in plan</option>
+                <option value="usage">Usage-based pilot</option>
+                <option value="manual">Manual agreement</option>
+              </select>
+            </label>
+            <label>
+              Overage cents / request
+              <input
+                name="overageRateCents"
+                type="number"
+                min="0"
+                max="100000"
+                step="1"
+                value="0"
+              />
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Scopes</legend>
+            <label><input type="checkbox" name="scopes" value="jobs:write" /> Jobs write</label>
+            <label
+              ><input type="checkbox" name="scopes" value="applications:read" /> Applications
+              read</label
+            >
+            <label
+              ><input type="checkbox" name="scopes" value="applications:write" /> Applications
+              write</label
+            >
+            <label
+              ><input type="checkbox" name="scopes" value="webhooks:manage" /> Webhooks
+              manage</label
+            >
+          </fieldset>
+
+          <label>
+            Allowed browser origins
+            <textarea
+              name="allowedOrigins"
+              rows="3"
+              placeholder="Leave empty for server-to-server integrations"
+            ></textarea>
+          </label>
+
+          <label>
+            Alert recipients
+            <input
+              name="alertEmails"
+              type="text"
+              placeholder="api-owner@example.co.za security@example.co.za"
+            />
+            <small>Space-separated email addresses for quota, security, and delivery alerts.</small>
+          </label>
+
+          <button class="primary-button" type="submit">Create key</button>
+        </form>
+
+        <section class="panel key-panel" id="keyPanel" hidden>
+          <div class="panel-heading">
+            <span>Secret shown once</span>
+            <h2>Copy this API key now</h2>
+          </div>
+          <pre id="createdKey"></pre>
+          <button type="button" id="copyCreatedKey">Copy key</button>
+        </section>
+
+        <section class="panel client-panel">
+          <div class="panel-heading row-heading">
+            <div>
+              <span>Approved clients</span>
+              <h2>API clients</h2>
+            </div>
+            <button type="button" id="reloadClients">Reload</button>
+          </div>
+          <div class="client-list" id="clientList"></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./admin.js"></script>
+  </body>
+</html>

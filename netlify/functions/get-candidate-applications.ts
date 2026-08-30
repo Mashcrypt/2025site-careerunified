@@ -66,6 +66,7 @@ export const handler: Handler = async (event) => {
       const application = applicationSnap.data() || {};
       const job = application.jobSnapshot || {};
       const cv = application.cvSnapshot || {};
+      const interview = application.interviewSchedule || {};
       return {
         id: applicationSnap.id,
         status: cleanText(application.status || "submitted", 40),
@@ -80,6 +81,19 @@ export const handler: Handler = async (event) => {
         cvSnapshot: {
           fileName: cleanText(cv.fileName, 160),
         },
+        talentPoolConsent: application.talentPoolConsent === true,
+        talentPoolConsentExpiresAt: timestampValue(application.talentPoolConsentExpiresAt),
+        interviewSchedule: interview.status === "scheduled"
+          ? {
+              status: "scheduled",
+              startsAt: timestampValue(interview.startsAt) || cleanText(interview.startsAt, 80),
+              durationMinutes: Math.max(15, Math.min(180, Number(interview.durationMinutes) || 30)),
+              mode: cleanText(interview.mode, 40),
+              timezone: cleanText(interview.timezone, 80),
+              locationOrLink: cleanText(interview.locationOrLink, 500),
+              notes: cleanText(interview.notes, 1200),
+            }
+          : null,
       };
     });
 

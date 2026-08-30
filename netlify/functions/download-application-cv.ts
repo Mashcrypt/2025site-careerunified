@@ -1,4 +1,5 @@
 import type {Handler} from "@netlify/functions";
+import mammoth from "mammoth";
 import {getAdmin} from "./_firebaseAdmin";
 import {readPrivateCv} from "./_privateCvStore";
 import {
@@ -60,6 +61,26 @@ export const handler: Handler = async (event) => {
     }
     const fileName = safeFilename(application.cvSnapshot?.fileName);
     const contentType = cleanText(application.cvSnapshot?.contentType, 120) || "application/octet-stream";
+    const previewRequested = event.queryStringParameters?.preview === "1";
+    const isDocx =
+      contentType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      fileName.toLowerCase().endsWith(".docx");
+
+    if (previewRequested && isDocx) {
+      const extracted = await mammoth.extractRawText({buffer});
+      return {
+        statusCode: 200,
+        headers: {
+          ...corsHeaders(origin),
+          "Content-Type": "text/plain; charset=utf-8",
+          "Content-Disposition": "inline",
+          "Cache-Control": "private, no-store",
+          "X-Content-Type-Options": "nosniff",
+        },
+        body: extracted.value.trim() || "No readable text was found in this CV.",
+      };
+    }
+
     const disposition = event.queryStringParameters?.download === "1" ? "attachment" : "inline";
 
     return {

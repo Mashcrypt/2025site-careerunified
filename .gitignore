@@ -61,6 +61,7 @@ resume-builder/.env.*.local
 # TypeScript
 # ================================
 *.tsbuildinfo
+.api-test-dist/
 
 # Local Netlify folder
 .netlify

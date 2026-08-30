@@ -78,6 +78,68 @@ function formatDate(value) {
     : "Date unavailable";
 }
 
+function formatDateTime(value, timeZone = "Africa/Johannesburg") {
+  const date = toDate(value);
+  if (!date) return "Time to be confirmed";
+  try {
+    return new Intl.DateTimeFormat("en-ZA", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone,
+      timeZoneName: "short",
+    }).format(date);
+  } catch {
+    return date.toLocaleString("en-ZA");
+  }
+}
+
+function interviewModeLabel(mode) {
+  return ({
+    phone: "Phone interview",
+    in_person: "In-person interview",
+    teams: "Microsoft Teams",
+    zoom: "Zoom meeting",
+    google_meet: "Google Meet",
+    other: "Interview",
+  })[mode] || "Interview";
+}
+
+function applicationInterviewMarkup(application) {
+  const interview = application.interviewSchedule;
+  if (!interview?.startsAt) return "";
+  const location = safeText(interview.locationOrLink);
+  const isLink = /^https?:\/\//i.test(location);
+
+  return `
+    <section class="candidate-interview-details" aria-label="Scheduled interview">
+      <h4>Interview scheduled</h4>
+      <div class="candidate-interview-grid">
+        <div class="candidate-interview-item">
+          <span>Date and time</span>
+          <strong>${escapeHtml(formatDateTime(interview.startsAt, interview.timezone))}</strong>
+        </div>
+        <div class="candidate-interview-item">
+          <span>Format</span>
+          <strong>${escapeHtml(interviewModeLabel(interview.mode))} · ${escapeHtml(interview.durationMinutes || 30)} minutes</strong>
+        </div>
+        ${location ? `
+          <div class="candidate-interview-item">
+            <span>${isLink ? "Meeting link" : "Location or contact"}</span>
+            ${isLink
+              ? `<a href="${escapeHtml(location)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
+              : `<strong>${escapeHtml(location)}</strong>`}
+          </div>` : ""}
+      </div>
+      ${interview.notes ? `<p class="candidate-interview-notes">${escapeHtml(interview.notes)}</p>` : ""}
+      <div>
+        <button class="btn btn-secondary" type="button" data-interview-calendar="${escapeHtml(application.id)}">Add to calendar</button>
+      </div>
+    </section>`;
+}
+
 function statusInfo(status) {
   return STATUS_COPY[status] || STATUS_COPY.submitted;
 }
@@ -156,13 +218,17 @@ function renderApplications() {
         <div class="candidate-application-meta" style="margin-top:12px;">
           <span>Applied ${escapeHtml(formatDate(application.submittedAt))}</span>
           <span>CV: ${escapeHtml(application.cvSnapshot?.fileName, "Submitted CV")}</span>
+          ${application.talentPoolConsent ? `<span>Future opportunities: opted in until ${escapeHtml(formatDate(application.talentPoolConsentExpiresAt))}</span>` : ""}
         </div>
+
+        ${applicationInterviewMarkup(application)}
 
         ${applicationMessagesMarkup(application.id)}
 
         <div class="candidate-application-actions">
           <a class="btn btn-primary" href="${escapeHtml(jobUrl(application))}">View Job</a>
           <button class="btn btn-secondary" type="button" data-candidate-cv="${escapeHtml(application.id)}">View submitted CV</button>
+          ${application.talentPoolConsent ? `<button class="btn btn-secondary" type="button" data-revoke-talent-consent="${escapeHtml(application.id)}">Stop future consideration</button>` : ""}
           ${canWithdraw ? `<button class="btn btn-secondary" type="button" data-withdraw-application="${escapeHtml(application.id)}">Withdraw</button>` : ""}
         </div>
       </article>`;
@@ -270,6 +336,72 @@ async function withdrawApplication(applicationId) {
   }
 }
 
+async function revokeTalentPoolConsent(applicationId) {
+  if (!confirm("Stop this employer from keeping your application for similar future opportunities?")) return;
+  try {
+    await applicationRequest("/.netlify/functions/update-job-application", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({applicationId, talentPoolConsent: false}),
+    });
+    const application = applications.find(item => item.id === applicationId);
+    if (application) application.talentPoolConsent = false;
+    renderApplications();
+  } catch (error) {
+    alert(error.message || "Future-opportunity consent could not be updated.");
+  }
+}
+
+function calendarValue(date) {
+  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+}
+
+function calendarText(value) {
+  return safeText(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\r?\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+
+function downloadInterviewCalendar(applicationId) {
+  const application = applications.find(item => item.id === applicationId);
+  const interview = application?.interviewSchedule;
+  const startsAt = toDate(interview?.startsAt);
+  if (!application || !startsAt) return;
+  const endsAt = new Date(startsAt.getTime() + Number(interview.durationMinutes || 30) * 60000);
+  const job = application.jobSnapshot || {};
+  const title = `Interview: ${safeText(job.title, "Job application")}`;
+  const description = [
+    `${interviewModeLabel(interview.mode)} with ${safeText(job.company, "the employer")}`,
+    safeText(interview.notes),
+  ].filter(Boolean).join("\n\n");
+  const location = safeText(interview.locationOrLink);
+  const calendar = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Career Unified//Candidate Interview//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${calendarText(application.id)}@careerunified.com`,
+    `DTSTAMP:${calendarValue(new Date())}`,
+    `DTSTART:${calendarValue(startsAt)}`,
+    `DTEND:${calendarValue(endsAt)}`,
+    `SUMMARY:${calendarText(title)}`,
+    `DESCRIPTION:${calendarText(description)}`,
+    `LOCATION:${calendarText(location)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+  const url = URL.createObjectURL(new Blob([calendar], {type: "text/calendar;charset=utf-8"}));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `career-unified-interview-${application.id}.ics`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 document.addEventListener("click", event => {
   const applicationsTab = event.target.closest('[data-tab="applications"]');
   if (applicationsTab && currentUser && !hasLoaded) loadApplications();
@@ -279,6 +411,12 @@ document.addEventListener("click", event => {
 
   const withdrawButton = event.target.closest("[data-withdraw-application]");
   if (withdrawButton) withdrawApplication(withdrawButton.dataset.withdrawApplication);
+
+  const calendarButton = event.target.closest("[data-interview-calendar]");
+  if (calendarButton) downloadInterviewCalendar(calendarButton.dataset.interviewCalendar);
+
+  const consentButton = event.target.closest("[data-revoke-talent-consent]");
+  if (consentButton) revokeTalentPoolConsent(consentButton.dataset.revokeTalentConsent);
 });
 
 function openRequestedTab() {

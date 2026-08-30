@@ -6,6 +6,10 @@ Base URL: https://careerunified.com/api/v1
 Human documentation: https://careerunified.com/api/
 OpenAPI 3.1 contract: https://careerunified.com/api/openapi.yaml
 Integration guide: https://careerunified.com/api/README.md
+Protected administrator console: https://careerunified.com/api/admin.html
+Approved partner portal: https://careerunified.com/api/portal.html
+Public operational status: https://careerunified.com/api/status.html
+Partner governance: https://careerunified.com/api/partner-governance.html
 
 ## Start here
 
@@ -38,6 +42,7 @@ Every POST /jobs request requires an Idempotency-Key header. API job publishing 
 - GET /jobs/{jobId}/applications: https://careerunified.com/api/#list-applications
 - GET /applications/{applicationId}: https://careerunified.com/api/#get-application
 - PATCH /applications/{applicationId}: https://careerunified.com/api/#update-application
+- POST /jobs/{jobId}/applications/test: sandbox-only synthetic application
 
 Application access is restricted to the recruiter organisation linked to the API client. CV binary delivery and private recruiter notes stay inside Career Unified's authenticated recruiter workflow.
 
@@ -46,6 +51,10 @@ Application access is restricted to the recruiter organisation linked to the API
 - POST /webhooks: https://careerunified.com/api/#create-webhook
 - GET /webhooks: https://careerunified.com/api/#list-webhooks
 - DELETE /webhooks/{webhookId}: https://careerunified.com/api/#delete-webhook
+- GET /webhooks/{webhookId}/deliveries: delivery history
+- POST /webhooks/{webhookId}/rotate-secret: return a new signing secret once
+- POST /webhooks/{webhookId}/test: queue a signed test event
+- POST /webhooks/events/{eventId}/replay: replay an owned event
 
 Supported events: job.published, job.updated, job.closed, application.received, application.stage_changed.
 
@@ -53,10 +62,14 @@ Webhook deliveries are signed with HMAC-SHA256. Verify X-Career-Unified-Signatur
 
 ## Authentication and scopes
 
-Partner keys use the format `cu_live_<client-id>.<secret>` and must remain in a server-side secret manager. Send a key with `X-API-Key` or `Authorization: Bearer`.
+Partner keys use the format `cu_live_<client-id>.<secret>` for production and `cu_test_<client-id>.<secret>` for sandbox clients. Keys must remain in a server-side secret manager. Send a key with `X-API-Key` or `Authorization: Bearer`.
 
 Scopes: jobs:read, jobs:write, applications:read, applications:write, webhooks:manage.
 
+API keys are only for approved recruiter organisations or ATS integrations. Ordinary job seekers and recruiters using the dashboard do not need keys. Admin endpoints can list clients, create live/test keys, rotate secrets, revoke clients, return usage summaries, export CSV usage reports, and surface quota/rate-limit alerts.
+
+Test keys are isolated: sandbox jobs, applications, idempotency records, webhook endpoints, and webhook events do not enter live collections or consume live job credits. API key rotation supports a 1-168 hour grace period and explicit finalisation. Approved recruiters can review their own clients, usage, alerts, invoice statements, and rotations through the partner portal.
+
 ## Operations
 
-All responses include X-Request-Id and X-API-Version. Errors use `{ "error": { "code", "message", "requestId" } }`. Respect Retry-After on HTTP 429 responses and use exponential backoff with jitter for retryable failures.
+All responses include X-Request-Id and X-API-Version. Errors use `{ "error": { "code", "message", "requestId" } }`. Respect Retry-After on HTTP 429 responses and use exponential backoff with jitter for retryable failures. Monthly quota failures use `monthly_quota_exceeded`.

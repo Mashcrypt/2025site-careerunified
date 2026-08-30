@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "outDir": ".api-test-dist",
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["node"]
+  },
+  "include": [
+    "tests/api-contract.test.ts",
+    "netlify/functions/_apiV1.ts",
+    "netlify/functions/_partnerWebhooks.ts",
+    "netlify/functions/_firebaseAdmin.ts",
+    "netlify/functions/_rateLimit.ts"
+  ]
+}

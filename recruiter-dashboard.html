@@ -815,7 +815,7 @@
     display:flex; gap:12px; align-items:center; margin-bottom: 12px;
   }
   .company-preview img {
-    width: 54px; height: 54px; border-radius: 14px; object-fit: cover; background:#eef2ff;
+    width: 54px; height: 54px; padding: 4px; border: 1px solid #dbeafe; border-radius: 8px; object-fit: contain; background:#fff;
   }
   .company-preview .name { font-weight: 800; font-size: 15px; }
   .company-preview .meta { color:#6b7280; font-size: 12px; margin-top: 2px; }
@@ -1714,14 +1714,57 @@
   .application-kpi span { color: #64748b; font-size: 13px; font-weight: 700; }
   .application-filters {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) minmax(180px, .45fr);
+    grid-template-columns: minmax(220px, 1fr) minmax(190px, .55fr) minmax(170px, .45fr);
     gap: 12px;
     margin-bottom: 18px;
+  }
+  .structured-hiring-toolbar {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 14px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+  .structured-hiring-toolbar-head,
+  .structured-hiring-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .structured-hiring-toolbar-head strong { color: #1e3a8a; font-size: 13px; }
+  .structured-hiring-toolbar-head span { color: #64748b; font-size: 12px; }
+  .structured-hiring-actions { justify-content: flex-start; }
+  .structured-hiring-actions > button,
+  .structured-hiring-actions select,
+  .structured-hiring-actions input {
+    height: 40px;
+    min-height: 40px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  .structured-hiring-actions select,
+  .structured-hiring-actions input {
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #1f2937;
+    font: inherit;
+    font-size: 12px;
+  }
+  .structured-hiring-actions input { min-width: 190px; }
+  .structured-hiring-actions .primary-btn {
+    justify-content: center;
+    padding: 0 12px;
   }
   .application-list { display: grid; gap: 12px; }
   .application-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(160px, .55fr) minmax(130px, .4fr) auto;
+    grid-template-columns: 24px minmax(0, 1.25fr) minmax(150px, .55fr) minmax(120px, .4fr) auto;
     gap: 16px;
     align-items: center;
     padding: 18px;
@@ -1729,6 +1772,9 @@
     border-radius: 8px;
     background: #fff;
   }
+  .application-row.selected { border-color: #2563eb; background: #f8fbff; }
+  .application-row-selection { display: grid; place-items: center; }
+  .application-row-selection input { width: 18px; height: 18px; accent-color: #2563eb; }
   .application-row h3 { margin: 0 0 4px; color: #1e3a8a; font-size: 1rem; }
   .application-row p { margin: 0; color: #64748b; font-size: 13px; }
   .candidate-identity {
@@ -1776,7 +1822,30 @@
   }
   .application-badge.match { background: #dcfce7; color: #166534; }
   .application-badge.review { background: #fef3c7; color: #92400e; }
-  .application-status { font-weight: 800; color: #374151; text-transform: capitalize; }
+  .application-badge.pool { background: #e0f2fe; color: #075985; }
+  .application-badge.score { background: #e0e7ff; color: #3730a3; }
+  .application-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .application-tag { padding: 3px 7px; border-radius: 4px; background: #e2e8f0; color: #334155; font-size: 10px; font-weight: 800; }
+  .application-meta-label {
+    margin: 0 0 4px !important;
+    color: #7c8799 !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px !important;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+  .application-meta-value {
+    display: block;
+    color: #172033;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .application-status { color: #374151; text-transform: capitalize; }
   .application-review-modal {
     position: fixed;
     inset: 0;
@@ -1797,6 +1866,124 @@
     background: #fff;
     box-shadow: 0 24px 60px rgba(15, 23, 42, .28);
   }
+  .structured-review-panel { width: min(1160px, 100%); }
+  .structured-section {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .structured-section:first-of-type { margin-top: 18px; }
+  .structured-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .structured-section-head h3 { margin: 0; color: #111827; font-size: 16px; }
+  .structured-section-head p { margin: 4px 0 0; color: #64748b; font-size: 12px; }
+  .match-summary {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    padding: 16px 0;
+  }
+  .match-score {
+    display: grid;
+    place-items: center;
+    width: 104px;
+    height: 104px;
+    border: 8px solid #bfdbfe;
+    border-radius: 50%;
+    background: #fff;
+    color: #1e3a8a;
+    text-align: center;
+  }
+  .match-score strong { display: block; font-size: 26px; line-height: 1; }
+  .match-score span { display: block; margin-top: 3px; color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  .match-score.strong { border-color: #22c55e; color: #166534; }
+  .match-score.potential { border-color: #60a5fa; }
+  .match-score.review { border-color: #fbbf24; color: #92400e; }
+  .match-summary-copy h4 { margin: 0 0 6px; color: #1f2937; font-size: 16px; }
+  .match-summary-copy p { margin: 0; color: #475569; font-size: 13px; line-height: 1.55; }
+  .match-disclaimer { margin-top: 8px !important; color: #64748b !important; font-size: 11px !important; }
+  .match-evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .match-evidence-column h4 { margin: 0 0 8px; color: #334155; font-size: 13px; }
+  .match-evidence-column ul { display: grid; gap: 7px; margin: 0; padding-left: 18px; color: #475569; font-size: 12px; line-height: 1.45; }
+  .match-criteria { display: grid; gap: 8px; margin-top: 16px; }
+  .match-criterion {
+    display: grid;
+    grid-template-columns: minmax(160px, .55fr) minmax(120px, .35fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #eef2f7;
+  }
+  .match-criterion strong { color: #334155; font-size: 12px; }
+  .match-criterion-meter { height: 7px; overflow: hidden; border-radius: 999px; background: #e2e8f0; }
+  .match-criterion-meter span { display: block; height: 100%; background: #2563eb; }
+  .match-criterion p { margin: 0; color: #64748b; font-size: 11px; line-height: 1.45; }
+  .scorecard-grid { display: grid; gap: 10px; }
+  .scorecard-row {
+    display: grid;
+    grid-template-columns: minmax(170px, .5fr) 110px 100px minmax(0, 1fr);
+    gap: 10px;
+    align-items: end;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2f7;
+  }
+  .scorecard-row label,
+  .structured-form label { display: grid; gap: 5px; color: #475569; font-size: 11px; font-weight: 800; }
+  .scorecard-row input,
+  .scorecard-row select,
+  .structured-form input,
+  .structured-form select,
+  .structured-form textarea {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+    font-size: 12px;
+  }
+  .structured-form textarea { min-height: 86px; resize: vertical; }
+  .structured-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .structured-form-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+  .comparison-grid-applications {
+    display: grid;
+    grid-template-columns: repeat(var(--compare-count, 2), minmax(250px, 1fr));
+    gap: 1px;
+    overflow-x: auto;
+    border: 1px solid #dbeafe;
+    background: #dbeafe;
+  }
+  .comparison-candidate { min-width: 250px; padding: 16px; background: #fff; }
+  .comparison-candidate h3 { margin: 0; color: #1e3a8a; font-size: 16px; }
+  .comparison-candidate > p { margin: 5px 0 12px; color: #64748b; font-size: 12px; }
+  .comparison-fact { padding: 9px 0; border-top: 1px solid #eef2f7; }
+  .comparison-fact span { display: block; color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  .comparison-fact strong { display: block; margin-top: 3px; color: #1f2937; font-size: 12px; }
+  .job-template-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 9px;
+    align-items: end;
+    margin-bottom: 18px;
+    padding: 13px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #f8fbff;
+  }
+  .job-template-bar .form-group { margin: 0; }
+  .job-template-bar button { min-height: 42px; }
   .application-review-head {
     display: flex;
     align-items: flex-start;
@@ -1826,11 +2013,78 @@
   .application-detail span { display: block; color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; }
   .application-detail strong { display: block; margin-top: 3px; color: #1f2937; overflow-wrap: anywhere; }
   .answer-list { display: grid; gap: 10px; margin: 12px 0 20px; }
-  .answer-item { padding: 13px; border-left: 3px solid #2563eb; background: #f8fbff; }
+  .answer-item {
+    padding: 13px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+  }
   .answer-item span { display: block; color: #475569; font-size: 12px; font-weight: 700; }
   .answer-item strong { display: block; margin-top: 5px; color: #111827; white-space: pre-wrap; }
   .application-review-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0; }
   .application-review-actions button { display: inline-flex; align-items: center; gap: 6px; }
+  .application-cv-preview {
+    margin: 18px 0 22px;
+    overflow: hidden;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #f8fafc;
+  }
+  .application-cv-preview[hidden] { display: none; }
+  .application-cv-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  .application-cv-preview-head h3 { margin: 0; font-size: 15px; color: #111827; }
+  .application-cv-preview-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 6px;
+    background: #fff;
+    color: #334155;
+    font-size: 21px;
+  }
+  .application-cv-preview-body {
+    min-height: 560px;
+    background: #eef2f7;
+  }
+  .application-cv-preview-frame {
+    display: block;
+    width: 100%;
+    height: min(72vh, 760px);
+    min-height: 560px;
+    border: 0;
+    background: #fff;
+  }
+  .application-cv-preview-text {
+    min-height: 560px;
+    margin: 0;
+    padding: 28px;
+    overflow: auto;
+    background: #fff;
+    color: #1f2937;
+    font: 14px/1.65 Arial, sans-serif;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .application-cv-preview-status {
+    display: grid;
+    min-height: 300px;
+    place-items: center;
+    padding: 28px;
+    color: #64748b;
+    text-align: center;
+  }
   .application-note { display: grid; gap: 8px; margin-top: 18px; }
   .application-note textarea { min-height: 96px; }
   .application-communication {
@@ -1888,6 +2142,416 @@
   .application-message-item summary span { color: #64748b; font-size: 11px; font-weight: 600; }
   .application-message-item p { margin: 9px 0 0; color: #334155; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
   .application-message-empty { margin: 0; color: #64748b; font-size: 12px; }
+
+  /* Candidate review workspace */
+  #applicationReviewModal {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(17, 24, 39, .42);
+  }
+  #applicationReviewModal .candidate-review-panel {
+    width: min(980px, calc(100vw - 92px));
+    height: calc(100vh - 40px);
+    max-height: calc(100vh - 40px);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #e7e9ee;
+    border-radius: 8px;
+    box-shadow: 0 24px 70px rgba(17, 24, 39, .2);
+  }
+  #applicationReviewContent {
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+  .candidate-review-shell {
+    min-height: 100%;
+    background: #fff;
+    color: #111827;
+    font-family: 'Poppins', sans-serif;
+  }
+  .candidate-review-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) auto auto;
+    align-items: center;
+    gap: 18px;
+    min-height: 72px;
+    padding: 14px 24px;
+    border-bottom: 1px solid #e9ebef;
+    background: rgba(255, 255, 255, .98);
+  }
+  .candidate-review-toolbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .candidate-review-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .candidate-review-nav button,
+  .candidate-review-close {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #667085;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .candidate-review-nav button:hover:not(:disabled),
+  .candidate-review-nav button:focus-visible,
+  .candidate-review-close:hover,
+  .candidate-review-close:focus-visible {
+    background: #f5f6f8;
+    color: #111827;
+  }
+  .candidate-review-nav button:disabled { opacity: .38; cursor: default; }
+  .candidate-review-close {
+    width: 38px;
+    padding: 0;
+    border: 1px solid #e1e4e9;
+    border-radius: 50%;
+    color: #344054;
+    font-size: 21px;
+  }
+  .candidate-review-profile {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px;
+  }
+  .candidate-review-profile-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .candidate-review-profile .candidate-avatar.large {
+    width: 68px;
+    height: 68px;
+    flex-basis: 68px;
+    border: 0;
+    background: #eef2f7;
+    color: #344054;
+    font-size: 17px;
+  }
+  .candidate-review-profile h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .candidate-review-role {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0 0;
+    color: #667085;
+    font-size: 12px;
+  }
+  .candidate-review-role i { font-size: 15px; }
+  .candidate-review-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 13px;
+  }
+  .candidate-review-chips .application-badge {
+    min-height: 34px;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #f5f6f8;
+    color: #344054;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .candidate-review-chips .application-badge.match { color: #16803c; }
+  .candidate-review-chips .application-badge.review { color: #a15c07; }
+  .candidate-review-profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 9px;
+  }
+  .candidate-header-action {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 15px;
+    border: 1px solid #dfe3e8;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    text-decoration: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .candidate-header-action:hover,
+  .candidate-header-action:focus-visible { border-color: #b8c0cc; color: #111827; }
+  .candidate-header-action.primary {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+  }
+  .candidate-header-action svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    display: block;
+    stroke: currentColor;
+  }
+  .candidate-header-action svg.candidate-header-action-brand {
+    fill: currentColor;
+    stroke: none;
+  }
+  .candidate-review-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0 24px 20px;
+    overflow: hidden;
+    border: 1px solid #e7e9ee;
+    border-radius: 8px;
+  }
+  .candidate-review-fact {
+    min-width: 0;
+    padding: 15px 16px;
+    border-right: 1px solid #edf0f3;
+  }
+  .candidate-review-fact:last-child { border-right: 0; }
+  .candidate-review-fact span {
+    display: block;
+    margin-bottom: 5px;
+    color: #98a2b3;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .candidate-review-fact strong {
+    display: block;
+    overflow: hidden;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .candidate-review-tabs {
+    position: sticky;
+    top: 72px;
+    z-index: 7;
+    display: flex;
+    gap: 24px;
+    padding: 0 24px;
+    overflow-x: auto;
+    border-bottom: 1px solid #e9ebef;
+    background: rgba(255, 255, 255, .98);
+    scrollbar-width: none;
+  }
+  .candidate-review-tabs::-webkit-scrollbar { display: none; }
+  .candidate-review-tab {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 13px 0 12px;
+    border: 0;
+    background: transparent;
+    color: #667085;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .candidate-review-tab::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: transparent;
+  }
+  .candidate-review-tab.active { color: #1d4ed8; }
+  .candidate-review-tab.active::after { background: #2563eb; }
+  .candidate-review-tab-panel { padding: 24px; }
+  .candidate-review-tab-panel[hidden] { display: none; }
+  .candidate-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .candidate-panel-heading h3 { margin: 0; color: #111827; font-size: 16px; font-weight: 600; }
+  .candidate-panel-heading p { margin: 4px 0 0; color: #667085; font-size: 12px; }
+  .candidate-review-shell .application-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #e7e9ee;
+    border-radius: 8px;
+  }
+  .candidate-review-shell .application-detail {
+    padding: 14px 16px;
+    border: 0;
+    border-right: 1px solid #edf0f3;
+    border-bottom: 1px solid #edf0f3;
+    border-radius: 0;
+    background: #fff;
+  }
+  .candidate-review-shell .application-detail:nth-child(2n) { border-right: 0; }
+  .candidate-review-shell .application-detail:nth-last-child(-n + 2) { border-bottom: 0; }
+  .candidate-review-shell .application-detail span {
+    color: #98a2b3;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: none;
+  }
+  .candidate-review-shell .application-detail strong,
+  .candidate-review-shell .application-detail a {
+    color: #111827;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .candidate-document-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #f7f7f8;
+  }
+  .candidate-document-copy { display: flex; align-items: center; gap: 11px; min-width: 0; }
+  .candidate-document-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    border-radius: 6px;
+    background: #fff;
+    color: #dc2626;
+    font-size: 18px;
+  }
+  .candidate-document-copy strong { display: block; color: #111827; font-size: 12px; font-weight: 500; }
+  .candidate-document-copy span { display: block; margin-top: 2px; color: #98a2b3; font-size: 10px; }
+  .candidate-document-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+  .candidate-document-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 9px;
+    border: 0;
+    background: transparent;
+    color: #344054;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .candidate-document-actions button:hover { color: #1d4ed8; }
+  .candidate-cover-letter {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #edf0f3;
+  }
+  .candidate-cover-letter h3 { margin: 0 0 9px; color: #111827; font-size: 14px; font-weight: 600; }
+  .candidate-cover-letter p { margin: 0; color: #475467; font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
+  .candidate-review-shell .answer-list { gap: 0; margin: 0; border-top: 1px solid #edf0f3; }
+  .candidate-review-shell .answer-item {
+    padding: 16px 0;
+    border: 0;
+    border-bottom: 1px solid #edf0f3;
+    border-radius: 0;
+    background: transparent;
+  }
+  .candidate-review-shell .answer-item span { color: #667085; font-size: 11px; font-weight: 500; }
+  .candidate-review-shell .answer-item strong { margin-top: 7px; color: #111827; font-size: 13px; font-weight: 500; }
+  .candidate-review-shell .application-communication {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .candidate-review-shell .application-message-composer {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top-color: #edf0f3;
+  }
+  .candidate-review-shell .application-message-history { margin-top: 20px; }
+  .candidate-review-shell .application-message-item { border-color: #e7e9ee; border-radius: 6px; }
+  .candidate-hiring-status {
+    padding: 16px;
+    border: 1px solid #e7e9ee;
+    border-radius: 8px;
+  }
+  .candidate-hiring-status .application-review-actions { margin-bottom: 0; }
+  .candidate-review-shell .application-note {
+    padding: 18px 0 4px;
+    border-bottom: 1px solid #edf0f3;
+  }
+  .candidate-review-shell .structured-section { border-top-color: #edf0f3; }
+
+  @media (max-width: 760px) {
+    #applicationReviewModal { padding: 0; }
+    #applicationReviewModal .candidate-review-panel {
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      border: 0;
+      border-radius: 0;
+    }
+    .candidate-review-toolbar {
+      grid-template-columns: 1fr auto;
+      min-height: 64px;
+      padding: 10px 16px;
+    }
+    .candidate-review-nav { display: none; }
+    .candidate-review-profile { flex-direction: column; padding: 20px 16px; }
+    .candidate-review-profile-actions { width: 100%; justify-content: flex-start; }
+    .candidate-header-action { flex: 1 1 auto; }
+    .candidate-review-facts { grid-template-columns: 1fr; margin: 0 16px 18px; }
+    .candidate-review-fact { border-right: 0; border-bottom: 1px solid #edf0f3; }
+    .candidate-review-fact:last-child { border-bottom: 0; }
+    .candidate-review-tabs { top: 64px; gap: 20px; padding: 0 16px; }
+    .candidate-review-tab-panel { padding: 20px 16px 28px; }
+    .candidate-review-shell .application-detail-grid { grid-template-columns: 1fr; }
+    .candidate-review-shell .application-detail,
+    .candidate-review-shell .application-detail:nth-child(2n),
+    .candidate-review-shell .application-detail:nth-last-child(-n + 2) {
+      border-right: 0;
+      border-bottom: 1px solid #edf0f3;
+    }
+    .candidate-review-shell .application-detail:last-child { border-bottom: 0; }
+    .candidate-document-row { align-items: flex-start; flex-direction: column; }
+    .candidate-document-actions { width: 100%; justify-content: flex-start; }
+    .candidate-panel-heading,
+    .application-communication-head { flex-direction: column; }
+  }
 
   /* ======================================================
      RECRUITER WORK INBOX + VACANCY WORKSPACE
@@ -2190,10 +2854,25 @@
     .chart-grid { grid-template-columns: 1fr; }
     .application-kpis { grid-template-columns: 1fr; }
     .application-filters { grid-template-columns: 1fr; }
-    .application-row { grid-template-columns: 1fr; align-items: start; }
+    .application-row { grid-template-columns: 24px minmax(0, 1fr); align-items: start; }
+    .application-row > :not(.application-row-selection) { grid-column: 2; }
+    .structured-hiring-actions > * { flex: 1 1 160px; }
+    .structured-hiring-actions input { min-width: 0; }
     .screening-toolbar,.screening-config { grid-template-columns: 1fr; }
     .application-detail-grid { grid-template-columns: 1fr; }
+    .match-summary { grid-template-columns: 1fr; }
+    .match-score { width: 88px; height: 88px; }
+    .match-evidence-grid,.structured-form-grid { grid-template-columns: 1fr; }
+    .match-criterion { grid-template-columns: 1fr; }
+    .scorecard-row { grid-template-columns: 1fr 1fr; }
+    .scorecard-row > label:last-child { grid-column: 1 / -1; }
+    .job-template-bar { grid-template-columns: 1fr; }
     .application-review-panel { padding: 18px; }
+    .application-cv-preview-body,
+    .application-cv-preview-frame,
+    .application-cv-preview-text { min-height: 440px; }
+    .application-cv-preview-frame { height: 68vh; }
+    .application-cv-preview-text { padding: 18px; }
     .application-message-grid { grid-template-columns: 1fr; }
     .application-communication-head { flex-direction: column; }
     .application-communication-head .primary-btn,
@@ -2276,7 +2955,10 @@
       aria-label="Open recruiter inbox"
       onclick="openRecruiterInboxShortcut()"
     >
-      <i class='bx bx-envelope' aria-hidden="true"></i>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+      </svg>
       <span class="dashboard-inbox-badge" data-recruiter-inbox-badge hidden>0</span>
     </button>
     <button class="menu-toggle" type="button" aria-label="Open dashboard menu" onclick="toggleMobileSidebar()">
@@ -2328,7 +3010,10 @@
       aria-label="Open recruiter inbox"
       onclick="openRecruiterInboxShortcut()"
     >
-      <i class='bx bx-envelope' aria-hidden="true"></i>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+      </svg>
       <span class="dashboard-inbox-badge" data-recruiter-inbox-badge hidden>0</span>
     </button>
   </header>
@@ -2534,7 +3219,7 @@
                   <label class="company-logo-select" for="cp_logo_file">
                     <i class='bx bx-upload'></i> Choose Logo
                   </label>
-                  <p style="margin:7px 0 0;">PNG, JPG or WebP. Maximum 2MB.</p>
+                  <p style="margin:7px 0 0;">PNG, JPG or WebP. Maximum 2MB. At least 400 x 200 pixels.</p>
                 </div>
               </div>
               <div class="company-logo-status" id="companyLogoStatus">No image selected.</div>
@@ -2774,6 +3459,20 @@
                 <p class="job-wizard-kicker">Step 1</p>
                 <h3>Basic Information</h3>
               </div>
+            </div>
+
+            <div class="job-template-bar" aria-label="Reusable hiring templates">
+              <div class="form-group">
+                <label for="jobTemplateSelect">Start from a hiring template</label>
+                <select id="jobTemplateSelect">
+                  <option value="">Choose a template</option>
+                  <option value="builtin_graduate">Graduate or internship role</option>
+                  <option value="builtin_admin">Administration and support role</option>
+                  <option value="builtin_technical">Technical or engineering role</option>
+                </select>
+              </div>
+              <button class="primary-btn btn-ghost" type="button" id="applyJobTemplateBtn"><i class='bx bx-copy-alt'></i> Use Template</button>
+              <button class="primary-btn btn-ghost" type="button" id="saveJobTemplateBtn"><i class='bx bx-save'></i> Save as Template</button>
             </div>
 
             <div class="job-form-grid">
@@ -3217,6 +3916,7 @@
     </div>
 
     <div class="application-filters">
+      <input id="applicationSearchFilter" type="search" placeholder="Search candidate, role, location, or tag" aria-label="Search applications">
       <select id="applicationJobFilter"><option value="">All jobs</option></select>
       <select id="applicationStatusFilter">
         <option value="">All statuses</option>
@@ -3229,6 +3929,30 @@
         <option value="unsuccessful">Unsuccessful</option>
         <option value="withdrawn">Withdrawn</option>
       </select>
+    </div>
+
+    <div class="structured-hiring-toolbar" id="structuredHiringToolbar">
+      <div class="structured-hiring-toolbar-head">
+        <label><input type="checkbox" id="selectAllApplications"> Select all in this view</label>
+        <div><strong id="selectedApplicationsCount">0 selected</strong> <span>Select 2–5 applicants to compare.</span></div>
+      </div>
+      <div class="structured-hiring-actions">
+        <button class="primary-btn btn-ghost" id="compareApplicationsBtn" type="button" disabled><i class='bx bx-git-compare'></i> Compare</button>
+        <select id="bulkApplicationStatus" aria-label="Bulk application stage">
+          <option value="">Move to stage</option>
+          <option value="viewed">Viewed</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="interview">Interview</option>
+          <option value="offer">Offer</option>
+          <option value="hired">Hired</option>
+          <option value="unsuccessful">Unsuccessful</option>
+        </select>
+        <button class="primary-btn btn-ghost" id="applyBulkStatusBtn" type="button" disabled><i class='bx bx-transfer'></i> Apply Stage</button>
+        <input id="bulkApplicationTag" type="text" maxlength="40" placeholder="Add tag, e.g. Finance">
+        <button class="primary-btn btn-ghost" id="addBulkTagBtn" type="button" disabled><i class='bx bx-tag'></i> Add Tag</button>
+        <button class="primary-btn btn-ghost" id="addToTalentPoolBtn" type="button" disabled><i class='bx bx-group'></i> Add to Talent Pool</button>
+        <button class="primary-btn btn-ghost" id="exportApplicationsBtn" type="button"><i class='bx bx-download'></i> Export CSV</button>
+      </div>
     </div>
 
     <div class="application-list" id="recruiterApplicationsList">
@@ -3520,6 +4244,9 @@
         <button class="primary-btn btn-ghost" id="refreshAnalyticsBtn">
           <i class='bx bx-refresh'></i> Refresh
         </button>
+        <button class="primary-btn btn-ghost" id="exportAnalyticsBtn">
+          <i class='bx bx-download'></i> Export CSV
+        </button>
       </div>
     </div>
 
@@ -3541,6 +4268,21 @@
         <div class="kpi-value" id="kpiAvg">0</div>
         <div class="kpi-sub" id="kpiAvgSub">Helpful to price your listings</div>
       </div>
+      <div class="a-card">
+        <div class="kpi-title">Shortlist rate</div>
+        <div class="kpi-value" id="kpiShortlistRate">0%</div>
+        <div class="kpi-sub">Applications reaching shortlist or later</div>
+      </div>
+      <div class="a-card">
+        <div class="kpi-title">Hire rate</div>
+        <div class="kpi-value" id="kpiHireRate">0%</div>
+        <div class="kpi-sub">Hires from submitted applications</div>
+      </div>
+      <div class="a-card">
+        <div class="kpi-title">Average time to review</div>
+        <div class="kpi-value" id="kpiReviewTime">—</div>
+        <div class="kpi-sub">From submission to first open</div>
+      </div>
     </div>
 
     <div class="chart-grid">
@@ -3555,6 +4297,12 @@
         <h3>Jobs by status</h3>
         <div class="chart-wrap">
           <canvas id="jobsStatusChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Application funnel</h3>
+        <div class="chart-wrap">
+          <canvas id="applicationFunnelChart"></canvas>
         </div>
       </div>
     </div>
@@ -3604,8 +4352,14 @@
 </div>
 
 <div class="application-review-modal" id="applicationReviewModal" hidden>
-  <div class="application-review-panel" role="dialog" aria-modal="true" aria-labelledby="applicationReviewTitle">
+  <div class="application-review-panel candidate-review-panel" role="dialog" aria-modal="true" aria-labelledby="applicationReviewTitle">
     <div id="applicationReviewContent"></div>
+  </div>
+</div>
+
+<div class="application-review-modal" id="structuredHiringModal" hidden>
+  <div class="application-review-panel structured-review-panel" role="dialog" aria-modal="true" aria-labelledby="structuredHiringTitle">
+    <div id="structuredHiringContent"></div>
   </div>
 </div>
 
@@ -3742,7 +4496,10 @@ let screeningQuestionsDraft = [];
 let jobFaqsDraft = [];
 let currentJobWizardStep = 1;
 let recruiterApplicationsCache = [];
+let recruiterApplicationsLoaded = false;
 let activeApplicationId = null;
+let activeApplicationCvBlobUrl = "";
+let selectedApplicationIds = new Set();
 
 const JOB_WIZARD_STEP_COUNT = 5;
 const JOB_HIRING_PROCESS = [
@@ -3753,6 +4510,54 @@ const JOB_HIRING_PROCESS = [
   'Offer',
   'Hired'
 ];
+
+const BUILTIN_JOB_TEMPLATES = {
+  builtin_graduate: {
+    name: 'Graduate or internship role',
+    values: {
+      category: 'Youth Opportunities',
+      type: 'Graduate Programme',
+      experience: 'Graduate',
+      workPreference: 'On Site',
+      minimumQualification: "Bachelor's Degree",
+      salaryType: 'Negotiable',
+      description: 'Join our early-career programme and gain practical experience while contributing to meaningful team projects.',
+      responsibilities: '- Support day-to-day team projects and deliver assigned work on time.\n- Learn company systems, standards, and professional practices.\n- Collaborate with colleagues and communicate progress clearly.',
+      requirements: '- Recently completed or currently completing a relevant qualification.\n- Strong communication, learning, and problem-solving ability.\n- Evidence of genuine interest in the field.',
+    },
+    screeningQuestions: ['work_authorisation', 'qualification', 'relocation', 'notice_period'],
+  },
+  builtin_admin: {
+    name: 'Administration and support role',
+    values: {
+      category: 'Other',
+      type: 'Full Time',
+      experience: 'Entry',
+      workPreference: 'On Site',
+      minimumQualification: 'Matric / Grade 12',
+      salaryType: 'Negotiable',
+      description: 'Support an organised, service-focused team by keeping records, communication, and daily administration accurate and up to date.',
+      responsibilities: '- Maintain accurate records and documents.\n- Respond professionally to routine enquiries.\n- Coordinate schedules, correspondence, and administrative tasks.',
+      requirements: '- Strong written and verbal communication.\n- Careful attention to detail and reliable follow-through.\n- Confidence using common office software.',
+    },
+    screeningQuestions: ['work_authorisation', 'qualification', 'experience', 'notice_period'],
+  },
+  builtin_technical: {
+    name: 'Technical or engineering role',
+    values: {
+      category: 'Engineering',
+      type: 'Full Time',
+      experience: 'Mid',
+      workPreference: 'On Site',
+      minimumQualification: "Bachelor's Degree",
+      salaryType: 'Range',
+      description: 'Join a delivery-focused technical team responsible for reliable, safe, and well-documented project outcomes.',
+      responsibilities: '- Deliver assigned technical work against agreed requirements.\n- Investigate issues and document practical solutions.\n- Collaborate with cross-functional stakeholders and communicate technical risks.',
+      requirements: '- Relevant technical qualification or equivalent demonstrated experience.\n- Evidence of practical problem solving and quality-focused delivery.\n- Ability to explain technical decisions clearly.',
+    },
+    screeningQuestions: ['work_authorisation', 'qualification', 'experience', 'drivers_licence', 'travel'],
+  },
+};
 
 const SCREENING_QUESTION_LIBRARY = {
   work_authorisation: {
@@ -3828,7 +4633,7 @@ const SCREENING_QUESTION_LIBRARY = {
       "siSwati",
       "Tshivenda",
       "Xitsonga",
-      "South African Sign Language (SASL)"
+      "South African Sign Language"
     ],
     criteria: null
   },
@@ -4872,6 +5677,8 @@ let jobDraftSaveTimer = null;
 ====================================================== */
 let appsOverTimeChart = null;
 let jobsStatusChart = null;
+let applicationFunnelChart = null;
+let latestAnalyticsExportRows = [];
 
 /* ======================================================
    CV LIBRARY existing vars (kept)
@@ -4945,10 +5752,36 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('cancelEditBtn')?.addEventListener('click', () => cancelEditJob());
   setupApplicationBuilder();
   setupJobWizard();
+  setupJobTemplates();
   setupJobDraftRecovery();
   document.getElementById('refreshApplicationsBtn')?.addEventListener('click', loadRecruiterApplications);
   document.getElementById('applicationJobFilter')?.addEventListener('change', renderRecruiterApplications);
   document.getElementById('applicationStatusFilter')?.addEventListener('change', renderRecruiterApplications);
+  document.getElementById('applicationSearchFilter')?.addEventListener('input', renderRecruiterApplications);
+  document.getElementById('selectAllApplications')?.addEventListener('change', event => {
+    let visibleIds = [];
+    try { visibleIds = JSON.parse(event.target.dataset.visibleIds || '[]'); } catch { visibleIds = []; }
+    visibleIds.forEach(id => event.target.checked ? selectedApplicationIds.add(id) : selectedApplicationIds.delete(id));
+    renderRecruiterApplications();
+  });
+  document.getElementById('compareApplicationsBtn')?.addEventListener('click', openApplicationComparison);
+  document.getElementById('applyBulkStatusBtn')?.addEventListener('click', () => {
+    const status = document.getElementById('bulkApplicationStatus')?.value || '';
+    if (!status) return showToast('warn', 'Choose a stage', 'Select the stage for the chosen applications.', 3000);
+    runBulkApplicationAction({status}, `Moved ${selectedApplicationIds.size} application${selectedApplicationIds.size === 1 ? '' : 's'} to ${applicationStatusLabel(status)}.`);
+  });
+  document.getElementById('addBulkTagBtn')?.addEventListener('click', () => {
+    const tag = dashboardText(document.getElementById('bulkApplicationTag')?.value).slice(0, 40);
+    if (!tag) return showToast('warn', 'Add a tag', 'Enter a useful candidate tag first.', 3000);
+    runBulkApplicationAction({addTags: [tag]}, `Added the “${tag}” tag to the selected applications.`);
+  });
+  document.getElementById('addToTalentPoolBtn')?.addEventListener('click', () => {
+    runBulkApplicationAction({talentPool: true}, 'Added the selected candidates to your talent pool.');
+  });
+  document.getElementById('exportApplicationsBtn')?.addEventListener('click', () => {
+    const selected = selectedRecruiterApplications();
+    exportRecruiterApplications(selected.length ? selected : recruiterApplicationsCache);
+  });
   loadRecruiterApplications();
 
   document.getElementById('refreshRecruiterInboxBtn')?.addEventListener('click', refreshRecruiterInbox);
@@ -4973,6 +5806,11 @@ onAuthStateChanged(auth, async (user) => {
   // Analytics
   document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', () => updateCharts());
   document.getElementById('analyticsRange')?.addEventListener('change', () => updateCharts());
+  document.getElementById('exportAnalyticsBtn')?.addEventListener('click', async () => {
+    if (!latestAnalyticsExportRows.length) await updateCharts();
+    if (!latestAnalyticsExportRows.length) return;
+    downloadCsv(`career-unified-recruiter-analytics-${new Date().toISOString().slice(0, 10)}.csv`, latestAnalyticsExportRows);
+  });
 
   // Keep mobile header in sync + initial auto-fill
   handleMobileLayout();
@@ -5175,6 +6013,23 @@ function renderCompanyPreview(p) {
 
 let companyLogoObjectUrl = "";
 
+function getCompanyLogoDimensions(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      const dimensions = {width: image.naturalWidth, height: image.naturalHeight};
+      URL.revokeObjectURL(objectUrl);
+      resolve(dimensions);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("The selected image could not be read."));
+    };
+    image.src = objectUrl;
+  });
+}
+
 function setCompanyLogoThumb(url) {
   const thumb = document.getElementById("cp_logo_thumb");
   if (!thumb) return;
@@ -5205,6 +6060,21 @@ async function uploadCompanyLogo(file) {
   if (file.size > 2 * 1024 * 1024) {
     setCompanyLogoStatus("Logo file size must be less than 2MB.", "error");
     showToast("warn", "Logo is too large", "Choose an image smaller than 2MB.", 3800);
+    return;
+  }
+
+  try {
+    const dimensions = await getCompanyLogoDimensions(file);
+    if (dimensions.width < 400 || dimensions.height < 200) {
+      const message = `Choose a logo that is at least 400 x 200 pixels. This image is ${dimensions.width} x ${dimensions.height}.`;
+      setCompanyLogoStatus(message, "error");
+      showToast("warn", "Logo resolution is too low", message, 4800);
+      return;
+    }
+  } catch (error) {
+    const message = error.message || "The selected image could not be read.";
+    setCompanyLogoStatus(message, "error");
+    showToast("warn", "Logo could not be read", message, 4200);
     return;
   }
 
@@ -5499,6 +6369,114 @@ function collectLocalJobDraft() {
     jobFaqs: collectJobFaqs(),
     facilities: collectJobFacilities()
   };
+}
+
+function customHiringTemplates() {
+  return Array.isArray(recruiterData?.hiringTemplates)
+    ? recruiterData.hiringTemplates.filter(template => template?.id && template?.name).slice(0, 10)
+    : [];
+}
+
+function renderJobTemplateOptions() {
+  const select = document.getElementById('jobTemplateSelect');
+  if (!select) return;
+  const selected = select.value;
+  select.innerHTML = `
+    <option value="">Choose a template</option>
+    ${Object.entries(BUILTIN_JOB_TEMPLATES).map(([id, template]) => `<option value="${escapeDashboard(id)}">${escapeDashboard(template.name)}</option>`).join('')}
+    ${customHiringTemplates().length ? '<optgroup label="My templates">' : ''}
+    ${customHiringTemplates().map(template => `<option value="custom_${escapeDashboard(template.id)}">${escapeDashboard(template.name)}</option>`).join('')}
+    ${customHiringTemplates().length ? '</optgroup>' : ''}`;
+  if (Array.from(select.options).some(option => option.value === selected)) select.value = selected;
+}
+
+function resolveHiringTemplate(templateId) {
+  if (BUILTIN_JOB_TEMPLATES[templateId]) return BUILTIN_JOB_TEMPLATES[templateId];
+  if (!templateId.startsWith('custom_')) return null;
+  return customHiringTemplates().find(template => `custom_${template.id}` === templateId) || null;
+}
+
+function applyHiringTemplate(template) {
+  const form = document.getElementById('jobForm');
+  if (!form || !template) return;
+  Object.entries(template.values || {}).forEach(([name, value]) => {
+    const field = form.elements.namedItem(name);
+    if (field && typeof field.value !== 'undefined') field.value = value ?? '';
+  });
+
+  const questions = Array.isArray(template.screeningQuestions) ? template.screeningQuestions : [];
+  screeningQuestionsDraft = questions.map((question, index) => {
+    if (typeof question === 'string' && SCREENING_QUESTION_LIBRARY[question]) {
+      return normalizeScreeningQuestion({
+        ...SCREENING_QUESTION_LIBRARY[question],
+        templateKey: question,
+        id: questionId('template')
+      }, index);
+    }
+    return normalizeScreeningQuestion({...question, id: questionId('template')}, index);
+  }).slice(0, 8);
+  jobFaqsDraft = Array.isArray(template.jobFaqs)
+    ? template.jobFaqs.map(normalizeJobFaq).slice(0, 5)
+    : [];
+  setJobFacilities(template.facilities || []);
+  updateApplicationMethodUI();
+  renderScreeningQuestions();
+  renderJobFaqs();
+  updateSalaryFieldsUI();
+  renderJobConfirmationPreview();
+  scheduleJobDraftSave();
+  showToast('success', 'Template applied', 'Review the role details and replace any example wording before publishing.', 3600);
+}
+
+async function saveCurrentHiringTemplate() {
+  const draft = collectLocalJobDraft();
+  if (!draft || !hasMeaningfulJobDraft(draft.values)) {
+    showToast('warn', 'Add role details first', 'Complete the role outline before saving it as a reusable template.', 3600);
+    return;
+  }
+  const requestedName = prompt('Template name, for example Finance graduate role:');
+  const name = dashboardText(requestedName).slice(0, 80);
+  if (!name) return;
+
+  const values = {...draft.values};
+  delete values.deadline;
+  delete values.applyLink;
+  const template = {
+    id: `template_${Date.now().toString(36)}`,
+    name,
+    values,
+    screeningQuestions: draft.screeningQuestions,
+    jobFaqs: draft.jobFaqs,
+    facilities: draft.facilities,
+  };
+  const hiringTemplates = [...customHiringTemplates(), template].slice(-10);
+  try {
+    await setDoc(doc(db, 'recruiters', currentRecruiter.uid), {
+      hiringTemplates,
+      hiringTemplatesUpdatedAt: serverTimestamp(),
+    }, {merge: true});
+    recruiterData = {...(recruiterData || {}), hiringTemplates};
+    renderJobTemplateOptions();
+    document.getElementById('jobTemplateSelect').value = `custom_${template.id}`;
+    showToast('success', 'Template saved', 'Your team can reuse this job structure from the posting wizard.', 3200);
+  } catch (error) {
+    console.error('save hiring template error:', error);
+    showToast('error', 'Template not saved', 'Could not save this hiring template. Please try again.', 3800);
+  }
+}
+
+function setupJobTemplates() {
+  renderJobTemplateOptions();
+  document.getElementById('applyJobTemplateBtn')?.addEventListener('click', () => {
+    const id = document.getElementById('jobTemplateSelect')?.value || '';
+    const template = resolveHiringTemplate(id);
+    if (!template) {
+      showToast('warn', 'Choose a template', 'Select a hiring template first.', 2800);
+      return;
+    }
+    applyHiringTemplate(template);
+  });
+  document.getElementById('saveJobTemplateBtn')?.addEventListener('click', saveCurrentHiringTemplate);
 }
 
 function saveJobDraftLocally() {
@@ -6177,6 +7155,22 @@ function applicationDate(value) {
     : "Date unavailable";
 }
 
+function applicationAvailability(application) {
+  const candidate = application?.candidateSnapshot || {};
+  const savedAvailability = dashboardText(candidate.availability);
+  if (savedAvailability) return savedAvailability;
+
+  const noticeAnswer = (Array.isArray(application?.answers) ? application.answers : []).find(answer => {
+    const templateKey = dashboardText(answer?.templateKey).toLowerCase();
+    const label = dashboardText(answer?.label).toLowerCase();
+    return templateKey === "notice_period" || /notice period|availability|available to start/.test(label);
+  });
+  const answer = Array.isArray(noticeAnswer?.answer)
+    ? noticeAnswer.answer.join(", ")
+    : noticeAnswer?.answer;
+  return dashboardText(answer, "Not supplied");
+}
+
 function applicationStatusLabel(value) {
   return APPLICATION_STATUS_LABELS[value] || dashboardText(value, "Submitted");
 }
@@ -6436,13 +7430,18 @@ async function loadRecruiterApplications() {
   list.innerHTML = `<p class="muted">Loading applications...</p>`;
 
   try {
-    const applicationQuery = query(
-      collection(db, "applications"),
-      where("recruiterId", "==", currentRecruiter.uid)
-    );
-    const snapshot = await getDocs(applicationQuery);
-    const applications = snapshot.docs
-      .map(application => ({id: application.id, ...application.data()}))
+    const token = await currentRecruiter.getIdToken();
+    const response = await fetch('/.netlify/functions/get-recruiter-applications', {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const reference = dashboardText(result.reference);
+      throw new Error(reference
+        ? `${result.error || 'Applications could not be loaded.'} Support reference: ${reference}.`
+        : result.error || 'Applications could not be loaded.');
+    }
+    const applications = (Array.isArray(result.applications) ? result.applications : [])
       .sort((left, right) => {
         const leftDate = toDateValue(left.submittedAt)?.getTime() || 0;
         const rightDate = toDateValue(right.submittedAt)?.getTime() || 0;
@@ -6456,6 +7455,9 @@ async function loadRecruiterApplications() {
         profilePhotoURL: safeCandidatePhotoURL(application.candidateSnapshot?.profilePhotoURL)
       }
     }));
+    recruiterApplicationsLoaded = true;
+    const availableApplicationIds = new Set(recruiterApplicationsCache.map(application => application.id));
+    selectedApplicationIds = new Set(Array.from(selectedApplicationIds).filter(id => availableApplicationIds.has(id)));
 
     const total = recruiterApplicationsCache.length;
     const waiting = recruiterApplicationsCache.filter(application => application.status === "submitted").length;
@@ -6487,7 +7489,7 @@ async function loadRecruiterApplications() {
     if (selectedWorkspaceJobId) renderJobWorkspace();
   } catch (error) {
     console.error("loadRecruiterApplications error:", error);
-    list.innerHTML = `<p style="color:#b91c1c;">Applications could not be loaded. Please refresh and try again.</p>`;
+    list.innerHTML = `<p style="color:#b91c1c;">${escapeDashboard(error?.message, 'Applications could not be loaded. Please refresh and try again.')}</p>`;
   }
 }
 
@@ -6496,10 +7498,28 @@ function renderRecruiterApplications() {
   if (!list) return;
   const jobId = document.getElementById("applicationJobFilter")?.value || "";
   const status = document.getElementById("applicationStatusFilter")?.value || "";
+  const search = dashboardText(document.getElementById("applicationSearchFilter")?.value).toLowerCase();
   const applications = recruiterApplicationsCache.filter(application =>
     (!jobId || application.jobId === jobId) &&
-    (!status || application.status === status)
+    (!status || application.status === status) &&
+    (!search || [
+      application.candidateSnapshot?.fullName,
+      application.candidateSnapshot?.location,
+      application.candidateSnapshot?.qualification,
+      application.jobSnapshot?.title,
+      ...(Array.isArray(application.tags) ? application.tags : []),
+    ].some(value => dashboardText(value).toLowerCase().includes(search)))
   );
+
+  const visibleIds = new Set(applications.map(application => application.id));
+  const selectAll = document.getElementById('selectAllApplications');
+  if (selectAll) {
+    const selectedVisible = applications.filter(application => selectedApplicationIds.has(application.id)).length;
+    selectAll.checked = applications.length > 0 && selectedVisible === applications.length;
+    selectAll.indeterminate = selectedVisible > 0 && selectedVisible < applications.length;
+    selectAll.dataset.visibleIds = JSON.stringify(Array.from(visibleIds));
+  }
+  updateStructuredHiringToolbar();
 
   if (!applications.length) {
     list.innerHTML = `
@@ -6514,8 +7534,15 @@ function renderRecruiterApplications() {
   list.innerHTML = applications.map(application => {
     const candidate = application.candidateSnapshot || {};
     const job = application.jobSnapshot || {};
+    const tags = Array.isArray(application.tags) ? application.tags.slice(0, 6) : [];
+    const matchScore = Number(application.matchAnalysis?.score);
+    const scorecardScore = Number(application.scorecard?.weightedScore);
+    const selected = selectedApplicationIds.has(application.id);
     return `
-      <article class="application-row">
+      <article class="application-row${selected ? ' selected' : ''}" data-application-row="${escapeDashboard(application.id)}">
+        <label class="application-row-selection" title="Select candidate">
+          <input type="checkbox" data-select-application="${escapeDashboard(application.id)}" ${selected ? 'checked' : ''} aria-label="Select ${escapeDashboard(candidate.fullName, 'candidate')}">
+        </label>
         <div class="candidate-identity">
           ${candidatePhotoMarkup(candidate)}
           <div>
@@ -6524,22 +7551,517 @@ function renderRecruiterApplications() {
             <div class="application-badges">
               ${screeningBadge(application)}
               <span class="application-badge"><i class='bx bx-map'></i> ${escapeDashboard(candidate.location, "Location unavailable")}</span>
+              ${Number.isFinite(matchScore) ? `<span class="application-badge score"><i class='bx bx-bulb'></i> Match ${Math.round(matchScore)}%</span>` : ''}
+              ${Number.isFinite(scorecardScore) ? `<span class="application-badge score"><i class='bx bx-check-square'></i> Scorecard ${Math.round(scorecardScore)}%</span>` : ''}
+              ${application.talentPool ? `<span class="application-badge pool"><i class='bx bx-group'></i> Talent pool</span>` : ''}
             </div>
+            ${tags.length ? `<div class="application-tags">${tags.map(tag => `<span class="application-tag">${escapeDashboard(tag)}</span>`).join('')}</div>` : ''}
           </div>
         </div>
         <div>
-          <p>Applied</p>
-          <strong>${escapeDashboard(applicationDate(application.submittedAt))}</strong>
+          <p class="application-meta-label">Applied</p>
+          <strong class="application-meta-value">${escapeDashboard(applicationDate(application.submittedAt))}</strong>
         </div>
         <div>
-          <p>Status</p>
-          <span class="application-status">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+          <p class="application-meta-label">Status</p>
+          <span class="application-status application-meta-value">${escapeDashboard(applicationStatusLabel(application.status))}</span>
         </div>
         <button class="primary-btn" type="button" data-review-application="${escapeDashboard(application.id)}">
           <i class='bx bx-show'></i> Review
         </button>
       </article>`;
   }).join("");
+}
+
+function selectedRecruiterApplications() {
+  return recruiterApplicationsCache.filter(application => selectedApplicationIds.has(application.id));
+}
+
+function updateStructuredHiringToolbar() {
+  const count = selectedApplicationIds.size;
+  const label = document.getElementById('selectedApplicationsCount');
+  if (label) label.textContent = `${count} selected`;
+  const anySelected = count > 0;
+  const compareButton = document.getElementById('compareApplicationsBtn');
+  if (compareButton) compareButton.disabled = count < 2 || count > 5;
+  ['applyBulkStatusBtn', 'addBulkTagBtn', 'addToTalentPoolBtn'].forEach(id => {
+    const button = document.getElementById(id);
+    if (button) button.disabled = !anySelected;
+  });
+}
+
+async function postBulkApplicationUpdate(payload) {
+  const token = await currentRecruiter.getIdToken();
+  const response = await fetch('/.netlify/functions/bulk-update-job-applications', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+    body: JSON.stringify({applicationIds: Array.from(selectedApplicationIds), ...payload}),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'Could not update the selected applications.');
+  return result;
+}
+
+async function runBulkApplicationAction(payload, successMessage) {
+  if (!selectedApplicationIds.size) return;
+  try {
+    await postBulkApplicationUpdate(payload);
+    showToast('success', 'Applications updated', successMessage, 3200);
+    selectedApplicationIds.clear();
+    await loadRecruiterApplications();
+  } catch (error) {
+    showToast('error', 'Bulk action failed', error.message || 'Could not update the selected applications.', 4200);
+  }
+}
+
+function csvCell(value) {
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function downloadCsv(fileName, rows) {
+  const blob = new Blob([`\uFEFF${rows.map(row => row.map(csvCell).join(',')).join('\r\n')}`], {type: 'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportRecruiterApplications(applications = recruiterApplicationsCache) {
+  const rows = [[
+    'Candidate', 'Email', 'Telephone', 'Location', 'Nationality', 'Qualification', 'Current role', 'Vacancy',
+    'Applied', 'Status', 'Screening', 'Explainable match', 'Scorecard', 'Tags', 'Talent pool'
+  ]];
+  applications.forEach(application => {
+    const candidate = application.candidateSnapshot || {};
+    rows.push([
+      candidate.fullName, candidate.email, candidate.phone, candidate.location, candidate.nationality, candidate.qualification,
+      candidate.currentJobTitle, application.jobSnapshot?.title, applicationDate(application.submittedAt),
+      applicationStatusLabel(application.status), application.screeningResult,
+      Number.isFinite(Number(application.matchAnalysis?.score)) ? `${Math.round(Number(application.matchAnalysis.score))}%` : '',
+      Number.isFinite(Number(application.scorecard?.weightedScore)) ? `${Math.round(Number(application.scorecard.weightedScore))}%` : '',
+      Array.isArray(application.tags) ? application.tags.join(' | ') : '', application.talentPool ? 'Yes' : 'No'
+    ]);
+  });
+  downloadCsv(`career-unified-applications-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+}
+
+const STRUCTURED_SCORECARD_CRITERIA = [
+  {id: 'essential_criteria', label: 'Essential screening criteria', weight: 30},
+  {id: 'role_skills', label: 'Role skills and evidence', weight: 30},
+  {id: 'relevant_experience', label: 'Relevant experience', weight: 20},
+  {id: 'qualification', label: 'Qualification alignment', weight: 10},
+  {id: 'practical_fit', label: 'Practical role fit', weight: 10},
+];
+
+function matchRecommendationLabel(value) {
+  return {
+    strong_match: 'Strong evidence match',
+    potential_match: 'Potential evidence match',
+    review_carefully: 'Needs careful review',
+  }[value] || 'Evidence review';
+}
+
+function matchScoreClass(score) {
+  if (score >= 75) return 'strong';
+  if (score >= 50) return 'potential';
+  return 'review';
+}
+
+function explainableMatchMarkup(application) {
+  const analysis = application?.matchAnalysis;
+  if (!analysis || !Number.isFinite(Number(analysis.score))) {
+    return `
+      <div class="structured-section" data-match-section>
+        <div class="structured-section-head">
+          <div>
+            <h3>Explainable match</h3>
+            <p>Review vacancy evidence from the CV, profile, and screening answers. This never makes the hiring decision.</p>
+          </div>
+          <button class="primary-btn" type="button" data-run-application-match="${escapeDashboard(application.id)}"><i class='bx bx-bulb'></i> Analyse Evidence</button>
+        </div>
+        <p class="muted">No match analysis has been generated for this application.</p>
+      </div>`;
+  }
+
+  const score = Math.max(0, Math.min(100, Math.round(Number(analysis.score))));
+  const strengths = Array.isArray(analysis.strengths) ? analysis.strengths : [];
+  const gaps = Array.isArray(analysis.gaps) ? analysis.gaps : [];
+  const criteria = Array.isArray(analysis.criteria) ? analysis.criteria : [];
+  return `
+    <div class="structured-section" data-match-section>
+      <div class="structured-section-head">
+        <div>
+          <h3>Explainable match</h3>
+          <p>${analysis.source === 'ai_assisted' ? 'AI-assisted evidence review' : 'Structured evidence review'} · ${escapeDashboard(analysis.confidence, 'medium')} confidence</p>
+        </div>
+        <button class="primary-btn btn-ghost" type="button" data-run-application-match="${escapeDashboard(application.id)}" data-refresh-match="true"><i class='bx bx-refresh'></i> Refresh Analysis</button>
+      </div>
+      <div class="match-summary">
+        <div class="match-score ${matchScoreClass(score)}"><div><strong>${score}%</strong><span>evidence match</span></div></div>
+        <div class="match-summary-copy">
+          <h4>${escapeDashboard(matchRecommendationLabel(analysis.recommendation))}</h4>
+          <p>${escapeDashboard(analysis.summary, 'Review the supporting evidence before deciding.')}</p>
+          <p class="match-disclaimer">${escapeDashboard(analysis.decisionNotice, 'Decision support only. A recruiter must review the evidence.')}</p>
+        </div>
+      </div>
+      <div class="match-evidence-grid">
+        <div class="match-evidence-column"><h4>Evidence supporting the match</h4><ul>${strengths.length ? strengths.map(item => `<li>${escapeDashboard(item)}</li>`).join('') : '<li>No strong evidence was identified automatically.</li>'}</ul></div>
+        <div class="match-evidence-column"><h4>Missing or unclear evidence</h4><ul>${gaps.length ? gaps.map(item => `<li>${escapeDashboard(item)}</li>`).join('') : '<li>No material evidence gaps were identified automatically.</li>'}</ul></div>
+      </div>
+      <div class="match-criteria">
+        ${criteria.map(criterion => {
+          const value = Math.max(0, Math.min(5, Number(criterion.score) || 0));
+          return `<div class="match-criterion"><strong>${escapeDashboard(criterion.label)}</strong><div class="match-criterion-meter" title="${value.toFixed(1)} out of 5"><span style="width:${value * 20}%"></span></div><p>${escapeDashboard(criterion.evidence)}</p></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function scorecardMarkup(application) {
+  const saved = application?.scorecard || {};
+  const savedCriteria = Array.isArray(saved.criteria) ? saved.criteria : [];
+  const matchCriteria = Array.isArray(application?.matchAnalysis?.criteria) ? application.matchAnalysis.criteria : [];
+  const criteria = STRUCTURED_SCORECARD_CRITERIA.map(base => {
+    const existing = savedCriteria.find(item => item.id === base.id);
+    const match = matchCriteria.find(item => item.id === base.id);
+    return {
+      ...base,
+      score: existing?.score ?? '',
+      evidence: existing?.evidence || match?.evidence || '',
+      weight: existing?.weight ?? base.weight,
+    };
+  });
+  return `
+    <form class="structured-section" id="applicationScorecardForm" data-application-id="${escapeDashboard(application.id)}">
+      <div class="structured-section-head">
+        <div><h3>Human scorecard</h3><p>Score the same job-related criteria for every candidate. Explainable matching can suggest evidence, but your team owns the decision.</p></div>
+        ${Number.isFinite(Number(saved.weightedScore)) ? `<span class="application-badge score">Saved score ${Math.round(Number(saved.weightedScore))}%</span>` : ''}
+      </div>
+      <div class="scorecard-grid">
+        ${criteria.map(criterion => `
+          <div class="scorecard-row" data-scorecard-criterion="${escapeDashboard(criterion.id)}">
+            <strong>${escapeDashboard(criterion.label)}</strong>
+            <label>Score
+              <select data-scorecard-score required>
+                <option value="">Not scored</option>
+                ${[1,2,3,4,5].map(score => `<option value="${score}"${Number(criterion.score) === score ? ' selected' : ''}>${score} / 5</option>`).join('')}
+              </select>
+            </label>
+            <label>Weight %<input data-scorecard-weight type="number" min="0" max="100" value="${escapeDashboard(criterion.weight)}" required></label>
+            <label>Evidence<input data-scorecard-evidence maxlength="700" value="${escapeDashboard(criterion.evidence)}" placeholder="What evidence supports this score?"></label>
+          </div>`).join('')}
+      </div>
+      <div class="structured-form-grid" style="margin-top:14px;">
+        <label>Recommendation
+          <select name="recommendation">
+            <option value="not_scored"${saved.recommendation === 'not_scored' ? ' selected' : ''}>Not decided</option>
+            <option value="strong_yes"${saved.recommendation === 'strong_yes' ? ' selected' : ''}>Strong yes</option>
+            <option value="yes"${saved.recommendation === 'yes' ? ' selected' : ''}>Yes</option>
+            <option value="consider"${saved.recommendation === 'consider' ? ' selected' : ''}>Consider</option>
+            <option value="no"${saved.recommendation === 'no' ? ' selected' : ''}>No</option>
+          </select>
+        </label>
+        <label>Review summary<input name="summary" maxlength="1200" value="${escapeDashboard(saved.summary)}" placeholder="Concise evidence-based review summary"></label>
+      </div>
+      <div class="structured-form-actions"><button class="primary-btn" type="submit"><i class='bx bx-save'></i> Save Scorecard</button></div>
+    </form>`;
+}
+
+function applicationOrganisationMarkup(application) {
+  const tags = Array.isArray(application.tags) ? application.tags.join(', ') : '';
+  const consentExpiresAt = toDateValue(application.talentPoolConsentExpiresAt);
+  const hasTalentPoolConsent = application.talentPoolConsent === true
+    && consentExpiresAt
+    && consentExpiresAt.getTime() > Date.now();
+  return `
+    <form class="structured-section structured-form" id="applicationOrganisationForm" data-application-id="${escapeDashboard(application.id)}">
+      <div class="structured-section-head"><div><h3>Talent organisation</h3><p>Use searchable tags and keep promising candidates in your consented talent pool.</p></div></div>
+      <div class="structured-form-grid">
+        <label>Tags<input name="tags" maxlength="500" value="${escapeDashboard(tags)}" placeholder="Finance, Gauteng, Driver's Licence"></label>
+        <label style="display:flex;grid-template-columns:auto 1fr;align-items:center;align-content:center;gap:9px;"><input name="talentPool" type="checkbox" style="width:18px;min-height:18px;" ${application.talentPool ? 'checked' : ''} ${hasTalentPoolConsent ? '' : 'disabled'}> ${hasTalentPoolConsent ? `Keep in talent pool (consent until ${escapeDashboard(applicationDate(consentExpiresAt))})` : 'Candidate has not opted in to future opportunities'}</label>
+      </div>
+      <div class="structured-form-actions"><button class="primary-btn btn-ghost" type="submit"><i class='bx bx-save'></i> Save Organisation</button></div>
+    </form>`;
+}
+
+function localInterviewValue(value) {
+  const date = toDateValue(value);
+  if (!date) return '';
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function interviewMarkup(application) {
+  const interview = application.interviewSchedule || {};
+  return `
+    <form class="structured-section structured-form" id="applicationInterviewForm" data-application-id="${escapeDashboard(application.id)}">
+      <div class="structured-section-head">
+        <div><h3>Interview details</h3><p>Confirm an in-person, telephone, or external meeting. Career Unified does not host video interviews.</p></div>
+        ${interview.status === 'scheduled' ? '<span class="application-badge match">Scheduled</span>' : ''}
+      </div>
+      <div class="structured-form-grid">
+        <label>Date and time<input name="startsAt" type="datetime-local" value="${escapeDashboard(localInterviewValue(interview.startsAt))}" required></label>
+        <label>Duration
+          <select name="durationMinutes">
+            ${[30,45,60,90].map(minutes => `<option value="${minutes}"${Number(interview.durationMinutes || 30) === minutes ? ' selected' : ''}>${minutes} minutes</option>`).join('')}
+          </select>
+        </label>
+        <label>Interview method
+          <select name="mode">
+            ${[
+              ['in_person','In person'],['phone','Telephone'],['teams','Microsoft Teams'],['zoom','Zoom'],['google_meet','Google Meet'],['other','Other']
+            ].map(([value,label]) => `<option value="${value}"${interview.mode === value ? ' selected' : ''}>${label}</option>`).join('')}
+          </select>
+        </label>
+        <label>Location or meeting link<input name="locationOrLink" maxlength="500" value="${escapeDashboard(interview.locationOrLink)}" placeholder="Office address or secure meeting link"></label>
+      </div>
+      <label style="margin-top:12px;">Candidate instructions<textarea name="notes" maxlength="1200" placeholder="Arrival instructions, contact person, or what to prepare">${escapeDashboard(interview.notes)}</textarea></label>
+      <div class="structured-form-actions">
+        <button class="primary-btn" type="submit"><i class='bx bx-calendar-check'></i> Save Interview</button>
+        ${interview.status === 'scheduled' ? `<button class="primary-btn btn-ghost" type="button" data-download-interview-calendar="${escapeDashboard(application.id)}"><i class='bx bx-calendar-plus'></i> Calendar File</button><button class="primary-btn btn-ghost" type="button" data-cancel-interview="${escapeDashboard(application.id)}"><i class='bx bx-x'></i> Cancel Interview</button>` : ''}
+      </div>
+    </form>`;
+}
+
+function structuredApplicationToolsMarkup(application) {
+  return `${explainableMatchMarkup(application)}${scorecardMarkup(application)}${applicationOrganisationMarkup(application)}${interviewMarkup(application)}`;
+}
+
+function closeStructuredHiringModal() {
+  const modal = document.getElementById('structuredHiringModal');
+  if (modal) modal.hidden = true;
+  document.body.style.overflow = '';
+}
+
+function openApplicationComparison() {
+  const applications = selectedRecruiterApplications();
+  if (applications.length < 2 || applications.length > 5) {
+    showToast('warn', 'Select 2 to 5 candidates', 'Comparison works best with a focused shortlist.', 3200);
+    return;
+  }
+  const modal = document.getElementById('structuredHiringModal');
+  const content = document.getElementById('structuredHiringContent');
+  if (!modal || !content) return;
+  content.innerHTML = `
+    <div class="application-review-head">
+      <div><p class="muted" style="margin:0 0 4px;">Structured Hiring</p><h2 id="structuredHiringTitle" style="margin:0;">Compare Candidates</h2></div>
+      <button class="application-review-close" type="button" data-close-structured-hiring aria-label="Close comparison"><i class='bx bx-x'></i></button>
+    </div>
+    <p class="muted" style="margin:14px 0;">Compare the same job-related evidence across candidates. Match analysis is decision support and never an automatic outcome.</p>
+    <div class="comparison-grid-applications" style="--compare-count:${applications.length}">
+      ${applications.map(application => {
+        const candidate = application.candidateSnapshot || {};
+        const analysis = application.matchAnalysis || {};
+        const scorecard = application.scorecard || {};
+        const answers = Array.isArray(application.answers) ? application.answers : [];
+        return `<article class="comparison-candidate">
+          <h3>${escapeDashboard(candidate.fullName, 'Candidate')}</h3>
+          <p>${escapeDashboard(application.jobSnapshot?.title, 'Vacancy')}</p>
+          <div class="comparison-fact"><span>Explainable match</span><strong>${Number.isFinite(Number(analysis.score)) ? `${Math.round(Number(analysis.score))}% · ${escapeDashboard(matchRecommendationLabel(analysis.recommendation))}` : `<button class="primary-btn btn-ghost" type="button" data-run-application-match="${escapeDashboard(application.id)}">Analyse evidence</button>`}</strong></div>
+          <div class="comparison-fact"><span>Human scorecard</span><strong>${Number.isFinite(Number(scorecard.weightedScore)) ? `${Math.round(Number(scorecard.weightedScore))}% · ${escapeDashboard(scorecard.recommendation)}` : 'Not scored'}</strong></div>
+          <div class="comparison-fact"><span>Qualification</span><strong>${escapeDashboard(candidate.qualification, 'Not supplied')}</strong></div>
+          <div class="comparison-fact"><span>Experience</span><strong>${escapeDashboard(candidate.currentJobTitle || candidate.yearsOfExperience, 'Not supplied')}</strong></div>
+          <div class="comparison-fact"><span>Location</span><strong>${escapeDashboard(candidate.location, 'Not supplied')}</strong></div>
+          <div class="comparison-fact"><span>Essential screening</span><strong>${escapeDashboard(application.screeningSummary?.essentialMatched ?? 0)} of ${escapeDashboard(application.screeningSummary?.essentialTotal ?? 0)} matched</strong></div>
+          ${answers.slice(0, 5).map(answer => `<div class="comparison-fact"><span>${escapeDashboard(answer.label)}</span><strong>${escapeDashboard(Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer, 'No answer')}</strong></div>`).join('')}
+          <div class="structured-form-actions"><button class="primary-btn btn-ghost" type="button" data-review-application="${escapeDashboard(application.id)}">Open Full Review</button></div>
+        </article>`;
+      }).join('')}
+    </div>`;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+async function runApplicationMatch(applicationId, refresh = false) {
+  const button = document.querySelector(`[data-run-application-match="${CSS.escape(applicationId)}"]`);
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Analysing";
+  }
+  try {
+    const token = await currentRecruiter.getIdToken();
+    const response = await fetch('/.netlify/functions/analyse-application-match', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+      body: JSON.stringify({applicationId, refresh}),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Could not analyse this application.');
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) application.matchAnalysis = result.analysis;
+    showToast('success', result.cached ? 'Analysis loaded' : 'Evidence analysed', 'Review the evidence before making a decision.', 3200);
+    if (!document.getElementById('structuredHiringModal')?.hidden) openApplicationComparison();
+    else await openRecruiterApplication(applicationId);
+    renderRecruiterApplications();
+  } catch (error) {
+    showToast('error', 'Analysis unavailable', error.message || 'Could not analyse this application.', 4200);
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = "<i class='bx bx-bulb'></i> Analyse Evidence";
+    }
+  }
+}
+
+async function saveApplicationScorecard(form) {
+  const applicationId = dashboardText(form.dataset.applicationId);
+  const criteria = Array.from(form.querySelectorAll('[data-scorecard-criterion]')).map(row => ({
+    id: row.dataset.scorecardCriterion,
+    label: row.querySelector('strong')?.textContent || '',
+    score: Number(row.querySelector('[data-scorecard-score]')?.value || 0),
+    weight: Number(row.querySelector('[data-scorecard-weight]')?.value || 0),
+    evidence: row.querySelector('[data-scorecard-evidence]')?.value || '',
+  }));
+  if (criteria.some(criterion => !criterion.score)) {
+    showToast('warn', 'Complete the scorecard', 'Score every criterion from 1 to 5 before saving.', 3600);
+    return;
+  }
+  const totalWeight = criteria.reduce((sum, criterion) => sum + criterion.weight, 0);
+  if (totalWeight !== 100) {
+    showToast('warn', 'Weights must total 100%', `The current weights total ${totalWeight}%.`, 3600);
+    return;
+  }
+  const data = new FormData(form);
+  try {
+    const result = await postApplicationUpdate(applicationId, {
+      scorecard: {criteria, recommendation: data.get('recommendation'), summary: data.get('summary')},
+    });
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) application.scorecard = {
+      criteria,
+      recommendation: data.get('recommendation'),
+      summary: data.get('summary'),
+      weightedScore: result.weightedScore,
+    };
+    showToast('success', 'Scorecard saved', 'The structured review is now part of this application.', 3200);
+    await openRecruiterApplication(applicationId);
+    renderRecruiterApplications();
+  } catch (error) {
+    showToast('error', 'Scorecard not saved', error.message || 'Could not save this scorecard.', 4200);
+  }
+}
+
+async function saveApplicationOrganisation(form) {
+  const applicationId = dashboardText(form.dataset.applicationId);
+  const data = new FormData(form);
+  const tags = dashboardText(data.get('tags')).split(',').map(tag => tag.trim()).filter(Boolean).slice(0, 12);
+  const talentPool = data.get('talentPool') === 'on';
+  try {
+    await postApplicationUpdate(applicationId, {tags, talentPool});
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) Object.assign(application, {tags, talentPool});
+    showToast('success', 'Candidate organised', 'Tags and talent-pool preference were saved.', 3000);
+    await openRecruiterApplication(applicationId);
+    renderRecruiterApplications();
+  } catch (error) {
+    showToast('error', 'Organisation not saved', error.message || 'Could not save these details.', 4000);
+  }
+}
+
+async function saveApplicationInterview(form) {
+  const applicationId = dashboardText(form.dataset.applicationId);
+  const data = new FormData(form);
+  const startsAt = new Date(String(data.get('startsAt') || ''));
+  if (Number.isNaN(startsAt.getTime())) {
+    showToast('warn', 'Choose a date and time', 'Enter the confirmed interview time before saving.', 3200);
+    return;
+  }
+  const interview = {
+    status: 'scheduled',
+    startsAt: startsAt.toISOString(),
+    durationMinutes: Number(data.get('durationMinutes') || 30),
+    mode: data.get('mode'),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Johannesburg',
+    locationOrLink: data.get('locationOrLink'),
+    notes: data.get('notes'),
+  };
+  try {
+    await postApplicationUpdate(applicationId, {status: 'interview', interview});
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) Object.assign(application, {status: 'interview', interviewSchedule: interview});
+    let candidateNotified = false;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dashboardText(application?.candidateSnapshot?.email))) {
+      const role = dashboardText(application?.jobSnapshot?.title, 'your application');
+      const company = dashboardText(application?.jobSnapshot?.company || companyProfile?.name, 'the recruitment team');
+      const when = startsAt.toLocaleString('en-ZA', {dateStyle: 'full', timeStyle: 'short'});
+      const method = dashboardText(form.elements.namedItem('mode')?.selectedOptions?.[0]?.textContent, 'Interview');
+      try {
+        await postApplicationMessage(applicationId, {
+          type: 'interview',
+          subject: `Interview details: ${role}`,
+          message: `Hi ${dashboardText(application?.candidateSnapshot?.fullName, 'there')},\n\nYour interview for ${role} has been scheduled for ${when}.\nMethod: ${method}${interview.locationOrLink ? `\nLocation or link: ${interview.locationOrLink}` : ''}${interview.notes ? `\n\nPreparation notes:\n${interview.notes}` : ''}\n\nYou can also view these details in your Career Unified application profile.\n\nKind regards,\n${company}`,
+          clientMessageId: nextApplicationMessageId(),
+        });
+        candidateNotified = true;
+      } catch (messageError) {
+        console.error('interview notification error:', messageError);
+      }
+    }
+    showToast(
+      candidateNotified ? 'success' : 'warn',
+      'Interview saved',
+      candidateNotified
+        ? 'The candidate was emailed and can also see the details in their application profile.'
+        : 'The details are visible in the candidate profile, but the email could not be sent.',
+      4200
+    );
+    await openRecruiterApplication(applicationId);
+    renderRecruiterApplications();
+  } catch (error) {
+    showToast('error', 'Interview not saved', error.message || 'Could not save the interview.', 4200);
+  }
+}
+
+function escapeIcs(value) {
+  return String(value || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+}
+
+function icsDate(value) {
+  return new Date(value).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+function downloadInterviewCalendar(applicationId) {
+  const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+  const interview = application?.interviewSchedule;
+  if (!application || interview?.status !== 'scheduled') return;
+  const start = new Date(interview.startsAt);
+  const end = new Date(start.getTime() + Number(interview.durationMinutes || 30) * 60000);
+  const candidate = application.candidateSnapshot || {};
+  const job = application.jobSnapshot || {};
+  const description = [interview.notes, interview.locationOrLink].filter(Boolean).join('\n');
+  const ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Career Unified//Structured Hiring//EN', 'BEGIN:VEVENT',
+    `UID:${applicationId}@careerunified.com`, `DTSTAMP:${icsDate(new Date())}`, `DTSTART:${icsDate(start)}`, `DTEND:${icsDate(end)}`,
+    `SUMMARY:${escapeIcs(`Interview: ${job.title || 'Career Unified application'}`)}`,
+    `DESCRIPTION:${escapeIcs(description)}`, `LOCATION:${escapeIcs(interview.locationOrLink || '')}`,
+    `ATTENDEE;CN=${escapeIcs(candidate.fullName || 'Candidate')}:mailto:${escapeIcs(candidate.email || '')}`,
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], {type: 'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `interview-${slugify(candidate.fullName || applicationId)}.ics`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function cancelApplicationInterview(applicationId) {
+  if (!confirm('Cancel the saved interview details?')) return;
+  try {
+    await postApplicationUpdate(applicationId, {interview: {status: 'cancelled'}});
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (application) application.interviewSchedule = {status: 'cancelled'};
+    showToast('success', 'Interview cancelled', 'The saved interview details were removed from the candidate view.', 3200);
+    await openRecruiterApplication(applicationId);
+  } catch (error) {
+    showToast('error', 'Interview not cancelled', error.message || 'Could not cancel this interview.', 4000);
+  }
 }
 
 async function postApplicationUpdate(applicationId, payload) {
@@ -6679,6 +8201,7 @@ function populateApplicationMessageForm(application, type) {
 async function openRecruiterApplication(applicationId) {
   let application = recruiterApplicationsCache.find(item => item.id === applicationId);
   if (!application) return;
+  closeApplicationCvPreview();
   activeApplicationId = applicationId;
 
   if (application.status === "submitted") {
@@ -6718,111 +8241,206 @@ async function openRecruiterApplication(applicationId) {
   const content = document.getElementById("applicationReviewContent");
   if (!modal || !content) return;
 
+  const currentIndex = recruiterApplicationsCache.findIndex(item => item.id === applicationId);
+  const previousApplication = currentIndex > 0 ? recruiterApplicationsCache[currentIndex - 1] : null;
+  const nextApplication = currentIndex >= 0 && currentIndex < recruiterApplicationsCache.length - 1
+    ? recruiterApplicationsCache[currentIndex + 1]
+    : null;
+  const matchScore = Number(application.matchAnalysis?.score);
+  const scorecardScore = Number(application.scorecard?.weightedScore);
+  const cvFileName = dashboardText(application.cvSnapshot?.fileName, "Submitted CV");
+  const cvSize = Number(application.cvSnapshot?.size || 0);
+  const cvSizeLabel = cvSize > 0
+    ? `${cvSize >= 1024 * 1024 ? (cvSize / (1024 * 1024)).toFixed(1) : Math.ceil(cvSize / 1024)} ${cvSize >= 1024 * 1024 ? "MB" : "KB"}`
+    : "Candidate document";
+
   content.innerHTML = `
-    <div class="application-review-head">
-      <div class="candidate-identity">
-        ${candidatePhotoMarkup(candidate, true)}
-        <div>
-          <p class="muted" style="margin:0 0 4px;">${escapeDashboard(job.title, "Job application")}</p>
-          <h2 id="applicationReviewTitle" style="margin:0;">${escapeDashboard(candidate.fullName, "Candidate")}</h2>
-          <div class="application-badges" style="margin-top:10px;">
-            ${screeningBadge(application)}
-            <span class="application-badge">${escapeDashboard(applicationStatusLabel(application.status))}</span>
+    <div class="candidate-review-shell">
+      <header class="candidate-review-toolbar">
+        <strong class="candidate-review-toolbar-title">Candidate Details</strong>
+        <nav class="candidate-review-nav" aria-label="Candidate navigation">
+          <button type="button" ${previousApplication ? `data-review-previous="${escapeDashboard(previousApplication.id)}"` : "disabled"}>
+            <i class='bx bx-chevron-left'></i> Previous
+          </button>
+          <button type="button" ${nextApplication ? `data-review-next="${escapeDashboard(nextApplication.id)}"` : "disabled"}>
+            Next <i class='bx bx-chevron-right'></i>
+          </button>
+        </nav>
+        <button class="candidate-review-close" type="button" data-close-application-review aria-label="Close candidate details"><i class='bx bx-x'></i></button>
+      </header>
+
+      <section class="candidate-review-profile">
+        <div class="candidate-review-profile-main">
+          ${candidatePhotoMarkup(candidate, true)}
+          <div>
+            <h2 id="applicationReviewTitle">${escapeDashboard(candidate.fullName, "Candidate")}</h2>
+            <p class="candidate-review-role"><i class='bx bx-map'></i> ${escapeDashboard(candidate.location, "Location not supplied")} · ${escapeDashboard(job.title, "Job application")}</p>
+            <div class="candidate-review-chips">
+              ${Number.isFinite(matchScore) ? `<span class="application-badge match"><i class='bx bx-user-check'></i> ${Math.round(matchScore)}% match</span>` : ""}
+              ${screeningBadge(application)}
+              ${Number.isFinite(scorecardScore) ? `<span class="application-badge"><i class='bx bx-clipboard'></i> ${Math.round(scorecardScore)}% scorecard</span>` : ""}
+              <span class="application-badge"><i class='bx bx-time-five'></i> ${escapeDashboard(applicationStatusLabel(application.status))}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <button class="application-review-close" type="button" data-close-application-review aria-label="Close review"><i class='bx bx-x'></i></button>
-    </div>
-
-    <div class="application-detail-grid">
-      <div class="application-detail"><span>Email</span><strong><a href="mailto:${escapeDashboard(candidate.email)}">${escapeDashboard(candidate.email, "Not supplied")}</a></strong></div>
-      <div class="application-detail"><span>Telephone</span><strong>${escapeDashboard(candidate.phone, "Not supplied")}</strong></div>
-      <div class="application-detail"><span>Location</span><strong>${escapeDashboard(candidate.location, "Not supplied")}</strong></div>
-      <div class="application-detail"><span>Qualification</span><strong>${escapeDashboard(candidate.qualification, "Not supplied")}</strong></div>
-      <div class="application-detail"><span>Current role</span><strong>${escapeDashboard(candidate.currentJobTitle, "Not supplied")}</strong></div>
-      <div class="application-detail"><span>Applied</span><strong>${escapeDashboard(applicationDate(application.submittedAt))}</strong></div>
-    </div>
-
-    <div class="application-review-actions">
-      <button class="primary-btn" type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-file'></i> Open submitted CV</button>
-      <button class="primary-btn btn-secondary" type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download CV</button>
-      ${whatsappUrl ? `<a class="primary-btn btn-secondary" href="${escapeDashboard(whatsappUrl)}" target="_blank" rel="noopener noreferrer"><i class='bx bxl-whatsapp'></i> WhatsApp candidate</a>` : ''}
-    </div>
-
-    <section class="application-communication" aria-labelledby="applicationCommunicationTitle">
-      <div class="application-communication-head">
-        <div>
-          <h3 id="applicationCommunicationTitle">Candidate communication</h3>
-          <p class="muted">Send a clear email and keep the candidate-visible history in one place.</p>
+        <div class="candidate-review-profile-actions">
+          ${hasCandidateEmail ? `<button class="candidate-header-action primary" type="button" data-open-application-message="${escapeDashboard(applicationId)}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg><span>Email</span></button>` : ""}
+          ${whatsappUrl ? `<a class="candidate-header-action" href="${escapeDashboard(whatsappUrl)}" target="_blank" rel="noopener noreferrer"><svg class="candidate-header-action-brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.966-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.173.198-.297.298-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.009-.371-.011-.57-.011-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.875 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 7.021 2.91 9.825 9.825 0 0 1 2.9 7.025c-.002 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"></path></svg><span>WhatsApp</span></a>` : ""}
         </div>
-        ${hasCandidateEmail ? `<button class="primary-btn" type="button" data-toggle-application-message="${escapeDashboard(applicationId)}"><i class='bx bx-envelope'></i> Email candidate</button>` : `<span class="muted" style="font-size:12px;">No valid candidate email is available.</span>`}
+      </section>
+
+      <div class="candidate-review-facts" aria-label="Candidate summary">
+        <div class="candidate-review-fact"><span>Current role</span><strong>${escapeDashboard(candidate.currentJobTitle, "Not supplied")}</strong></div>
+        <div class="candidate-review-fact"><span>Experience</span><strong>${escapeDashboard(candidate.yearsOfExperience, "Not supplied")}</strong></div>
+        <div class="candidate-review-fact"><span>Availability</span><strong>${escapeDashboard(applicationAvailability(application))}</strong></div>
+        <div class="candidate-review-fact"><span>Applied</span><strong>${escapeDashboard(applicationDate(application.submittedAt))}</strong></div>
       </div>
-      ${hasCandidateEmail ? `
-        <form class="application-message-composer" id="applicationMessageForm" data-application-id="${escapeDashboard(applicationId)}" hidden>
-          <div class="application-message-grid">
-            <label>Email type
-              <select id="applicationMessageType" name="type">
-                <option value="application_update">Application update</option>
-                <option value="shortlisted">Shortlisted</option>
-                <option value="request_information">Request information</option>
-                <option value="interview">Interview invitation</option>
-                <option value="offer">Offer stage</option>
-                <option value="outcome">Application outcome</option>
-                <option value="custom">Write a custom message</option>
-              </select>
-            </label>
-            <label>Subject
-              <input id="applicationMessageSubject" name="subject" maxlength="180" required>
-            </label>
+
+      <nav class="candidate-review-tabs" role="tablist" aria-label="Candidate information">
+        <button class="candidate-review-tab active" type="button" role="tab" aria-selected="true" data-candidate-review-tab="application">Application</button>
+        <button class="candidate-review-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-candidate-review-tab="screening">Screening</button>
+        <button class="candidate-review-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-candidate-review-tab="communication">Communication</button>
+        <button class="candidate-review-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-candidate-review-tab="hiring">Hiring</button>
+      </nav>
+
+      <section class="candidate-review-tab-panel" data-candidate-tab-panel="application">
+        <div class="candidate-panel-heading">
+          <div><h3>Application profile</h3><p>Contact details and the submitted application record.</p></div>
+        </div>
+        <div class="application-detail-grid">
+          <div class="application-detail"><span>Email</span><strong>${hasCandidateEmail ? `<a href="mailto:${escapeDashboard(candidate.email)}">${escapeDashboard(candidate.email)}</a>` : "Not supplied"}</strong></div>
+          <div class="application-detail"><span>Telephone</span><strong>${escapeDashboard(candidate.phone, "Not supplied")}</strong></div>
+          <div class="application-detail"><span>Location</span><strong>${escapeDashboard(candidate.location, "Not supplied")}</strong></div>
+          <div class="application-detail"><span>Nationality</span><strong>${escapeDashboard(candidate.nationality, "Not supplied")}</strong></div>
+          <div class="application-detail"><span>Qualification</span><strong>${escapeDashboard(candidate.qualification, "Not supplied")}</strong></div>
+          <div class="application-detail"><span>Gender</span><strong>${escapeDashboard(candidate.gender, "Not supplied")}</strong></div>
+        </div>
+
+        <div class="candidate-document-row">
+          <div class="candidate-document-copy">
+            <span class="candidate-document-icon"><i class='bx bxs-file-pdf'></i></span>
+            <span><strong>${escapeDashboard(cvFileName)}</strong><span>${escapeDashboard(cvSizeLabel)}</span></span>
           </div>
-          <label>Message
-            <textarea id="applicationMessageBody" name="message" maxlength="5000" required></textarea>
-          </label>
-          <div class="application-message-actions">
-            <button class="primary-btn" type="submit"><i class='bx bx-send'></i> Send email</button>
-            <span class="muted" style="font-size:12px;">Sent from Career Unified. Replies go to the company email on your profile.</span>
+          <div class="candidate-document-actions">
+            <button type="button" data-open-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-show'></i> Preview</button>
+            <button type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download</button>
           </div>
-        </form>` : ''}
-      ${applicationMessageHistoryMarkup(messageHistory)}
-    </section>
+        </div>
 
-    <h3>Screening answers</h3>
-    <div class="answer-list">
-      ${answers.length ? answers.map(answer => `
-        <div class="answer-item">
-          <span>${escapeDashboard(answer.label, "Question")}${answer.essentialMatch === false ? " · Essential answer needs review" : ""}</span>
-          <strong>${escapeDashboard(Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer, "No answer")}</strong>
-        </div>`).join("") : `<p class="muted">This vacancy did not include screening questions.</p>`}
-    </div>
+        <section class="application-cv-preview" id="applicationCvPreview" aria-labelledby="applicationCvPreviewTitle" hidden>
+          <div class="application-cv-preview-head">
+            <h3 id="applicationCvPreviewTitle">Submitted CV preview</h3>
+            <button class="application-cv-preview-close" type="button" data-close-application-cv-preview aria-label="Close CV preview"><i class='bx bx-x'></i></button>
+          </div>
+          <div class="application-cv-preview-body" id="applicationCvPreviewBody"></div>
+        </section>
 
-    ${application.coverLetter ? `
-      <h3>Application note</h3>
-      <div class="answer-item"><strong>${escapeDashboard(application.coverLetter)}</strong></div>` : ""}
+        ${application.coverLetter ? `<div class="candidate-cover-letter"><h3>Candidate note</h3><p>${escapeDashboard(application.coverLetter)}</p></div>` : ""}
+      </section>
 
-    <h3 style="margin-top:20px;">Move candidate</h3>
-    <div class="application-review-actions">
-      ${["shortlisted", "interview", "offer", "hired", "unsuccessful"].map(status => `
-        <button class="primary-btn${application.status === status ? " btn-secondary" : ""}" type="button"
-          data-set-application-status="${status}" data-application-id="${escapeDashboard(applicationId)}"
-          ${application.status === status ? "disabled" : ""}>
-          ${escapeDashboard(applicationStatusLabel(status))}
-        </button>`).join("")}
-    </div>
+      <section class="candidate-review-tab-panel" data-candidate-tab-panel="screening" hidden>
+        <div class="candidate-panel-heading">
+          <div><h3>Screening answers</h3><p>Review the candidate's answers against the same job-related criteria used for every applicant.</p></div>
+        </div>
+        <div class="answer-list">
+          ${answers.length ? answers.map(answer => `
+            <div class="answer-item">
+              <span>${escapeDashboard(answer.label, "Question")}${answer.essentialMatch === false ? " · Essential answer needs review" : ""}</span>
+              <strong>${escapeDashboard(Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer, "No answer")}</strong>
+            </div>`).join("") : `<p class="muted">This vacancy did not include screening questions.</p>`}
+        </div>
+      </section>
 
-    <label class="application-note">
-      <strong>Private recruiter note</strong>
-      <span class="muted" style="font-size:12px;">Only your recruiter account can see this note.</span>
-      <textarea id="applicationPrivateNote" maxlength="1500" placeholder="Add interview notes, follow-up details, or an internal reminder.">${escapeDashboard(privateNote)}</textarea>
-      <button class="primary-btn btn-secondary" type="button" data-save-application-note="${escapeDashboard(applicationId)}"><i class='bx bx-save'></i> Save private note</button>
-    </label>`;
+      <section class="candidate-review-tab-panel" data-candidate-tab-panel="communication" hidden>
+        <section class="application-communication" aria-labelledby="applicationCommunicationTitle">
+          <div class="application-communication-head">
+            <div>
+              <h3 id="applicationCommunicationTitle">Candidate communication</h3>
+              <p class="muted">Send a clear email and keep the candidate-visible history in one place.</p>
+            </div>
+            ${hasCandidateEmail ? `<button class="candidate-header-action primary" type="button" data-toggle-application-message="${escapeDashboard(applicationId)}"><i class='bx bx-envelope'></i> Write email</button>` : `<span class="muted" style="font-size:12px;">No valid candidate email is available.</span>`}
+          </div>
+          ${hasCandidateEmail ? `
+            <form class="application-message-composer" id="applicationMessageForm" data-application-id="${escapeDashboard(applicationId)}" hidden>
+              <div class="application-message-grid">
+                <label>Email type
+                  <select id="applicationMessageType" name="type">
+                    <option value="application_update">Application update</option>
+                    <option value="shortlisted">Shortlisted</option>
+                    <option value="request_information">Request information</option>
+                    <option value="interview">Interview invitation</option>
+                    <option value="offer">Offer stage</option>
+                    <option value="outcome">Application outcome</option>
+                    <option value="custom">Write a custom message</option>
+                  </select>
+                </label>
+                <label>Subject
+                  <input id="applicationMessageSubject" name="subject" maxlength="180" required>
+                </label>
+              </div>
+              <label>Message
+                <textarea id="applicationMessageBody" name="message" maxlength="5000" required></textarea>
+              </label>
+              <div class="application-message-actions">
+                <button class="primary-btn" type="submit"><i class='bx bx-send'></i> Send email</button>
+                <span class="muted" style="font-size:12px;">Sent from Career Unified. Replies go to the company email on your profile.</span>
+              </div>
+            </form>` : ""}
+          ${applicationMessageHistoryMarkup(messageHistory)}
+        </section>
+      </section>
+
+      <section class="candidate-review-tab-panel" data-candidate-tab-panel="hiring" hidden>
+        <div class="candidate-panel-heading">
+          <div><h3>Hiring workflow</h3><p>Move the candidate, keep private notes, and review structured hiring evidence.</p></div>
+        </div>
+        <div class="candidate-hiring-status">
+          <div class="application-review-actions">
+            ${["shortlisted", "interview", "offer", "hired", "unsuccessful"].map(status => `
+              <button class="primary-btn${application.status === status ? " btn-secondary" : ""}" type="button"
+                data-set-application-status="${status}" data-application-id="${escapeDashboard(applicationId)}"
+                ${application.status === status ? "disabled" : ""}>
+                ${escapeDashboard(applicationStatusLabel(status))}
+              </button>`).join("")}
+          </div>
+        </div>
+
+        <label class="application-note">
+          <strong>Private recruiter note</strong>
+          <span class="muted" style="font-size:12px;">Only your recruiter account can see this note.</span>
+          <textarea id="applicationPrivateNote" maxlength="1500" placeholder="Add interview notes, follow-up details, or an internal reminder.">${escapeDashboard(privateNote)}</textarea>
+          <button class="primary-btn btn-secondary" type="button" data-save-application-note="${escapeDashboard(applicationId)}"><i class='bx bx-save'></i> Save private note</button>
+        </label>
+
+        ${structuredApplicationToolsMarkup(application)}
+      </section>
+    </div>`;
 
   modal.hidden = false;
   document.body.style.overflow = "hidden";
+  activateCandidateReviewTab("application");
+}
+
+function activateCandidateReviewTab(tabName) {
+  const modal = document.getElementById("applicationReviewModal");
+  if (!modal || modal.hidden) return;
+
+  modal.querySelectorAll("[data-candidate-review-tab]").forEach(button => {
+    const isActive = button.dataset.candidateReviewTab === tabName;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+    button.tabIndex = isActive ? 0 : -1;
+  });
+
+  modal.querySelectorAll("[data-candidate-tab-panel]").forEach(panel => {
+    panel.hidden = panel.dataset.candidateTabPanel !== tabName;
+  });
 }
 
 function closeApplicationReview() {
   const modal = document.getElementById("applicationReviewModal");
   if (modal) modal.hidden = true;
+  closeApplicationCvPreview();
   document.body.style.overflow = "";
   activeApplicationId = null;
 }
@@ -6856,20 +8474,57 @@ async function saveRecruiterApplicationNote(applicationId) {
   }
 }
 
-async function openApplicationCv(applicationId, download = false) {
-  const previewWindow = download ? null : window.open("", "_blank");
+function releaseApplicationCvBlobUrl() {
+  if (!activeApplicationCvBlobUrl) return;
+  URL.revokeObjectURL(activeApplicationCvBlobUrl);
+  activeApplicationCvBlobUrl = "";
+}
+
+function closeApplicationCvPreview() {
+  const preview = document.getElementById("applicationCvPreview");
+  const body = document.getElementById("applicationCvPreviewBody");
+  if (preview) preview.hidden = true;
+  if (body) body.replaceChildren();
+  releaseApplicationCvBlobUrl();
+}
+
+async function openApplicationCv(applicationId, download = false, triggerButton = null) {
+  const preview = document.getElementById("applicationCvPreview");
+  const previewBody = document.getElementById("applicationCvPreviewBody");
+  const originalButtonHtml = triggerButton?.innerHTML || "";
+
+  if (!download && (!preview || !previewBody)) {
+    showToast("error", "CV unavailable", "The CV preview could not be opened.", 4200);
+    return;
+  }
+
+  if (triggerButton) {
+    triggerButton.disabled = true;
+    triggerButton.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> ${download ? "Preparing" : "Loading preview"}`;
+  }
+
+  if (!download) {
+    releaseApplicationCvBlobUrl();
+    preview.hidden = false;
+    previewBody.innerHTML = `<div class="application-cv-preview-status"><span><i class='bx bx-loader-alt bx-spin'></i> Loading the submitted CV...</span></div>`;
+    preview.scrollIntoView({behavior: "smooth", block: "nearest"});
+  }
+
   try {
     const token = await currentRecruiter.getIdToken();
     const response = await fetch(
-      `/.netlify/functions/download-application-cv?id=${encodeURIComponent(applicationId)}${download ? "&download=1" : ""}`,
+      `/.netlify/functions/download-application-cv?id=${encodeURIComponent(applicationId)}${download ? "&download=1" : "&preview=1"}`,
       {headers: {"Authorization": `Bearer ${token}`}}
     );
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
       throw new Error(payload.error || "Could not open this CV.");
     }
-    const blobUrl = URL.createObjectURL(await response.blob());
+
+    if (!download && (activeApplicationId !== applicationId || !preview.isConnected)) return;
+
     if (download) {
+      const blobUrl = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       const application = recruiterApplicationsCache.find(item => item.id === applicationId);
       link.href = blobUrl;
@@ -6877,13 +8532,56 @@ async function openApplicationCv(applicationId, download = false) {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } else if (previewWindow) {
-      previewWindow.location.href = blobUrl;
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      return;
     }
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+
+    const contentType = (response.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    if (contentType === "text/plain") {
+      const previewText = await response.text();
+      if (activeApplicationId !== applicationId || !preview.isConnected) return;
+      const textPreview = document.createElement("pre");
+      textPreview.className = "application-cv-preview-text";
+      textPreview.textContent = previewText;
+      previewBody.replaceChildren(textPreview);
+      return;
+    }
+
+    const blob = await response.blob();
+    if (activeApplicationId !== applicationId || !preview.isConnected) return;
+    activeApplicationCvBlobUrl = URL.createObjectURL(blob);
+
+    if (contentType === "application/pdf") {
+      const frame = document.createElement("iframe");
+      frame.className = "application-cv-preview-frame";
+      frame.title = "Submitted candidate CV";
+      frame.src = `${activeApplicationCvBlobUrl}#toolbar=1&navpanes=0`;
+      previewBody.replaceChildren(frame);
+      return;
+    }
+
+    if (contentType.startsWith("image/")) {
+      const image = document.createElement("img");
+      image.className = "application-cv-preview-frame";
+      image.alt = "Submitted candidate CV";
+      image.src = activeApplicationCvBlobUrl;
+      image.style.objectFit = "contain";
+      previewBody.replaceChildren(image);
+      return;
+    }
+
+    releaseApplicationCvBlobUrl();
+    previewBody.innerHTML = `<div class="application-cv-preview-status"><span>This file cannot be previewed in the browser. Use <strong>Download CV</strong> to review it.</span></div>`;
   } catch (error) {
-    if (previewWindow) previewWindow.close();
+    if (!download && previewBody) {
+      previewBody.innerHTML = `<div class="application-cv-preview-status"><span>${escapeDashboard(error.message || "Could not open this CV.")}</span></div>`;
+    }
     showToast("error", "CV unavailable", error.message || "Could not open this CV.", 4200);
+  } finally {
+    if (triggerButton) {
+      triggerButton.disabled = false;
+      triggerButton.innerHTML = originalButtonHtml;
+    }
   }
 }
 
@@ -6923,13 +8621,52 @@ async function sendRecruiterApplicationMessage(form) {
 }
 
 document.addEventListener("click", async event => {
+  if (event.target.closest('[data-close-structured-hiring]')) {
+    closeStructuredHiringModal();
+    return;
+  }
+  const matchButton = event.target.closest('[data-run-application-match]');
+  if (matchButton) {
+    await runApplicationMatch(matchButton.dataset.runApplicationMatch, matchButton.dataset.refreshMatch === 'true');
+    return;
+  }
+  const calendarButton = event.target.closest('[data-download-interview-calendar]');
+  if (calendarButton) {
+    downloadInterviewCalendar(calendarButton.dataset.downloadInterviewCalendar);
+    return;
+  }
+  const cancelInterviewButton = event.target.closest('[data-cancel-interview]');
+  if (cancelInterviewButton) {
+    await cancelApplicationInterview(cancelInterviewButton.dataset.cancelInterview);
+    return;
+  }
   const reviewButton = event.target.closest("[data-review-application]");
   if (reviewButton) {
+    closeStructuredHiringModal();
     await openRecruiterApplication(reviewButton.dataset.reviewApplication);
+    return;
+  }
+  const candidateTab = event.target.closest("[data-candidate-review-tab]");
+  if (candidateTab) {
+    activateCandidateReviewTab(candidateTab.dataset.candidateReviewTab);
+    return;
+  }
+  const previousCandidateButton = event.target.closest("[data-review-previous]");
+  if (previousCandidateButton) {
+    await openRecruiterApplication(previousCandidateButton.dataset.reviewPrevious);
+    return;
+  }
+  const nextCandidateButton = event.target.closest("[data-review-next]");
+  if (nextCandidateButton) {
+    await openRecruiterApplication(nextCandidateButton.dataset.reviewNext);
     return;
   }
   if (event.target.closest("[data-close-application-review]")) {
     closeApplicationReview();
+    return;
+  }
+  if (event.target.closest("[data-close-application-cv-preview]")) {
+    closeApplicationCvPreview();
     return;
   }
   const messageButton = event.target.closest("[data-toggle-application-message]");
@@ -6942,6 +8679,17 @@ document.addEventListener("click", async event => {
       populateApplicationMessageForm(application, "application_update");
       form.querySelector('[name="message"]')?.focus();
     }
+    return;
+  }
+  const openMessageButton = event.target.closest("[data-open-application-message]");
+  if (openMessageButton) {
+    activateCandidateReviewTab("communication");
+    const form = document.getElementById("applicationMessageForm");
+    if (!form) return;
+    form.hidden = false;
+    const application = recruiterApplicationsCache.find(item => item.id === openMessageButton.dataset.openApplicationMessage);
+    populateApplicationMessageForm(application, "application_update");
+    form.querySelector('[name="message"]')?.focus();
     return;
   }
   const statusButton = event.target.closest("[data-set-application-status]");
@@ -6957,16 +8705,24 @@ document.addEventListener("click", async event => {
   }
   const openCvButton = event.target.closest("[data-open-application-cv]");
   if (openCvButton) {
-    await openApplicationCv(openCvButton.dataset.openApplicationCv, false);
+    await openApplicationCv(openCvButton.dataset.openApplicationCv, false, openCvButton);
     return;
   }
   const downloadCvButton = event.target.closest("[data-download-application-cv]");
   if (downloadCvButton) {
-    await openApplicationCv(downloadCvButton.dataset.downloadApplicationCv, true);
+    await openApplicationCv(downloadCvButton.dataset.downloadApplicationCv, true, downloadCvButton);
   }
 });
 
 document.addEventListener("change", event => {
+  const selection = event.target.closest('[data-select-application]');
+  if (selection) {
+    const applicationId = selection.dataset.selectApplication;
+    if (selection.checked) selectedApplicationIds.add(applicationId);
+    else selectedApplicationIds.delete(applicationId);
+    renderRecruiterApplications();
+    return;
+  }
   if (event.target.id !== "applicationMessageType") return;
   const form = event.target.closest("#applicationMessageForm");
   const applicationId = dashboardText(form?.dataset.applicationId);
@@ -6975,6 +8731,24 @@ document.addEventListener("change", event => {
 });
 
 document.addEventListener("submit", async event => {
+  const scorecardForm = event.target.closest('#applicationScorecardForm');
+  if (scorecardForm) {
+    event.preventDefault();
+    await saveApplicationScorecard(scorecardForm);
+    return;
+  }
+  const organisationForm = event.target.closest('#applicationOrganisationForm');
+  if (organisationForm) {
+    event.preventDefault();
+    await saveApplicationOrganisation(organisationForm);
+    return;
+  }
+  const interviewForm = event.target.closest('#applicationInterviewForm');
+  if (interviewForm) {
+    event.preventDefault();
+    await saveApplicationInterview(interviewForm);
+    return;
+  }
   const form = event.target.closest("#applicationMessageForm");
   if (!form) return;
   event.preventDefault();
@@ -6984,32 +8758,58 @@ document.addEventListener("submit", async event => {
 document.getElementById("applicationReviewModal")?.addEventListener("click", event => {
   if (event.target.id === "applicationReviewModal") closeApplicationReview();
 });
+document.getElementById('structuredHiringModal')?.addEventListener('click', event => {
+  if (event.target.id === 'structuredHiringModal') closeStructuredHiringModal();
+});
 document.addEventListener("keydown", event => {
+  const activeCandidateTab = event.target.closest?.("[data-candidate-review-tab]");
+  if (activeCandidateTab && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+    const tabs = Array.from(document.querySelectorAll("#applicationReviewModal [data-candidate-review-tab]"));
+    const currentIndex = tabs.indexOf(activeCandidateTab);
+    if (currentIndex >= 0 && tabs.length) {
+      event.preventDefault();
+      const targetIndex = event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? tabs.length - 1
+          : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+      const targetTab = tabs[targetIndex];
+      activateCandidateReviewTab(targetTab.dataset.candidateReviewTab);
+      targetTab.focus();
+    }
+    return;
+  }
   if (event.key === "Escape" && activeApplicationId) closeApplicationReview();
+  if (event.key === 'Escape' && !document.getElementById('structuredHiringModal')?.hidden) closeStructuredHiringModal();
 });
 
 /* ======================================================
-   ANALYTICS: Working charts + table (NEW)
-   Uses jobs collection fields: createdAt, status, applicationsCount
+   ANALYTICS: jobs, application timestamps, funnel, and outcomes
 ====================================================== */
 function startDateFromRangeDays(days) {
   const n = parseInt(days || "30", 10);
   if (!n || n === 0) return null;
   const d = new Date();
   d.setDate(d.getDate() - n);
+  d.setHours(0, 0, 0, 0);
   return d;
 }
 
 function safeDateFromTS(ts) {
   if (!ts) return null;
   if (ts?.toDate) return ts.toDate();
-  try { return new Date(ts); } catch { return null; }
+  try {
+    const date = new Date(ts);
+    return Number.isNaN(date.getTime()) ? null : date;
+  } catch { return null; }
 }
 
 function toISODateKey(d) {
   const x = new Date(d);
-  x.setHours(0,0,0,0);
-  return x.toISOString().slice(0,10);
+  const year = x.getFullYear();
+  const month = String(x.getMonth() + 1).padStart(2, '0');
+  const day = String(x.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function fillDateSeries(start, end) {
@@ -7028,57 +8828,81 @@ function fillDateSeries(start, end) {
 
 async function updateCharts() {
   try {
+    if (!recruiterApplicationsLoaded) await loadRecruiterApplications();
     const range = document.getElementById('analyticsRange')?.value || "30";
     const start = startDateFromRangeDays(range);
-
-    // load all recruiter jobs (then filter by createdAt client-side)
     const q = query(
       collection(db, "jobs"),
       where("recruiterId", "==", currentRecruiter.uid),
       orderBy("createdAt", "desc")
     );
-
     const snap = await getDocs(q);
-    let jobs = [];
-    snap.forEach(d => jobs.push({ id: d.id, ...d.data() }));
-
-    if (start) {
-      jobs = jobs.filter(j => {
-        const created = safeDateFromTS(j.createdAt);
-        return created ? created >= start : true;
-      });
-    }
+    const allJobs = [];
+    snap.forEach(d => allJobs.push({id: d.id, ...d.data()}));
+    const jobs = allJobs.filter(job => {
+      if (!start) return true;
+      const createdAt = safeDateFromTS(job.createdAt);
+      return createdAt ? createdAt >= start : false;
+    });
+    const applications = recruiterApplicationsCache.filter(application => {
+      if (!start) return true;
+      const submittedAt = safeDateFromTS(application.submittedAt);
+      return submittedAt ? submittedAt >= start : false;
+    });
+    const applicationCounts = new Map();
+    applications.forEach(application => {
+      const jobId = dashboardText(application.jobId);
+      if (jobId) applicationCounts.set(jobId, (applicationCounts.get(jobId) || 0) + 1);
+    });
 
     const totalJobs = jobs.length;
-    const totalApps = jobs.reduce((sum, j) => sum + (parseInt(j.applicationsCount || 0, 10) || 0), 0);
-    const avg = totalJobs > 0 ? (totalApps / totalJobs) : 0;
+    const totalApps = applications.length;
+    const measuredJobIds = new Set([...jobs.map(job => job.id), ...applications.map(application => application.jobId).filter(Boolean)]);
+    const avg = measuredJobIds.size ? totalApps / measuredJobIds.size : 0;
+    const shortlistStatuses = new Set(['shortlisted', 'interview', 'offer', 'hired']);
+    const shortlisted = applications.filter(application => shortlistStatuses.has(application.status)).length;
+    const hired = applications.filter(application => application.status === 'hired').length;
+    const reviewDurations = applications.map(application => {
+      const submittedAt = safeDateFromTS(application.submittedAt);
+      const viewedAt = safeDateFromTS(application.viewedAt);
+      return submittedAt && viewedAt && viewedAt >= submittedAt
+        ? (viewedAt.getTime() - submittedAt.getTime()) / 3600000
+        : null;
+    }).filter(Number.isFinite);
+    const averageReviewHours = reviewDurations.length
+      ? reviewDurations.reduce((sum, hours) => sum + hours, 0) / reviewDurations.length
+      : null;
 
     document.getElementById('kpiJobs').textContent = totalJobs;
     document.getElementById('kpiApps').textContent = totalApps;
     document.getElementById('kpiAvg').textContent = avg.toFixed(1);
+    document.getElementById('kpiShortlistRate').textContent = totalApps ? `${Math.round((shortlisted / totalApps) * 100)}%` : '0%';
+    document.getElementById('kpiHireRate').textContent = totalApps ? `${Math.round((hired / totalApps) * 100)}%` : '0%';
+    document.getElementById('kpiReviewTime').textContent = averageReviewHours === null
+      ? '--'
+      : averageReviewHours < 24
+        ? `${averageReviewHours.toFixed(1)}h`
+        : `${(averageReviewHours / 24).toFixed(1)}d`;
 
     document.getElementById('kpiJobsSub').textContent = start ? "In selected range" : "All time";
-    document.getElementById('kpiAppsSub').textContent = "Across your jobs";
-    document.getElementById('kpiAvgSub').textContent = totalJobs ? "Across posted jobs" : "Post jobs to see averages";
+    document.getElementById('kpiAppsSub').textContent = start ? "Submitted in selected range" : "All direct applications";
+    document.getElementById('kpiAvgSub').textContent = measuredJobIds.size ? `Across ${measuredJobIds.size} measured job${measuredJobIds.size === 1 ? '' : 's'}` : "Post jobs to see averages";
 
-    // Applications over time (daily)
     const today = new Date();
     const seriesStart = start || (() => {
-      const d = new Date(today);
-      d.setDate(d.getDate() - 30);
-      return d;
+      const dates = applications.map(application => safeDateFromTS(application.submittedAt)).filter(Boolean);
+      if (dates.length) return new Date(Math.min(...dates.map(date => date.getTime())));
+      const fallback = new Date(today);
+      fallback.setDate(fallback.getDate() - 30);
+      return fallback;
     })();
-
     const series = fillDateSeries(seriesStart, today);
-
-    // distribute applications by created date (simple & consistent with your schema)
-    // (When you later store per-application timestamps, you can replace this to true daily counts.)
-    jobs.forEach(j => {
-      const created = safeDateFromTS(j.createdAt) || today;
-      const key = toISODateKey(created);
-      if (series.has(key)) series.set(key, (series.get(key) || 0) + (parseInt(j.applicationsCount || 0, 10) || 0));
+    applications.forEach(application => {
+      const submittedAt = safeDateFromTS(application.submittedAt);
+      if (!submittedAt) return;
+      const key = toISODateKey(submittedAt);
+      if (series.has(key)) series.set(key, (series.get(key) || 0) + 1);
     });
-
     const labels = Array.from(series.keys());
     const values = Array.from(series.values());
 
@@ -7091,6 +8915,9 @@ async function updateCharts() {
         datasets: [{
           label: 'Applications',
           data: values,
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.12)',
+          fill: true,
           borderWidth: 2,
           tension: 0.25
         }]
@@ -7106,7 +8933,6 @@ async function updateCharts() {
       }
     });
 
-    // Jobs by status (active/draft)
     const statusCounts = { active: 0, draft: 0, other: 0 };
     jobs.forEach(j => {
       const s = String(j.status || 'active').toLowerCase();
@@ -7123,6 +8949,7 @@ async function updateCharts() {
         labels: ['Active', 'Draft', 'Other'],
         datasets: [{
           data: [statusCounts.active, statusCounts.draft, statusCounts.other],
+          backgroundColor: ['#2563eb', '#f59e0b', '#94a3b8'],
           borderWidth: 1
         }]
       },
@@ -7133,11 +8960,77 @@ async function updateCharts() {
       }
     });
 
-    // Top jobs table
-    const top = [...jobs].sort((a, b) => (b.applicationsCount || 0) - (a.applicationsCount || 0)).slice(0, 10);
-    const tbody = document.getElementById('topJobsTable');
+    const funnelValues = [
+      applications.length,
+      applications.filter(application => application.viewedAt || !['submitted', 'withdrawn'].includes(application.status)).length,
+      applications.filter(application => shortlistStatuses.has(application.status)).length,
+      applications.filter(application => ['interview', 'offer', 'hired'].includes(application.status)).length,
+      applications.filter(application => ['offer', 'hired'].includes(application.status)).length,
+      hired,
+    ];
+    if (applicationFunnelChart) applicationFunnelChart.destroy();
+    const funnelCanvas = document.getElementById('applicationFunnelChart');
+    applicationFunnelChart = new Chart(funnelCanvas, {
+      type: 'bar',
+      data: {
+        labels: ['Submitted', 'Reviewed', 'Shortlisted', 'Interview', 'Offer', 'Hired'],
+        datasets: [{
+          data: funnelValues,
+          backgroundColor: ['#2563eb', '#3b82f6', '#0ea5e9', '#14b8a6', '#22c55e', '#15803d'],
+          borderRadius: 4,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {legend: {display: false}},
+        scales: {x: {beginAtZero: true, ticks: {precision: 0}}},
+      },
+    });
 
+    const jobsById = new Map(allJobs.map(job => [job.id, job]));
+    applications.forEach(application => {
+      if (!jobsById.has(application.jobId)) {
+        jobsById.set(application.jobId, {
+          id: application.jobId,
+          title: application.jobSnapshot?.title,
+          company: application.jobSnapshot?.company,
+          city: application.jobSnapshot?.location,
+          status: 'active',
+        });
+      }
+    });
+    const top = Array.from(jobsById.values())
+      .filter(job => applicationCounts.has(job.id) || jobs.some(item => item.id === job.id))
+      .sort((left, right) => (applicationCounts.get(right.id) || 0) - (applicationCounts.get(left.id) || 0))
+      .slice(0, 10);
+    const tbody = document.getElementById('topJobsTable');
     if (!tbody) return;
+
+    latestAnalyticsExportRows = [[
+      'Vacancy', 'Status', 'Created', 'Applications', 'Reviewed', 'Shortlisted', 'Interviews', 'Offers', 'Hired',
+      'Average explainable match', 'Average scorecard'
+    ]];
+    Array.from(jobsById.values()).forEach(job => {
+      const jobApplications = applications.filter(application => application.jobId === job.id);
+      if (!jobApplications.length && !jobs.some(item => item.id === job.id)) return;
+      const matchScores = jobApplications.map(application => Number(application.matchAnalysis?.score)).filter(Number.isFinite);
+      const scorecards = jobApplications.map(application => Number(application.scorecard?.weightedScore)).filter(Number.isFinite);
+      latestAnalyticsExportRows.push([
+        dashboardText(job.title, 'Untitled job'),
+        dashboardText(job.status, 'active'),
+        safeDateFromTS(job.createdAt)?.toLocaleDateString('en-ZA') || '',
+        jobApplications.length,
+        jobApplications.filter(application => application.viewedAt || !['submitted', 'withdrawn'].includes(application.status)).length,
+        jobApplications.filter(application => shortlistStatuses.has(application.status)).length,
+        jobApplications.filter(application => ['interview', 'offer', 'hired'].includes(application.status)).length,
+        jobApplications.filter(application => ['offer', 'hired'].includes(application.status)).length,
+        jobApplications.filter(application => application.status === 'hired').length,
+        matchScores.length ? `${Math.round(matchScores.reduce((sum, score) => sum + score, 0) / matchScores.length)}%` : '',
+        scorecards.length ? `${Math.round(scorecards.reduce((sum, score) => sum + score, 0) / scorecards.length)}%` : '',
+      ]);
+    });
 
     if (top.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" class="muted">No jobs in this range yet.</td></tr>`;
@@ -7149,7 +9042,7 @@ async function updateCharts() {
       const createdText = created ? created.toLocaleDateString() : '—';
       const loc = j.remote ? 'Remote' : `${j.city || ''}${j.country ? ', ' + j.country : ''}`.trim();
       const s = String(j.status || 'active').toUpperCase();
-      const apps = parseInt(j.applicationsCount || 0, 10) || 0;
+      const apps = applicationCounts.get(j.id) || 0;
       return `
         <tr>
           <td>

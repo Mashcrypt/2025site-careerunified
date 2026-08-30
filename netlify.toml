@@ -446,6 +446,18 @@
   [headers.values]
     Content-Type = "application/yaml; charset=utf-8"
 
+[[headers]]
+  for = "/api/admin.html"
+  [headers.values]
+    Cache-Control = "private, no-store"
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/api/portal.html"
+  [headers.values]
+    Cache-Control = "private, no-store"
+    X-Robots-Tag = "noindex, nofollow"
+
 # Sitemap + robots: short cache so Google sees updates fast
 [[headers]]
   for = "/sitemap.xml"

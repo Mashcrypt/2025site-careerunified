@@ -243,7 +243,11 @@
               </div>
               <div class="ra-field">
                 <label for="city">City / Town <span aria-hidden="true">*</span></label>
-                <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="120" required>
+                <div class="ra-city-combobox" data-city-combobox>
+                  <input id="city" name="city" type="text" autocomplete="off" maxlength="120" required aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="citySuggestions">
+                  <button class="ra-city-combobox__toggle" type="button" aria-label="Show city suggestions" data-city-toggle="city"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                  <div class="ra-city-suggestions" id="citySuggestions" role="listbox" hidden></div>
+                </div>
                 <p class="ra-field-error" data-error-for="city"></p>
               </div>
               <div class="ra-field">
@@ -281,7 +285,7 @@
                 <div class="ra-field"><label for="billingBuildingNumber">House/Building Number <span aria-hidden="true">*</span></label><input id="billingBuildingNumber" name="billingBuildingNumber" type="text" maxlength="50" data-billing-required><p class="ra-field-error" data-error-for="billingBuildingNumber"></p></div>
                 <div class="ra-field"><label for="billingStreet">Street <span aria-hidden="true">*</span></label><input id="billingStreet" name="billingStreet" type="text" autocomplete="section-billing address-line1" maxlength="160" data-billing-required><p class="ra-field-error" data-error-for="billingStreet"></p></div>
                 <div class="ra-field"><label for="billingSuburb">Suburb <span aria-hidden="true">*</span></label><input id="billingSuburb" name="billingSuburb" type="text" autocomplete="section-billing address-level3" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingSuburb"></p></div>
-                <div class="ra-field"><label for="billingCity">City / Town <span aria-hidden="true">*</span></label><input id="billingCity" name="billingCity" type="text" autocomplete="section-billing address-level2" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingCity"></p></div>
+                <div class="ra-field"><label for="billingCity">City / Town <span aria-hidden="true">*</span></label><div class="ra-city-combobox" data-city-combobox><input id="billingCity" name="billingCity" type="text" autocomplete="off" maxlength="120" data-billing-required aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="billingCitySuggestions"><button class="ra-city-combobox__toggle" type="button" aria-label="Show city suggestions" data-city-toggle="billingCity"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button><div class="ra-city-suggestions" id="billingCitySuggestions" role="listbox" hidden></div></div><p class="ra-field-error" data-error-for="billingCity"></p></div>
                 <div class="ra-field"><label for="billingProvince">Province/State <span aria-hidden="true">*</span></label><input id="billingProvince" name="billingProvince" type="text" autocomplete="section-billing address-level1" maxlength="120" data-billing-required><p class="ra-field-error" data-error-for="billingProvince"></p></div>
                 <div class="ra-field"><label for="billingCountry">Country <span aria-hidden="true">*</span></label><input id="billingCountry" name="billingCountry" type="text" autocomplete="section-billing country-name" maxlength="120" value="South Africa" data-billing-required><p class="ra-field-error" data-error-for="billingCountry"></p></div>
                 <div class="ra-field"><label for="billingPostcode">Postcode <span aria-hidden="true">*</span></label><input id="billingPostcode" name="billingPostcode" type="text" autocomplete="section-billing postal-code" inputmode="numeric" maxlength="12" data-billing-required><p class="ra-field-error" data-error-for="billingPostcode"></p></div>

@@ -17,16 +17,17 @@
   </script>
   <style>
     *{box-sizing:border-box}
+    html,body{max-width:100%;overflow-x:hidden}
     body{margin:0;background:#f4f7fc;color:#111827;font-family:Poppins,Arial,sans-serif;line-height:1.5}
     a{color:#1d4ed8}
     .apply-header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e8edf6}
-    .header-inner{width:min(1180px,calc(100% - 32px));min-height:68px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .header-inner{width:min(1180px,calc(100% - 32px));min-height:68px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px;min-width:0}
     .brand{display:inline-flex;align-items:center;gap:10px;color:#111827;text-decoration:none;font-weight:700;font-size:1.1rem;white-space:nowrap}
     .brand-logo{width:34px;height:34px;display:block;flex:0 0 34px;border-radius:6px;object-fit:cover}
-    .back-link{display:inline-flex;align-items:center;min-height:40px;padding:0 8px;color:#374151;text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
+    .back-link{display:inline-flex;align-items:center;min-height:40px;padding:0 8px;color:#374151;text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap;flex-shrink:0}
     .back-link:hover,.back-link:focus-visible{color:#1d4ed8}
-    .apply-layout{width:min(1180px,calc(100% - 32px));margin:28px auto 56px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
-    .apply-panel,.job-summary{background:#fff;border:1px solid #dbeafe;border-radius:8px;box-shadow:0 10px 30px rgba(30,58,138,.08)}
+    .apply-layout{width:min(1180px,calc(100% - 32px));margin:28px auto 56px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start;min-width:0}
+    .apply-panel,.job-summary{background:#fff;border:1px solid #dbeafe;border-radius:8px;box-shadow:0 10px 30px rgba(30,58,138,.08);min-width:0}
     .apply-panel{padding:28px}
     .job-summary{padding:22px;position:sticky;top:20px}
     .eyebrow{margin:0 0 6px;color:#2563eb;font-size:.78rem;font-weight:800;text-transform:uppercase}
@@ -44,6 +45,16 @@
     label,.field-label{font-weight:700;font-size:.87rem;color:#374151}
     .required{color:#dc2626}
     input,select,textarea{width:100%;min-height:46px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:11px 12px;color:#111827;font:inherit;font-size:.92rem}
+    .picker-combobox{position:relative}
+    .picker-combobox input{padding-right:48px}
+    .picker-toggle{position:absolute;top:50%;right:6px;display:grid;width:36px;height:36px;padding:0;transform:translateY(-50%);place-items:center;border:0;border-radius:6px;background:transparent;color:#475569;cursor:pointer}
+    .picker-toggle:hover,.picker-toggle:focus-visible{background:#eff6ff;color:#1e3a8a}
+    .picker-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:25;max-height:280px;overflow:auto;border:1px solid #dbe5f0;border-radius:10px;background:#fff;box-shadow:0 16px 36px rgba(15,23,42,.12)}
+    .picker-suggestion{display:grid;width:100%;padding:12px 14px;border:0;border-bottom:1px solid #eef2f7;background:#fff;color:#1f2937;text-align:left;cursor:pointer}
+    .picker-suggestion:last-child{border-bottom:0}
+    .picker-suggestion:hover,.picker-suggestion:focus-visible,.picker-suggestion.is-active{background:#eff6ff;color:#1e3a8a}
+    .picker-suggestion strong{font-size:.9rem;font-weight:700}
+    .picker-suggestion span{margin-top:2px;color:#64748b;font-size:.78rem}
     .choice-grid{display:flex;flex-wrap:wrap;gap:8px}
     .choice-pill{display:inline-flex;align-items:center;min-height:40px;cursor:pointer}
     .choice-pill input{position:absolute;opacity:0;pointer-events:none}
@@ -54,16 +65,16 @@
     input:focus,select:focus,textarea:focus{outline:3px solid rgba(37,99,235,.16);border-color:#2563eb}
     .help{margin:0;color:#64748b;font-size:.78rem}
     .cv-upload{margin-top:12px;padding:16px;border:1px dashed #93c5fd;border-radius:6px;background:#eff6ff}
-    .question-list{display:grid;gap:18px}
-    .question{padding:16px;border-left:3px solid #2563eb;background:#f8fbff}
-    .question.conditional-question{border-left-color:#0f766e;background:#f0fdfa}
+    .question-list{display:grid;gap:18px;min-width:0}
+    .question{padding:16px;background:#f8fbff;min-width:0}
+    .question.conditional-question{background:#f0fdfa}
     .question.conditional-question[hidden]{display:none}
-    .checks{display:grid;gap:13px}
-    .check{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:start;color:#374151;font-size:.86rem}
+    .checks{display:grid;gap:12px}
+    .check{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:start;color:#374151;font-size:.86rem;min-width:0}
     .check input{width:18px;height:18px;min-height:0;margin:2px 0 0}
     .submit-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}
-    .primary-btn{border:0;border-radius:6px;background:#16a34a;color:#fff;padding:14px 22px;font:inherit;font-weight:800;cursor:pointer;min-width:210px}
-    .primary-btn:hover{background:#15803d}
+    .primary-btn{border:0;border-radius:8px;background:#2563eb;color:#fff;padding:14px 22px;font:inherit;font-weight:800;cursor:pointer;min-width:220px;box-shadow:0 10px 24px rgba(37,99,235,.18);transition:background .16s ease,transform .16s ease,box-shadow .16s ease}
+    .primary-btn:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 14px 28px rgba(29,78,216,.22)}
     .primary-btn:disabled{cursor:not-allowed;opacity:.65}
     .status{display:none;margin:18px 0 0;padding:14px 16px;border-radius:6px;font-weight:600;font-size:.9rem}
     .status.show{display:block}
@@ -98,7 +109,8 @@
     @media(max-width:560px){
       .header-inner,.apply-layout{width:min(100% - 20px,1180px)}
       .header-inner{gap:12px}
-      .brand{gap:8px;font-size:1rem}
+      .brand{gap:8px;font-size:1rem;min-width:0}
+      .brand span{overflow:hidden;text-overflow:ellipsis}
       .brand-logo{width:32px;height:32px;flex-basis:32px}
       .back-link{padding:0;font-size:.8rem}
       .apply-panel,.job-summary{padding:18px}
@@ -106,6 +118,9 @@
       .field.full{grid-column:auto}
       .submit-row{align-items:stretch;flex-direction:column}
       .primary-btn{width:100%}
+      .choice-grid{gap:6px}
+      .choice-pill{max-width:100%}
+      .choice-pill span{max-width:100%;white-space:normal;text-align:left}
     }
   </style>
 </head>
@@ -139,7 +154,7 @@
     </aside>
   </main>
 
-  <script type="module" src="/js/direct-apply.js?v=20260814-3"></script>
+  <script type="module" src="/js/direct-apply.js?v=20260828-1"></script>
   <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

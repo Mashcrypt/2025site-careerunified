@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Security, data protection, support, and acceptable-use requirements for Career Unified Partner API integrations."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://careerunified.com/api/partner-governance.html" />
+    <title>Partner API Governance | Career Unified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue: #185fa5;
+        --ink: #111827;
+        --text: #334155;
+        --muted: #64748b;
+        --border: #dbe5f0;
+        --soft: #f5f8fc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #fff;
+        color: var(--text);
+        font-family: Inter, Arial, sans-serif;
+        line-height: 1.65;
+      }
+      .shell {
+        width: min(900px, 92vw);
+        margin: 0 auto;
+        padding: 30px 0 80px;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav div {
+        display: flex;
+        gap: 18px;
+      }
+      .nav a {
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .hero {
+        padding: 64px 0 42px;
+      }
+      .eyebrow {
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        max-width: 760px;
+        margin: 8px 0 14px;
+        color: var(--ink);
+        font-size: clamp(36px, 6vw, 58px);
+        line-height: 1.06;
+        letter-spacing: 0;
+      }
+      .hero p {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .notice {
+        margin: 0 0 44px;
+        padding: 16px 18px;
+        border-left: 3px solid var(--blue);
+        background: var(--soft);
+        font-size: 13px;
+      }
+      .content {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 54px;
+      }
+      .toc {
+        position: sticky;
+        top: 24px;
+        align-self: start;
+      }
+      .toc strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ink);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      .toc a {
+        display: block;
+        padding: 6px 0;
+        color: var(--muted);
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .toc a:hover {
+        color: var(--blue);
+      }
+      article section {
+        padding: 0 0 38px;
+        margin-bottom: 38px;
+        border-bottom: 1px solid var(--border);
+      }
+      article section:last-child {
+        border: 0;
+      }
+      h2 {
+        margin: 0 0 12px;
+        color: var(--ink);
+        font-size: 25px;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 7px 0;
+      }
+      code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: var(--soft);
+        font-size: 0.9em;
+      }
+      .checklist {
+        padding: 0;
+        list-style: none;
+        counter-reset: item;
+      }
+      .checklist li {
+        counter-increment: item;
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 10px;
+      }
+      .checklist li:before {
+        content: counter(item);
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      @media (max-width: 700px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+        .toc {
+          position: static;
+          padding-bottom: 24px;
+          border-bottom: 1px solid var(--border);
+        }
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .hero {
+          padding-top: 42px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="nav" aria-label="API governance navigation">
+        <a href="/api/">Career Unified Developers</a>
+        <div>
+          <a href="/api/portal.html">Partner portal</a><a href="/api/status.html">Status</a>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Partner governance</p>
+        <h1>Build responsibly with Career Unified data</h1>
+        <p>
+          These requirements explain how approved organisations must secure credentials, protect
+          candidate information, operate integrations, and respond when something goes wrong.
+        </p>
+      </header>
+
+      <p class="notice">
+        This page is an operational summary. The signed partner agreement, data-processing terms,
+        Career Unified privacy policy, and applicable South African law remain controlling.
+      </p>
+
+      <div class="content">
+        <nav class="toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <a href="#approval">Approval</a><a href="#acceptable-use">Acceptable use</a
+          ><a href="#data-protection">Data protection</a><a href="#security">Security</a
+          ><a href="#retention">Retention</a><a href="#operations">Operations</a
+          ><a href="#incidents">Incidents</a><a href="#offboarding">Offboarding</a
+          ><a href="#checklist">Launch checklist</a>
+        </nav>
+
+        <article>
+          <section id="approval">
+            <h2>Approval and access</h2>
+            <p>
+              API access is available only to approved recruiter organisations and reviewed ATS or
+              recruitment integrations. A dashboard login does not automatically provide API access.
+            </p>
+            <ul>
+              <li>Each client is linked to one verified recruiter organisation.</li>
+              <li>Scopes must be limited to the minimum capabilities the integration needs.</li>
+              <li>
+                Test and live keys must be kept separate throughout development and deployment.
+              </li>
+              <li>Career Unified may suspend access during an investigation or material breach.</li>
+            </ul>
+          </section>
+
+          <section id="acceptable-use">
+            <h2>Acceptable use</h2>
+            <p>
+              Partners may use the API only for legitimate recruitment and agreed integration
+              purposes.
+            </p>
+            <ul>
+              <li>
+                Do not scrape, resell, enrich, or build unrelated profiles from candidate data.
+              </li>
+              <li>Do not make fully automated hiring decisions from Career Unified data.</li>
+              <li>
+                Do not bypass plan limits, job credits, rate limits, or candidate permissions.
+              </li>
+              <li>
+                Do not expose API keys in browser code, mobile apps, public repositories, or logs.
+              </li>
+            </ul>
+          </section>
+
+          <section id="data-protection">
+            <h2>POPIA and candidate data</h2>
+            <p>
+              Candidate information must be processed only for the vacancy and recruitment purpose
+              for which it was supplied. Partners are responsible for their own POPIA obligations.
+            </p>
+            <ul>
+              <li>Restrict access to authorised recruitment personnel.</li>
+              <li>
+                Maintain a lawful purpose, transparency, and a process for data-subject requests.
+              </li>
+              <li>
+                Do not use sensitive or employment-equity information for unlawful discrimination.
+              </li>
+              <li>Use encryption in transit and appropriate encryption at rest.</li>
+            </ul>
+          </section>
+
+          <section id="security">
+            <h2>Credential and webhook security</h2>
+            <ul>
+              <li>Store API and webhook secrets in a server-side secret manager.</li>
+              <li>
+                Rotate credentials after staff changes, suspected exposure, or according to policy.
+              </li>
+              <li>Verify every webhook signature and reject stale timestamps.</li>
+              <li>Process webhook event IDs idempotently and allow safe retries.</li>
+              <li>Keep production credentials out of test environments.</li>
+            </ul>
+          </section>
+
+          <section id="retention">
+            <h2>Retention and deletion</h2>
+            <p>
+              Partners must define retention periods appropriate to their recruitment purpose and
+              delete candidate information when it is no longer required. Career Unified
+              automatically removes sandbox data after 30 days, idempotency records after 7 days,
+              webhook history after 90 days, and API audit records after 365 days.
+            </p>
+          </section>
+
+          <section id="operations">
+            <h2>Reliability, support, and change management</h2>
+            <ul>
+              <li>Monitor the public status page and integration alert channels.</li>
+              <li>Respect <code>429</code> responses and the <code>Retry-After</code> header.</li>
+              <li>Use idempotency keys on create operations and exponential backoff on retries.</li>
+              <li>Test API-version changes in the sandbox before production rollout.</li>
+              <li>Enterprise service levels apply only when stated in a signed agreement.</li>
+            </ul>
+          </section>
+
+          <section id="incidents">
+            <h2>Security incidents</h2>
+            <p>
+              A partner must notify Career Unified promptly after discovering credential exposure,
+              unauthorised access, data loss, or misuse connected to the integration. Revoke the
+              key, preserve relevant evidence, identify affected data, and cooperate on containment
+              and notification obligations.
+            </p>
+          </section>
+
+          <section id="offboarding">
+            <h2>Offboarding</h2>
+            <p>
+              When an integration ends, revoke all API keys and webhook endpoints, remove Career
+              Unified data that no longer has a lawful retention purpose, and confirm deletion where
+              the partner agreement requires it.
+            </p>
+          </section>
+
+          <section id="checklist">
+            <h2>Production launch checklist</h2>
+            <ol class="checklist">
+              <li>Organisation, purpose, contacts, and data flows have been reviewed.</li>
+              <li>Partner terms and any required data-processing agreement are signed.</li>
+              <li>The sandbox integration passes job, application, webhook, and retry tests.</li>
+              <li>Production scopes and quotas use the least privilege needed.</li>
+              <li>Secrets are stored securely and rotation ownership is assigned.</li>
+              <li>Monitoring, incident contacts, retention, and offboarding are documented.</li>
+            </ol>
+          </section>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Current Career Unified Partner API and webhook status." />
+    <title>Partner API Status | Career Unified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue: #185fa5;
+        --ink: #111827;
+        --text: #334155;
+        --muted: #64748b;
+        --border: #dbe5f0;
+        --green: #3b6d11;
+        --green-soft: #eaf3de;
+        --amber: #854f0b;
+        --amber-soft: #faeeda;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f8fc;
+        color: var(--text);
+        font-family: Inter, Arial, sans-serif;
+      }
+      .shell {
+        width: min(760px, 92vw);
+        margin: 0 auto;
+        padding: 38px 0 70px;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 70px;
+      }
+      .nav a {
+        color: var(--blue);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      h1 {
+        margin: 0 0 12px;
+        color: var(--ink);
+        font-size: clamp(38px, 7vw, 64px);
+        letter-spacing: -0.04em;
+      }
+      .intro {
+        margin: 0 0 30px;
+        color: var(--muted);
+      }
+      .overall,
+      .component {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .overall {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .overall strong {
+        color: var(--ink);
+      }
+      .badge {
+        border-radius: 999px;
+        background: var(--green-soft);
+        color: var(--green);
+        padding: 7px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .badge.degraded {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+      .components {
+        display: grid;
+        gap: 10px;
+      }
+      .component {
+        padding: 17px 20px;
+      }
+      .component-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .component h2 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 16px;
+      }
+      .component p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .updated {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="nav">
+        <a href="/api/">Career Unified API</a><a href="/api/portal.html">Partner portal</a>
+      </nav>
+      <h1>System status</h1>
+      <p class="intro">Live operational signals for the Career Unified Partner API.</p>
+      <div id="statusContent" aria-live="polite">Checking current status...</div>
+    </main>
+    <script>
+      const escapeHtml = (value) =>
+        String(value ?? '').replace(
+          /[&<>"']/g,
+          (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c],
+        )
+      fetch('/api/v1/status')
+        .then((response) => response.json())
+        .then(({data}) => {
+          const components = data.components || {}
+          document.getElementById('statusContent').innerHTML =
+            `<section class="overall"><strong>${data.status === 'available' ? 'All systems operational' : 'Some systems are degraded'}</strong><span class="badge ${escapeHtml(data.status)}">${escapeHtml(data.status)}</span></section><div class="components"><section class="component"><div class="component-head"><h2>Partner API</h2><span class="badge ${escapeHtml(components.api?.status)}">${escapeHtml(components.api?.status)}</span></div><p>Average response time today: ${Number(components.api?.averageLatencyMs || 0)} ms</p></section><section class="component"><div class="component-head"><h2>Webhook delivery</h2><span class="badge ${escapeHtml(components.webhooks?.status)}">${escapeHtml(components.webhooks?.status)}</span></div><p>${Number(components.webhooks?.pending || 0)} pending &middot; ${Number(components.webhooks?.failed || 0)} failed</p></section></div><p class="updated">Last checked ${escapeHtml(new Date(data.checkedAt).toLocaleString())}</p>`
+        })
+        .catch(() => {
+          document.getElementById('statusContent').innerHTML =
+            '<section class="overall"><strong>Status could not be loaded</strong><span class="badge degraded">Unknown</span></section>'
+        })
+    </script>
+  </body>
+</html>

@@ -145,6 +145,17 @@ service cloud.firestore {
       match /saved/{savedId} {
         allow read, create, update, delete: if isOwner(userId) || isAdmin();
       }
+
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow update: if isOwner(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'readAt']);
+        allow create, delete: if isAdmin();
+      }
+
+      match /notificationDeliveries/{deliveryId} {
+        allow read, write: if isAdmin();
+      }
     }
 
     match /cvs/{cvId} {

@@ -15,8 +15,11 @@ import {
   safeFilename,
   storagePathFromCv,
 } from "./_applicationUtils";
-import {copyPrivateCv, deletePrivateCv} from "./_privateCvStore";
+import {copyPrivateCv, deletePrivateCv, savePrivateCv} from "./_privateCvStore";
+import {sendTransactionalEmail} from "./_notify";
 import {enqueuePartnerWebhook} from "./_partnerWebhooks";
+import {buildProfileCvPdf} from "./_profileCvPdf";
+import {countryNameForCode, normalizeCountryCode} from "./_countryOptions";
 
 type ScreeningQuestion = {
   id: string;
@@ -41,6 +44,13 @@ class DuplicateApplicationError extends ApplicationError {
 
 const SENSITIVE_SCREENING_PATTERN =
   /\b(?:id|identity|passport|visa)\s*(?:number|no\.?)\b|\b(?:race|ethnicity|gender|sex|medical|health|disability|bank details?|salary history|current salary|photo|picture|criminal record)\b/i;
+const GENDER_OPTIONS = new Set([
+  "Female",
+  "Male",
+  "Non-binary",
+  "Another gender",
+  "Prefer not to say",
+]);
 const LEGACY_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work in South Africa?";
 const GENERIC_WORK_AUTHORISATION_QUESTION =
   "Are you legally authorised to work in the country where this position is based?";
@@ -66,6 +76,103 @@ const SCREENING_TEMPLATE_KEYS = new Set([
 
 function applicationIdFor(jobId: string, candidateId: string) {
   return crypto.createHash("sha256").update(`${jobId}:${candidateId}`).digest("hex").slice(0, 48);
+}
+
+function escapeEmailHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function siteOrigin() {
+  const configuredUrl = cleanText(process.env.URL || process.env.SITE_URL, 500);
+  try {
+    const parsed = new URL(configuredUrl);
+    if (["http:", "https:"].includes(parsed.protocol)) return parsed.origin;
+  } catch {
+    // Fall through to the canonical production URL.
+  }
+  return "https://careerunified.com";
+}
+
+function candidateFirstName(fullName: string) {
+  return cleanText(fullName.split(/\s+/)[0], 60) || "there";
+}
+
+function applicationConfirmationEmail({
+  fullName,
+  jobTitle,
+  companyName,
+  applicationId,
+  submittedAt,
+}: {
+  fullName: string;
+  jobTitle: string;
+  companyName: string;
+  applicationId: string;
+  submittedAt: Date;
+}) {
+  const firstName = candidateFirstName(fullName);
+  const applicationsUrl = new URL("/account-page.html?tab=applications", siteOrigin()).toString();
+  const submittedDate = new Intl.DateTimeFormat("en-ZA", {
+    dateStyle: "long",
+    timeZone: "Africa/Johannesburg",
+  }).format(submittedAt);
+  const subject = `Application received: ${jobTitle}`;
+  const text = `Hi ${firstName},
+
+Thank you for applying for ${jobTitle} at ${companyName} through Career Unified. We have successfully received your application and securely shared it with the recruiter.
+
+Application details
+Job: ${jobTitle}
+Company: ${companyName}
+Submitted: ${submittedDate}
+Reference: ${applicationId}
+
+You can follow your progress from Profile > My Applications. If you need to review your submission, withdraw it, or make any available changes, open My Applications here:
+${applicationsUrl}
+
+The recruiter will contact you directly or update your application when there is news. You do not need to submit another application for this vacancy.
+
+Good luck with your application.
+
+Career Unified`;
+  const html = `<!doctype html>
+<html lang="en">
+  <body style="margin:0;background:#f4f7fb;color:#14213d;font-family:Arial,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your application for ${escapeEmailHtml(jobTitle)} was received successfully.</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:28px 12px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border:1px solid #dce5f2;">
+          <tr><td style="padding:24px 30px;border-bottom:1px solid #e5eaf2;font-size:22px;font-weight:700;color:#173b8f;">Career Unified</td></tr>
+          <tr><td style="padding:32px 30px;">
+            <p style="margin:0 0 10px;color:#2864dc;font-size:13px;font-weight:700;text-transform:uppercase;">Application received</p>
+            <h1 style="margin:0 0 18px;font-size:28px;line-height:1.25;color:#101828;">Thank you for applying, ${escapeEmailHtml(firstName)}</h1>
+            <p style="margin:0 0 22px;font-size:16px;line-height:1.7;color:#475467;">We have successfully received your application and securely shared it with the recruiter.</p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 24px;background:#f7f9fc;border:1px solid #dce5f2;">
+              <tr><td style="padding:20px;">
+                <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#667085;text-transform:uppercase;">Position</p>
+                <p style="margin:0 0 16px;font-size:18px;font-weight:700;color:#173b8f;">${escapeEmailHtml(jobTitle)}</p>
+                <p style="margin:0 0 6px;color:#475467;"><strong>Company:</strong> ${escapeEmailHtml(companyName)}</p>
+                <p style="margin:0 0 6px;color:#475467;"><strong>Submitted:</strong> ${escapeEmailHtml(submittedDate)}</p>
+                <p style="margin:0;color:#475467;"><strong>Reference:</strong> ${escapeEmailHtml(applicationId)}</p>
+              </td></tr>
+            </table>
+            <p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#475467;">Follow your progress from <strong>Profile &gt; My Applications</strong>. You can also review your submission, withdraw it, or make any available changes there.</p>
+            <p style="margin:0 0 24px;"><a href="${escapeEmailHtml(applicationsUrl)}" style="display:inline-block;background:#2864dc;color:#ffffff;text-decoration:none;font-weight:700;padding:13px 20px;">View My Applications</a></p>
+            <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#667085;">The recruiter will contact you directly or update your application when there is news. You do not need to apply again for this vacancy.</p>
+            <p style="margin:24px 0 0;font-size:16px;color:#344054;">Good luck with your application.<br><strong>Career Unified</strong></p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`;
+
+  return {subject, text, html};
 }
 
 function isActiveJob(job: Record<string, any>) {
@@ -156,6 +263,15 @@ function answerMatches(question: ScreeningQuestion, answer: unknown) {
   return actualValues.includes(expectedValue);
 }
 
+function isEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function logCvFallback(stage: string, error: unknown) {
+  const errorName = error instanceof Error ? error.name : "UnknownError";
+  console.warn("DIRECT_APPLY_CV_FALLBACK", {stage, errorName});
+}
+
 export const handler: Handler = async (event) => {
   const origin = event.headers.origin || event.headers.Origin;
 
@@ -169,9 +285,11 @@ export const handler: Handler = async (event) => {
   let copiedCvPath = "";
   let copiedCvBlobKey = "";
   let applicationCreated = false;
+  let failureStage = "initialization";
 
   try {
     const admin = getAdmin();
+    failureStage = "authentication";
     const token = bearerToken(event);
     if (!token) throw new ApplicationError(401, "Please log in before applying.");
 
@@ -182,6 +300,7 @@ export const handler: Handler = async (event) => {
       throw new ApplicationError(401, "Your login session has expired. Please log in again.");
     }
 
+    failureStage = "rate_limit";
     const rateLimit = await checkRateLimit({
       admin,
       action: "direct-job-application",
@@ -201,16 +320,18 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    failureStage = "request_validation";
     const body = parseJsonBody(event);
     const jobId = cleanText(body.jobId, 160);
     const cvId = cleanText(body.cvId, 180);
     if (!jobId) throw new ApplicationError(400, "A valid job is required.");
     if (!cvId) throw new ApplicationError(400, "Please select or upload a CV.");
-    if (body.privacyAccepted !== true || body.declarationAccepted !== true || body.termsAccepted !== true) {
-      throw new ApplicationError(400, "Please accept the declaration, Privacy Policy, and Terms and Conditions.");
+    if (body.privacyAccepted !== true || body.termsAccepted !== true) {
+      throw new ApplicationError(400, "Please accept the Privacy Policy and Terms and Conditions.");
     }
 
     const db = admin.firestore();
+    failureStage = "application_context";
     const [jobSnap, userSnap, cvSnap] = await Promise.all([
       db.doc(`jobs/${jobId}`).get(),
       db.doc(`users/${decoded.uid}`).get(),
@@ -239,14 +360,40 @@ export const handler: Handler = async (event) => {
     const fullName = cleanText(contact.fullName || profile.name || decoded.name, 120);
     const email = cleanText(decoded.email || profile.email, 180).toLowerCase();
     const phone = cleanText(contact.phone || profile.phone, 40);
-    const location = cleanText(contact.location || profile.location, 160);
+    const city = cleanText(contact.city || profile.city, 80);
+    const province = cleanText(contact.province || profile.province, 80);
+    const location = cleanText(contact.location || [city, province].filter(Boolean).join(", ") || profile.location, 160);
     const qualification = cleanText(contact.qualification || profile.degreeType, 160);
+    const nationalityCodeSource = Object.prototype.hasOwnProperty.call(contact, "nationalityCode")
+      ? contact.nationalityCode
+      : profile.nationalityCode;
+    const suppliedNationalityCode = cleanText(nationalityCodeSource, 4).toUpperCase();
+    const nationalityCode = normalizeCountryCode(suppliedNationalityCode);
+    const suppliedNationality = cleanText(contact.nationality, 100);
+    if ((suppliedNationalityCode && !nationalityCode) || (suppliedNationality && !nationalityCode)) {
+      throw new ApplicationError(400, "Choose a valid nationality from the suggestions.");
+    }
+    const nationality = countryNameForCode(nationalityCode);
+    const genderSource = Object.prototype.hasOwnProperty.call(contact, "gender")
+      ? contact.gender
+      : profile.gender;
+    const suppliedGender = cleanText(genderSource, 80);
+    if (suppliedGender && !GENDER_OPTIONS.has(suppliedGender)) {
+      throw new ApplicationError(400, "Select a valid gender option.");
+    }
+    const gender = GENDER_OPTIONS.has(suppliedGender) ? suppliedGender : "";
     const currentJobTitle = cleanText(profile.currentJobTitle, 160);
     const yearsOfExperience = cleanText(profile.yearsOfExperience, 80);
     const profilePhotoURL = cleanText(profile.profilePhotoURL, 1200);
 
-    if (!fullName || !email || !phone || !location) {
-      throw new ApplicationError(400, "Name, verified email, telephone, and location are required.");
+    if (!fullName || !phone || !location) {
+      throw new ApplicationError(400, "Name, telephone, and location are required.");
+    }
+    if (!isEmail(email)) {
+      throw new ApplicationError(
+        400,
+        "Add a valid email address to your Career Unified account before applying.",
+      );
     }
 
     const questions = normalizeQuestions(job.screeningQuestions, cleanText(job.country, 120));
@@ -283,6 +430,7 @@ export const handler: Handler = async (event) => {
       }
       return {
         questionId: question.id,
+        templateKey: question.templateKey || "",
         label: question.label,
         type: question.type,
         answer,
@@ -290,6 +438,15 @@ export const handler: Handler = async (event) => {
         essentialMatch: answerMatches(question, answer),
       };
     }).filter((answer) => answer.visibleToCandidate);
+
+    const noticePeriodAnswer = answers.find((answer) => answer.templateKey === "notice_period")?.answer;
+    const noticePeriod = Array.isArray(noticePeriodAnswer)
+      ? noticePeriodAnswer.join(", ")
+      : noticePeriodAnswer;
+    const availability = cleanText(
+      profile.availability || cv.data?.availability || noticePeriod,
+      80,
+    );
 
     const essentialAnswers = answers.filter((answer) => answer.essentialMatch !== null);
     const essentialMatched = essentialAnswers.filter((answer) => answer.essentialMatch === true).length;
@@ -309,44 +466,171 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    failureStage = "cv_snapshot";
     const sourceCvPath = storagePathFromCv(cv);
     const sourceCvBlobKey = cleanText(cv.blobKey, 800);
-    if (!sourceCvPath && !sourceCvBlobKey) {
-      throw new ApplicationError(400, "Please upload this CV again before applying.");
-    }
-
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`;
     const bucket = admin.storage().bucket(bucketName);
-    const cvFileName = safeFilename(cv.cvFileName);
+    let cvFileName = safeFilename(cv.cvFileName || `${fullName}-CV.pdf`);
     const cvSnapshotId = crypto.randomUUID();
-    const cvContentType = cleanText(cv.contentType, 120) || "application/octet-stream";
-    if (sourceCvBlobKey) {
-      copiedCvBlobKey = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}`;
-      const copied = await copyPrivateCv(sourceCvBlobKey, copiedCvBlobKey, {
-        candidateId: decoded.uid,
-        recruiterId,
-        jobId,
-        applicationId,
-        contentType: cvContentType,
-        fileName: cvFileName,
+    let cvContentType = cleanText(cv.contentType, 120) || "application/octet-stream";
+    let cvSize = Number(cv.size || 0);
+    let generatedFromProfile = false;
+    let cvSnapshotPath = "";
+    let cvSnapshotBlobKey = "";
+    let cvStorageProvider: "firebase" | "netlify_blobs" = "netlify_blobs";
+    const destinationBlobKey = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}`;
+    const destinationStoragePath = () =>
+      `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}_${cvFileName}`;
+
+    const createProfileCvFallback = async () => {
+      const fallbackBuffer = await buildProfileCvPdf({
+        fullName,
+        email,
+        phone,
+        location,
+        qualification,
+        currentJobTitle,
+        currentCompany: cleanText(profile.currentCompany, 160),
+        yearsOfExperience,
+        institutionName: cleanText(profile.institutionName, 180),
+        fieldOfStudy: cleanText(profile.fieldOfStudy, 180),
+        graduationYear: cleanText(profile.graduationYear, 40),
+        industry: cleanText(profile.industry, 120),
+        summary: cleanMultiline(profile.bio || profile.summary, 1600),
+        skills: profile.skills,
+        homeLanguages: profile.homeLanguages,
       });
-      if (!copied) throw new ApplicationError(400, "Please upload this CV again before applying.");
-    } else {
-      copiedCvPath = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_${cvSnapshotId}_${cvFileName}`;
-      await bucket.file(sourceCvPath).copy(bucket.file(copiedCvPath));
-      await bucket.file(copiedCvPath).setMetadata({
-        contentType: cvContentType,
-        cacheControl: "private, max-age=0, no-store",
-        metadata: {
+      cvFileName = safeFilename(`${fullName}-CV.pdf`);
+      cvContentType = "application/pdf";
+      cvSize = fallbackBuffer.length;
+      generatedFromProfile = true;
+      return fallbackBuffer;
+    };
+
+    const saveBufferToBlob = async (buffer: Buffer) => {
+      copiedCvBlobKey = destinationBlobKey;
+      try {
+        await savePrivateCv(destinationBlobKey, buffer, {
           candidateId: decoded.uid,
           recruiterId,
           jobId,
           applicationId,
-        },
-      });
+          contentType: cvContentType,
+          fileName: cvFileName,
+          generatedFromProfile,
+        });
+      } catch (error) {
+        copiedCvBlobKey = "";
+        throw error;
+      }
+      cvSnapshotBlobKey = destinationBlobKey;
+      cvStorageProvider = "netlify_blobs";
+    };
+
+    const saveBufferToFirebase = async (buffer: Buffer) => {
+      const storagePath = destinationStoragePath();
+      copiedCvPath = storagePath;
+      try {
+        await bucket.file(storagePath).save(buffer, {
+          resumable: false,
+          metadata: {
+            contentType: cvContentType,
+            cacheControl: "private, max-age=0, no-store",
+            metadata: {
+              candidateId: decoded.uid,
+              recruiterId,
+              jobId,
+              applicationId,
+            },
+          },
+        });
+      } catch (error) {
+        copiedCvPath = "";
+        throw error;
+      }
+      cvSnapshotPath = storagePath;
+      cvStorageProvider = "firebase";
+    };
+
+    if (sourceCvBlobKey) {
+      copiedCvBlobKey = destinationBlobKey;
+      try {
+        const copied = await copyPrivateCv(sourceCvBlobKey, destinationBlobKey, {
+          candidateId: decoded.uid,
+          recruiterId,
+          jobId,
+          applicationId,
+          contentType: cvContentType,
+          fileName: cvFileName,
+        });
+        if (copied) {
+          cvSnapshotBlobKey = destinationBlobKey;
+          cvStorageProvider = "netlify_blobs";
+        } else {
+          copiedCvBlobKey = "";
+        }
+      } catch (error) {
+        copiedCvBlobKey = "";
+        logCvFallback("copy_blob", error);
+      }
     }
 
+    let sourceBuffer: Buffer | null = null;
+    if (!cvSnapshotBlobKey && sourceCvPath) {
+      try {
+        [sourceBuffer] = await bucket.file(sourceCvPath).download();
+        cvSize = sourceBuffer.length;
+        await saveBufferToBlob(sourceBuffer);
+      } catch (error) {
+        logCvFallback("firebase_to_blob", error);
+      }
+    }
+
+    if (!cvSnapshotBlobKey && !cvSnapshotPath && sourceCvPath) {
+      try {
+        if (!sourceBuffer) [sourceBuffer] = await bucket.file(sourceCvPath).download();
+        cvSize = sourceBuffer.length;
+        await saveBufferToFirebase(sourceBuffer);
+      } catch (error) {
+        logCvFallback("copy_firebase", error);
+      }
+    }
+
+    if (!cvSnapshotBlobKey && !cvSnapshotPath) {
+      try {
+        const fallbackBuffer = await createProfileCvFallback();
+        try {
+          await saveBufferToBlob(fallbackBuffer);
+        } catch (error) {
+          logCvFallback("profile_to_blob", error);
+          await saveBufferToFirebase(fallbackBuffer);
+        }
+      } catch (error) {
+        logCvFallback("profile_cv", error);
+      }
+    }
+
+    // Keep Direct Apply available during a storage-provider incident. These
+    // references remain private and are served to recruiters by an authenticated
+    // function; no public CV URL is exposed.
+    if (!cvSnapshotBlobKey && !cvSnapshotPath && sourceCvBlobKey) {
+      cvSnapshotBlobKey = sourceCvBlobKey;
+      cvStorageProvider = "netlify_blobs";
+    } else if (!cvSnapshotBlobKey && !cvSnapshotPath && sourceCvPath) {
+      cvSnapshotPath = sourceCvPath;
+      cvStorageProvider = "firebase";
+    }
+
+    if (!cvSnapshotBlobKey && !cvSnapshotPath) {
+      throw new ApplicationError(
+        503,
+        "We could not securely attach your CV. Please upload the CV again and retry.",
+      );
+    }
+
+    failureStage = "application_write";
     const now = admin.firestore.Timestamp.now();
     const application = {
       applicationId,
@@ -366,9 +650,15 @@ export const handler: Handler = async (event) => {
         email,
         phone,
         location,
+        city,
+        province,
+        nationality,
+        nationalityCode,
         qualification,
+        gender,
         currentJobTitle,
         yearsOfExperience,
+        availability,
         profilePhotoURL,
       },
       jobSnapshot: {
@@ -381,11 +671,12 @@ export const handler: Handler = async (event) => {
       cvSnapshot: {
         cvId,
         fileName: cvFileName,
-        storagePath: copiedCvPath,
-        blobKey: copiedCvBlobKey,
-        storageProvider: copiedCvBlobKey ? "netlify_blobs" : "firebase",
+        storagePath: cvSnapshotPath,
+        blobKey: cvSnapshotBlobKey,
+        storageProvider: cvStorageProvider,
         contentType: cvContentType,
-        size: Number(cv.size || 0),
+        size: cvSize,
+        generatedFromProfile,
       },
       answers,
       coverLetter: cleanMultiline(body.coverLetter, 4000),
@@ -393,7 +684,13 @@ export const handler: Handler = async (event) => {
       submittedAt: now,
       updatedAt: now,
       viewedAt: null,
-      privacyVersion: "2026-07-24",
+      talentPoolConsent: body.talentPoolConsent === true,
+      talentPoolConsentAt: body.talentPoolConsent === true ? now : null,
+      talentPoolConsentExpiresAt: body.talentPoolConsent === true
+        ? admin.firestore.Timestamp.fromMillis(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        : null,
+      talentPool: false,
+      privacyVersion: "2026-08-21",
       termsVersion: "2026-07-24",
       source: "career_unified_direct_apply",
     };
@@ -423,19 +720,31 @@ export const handler: Handler = async (event) => {
     applicationCreated = true;
 
     if (body.saveToProfile !== false) {
+      failureStage = "profile_update";
       await userSnap.ref.set(
         {
           name: fullName,
           email,
           phone,
           location,
+          city,
+          province,
+          ...(nationalityCode ? {nationality, nationalityCode} : {}),
           ...(qualification ? {degreeType: qualification} : {}),
+          ...(gender ? {gender} : {}),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         {merge: true},
-      );
+      ).catch((error: unknown) => {
+        // The application has already been committed. A profile convenience
+        // update must never make a successful application appear to have failed.
+        console.warn("DIRECT_APPLY_PROFILE_UPDATE_FAILED", {
+          errorName: error instanceof Error ? error.name : "UnknownError",
+        });
+      });
     }
 
+    failureStage = "notification";
     await enqueuePartnerWebhook({
       recruiterId,
       event: "application.received",
@@ -448,6 +757,46 @@ export const handler: Handler = async (event) => {
       },
     }).catch((error) => {
       console.error("APPLICATION_WEBHOOK_ENQUEUE_ERROR", error);
+    });
+
+    const confirmationMessage = applicationConfirmationEmail({
+      fullName,
+      jobTitle: application.jobSnapshot.title || "this position",
+      companyName: application.jobSnapshot.company || "the employer",
+      applicationId,
+      submittedAt: now.toDate(),
+    });
+    let candidateConfirmationEmail: Record<string, unknown>;
+    try {
+      const delivery = await sendTransactionalEmail({
+        to: email,
+        ...confirmationMessage,
+        tag: "direct-apply-confirmation",
+      });
+      candidateConfirmationEmail = {
+        status: "sent",
+        providerMessageId: delivery.id || null,
+        sentAt: admin.firestore.Timestamp.now(),
+      };
+    } catch (error) {
+      candidateConfirmationEmail = {
+        status: "failed",
+        failedAt: admin.firestore.Timestamp.now(),
+      };
+      console.error("DIRECT_APPLY_CONFIRMATION_EMAIL_ERROR", {
+        applicationId,
+        errorName: error instanceof Error ? error.name : "UnknownError",
+      });
+    }
+
+    await applicationRef.set(
+      {candidateConfirmationEmail, updatedAt: admin.firestore.Timestamp.now()},
+      {merge: true},
+    ).catch((error: unknown) => {
+      console.warn("DIRECT_APPLY_CONFIRMATION_STATUS_WRITE_FAILED", {
+        applicationId,
+        errorName: error instanceof Error ? error.name : "UnknownError",
+      });
     });
 
     return json(201, origin, {
@@ -484,7 +833,16 @@ export const handler: Handler = async (event) => {
     if (error instanceof ApplicationError) {
       return json(error.statusCode, origin, {error: error.message});
     }
-    console.error("SUBMIT_JOB_APPLICATION_ERROR", error);
-    return json(500, origin, {error: "Could not submit your application. Please try again."});
+    const reference = crypto.randomUUID().slice(0, 8).toUpperCase();
+    console.error("SUBMIT_JOB_APPLICATION_ERROR", {
+      reference,
+      stage: failureStage,
+      errorName: error instanceof Error ? error.name : "UnknownError",
+      error,
+    });
+    return json(500, origin, {
+      error: "Could not submit your application. Please try again.",
+      reference,
+    });
   }
 };

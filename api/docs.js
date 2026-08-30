@@ -1,4 +1,4 @@
-(() => {
+;(() => {
   'use strict'
 
   const baseUrl = 'https://careerunified.com/api/v1'
@@ -13,7 +13,11 @@
       description: 'Return active Career Unified editorial and approved recruiter jobs.',
       access: 'Public',
       parameters: [
-        ['limit', 'integer', 'Number of records to return. Minimum 1, maximum 100. Defaults to 25.'],
+        [
+          'limit',
+          'integer',
+          'Number of records to return. Minimum 1, maximum 100. Defaults to 25.',
+        ],
         ['cursor', 'string', 'Opaque cursor returned by the previous page.'],
         ['q', 'string', 'Search title, organisation, location, category, and employment type.'],
         ['category', 'string', 'Return jobs matching an exact category.'],
@@ -54,9 +58,13 @@ result = requests.get(
 }`,
     },
     {
-      id: 'get-job', method: 'GET', path: '/jobs/{slug-or-id}', title: 'Retrieve a job', access: 'Public',
+      id: 'get-job',
+      method: 'GET',
+      path: '/jobs/{slug-or-id}',
+      title: 'Retrieve a job',
+      access: 'Public',
       description: 'Retrieve one active job by its canonical slug or Career Unified identifier.',
-      parameters: [['slug-or-id', 'string · path', 'The job slug or identifier.', true]],
+      parameters: [['slug-or-id', 'string - path', 'The job slug or identifier.', true]],
       curl: `curl "${baseUrl}/jobs/junior-financial-analyst--api_8f"`,
       node: `const job = await fetch(
   '${baseUrl}/jobs/junior-financial-analyst--api_8f'
@@ -78,21 +86,30 @@ job = requests.get(
 }`,
     },
     {
-      id: 'create-job', method: 'POST', path: '/jobs', title: 'Create a job', access: 'jobs:write',
+      id: 'create-job',
+      method: 'POST',
+      path: '/jobs',
+      title: 'Create a job',
+      access: 'jobs:write',
       description: 'Publish a vacancy for the organisation linked to the API client.',
       note: 'The linked recruiter company profile controls the company name, logo, website, email, and social profiles.',
       parameters: [
-        ['Idempotency-Key', 'string · header', 'Unique key of 8 to 180 safe characters. Reuse it only when retrying the same payload.', true],
-        ['title', 'string · body', 'Public job title.', true],
-        ['category', 'string · body', 'Career Unified job category.', true],
-        ['employmentType', 'string · body', 'Employment arrangement shown to applicants.', true],
-        ['description', 'string · body', 'Job responsibilities and requirements.', true],
-        ['city', 'string · body', 'City or town.', true],
-        ['country', 'string · body', 'Country. Defaults to South Africa.'],
-        ['closingDate', 'date · body', 'Closing date in YYYY-MM-DD format.'],
-        ['applicationMethod', 'string · body', 'direct, external, or email. Defaults to direct.'],
-        ['applyLink', 'HTTPS URL · body', 'Required when applicationMethod is external.'],
-        ['screeningQuestions', 'array · body', 'Structured questions for Direct Apply jobs.'],
+        [
+          'Idempotency-Key',
+          'string - header',
+          'Unique key of 8 to 180 safe characters. Reuse it only when retrying the same payload.',
+          true,
+        ],
+        ['title', 'string - body', 'Public job title.', true],
+        ['category', 'string - body', 'Career Unified job category.', true],
+        ['employmentType', 'string - body', 'Employment arrangement shown to applicants.', true],
+        ['description', 'string - body', 'Job responsibilities and requirements.', true],
+        ['city', 'string - body', 'City or town.', true],
+        ['country', 'string - body', 'Country. Defaults to South Africa.'],
+        ['closingDate', 'date - body', 'Closing date in YYYY-MM-DD format.'],
+        ['applicationMethod', 'string - body', 'direct, external, or email. Defaults to direct.'],
+        ['applyLink', 'HTTPS URL - body', 'Required when applicationMethod is external.'],
+        ['screeningQuestions', 'array - body', 'Structured questions for Direct Apply jobs.'],
       ],
       curl: `curl -X POST "${baseUrl}/jobs" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY" \\
@@ -162,9 +179,19 @@ response = requests.post(
 }`,
     },
     {
-      id: 'update-job', method: 'PATCH', path: '/jobs/{jobId}', title: 'Update a job', access: 'jobs:write',
+      id: 'update-job',
+      method: 'PATCH',
+      path: '/jobs/{jobId}',
+      title: 'Update a job',
+      access: 'jobs:write',
       description: 'Update an active job owned by the API client organisation.',
-      parameters: [['jobId', 'string · path', 'Career Unified job identifier.', true], ['title', 'string · body', 'Updated public job title.'], ['description', 'string · body', 'Updated role content.'], ['closingDate', 'date · body', 'Replacement closing date in YYYY-MM-DD format.'], ['status', 'string · body', 'Supported job status where permitted.']],
+      parameters: [
+        ['jobId', 'string - path', 'Career Unified job identifier.', true],
+        ['title', 'string - body', 'Updated public job title.'],
+        ['description', 'string - body', 'Updated role content.'],
+        ['closingDate', 'date - body', 'Replacement closing date in YYYY-MM-DD format.'],
+        ['status', 'string - body', 'Supported job status where permitted.'],
+      ],
       curl: `curl -X PATCH "${baseUrl}/jobs/api_7eb96a1a8d91" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY" \\
   -H "Content-Type: application/json" \\
@@ -191,9 +218,13 @@ response = requests.post(
 }`,
     },
     {
-      id: 'close-job', method: 'POST', path: '/jobs/{jobId}/close', title: 'Close a job', access: 'jobs:write',
+      id: 'close-job',
+      method: 'POST',
+      path: '/jobs/{jobId}/close',
+      title: 'Close a job',
+      access: 'jobs:write',
       description: 'Stop an organisation job from accepting new applications.',
-      parameters: [['jobId', 'string · path', 'Career Unified job identifier.', true]],
+      parameters: [['jobId', 'string - path', 'Career Unified job identifier.', true]],
       curl: `curl -X POST "${baseUrl}/jobs/api_7eb96a1a8d91/close" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
       node: `await fetch('${baseUrl}/jobs/api_7eb96a1a8d91/close', {
@@ -212,9 +243,18 @@ response = requests.post(
 }`,
     },
     {
-      id: 'list-applications', method: 'GET', path: '/jobs/{jobId}/applications', title: 'List applications', access: 'applications:read',
+      id: 'list-applications',
+      method: 'GET',
+      path: '/jobs/{jobId}/applications',
+      title: 'List applications',
+      access: 'applications:read',
       description: 'List Direct Apply applications submitted to one organisation job.',
-      parameters: [['jobId', 'string · path', 'Career Unified job identifier.', true], ['limit', 'integer', 'Number of records to return. Maximum 100.'], ['cursor', 'string', 'Opaque cursor returned by the previous page.'], ['status', 'string', 'Filter by application stage.']],
+      parameters: [
+        ['jobId', 'string - path', 'Career Unified job identifier.', true],
+        ['limit', 'integer', 'Number of records to return. Maximum 100.'],
+        ['cursor', 'string', 'Opaque cursor returned by the previous page.'],
+        ['status', 'string', 'Filter by application stage.'],
+      ],
       curl: `curl "${baseUrl}/jobs/api_7eb96a1a8d91/applications?status=submitted" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
       node: `const applications = await fetch(
@@ -243,10 +283,17 @@ response = requests.post(
 }`,
     },
     {
-      id: 'get-application', method: 'GET', path: '/applications/{applicationId}', title: 'Retrieve application', access: 'applications:read',
-      description: 'Retrieve the structured candidate snapshot, answers, and application workflow data.',
+      id: 'get-application',
+      method: 'GET',
+      path: '/applications/{applicationId}',
+      title: 'Retrieve application',
+      access: 'applications:read',
+      description:
+        'Retrieve the structured candidate snapshot, answers, and application workflow data.',
       note: 'Storage paths, blob keys, API credentials, private recruiter notes, CV binary data, and employment-equity profile fields are never returned.',
-      parameters: [['applicationId', 'string · path', 'Career Unified application identifier.', true]],
+      parameters: [
+        ['applicationId', 'string - path', 'Career Unified application identifier.', true],
+      ],
       curl: `curl "${baseUrl}/applications/app_4b21" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
       node: `const application = await fetch(
@@ -273,9 +320,21 @@ response = requests.post(
 }`,
     },
     {
-      id: 'update-application', method: 'PATCH', path: '/applications/{applicationId}', title: 'Update application stage', access: 'applications:write',
+      id: 'update-application',
+      method: 'PATCH',
+      path: '/applications/{applicationId}',
+      title: 'Update application stage',
+      access: 'applications:write',
       description: 'Move an organisation application through a supported recruitment stage.',
-      parameters: [['applicationId', 'string · path', 'Career Unified application identifier.', true], ['status', 'string · body', 'viewed, shortlisted, interview, offer, hired, or unsuccessful.', true]],
+      parameters: [
+        ['applicationId', 'string - path', 'Career Unified application identifier.', true],
+        [
+          'status',
+          'string - body',
+          'viewed, shortlisted, interview, offer, hired, or unsuccessful.',
+          true,
+        ],
+      ],
       curl: `curl -X PATCH "${baseUrl}/applications/app_4b21" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY" \\
   -H "Content-Type: application/json" \\
@@ -301,9 +360,58 @@ response = requests.post(
 }`,
     },
     {
-      id: 'list-bursaries', method: 'GET', path: '/bursaries', title: 'List bursaries', access: 'Public',
+      id: 'create-test-application',
+      method: 'POST',
+      path: '/jobs/{jobId}/applications/test',
+      title: 'Create a sandbox application',
+      access: 'applications:write',
+      description:
+        'Create a synthetic candidate application to test application retrieval and webhooks.',
+      note: 'This endpoint accepts cu_test_ keys only. It never writes to live application data.',
+      parameters: [
+        ['jobId', 'string - path', 'An owned sandbox job identifier.', true],
+        ['candidate.name', 'string - body', 'Optional test candidate display name.'],
+        ['candidate.email', 'email - body', 'Optional test candidate email.'],
+      ],
+      curl: `curl -X POST "${baseUrl}/jobs/api_test_job/applications/test" \\
+  -H "X-API-Key: $CAREER_UNIFIED_TEST_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"candidate":{"name":"API Test Candidate","email":"api-test@example.com"}}'`,
+      node: `await fetch('${baseUrl}/jobs/api_test_job/applications/test', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': process.env.CAREER_UNIFIED_TEST_API_KEY,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ candidate: { name: 'API Test Candidate' } }),
+})`,
+      python: `requests.post(
+    "${baseUrl}/jobs/api_test_job/applications/test",
+    headers={"X-API-Key": test_api_key},
+    json={"candidate": {"name": "API Test Candidate"}},
+)`,
+      response: `{
+  "data": {
+    "id": "sandbox_app_4b21",
+    "jobId": "api_test_job",
+    "status": "submitted",
+    "environment": "test"
+  }
+}`,
+    },
+    {
+      id: 'list-bursaries',
+      method: 'GET',
+      path: '/bursaries',
+      title: 'List bursaries',
+      access: 'Public',
       description: 'Return active bursaries published by Career Unified.',
-      parameters: [['limit', 'integer', 'Number of records to return. Maximum 100.'], ['cursor', 'string', 'Opaque cursor from the previous page.'], ['q', 'string', 'Search bursary name, provider, and faculty.'], ['faculty', 'string', 'Return bursaries matching an exact faculty.']],
+      parameters: [
+        ['limit', 'integer', 'Number of records to return. Maximum 100.'],
+        ['cursor', 'string', 'Opaque cursor from the previous page.'],
+        ['q', 'string', 'Search bursary name, provider, and faculty.'],
+        ['faculty', 'string', 'Return bursaries matching an exact faculty.'],
+      ],
       curl: `curl "${baseUrl}/bursaries?faculty=Engineering&limit=25"`,
       node: `const bursaries = await fetch(
   '${baseUrl}/bursaries?faculty=Engineering&limit=25'
@@ -325,9 +433,13 @@ response = requests.post(
 }`,
     },
     {
-      id: 'get-bursary', method: 'GET', path: '/bursaries/{slug-or-id}', title: 'Retrieve a bursary', access: 'Public',
+      id: 'get-bursary',
+      method: 'GET',
+      path: '/bursaries/{slug-or-id}',
+      title: 'Retrieve a bursary',
+      access: 'Public',
       description: 'Retrieve one active bursary by its canonical slug or identifier.',
-      parameters: [['slug-or-id', 'string · path', 'Bursary slug or identifier.', true]],
+      parameters: [['slug-or-id', 'string - path', 'Bursary slug or identifier.', true]],
       curl: `curl "${baseUrl}/bursaries/engineering-bursary-2027"`,
       node: `const bursary = await fetch(
   '${baseUrl}/bursaries/engineering-bursary-2027'
@@ -346,10 +458,18 @@ response = requests.post(
 }`,
     },
     {
-      id: 'create-webhook', method: 'POST', path: '/webhooks', title: 'Create a webhook endpoint', access: 'webhooks:manage',
+      id: 'create-webhook',
+      method: 'POST',
+      path: '/webhooks',
+      title: 'Create a webhook endpoint',
+      access: 'webhooks:manage',
       description: 'Register a public HTTPS endpoint for selected organisation events.',
       note: 'The signing secret is returned once. Store it in a server-side secret manager.',
-      parameters: [['url', 'HTTPS URL · body', 'Public endpoint that receives signed POST requests.', true], ['events', 'array · body', 'One or more supported event names.', true], ['description', 'string · body', 'Internal label for this destination.']],
+      parameters: [
+        ['url', 'HTTPS URL - body', 'Public endpoint that receives signed POST requests.', true],
+        ['events', 'array - body', 'One or more supported event names.', true],
+        ['description', 'string - body', 'Internal label for this destination.'],
+      ],
       curl: `curl -X POST "${baseUrl}/webhooks" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY" \\
   -H "Content-Type: application/json" \\
@@ -391,7 +511,11 @@ response = requests.post(
 }`,
     },
     {
-      id: 'list-webhooks', method: 'GET', path: '/webhooks', title: 'List webhook endpoints', access: 'webhooks:manage',
+      id: 'list-webhooks',
+      method: 'GET',
+      path: '/webhooks',
+      title: 'List webhook endpoints',
+      access: 'webhooks:manage',
       description: 'List webhook destinations configured for the organisation.',
       parameters: [],
       curl: `curl "${baseUrl}/webhooks" \\
@@ -415,9 +539,92 @@ response = requests.post(
 }`,
     },
     {
-      id: 'delete-webhook', method: 'DELETE', path: '/webhooks/{webhookId}', title: 'Disable a webhook endpoint', access: 'webhooks:manage',
-      description: 'Disable delivery to an organisation webhook endpoint without deleting its audit history.',
-      parameters: [['webhookId', 'string · path', 'Webhook endpoint identifier.', true]],
+      id: 'webhook-deliveries',
+      method: 'GET',
+      path: '/webhooks/{webhookId}/deliveries',
+      title: 'Review webhook deliveries',
+      access: 'webhooks:manage',
+      description: 'Return recent delivery attempts for an owned webhook endpoint.',
+      parameters: [['webhookId', 'string - path', 'Webhook endpoint identifier.', true]],
+      curl: `curl "${baseUrl}/webhooks/wh_21fb/deliveries" \\
+  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
+      node: `const deliveries = await fetch('${baseUrl}/webhooks/wh_21fb/deliveries', {
+  headers: { 'X-API-Key': process.env.CAREER_UNIFIED_API_KEY },
+}).then(response => response.json())`,
+      python: `deliveries = requests.get(
+    "${baseUrl}/webhooks/wh_21fb/deliveries",
+    headers={"X-API-Key": api_key},
+).json()`,
+      response: `{
+  "data": [{"eventId":"evt_123","status":"delivered","responseStatus":200}]
+}`,
+    },
+    {
+      id: 'rotate-webhook',
+      method: 'POST',
+      path: '/webhooks/{webhookId}/rotate-secret',
+      title: 'Rotate a webhook secret',
+      access: 'webhooks:manage',
+      description: 'Replace an endpoint signing secret and return the new secret once.',
+      parameters: [['webhookId', 'string - path', 'Webhook endpoint identifier.', true]],
+      curl: `curl -X POST "${baseUrl}/webhooks/wh_21fb/rotate-secret" \\
+  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
+      node: `await fetch('${baseUrl}/webhooks/wh_21fb/rotate-secret', {
+  method: 'POST', headers: { 'X-API-Key': process.env.CAREER_UNIFIED_API_KEY },
+})`,
+      python: `requests.post(
+    "${baseUrl}/webhooks/wh_21fb/rotate-secret",
+    headers={"X-API-Key": api_key},
+)`,
+      response: `{"data":{"signingSecret":"whsec_...","notice":"Store this signing secret securely."}}`,
+    },
+    {
+      id: 'test-webhook',
+      method: 'POST',
+      path: '/webhooks/{webhookId}/test',
+      title: 'Send a webhook test',
+      access: 'webhooks:manage',
+      description: 'Queue a signed test.ping event for an owned webhook endpoint.',
+      parameters: [['webhookId', 'string - path', 'Webhook endpoint identifier.', true]],
+      curl: `curl -X POST "${baseUrl}/webhooks/wh_21fb/test" \\
+  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
+      node: `await fetch('${baseUrl}/webhooks/wh_21fb/test', {
+  method: 'POST', headers: { 'X-API-Key': process.env.CAREER_UNIFIED_API_KEY },
+})`,
+      python: `requests.post(
+    "${baseUrl}/webhooks/wh_21fb/test",
+    headers={"X-API-Key": api_key},
+)`,
+      response: `{"data":{"queued":true,"event":"test.ping"}}`,
+    },
+    {
+      id: 'replay-webhook',
+      method: 'POST',
+      path: '/webhooks/events/{eventId}/replay',
+      title: 'Replay a webhook event',
+      access: 'webhooks:manage',
+      description: 'Queue a new delivery attempt for an owned webhook event.',
+      parameters: [['eventId', 'string - path', 'Webhook event identifier.', true]],
+      curl: `curl -X POST "${baseUrl}/webhooks/events/evt_123/replay" \\
+  -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
+      node: `await fetch('${baseUrl}/webhooks/events/evt_123/replay', {
+  method: 'POST', headers: { 'X-API-Key': process.env.CAREER_UNIFIED_API_KEY },
+})`,
+      python: `requests.post(
+    "${baseUrl}/webhooks/events/evt_123/replay",
+    headers={"X-API-Key": api_key},
+)`,
+      response: `{"data":{"queued":true,"eventId":"evt_123"}}`,
+    },
+    {
+      id: 'delete-webhook',
+      method: 'DELETE',
+      path: '/webhooks/{webhookId}',
+      title: 'Disable a webhook endpoint',
+      access: 'webhooks:manage',
+      description:
+        'Disable delivery to an organisation webhook endpoint without deleting its audit history.',
+      parameters: [['webhookId', 'string - path', 'Webhook endpoint identifier.', true]],
       curl: `curl -X DELETE "${baseUrl}/webhooks/wh_21fb" \\
   -H "X-API-Key: $CAREER_UNIFIED_API_KEY"`,
       node: `await fetch('${baseUrl}/webhooks/wh_21fb', {
@@ -430,31 +637,227 @@ response = requests.post(
 )`,
       response: `HTTP/1.1 204 No Content`,
     },
+    {
+      id: 'list-api-clients',
+      method: 'GET',
+      path: '/admin/clients',
+      title: 'List API clients',
+      access: 'Admin',
+      description:
+        'List approved partner API clients without returning secret hashes or full keys.',
+      note: 'This endpoint requires a Firebase ID token with the admin claim. It is not accessible with partner API keys.',
+      parameters: [],
+      curl: `curl "${baseUrl}/admin/clients" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN"`,
+      node: `const clients = await fetch('${baseUrl}/admin/clients', {
+  headers: { Authorization: \`Bearer \${firebaseAdminIdToken}\` },
+}).then(response => response.json())`,
+      python: `clients = requests.get(
+    "${baseUrl}/admin/clients",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+).json()`,
+      response: `{
+  "data": [
+    {
+      "id": "api_7eb96a1a8d91",
+      "name": "Example ATS production",
+      "environment": "live",
+      "monthlyQuota": 10000,
+      "usage": { "requestCount": 420, "monthlyQuota": 10000 }
+    }
+  ]
+}`,
+    },
+    {
+      id: 'create-api-client',
+      method: 'POST',
+      path: '/admin/clients',
+      title: 'Create an API client',
+      access: 'Admin',
+      description:
+        'Create a scoped live or sandbox API client for an approved recruiter organisation.',
+      note: 'The full key is returned once. Store it immediately in the partner server-side secret manager.',
+      parameters: [
+        ['name', 'string - body', 'Internal client label.', true],
+        ['recruiterId', 'string - body', 'Approved recruiter organisation UID.', true],
+        ['environment', 'string - body', 'live or test. Defaults to live.'],
+        ['apiPlan', 'string - body', 'pilot, starter, growth, or enterprise.'],
+        ['scopes', 'array - body', 'Approved API scopes.', true],
+        ['monthlyQuota', 'integer - body', 'Optional monthly request cap. Zero means no cap.'],
+      ],
+      curl: `curl -X POST "${baseUrl}/admin/clients" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "Example ATS sandbox",
+    "recruiterId": "firebase-recruiter-uid",
+    "environment": "test",
+    "apiPlan": "pilot",
+    "scopes": ["jobs:write", "applications:read"],
+    "rateLimitPerMinute": 600,
+    "monthlyQuota": 10000
+  }'`,
+      node: `await fetch('${baseUrl}/admin/clients', {
+  method: 'POST',
+  headers: {
+    Authorization: \`Bearer \${firebaseAdminIdToken}\`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    name: 'Example ATS sandbox',
+    recruiterId: 'firebase-recruiter-uid',
+    environment: 'test',
+    scopes: ['jobs:write', 'applications:read'],
+  }),
+})`,
+      python: `requests.post(
+    "${baseUrl}/admin/clients",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+    json={
+        "name": "Example ATS sandbox",
+        "recruiterId": "firebase-recruiter-uid",
+        "environment": "test",
+        "scopes": ["jobs:write", "applications:read"],
+    },
+)`,
+      response: `{
+  "data": {
+    "client": { "id": "api_7eb96a1a8d91", "environment": "test" },
+    "apiKey": "cu_test_api_7eb96a1a8d91.secret",
+    "notice": "Store this key securely. It will not be shown again."
+  }
+}`,
+    },
+    {
+      id: 'get-api-client',
+      method: 'GET',
+      path: '/admin/clients/{clientId}',
+      title: 'Review usage and alerts',
+      access: 'Admin',
+      description:
+        'Retrieve one API client, its monthly/daily usage, and recent rate-limit or quota alerts.',
+      parameters: [
+        ['clientId', 'string - path', 'API client identifier.', true],
+        ['month', 'YYYY-MM - query', 'Optional month to review.'],
+      ],
+      curl: `curl "${baseUrl}/admin/clients/api_7eb96a1a8d91?month=2026-08" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN"`,
+      node: `const client = await fetch('${baseUrl}/admin/clients/api_7eb96a1a8d91?month=2026-08', {
+  headers: { Authorization: \`Bearer \${firebaseAdminIdToken}\` },
+}).then(response => response.json())`,
+      python: `client = requests.get(
+    "${baseUrl}/admin/clients/api_7eb96a1a8d91",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+    params={"month": "2026-08"},
+).json()`,
+      response: `{
+  "data": {
+    "client": { "id": "api_7eb96a1a8d91", "active": true },
+    "usage": { "month": "2026-08", "monthly": { "requestCount": 420 } },
+    "alerts": []
+  }
+}`,
+    },
+    {
+      id: 'rotate-api-client',
+      method: 'POST',
+      path: '/admin/clients/{clientId}/rotate',
+      title: 'Rotate an API key',
+      access: 'Admin',
+      description: 'Replace the stored secret hash and return a new full API key once.',
+      parameters: [['clientId', 'string - path', 'API client identifier.', true]],
+      curl: `curl -X POST "${baseUrl}/admin/clients/api_7eb96a1a8d91/rotate" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN"`,
+      node: `await fetch('${baseUrl}/admin/clients/api_7eb96a1a8d91/rotate', {
+  method: 'POST',
+  headers: { Authorization: \`Bearer \${firebaseAdminIdToken}\` },
+})`,
+      python: `requests.post(
+    "${baseUrl}/admin/clients/api_7eb96a1a8d91/rotate",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+)`,
+      response: `{
+  "data": {
+    "apiKey": "cu_live_api_7eb96a1a8d91.new-secret",
+    "notice": "Store this rotated key securely. It will not be shown again."
+  }
+}`,
+    },
+    {
+      id: 'download-api-usage',
+      method: 'GET',
+      path: '/admin/clients/{clientId}/usage.csv',
+      title: 'Download usage CSV',
+      access: 'Admin',
+      description: 'Download daily request usage for reporting or usage-based billing review.',
+      parameters: [
+        ['clientId', 'string - path', 'API client identifier.', true],
+        ['month', 'YYYY-MM - query', 'Optional month to export.'],
+      ],
+      curl: `curl "${baseUrl}/admin/clients/api_7eb96a1a8d91/usage.csv?month=2026-08" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN"`,
+      node: `const csv = await fetch('${baseUrl}/admin/clients/api_7eb96a1a8d91/usage.csv?month=2026-08', {
+  headers: { Authorization: \`Bearer \${firebaseAdminIdToken}\` },
+}).then(response => response.text())`,
+      python: `csv = requests.get(
+    "${baseUrl}/admin/clients/api_7eb96a1a8d91/usage.csv",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+    params={"month": "2026-08"},
+).text`,
+      response: `day,request_count,last_request_id,updated_at
+2026-08-01,42,req_123,2026-08-01T15:30:00.000Z`,
+    },
+    {
+      id: 'revoke-api-client',
+      method: 'DELETE',
+      path: '/admin/clients/{clientId}',
+      title: 'Revoke an API client',
+      access: 'Admin',
+      description: 'Disable an API client immediately without changing recruiter dashboard access.',
+      parameters: [['clientId', 'string - path', 'API client identifier.', true]],
+      curl: `curl -X DELETE "${baseUrl}/admin/clients/api_7eb96a1a8d91" \\
+  -H "Authorization: Bearer $FIREBASE_ADMIN_ID_TOKEN"`,
+      node: `await fetch('${baseUrl}/admin/clients/api_7eb96a1a8d91', {
+  method: 'DELETE',
+  headers: { Authorization: \`Bearer \${firebaseAdminIdToken}\` },
+})`,
+      python: `requests.delete(
+    "${baseUrl}/admin/clients/api_7eb96a1a8d91",
+    headers={"Authorization": f"Bearer {firebase_admin_id_token}"},
+)`,
+      response: `HTTP/1.1 204 No Content`,
+    },
   ]
 
-  const escapeHtml = (value) => String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  const escapeHtml = (value) =>
+    String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
 
-  const methodClass = (method) => `method-${method.toLowerCase() === 'delete' ? 'delete' : method.toLowerCase()}`
+  const methodClass = (method) =>
+    `method-${method.toLowerCase() === 'delete' ? 'delete' : method.toLowerCase()}`
 
   const renderParameters = (parameters) => {
     if (!parameters.length) return '<p>No parameters are required for this endpoint.</p>'
-    return `<div class="parameter-list">${parameters.map(([name, type, description, required]) => `
+    return `<div class="parameter-list">${parameters
+      .map(
+        ([name, type, description, required]) => `
       <div class="parameter-row">
         <div class="parameter-name"><strong>${escapeHtml(name)}${required ? '<em>required</em>' : ''}</strong><span>${escapeHtml(type)}</span></div>
         <p>${escapeHtml(description)}</p>
-      </div>`).join('')}</div>`
+      </div>`,
+      )
+      .join('')}</div>`
   }
 
   const renderEndpoint = (endpoint) => `
     <article class="doc-page endpoint-page" data-doc-page="${endpoint.id}" data-title="${escapeHtml(endpoint.title)}" data-description="${escapeHtml(endpoint.description)}">
       <div class="doc-grid landing-grid">
         <div class="doc-copy">
-          <p class="eyebrow">API REFERENCE · ${escapeHtml(endpoint.access)}</p>
+          <p class="eyebrow">API REFERENCE - ${escapeHtml(endpoint.access)}</p>
           <div class="endpoint-heading"><span class="method ${methodClass(endpoint.method)}">${endpoint.method === 'DELETE' ? 'DEL' : endpoint.method}</span><code>${escapeHtml(endpoint.path)}</code></div>
           <h1>${escapeHtml(endpoint.title)}</h1>
           <p class="lead">${escapeHtml(endpoint.description)}</p>
@@ -538,9 +941,13 @@ response = requests.post(
   const activeRequestCode = (button) => {
     const windowElement = button.closest('.code-window')
     if (!windowElement) return null
-    const requested = button.dataset.copyTarget && document.getElementById(button.dataset.copyTarget)
+    const requested =
+      button.dataset.copyTarget && document.getElementById(button.dataset.copyTarget)
     if (requested && !requested.hidden) return requested
-    return windowElement.querySelector('pre[data-code-panel]:not([hidden])') || windowElement.querySelector('pre')
+    return (
+      windowElement.querySelector('pre[data-code-panel]:not([hidden])') ||
+      windowElement.querySelector('pre')
+    )
   }
 
   const showCopyToast = () => {
@@ -591,10 +998,15 @@ response = requests.post(
   const renderSearch = (query = '') => {
     const normalized = query.trim().toLowerCase()
     const matches = pageIndex
-      .filter((page) => !normalized || `${page.title} ${page.description} ${page.text}`.toLowerCase().includes(normalized))
+      .filter(
+        (page) =>
+          !normalized ||
+          `${page.title} ${page.description} ${page.text}`.toLowerCase().includes(normalized),
+      )
       .slice(0, 9)
     if (!normalized) {
-      searchResults.innerHTML = '<p class="search-hint">Search for authentication, jobs, applications, webhooks, or errors.</p>'
+      searchResults.innerHTML =
+        '<p class="search-hint">Search for authentication, jobs, applications, webhooks, or errors.</p>'
       return
     }
     if (!matches.length) {

@@ -38,6 +38,13 @@ const GENERIC_WORK_AUTHORISATION_QUESTION = "Are you legally authorised to work 
 const RELATIVES_IN_ORGANISATION_TEMPLATE = "relatives_in_organisation";
 const RELATIVE_DETAIL_TEMPLATE_KEYS = new Set(["relative_full_name", "relative_relationship"]);
 const EMPLOYMENT_EQUITY_TEMPLATE = "employment_equity_self_identification";
+const GENDER_OPTIONS = [
+  "Female",
+  "Male",
+  "Non-binary",
+  "Another gender",
+  "Prefer not to say",
+];
 const SCREENING_TEMPLATE_KEYS = new Set([
   "work_authorisation",
   "qualification",
@@ -52,6 +59,114 @@ const SCREENING_TEMPLATE_KEYS = new Set([
   RELATIVES_IN_ORGANISATION_TEMPLATE,
   ...RELATIVE_DETAIL_TEMPLATE_KEYS,
 ]);
+const cityAutocompleteState = new Map();
+const CITY_SUGGESTIONS = [
+  {city: "Pretoria", province: "Gauteng", country: "South Africa"},
+  {city: "Johannesburg", province: "Gauteng", country: "South Africa"},
+  {city: "Soweto", province: "Gauteng", country: "South Africa"},
+  {city: "Midrand", province: "Gauteng", country: "South Africa"},
+  {city: "Sandton", province: "Gauteng", country: "South Africa"},
+  {city: "Benoni", province: "Gauteng", country: "South Africa"},
+  {city: "Boksburg", province: "Gauteng", country: "South Africa"},
+  {city: "Germiston", province: "Gauteng", country: "South Africa"},
+  {city: "Roodepoort", province: "Gauteng", country: "South Africa"},
+  {city: "Vereeniging", province: "Gauteng", country: "South Africa"},
+  {city: "Bloemfontein", province: "Free State", country: "South Africa"},
+  {city: "Welkom", province: "Free State", country: "South Africa"},
+  {city: "Bethlehem", province: "Free State", country: "South Africa"},
+  {city: "Kroonstad", province: "Free State", country: "South Africa"},
+  {city: "Durban", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Pietermaritzburg", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Richards Bay", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Newcastle", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Empangeni", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Port Shepstone", province: "KwaZulu-Natal", country: "South Africa"},
+  {city: "Cape Town", province: "Western Cape", country: "South Africa"},
+  {city: "Bellville", province: "Western Cape", country: "South Africa"},
+  {city: "Paarl", province: "Western Cape", country: "South Africa"},
+  {city: "Stellenbosch", province: "Western Cape", country: "South Africa"},
+  {city: "George", province: "Western Cape", country: "South Africa"},
+  {city: "Worcester", province: "Western Cape", country: "South Africa"},
+  {city: "East London", province: "Eastern Cape", country: "South Africa"},
+  {city: "Gqeberha", province: "Eastern Cape", country: "South Africa"},
+  {city: "Port Elizabeth", province: "Eastern Cape", country: "South Africa"},
+  {city: "Mthatha", province: "Eastern Cape", country: "South Africa"},
+  {city: "Komani", province: "Eastern Cape", country: "South Africa"},
+  {city: "Bhisho", province: "Eastern Cape", country: "South Africa"},
+  {city: "Polokwane", province: "Limpopo", country: "South Africa"},
+  {city: "Tzaneen", province: "Limpopo", country: "South Africa"},
+  {city: "Thohoyandou", province: "Limpopo", country: "South Africa"},
+  {city: "Mokopane", province: "Limpopo", country: "South Africa"},
+  {city: "Mbombela", province: "Mpumalanga", country: "South Africa"},
+  {city: "Nelspruit", province: "Mpumalanga", country: "South Africa"},
+  {city: "Emalahleni", province: "Mpumalanga", country: "South Africa"},
+  {city: "Secunda", province: "Mpumalanga", country: "South Africa"},
+  {city: "Kimberley", province: "Northern Cape", country: "South Africa"},
+  {city: "Upington", province: "Northern Cape", country: "South Africa"},
+  {city: "Kuruman", province: "Northern Cape", country: "South Africa"},
+  {city: "Rustenburg", province: "North West", country: "South Africa"},
+  {city: "Mahikeng", province: "North West", country: "South Africa"},
+  {city: "Klerksdorp", province: "North West", country: "South Africa"},
+  {city: "Potchefstroom", province: "North West", country: "South Africa"},
+];
+const PROVINCE_SUGGESTIONS = [
+  "Eastern Cape",
+  "Free State",
+  "Gauteng",
+  "KwaZulu-Natal",
+  "Limpopo",
+  "Mpumalanga",
+  "North West",
+  "Northern Cape",
+  "Western Cape",
+];
+const COUNTRY_CODES = `
+  AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ
+  BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ
+  CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ
+  DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR
+  GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY
+  HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP
+  KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY
+  MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ
+  NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY
+  QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ
+  TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ
+  VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW
+`.trim().split(/\s+/);
+const COUNTRY_CODE_SET = new Set(COUNTRY_CODES);
+const REGION_DISPLAY_NAMES = typeof Intl.DisplayNames === "function"
+  ? new Intl.DisplayNames(["en"], {type: "region"})
+  : null;
+const NATIONALITY_ALIASES = new Map([
+  ["south african", "ZA"],
+  ["zimbabwean", "ZW"],
+  ["zambian", "ZM"],
+  ["namibian", "NA"],
+  ["botswanan", "BW"],
+  ["mosotho", "LS"],
+  ["swazi", "SZ"],
+  ["mozambican", "MZ"],
+  ["malawian", "MW"],
+  ["nigerian", "NG"],
+  ["ghanaian", "GH"],
+  ["kenyan", "KE"],
+  ["ugandan", "UG"],
+  ["tanzanian", "TZ"],
+]);
+
+function regionName(code) {
+  if (code === "XK") return "Kosovo";
+  return REGION_DISPLAY_NAMES?.of(code) || code;
+}
+
+const NATIONALITY_OPTIONS = COUNTRY_CODES
+  .map((code) => ({code, name: regionName(code)}))
+  .sort((left, right) => {
+    if (left.code === "ZA") return -1;
+    if (right.code === "ZA") return 1;
+    return left.name.localeCompare(right.name, "en");
+  });
 
 function text(value, fallback = "") {
   const output = String(value ?? "").trim();
@@ -73,6 +188,245 @@ function timestampMs(value) {
   if (typeof value.toDate === "function") return value.toDate().getTime();
   const parsed = new Date(value).getTime();
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function placeLabel(place) {
+  return [place.city, place.province, place.country].filter(Boolean).join(", ");
+}
+
+function queryCities(term) {
+  const normalized = String(term || "").trim().toLowerCase();
+  if (!normalized) return [];
+  return CITY_SUGGESTIONS
+    .map((place) => ({
+      ...place,
+      haystack: `${place.city} ${place.province} ${place.country}`.toLowerCase(),
+    }))
+    .filter((place) => place.haystack.includes(normalized))
+    .slice(0, 8);
+}
+
+function closePickerSuggestions(input) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state) return;
+  state.panel.hidden = true;
+  state.panel.replaceChildren();
+  state.suggestions = [];
+  state.activeIndex = -1;
+  input.setAttribute("aria-expanded", "false");
+}
+
+function applyCitySuggestion(input, suggestion) {
+  input.value = suggestion.city;
+  const provinceField = document.getElementById("province");
+  if (provinceField) provinceField.value = suggestion.province;
+  closePickerSuggestions(input);
+}
+
+function applyProvinceSuggestion(input, suggestion) {
+  input.value = suggestion;
+  closePickerSuggestions(input);
+}
+
+function applyNationalitySuggestion(input, suggestion) {
+  input.value = suggestion.name;
+  input.setCustomValidity("");
+  const codeField = document.getElementById("nationalityCode");
+  if (codeField instanceof HTMLInputElement) codeField.value = suggestion.code;
+  closePickerSuggestions(input);
+}
+
+function renderPickerSuggestions(input, suggestions) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state) return;
+  state.panel.replaceChildren();
+  state.suggestions = suggestions;
+  state.activeIndex = suggestions.length ? 0 : -1;
+  if (!suggestions.length) {
+    closePickerSuggestions(input);
+    return;
+  }
+
+  suggestions.forEach((suggestion, index) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = "picker-suggestion";
+    if (index === state.activeIndex) option.classList.add("is-active");
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", index === state.activeIndex ? "true" : "false");
+    if (state.type === "province") {
+      option.innerHTML = `<strong>${escapeHtml(suggestion)}</strong>`;
+    } else if (state.type === "nationality") {
+      option.innerHTML = `<strong>${escapeHtml(suggestion.name)}</strong>`;
+    } else {
+      option.innerHTML = `<strong>${escapeHtml(suggestion.city)}</strong><span>${escapeHtml(placeLabel(suggestion))}</span>`;
+    }
+    option.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+      if (state.type === "province") {
+        applyProvinceSuggestion(input, suggestion);
+      } else if (state.type === "nationality") {
+        applyNationalitySuggestion(input, suggestion);
+      } else {
+        applyCitySuggestion(input, suggestion);
+      }
+    });
+    option.addEventListener("mouseenter", () => {
+      state.activeIndex = index;
+      Array.from(state.panel.children).forEach((child, childIndex) => {
+        child.classList.toggle("is-active", childIndex === index);
+        child.setAttribute("aria-selected", childIndex === index ? "true" : "false");
+      });
+    });
+    state.panel.append(option);
+  });
+
+  state.panel.hidden = false;
+  input.setAttribute("aria-expanded", "true");
+}
+
+function moveCitySuggestion(input, direction) {
+  const state = cityAutocompleteState.get(input.id);
+  if (!state?.suggestions?.length) return;
+  state.activeIndex = (state.activeIndex + direction + state.suggestions.length) % state.suggestions.length;
+  Array.from(state.panel.children).forEach((child, childIndex) => {
+    child.classList.toggle("is-active", childIndex === state.activeIndex);
+    child.setAttribute("aria-selected", childIndex === state.activeIndex ? "true" : "false");
+  });
+}
+
+function syncCitySuggestions(input, openOnEmpty = false) {
+  const term = input.value.trim();
+  const suggestions = openOnEmpty && !term ? CITY_SUGGESTIONS.slice(0, 8) : queryCities(term);
+  renderPickerSuggestions(input, suggestions);
+}
+
+function queryProvinces(term) {
+  const normalized = String(term || "").trim().toLowerCase();
+  if (!normalized) return [];
+  return PROVINCE_SUGGESTIONS.filter((province) => province.toLowerCase().includes(normalized)).slice(0, 8);
+}
+
+function syncProvinceSuggestions(input, openOnEmpty = false) {
+  const term = input.value.trim();
+  const suggestions = openOnEmpty && !term ? PROVINCE_SUGGESTIONS.slice(0, 8) : queryProvinces(term);
+  renderPickerSuggestions(input, suggestions);
+}
+
+function queryNationalities(term) {
+  const normalized = String(term || "").trim().toLowerCase();
+  if (!normalized) return [];
+  return NATIONALITY_OPTIONS.filter((option) => {
+    const aliases = Array.from(NATIONALITY_ALIASES.entries())
+      .filter(([, code]) => code === option.code)
+      .map(([alias]) => alias);
+    return `${option.name} ${option.code} ${aliases.join(" ")}`.toLowerCase().includes(normalized);
+  }).slice(0, 8);
+}
+
+function syncNationalitySuggestions(input, openOnEmpty = false) {
+  const term = input.value.trim();
+  const suggestions = openOnEmpty && !term ? NATIONALITY_OPTIONS.slice(0, 8) : queryNationalities(term);
+  renderPickerSuggestions(input, suggestions);
+}
+
+function nationalityOption(value, codeValue) {
+  const code = text(codeValue).toUpperCase();
+  if (COUNTRY_CODE_SET.has(code)) {
+    return NATIONALITY_OPTIONS.find((option) => option.code === code) || null;
+  }
+
+  const normalized = text(value).toLowerCase();
+  const aliasCode = NATIONALITY_ALIASES.get(normalized);
+  if (aliasCode) return NATIONALITY_OPTIONS.find((option) => option.code === aliasCode) || null;
+  return NATIONALITY_OPTIONS.find((option) => option.name.toLowerCase() === normalized) || null;
+}
+
+function validateNationalitySelection() {
+  const input = document.getElementById("nationality");
+  const codeField = document.getElementById("nationalityCode");
+  if (!(input instanceof HTMLInputElement) || !(codeField instanceof HTMLInputElement)) return true;
+
+  const value = input.value.trim();
+  if (!value) {
+    codeField.value = "";
+    input.setCustomValidity("");
+    return true;
+  }
+
+  const selection = NATIONALITY_OPTIONS.find(
+    (option) => option.code === codeField.value && option.name === value,
+  );
+  input.setCustomValidity(selection ? "" : "Choose a nationality from the suggestions.");
+  return Boolean(selection);
+}
+
+function setupPickerAutocomplete(config) {
+  const input = document.getElementById(config.inputId);
+  const panel = document.getElementById(config.panelId);
+  const toggle = document.getElementById(config.toggleId);
+  if (!(input instanceof HTMLInputElement) || !panel || !toggle) return;
+
+  cityAutocompleteState.set(config.inputId, {
+    panel,
+    toggle,
+    type: config.type,
+    suggestions: [],
+    activeIndex: -1,
+  });
+
+  input.addEventListener("input", () => {
+    if (config.type === "nationality") {
+      const codeField = document.getElementById("nationalityCode");
+      if (codeField instanceof HTMLInputElement) codeField.value = "";
+      input.setCustomValidity("");
+    }
+    config.sync(input);
+  });
+  input.addEventListener("focus", () => {
+    if (input.value.trim().length >= 2) config.sync(input);
+  });
+  input.addEventListener("keydown", (event) => {
+    const state = cityAutocompleteState.get(config.inputId);
+    if (!state) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (state.panel.hidden) {
+        config.sync(input, true);
+        return;
+      }
+      moveCitySuggestion(input, 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!state.panel.hidden) moveCitySuggestion(input, -1);
+    } else if (event.key === "Enter") {
+      if (!state.panel.hidden && state.suggestions[state.activeIndex]) {
+        event.preventDefault();
+        if (state.type === "province") {
+          applyProvinceSuggestion(input, state.suggestions[state.activeIndex]);
+        } else if (state.type === "nationality") {
+          applyNationalitySuggestion(input, state.suggestions[state.activeIndex]);
+        } else {
+          applyCitySuggestion(input, state.suggestions[state.activeIndex]);
+        }
+      }
+    } else if (event.key === "Escape") {
+      closePickerSuggestions(input);
+    }
+  });
+  input.addEventListener("blur", () => {
+    window.setTimeout(() => closePickerSuggestions(input), 120);
+  });
+  toggle.addEventListener("click", () => {
+    const state = cityAutocompleteState.get(config.inputId);
+    if (!state) return;
+    if (state.panel.hidden) {
+      input.focus();
+      config.sync(input, true);
+    } else {
+      closePickerSuggestions(input);
+    }
+  });
 }
 
 function track(eventName, params = {}) {
@@ -120,6 +474,24 @@ function formatDate(value) {
   return Number.isNaN(parsed.getTime())
     ? raw
     : parsed.toLocaleDateString("en-ZA", {day: "2-digit", month: "short", year: "numeric"});
+}
+
+function splitProfileLocation(value, cityValue = "", provinceValue = "") {
+  const savedCity = text(cityValue);
+  const savedProvince = text(provinceValue);
+  if (savedCity || savedProvince) {
+    return {city: savedCity, province: savedProvince};
+  }
+  const raw = text(value);
+  if (!raw) return {city: "", province: ""};
+  const parts = raw.split(",").map((part) => text(part)).filter(Boolean);
+  if (parts.length >= 2) {
+    return {
+      city: parts[0],
+      province: parts.slice(1).join(", "),
+    };
+  }
+  return {city: raw, province: ""};
 }
 
 function renderSummary() {
@@ -209,7 +581,7 @@ function questionInput(question) {
       })
       .join("");
     const help = question.templateKey === "home_languages"
-      ? "Pre-filled from your profile. Adjust the languages for this application if needed."
+      ? ""
       : "Select every option that applies.";
     return `
       <div class="question field${conditionalClass}"${conditionalAttributes}>
@@ -217,7 +589,7 @@ function questionInput(question) {
         <div class="choice-grid" role="group" aria-labelledby="${escapeHtml(id)}_label" data-multi-answer="${escapeHtml(question.id)}" data-required="${question.required ? "true" : "false"}">
           ${options}
         </div>
-        <p class="help">${help}</p>
+        ${help ? `<p class="help">${help}</p>` : ""}
       </div>`;
   }
 
@@ -305,6 +677,12 @@ function applicationQuestions() {
 
 function renderForm() {
   const qualification = text(profile.degreeType || profile.highestQualification);
+  const profileLocation = splitProfileLocation(profile.location, profile.city, profile.province);
+  const selectedNationality = nationalityOption(profile.nationality, profile.nationalityCode);
+  const selectedGender = text(profile.gender);
+  const genderOptions = GENDER_OPTIONS.map((gender) => (
+    `<option value="${escapeHtml(gender)}" ${selectedGender === gender ? "selected" : ""}>${escapeHtml(gender)}</option>`
+  )).join("");
   const cvOptions = cvs.map((cv) => (
     `<option value="${escapeHtml(cv.id)}">${escapeHtml(text(cv.cvFileName, "Saved CV"))}</option>`
   )).join("");
@@ -331,12 +709,41 @@ function renderForm() {
             <input id="phone" name="phone" type="tel" value="${escapeHtml(text(profile.phone))}" maxlength="40" required>
           </div>
           <div class="field">
-            <label for="location">City/town and province <span class="required">*</span></label>
-            <input id="location" name="location" value="${escapeHtml(text(profile.location))}" maxlength="160" required>
+            <label for="nationality">Nationality</label>
+            <div class="picker-combobox">
+              <input id="nationality" name="nationality" value="${escapeHtml(selectedNationality?.name || "")}" maxlength="100" autocomplete="off" placeholder="Search nationality" aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="nationalitySuggestions">
+              <input id="nationalityCode" name="nationalityCode" type="hidden" value="${escapeHtml(selectedNationality?.code || "")}">
+              <button class="picker-toggle" id="nationalityToggle" type="button" aria-label="Show nationality suggestions">⌕</button>
+              <div class="picker-suggestions" id="nationalitySuggestions" role="listbox" hidden></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="city">City <span class="required">*</span></label>
+            <div class="picker-combobox">
+              <input id="city" name="city" value="${escapeHtml(profileLocation.city)}" maxlength="80" autocomplete="off" required aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="citySuggestions">
+              <button class="picker-toggle" id="cityToggle" type="button" aria-label="Show city suggestions">⌕</button>
+              <div class="picker-suggestions" id="citySuggestions" role="listbox" hidden></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="province">Province <span class="required">*</span></label>
+            <div class="picker-combobox">
+              <input id="province" name="province" value="${escapeHtml(profileLocation.province)}" maxlength="80" autocomplete="off" required aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="provinceSuggestions">
+              <button class="picker-toggle" id="provinceToggle" type="button" aria-label="Show province suggestions">⌕</button>
+              <div class="picker-suggestions" id="provinceSuggestions" role="listbox" hidden></div>
+            </div>
           </div>
           <div class="field full">
             <label for="qualification">Highest qualification</label>
             <input id="qualification" name="qualification" value="${escapeHtml(qualification)}" maxlength="160" placeholder="For example: Diploma in Human Resources">
+          </div>
+          <div class="field">
+            <label for="gender">Gender <span class="help">(optional)</span></label>
+            <select id="gender" name="gender">
+              <option value="">Select gender</option>
+              ${genderOptions}
+            </select>
+            <p class="help">This optional detail is not used for candidate matching or scoring.</p>
           </div>
         </div>
       </section>
@@ -346,7 +753,7 @@ function renderForm() {
         <div class="field">
           <label for="cvId">CV <span class="required">*</span></label>
           <select id="cvId" name="cvId">
-            <option value="">Select a saved CV</option>
+            <option value="" ${cvs.length ? "disabled" : "selected"}>${cvs.length ? "Choose a different saved CV" : "Select a saved CV"}</option>
             ${cvOptions}
             <option value="__upload">Upload a different CV</option>
           </select>
@@ -373,10 +780,8 @@ function renderForm() {
       <section class="step">
         <div class="step-title"><span class="step-number">${questions.length ? "4" : "3"}</span><h2>Review and submit</h2></div>
         <div class="checks">
-          <label class="check"><input id="declarationAccepted" type="checkbox" required><span>I declare that the information in this application is accurate.</span></label>
-          <label class="check"><input id="privacyAccepted" type="checkbox" required><span>I understand that this application will be shared with ${escapeHtml(text(currentJob.company, "the recruiter"))} for this vacancy, as described in the <a href="/privacy" target="_blank">Privacy Policy</a>.</span></label>
-          <label class="check"><input id="termsAccepted" type="checkbox" required><span>I have read and accept the <a href="/terms" target="_blank">Terms and Conditions</a>.</span></label>
-          <label class="check"><input id="saveToProfile" type="checkbox" checked><span>Save updated contact details to my Career Unified profile.</span></label>
+          <label class="check"><input id="privacyAccepted" type="checkbox" required aria-required="true"><span>Do you consent to the processing of your personal information in accordance with the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> of this platform?</span></label>
+          <label class="check"><input id="termsAccepted" type="checkbox" required aria-required="true"><span>Do you confirm that you have read, understood and agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> of Application and use of this platform?</span></label>
         </div>
         <div id="formStatus" class="status" role="alert"></div>
         <div class="submit-row">
@@ -387,7 +792,11 @@ function renderForm() {
     </form>`;
 
   const cvSelect = document.getElementById("cvId");
-  if (!cvs.length) cvSelect.value = "__upload";
+  if (cvs.length) {
+    cvSelect.value = text(cvs[0]?.id);
+  } else {
+    cvSelect.value = "__upload";
+  }
   document.getElementById("newCvWrap").hidden = cvSelect.value !== "__upload";
   cvSelect.addEventListener("change", () => {
     document.getElementById("newCvWrap").hidden = cvSelect.value !== "__upload";
@@ -396,6 +805,27 @@ function renderForm() {
   const applicationForm = document.getElementById("directApplicationForm");
   configureRelativeQuestionFlow(applicationForm, questions);
   configureNumericQuestionInputs(applicationForm);
+  setupPickerAutocomplete({
+    inputId: "city",
+    panelId: "citySuggestions",
+    toggleId: "cityToggle",
+    type: "city",
+    sync: syncCitySuggestions,
+  });
+  setupPickerAutocomplete({
+    inputId: "province",
+    panelId: "provinceSuggestions",
+    toggleId: "provinceToggle",
+    type: "province",
+    sync: syncProvinceSuggestions,
+  });
+  setupPickerAutocomplete({
+    inputId: "nationality",
+    panelId: "nationalitySuggestions",
+    toggleId: "nationalityToggle",
+    type: "nationality",
+    sync: syncNationalitySuggestions,
+  });
   track("job_application_started", {application_method: "career_unified_direct"});
 }
 
@@ -453,6 +883,7 @@ async function uploadCv(file, token) {
 async function submitApplication(event) {
   event.preventDefault();
   const form = event.currentTarget;
+  validateNationalitySelection();
   if (!form.reportValidity()) return;
 
   const button = document.getElementById("submitApplication");
@@ -463,6 +894,9 @@ async function submitApplication(event) {
   try {
     const token = await getIdToken(currentUser, true);
     let cvId = document.getElementById("cvId").value;
+    if (!cvId && cvs.length) {
+      cvId = text(cvs[0]?.id);
+    }
     if (cvId === "__upload") {
       const file = document.getElementById("newCv").files[0];
       if (!file) throw new Error("Choose a PDF or DOCX CV to upload.");
@@ -505,15 +939,22 @@ async function submitApplication(event) {
         contact: {
           fullName: form.fullName.value,
           phone: form.phone.value,
-          location: form.location.value,
+          city: form.city.value,
+          province: form.province.value,
+          nationality: form.nationality.value,
+          nationalityCode: form.nationalityCode.value,
+          location: [text(form.city.value, ""), text(form.province.value, "")]
+            .filter(Boolean)
+            .join(", "),
           qualification: form.qualification.value,
+          gender: form.gender.value,
         },
         coverLetter: form.coverLetter.value,
         answers,
-        declarationAccepted: document.getElementById("declarationAccepted").checked,
         privacyAccepted: document.getElementById("privacyAccepted").checked,
         termsAccepted: document.getElementById("termsAccepted").checked,
-        saveToProfile: document.getElementById("saveToProfile").checked,
+        talentPoolConsent: false,
+        saveToProfile: true,
       }),
     });
     const payload = await response.json().catch(() => ({}));
@@ -521,7 +962,11 @@ async function submitApplication(event) {
       renderExistingApplication(payload.existingApplication);
       return;
     }
-    if (!response.ok) throw new Error(payload.error || "Could not submit your application.");
+    if (!response.ok) {
+      const message = payload.error || "Could not submit your application.";
+      const reference = text(payload.reference);
+      throw new Error(reference ? `${message} Support reference: ${reference}.` : message);
+    }
 
     track("job_application_submitted", {
       application_method: "career_unified_direct",
@@ -608,6 +1053,10 @@ async function loadApplicationContextFromFirestore(user) {
       email: text(profileData.email),
       phone: text(profileData.phone),
       location: text(profileData.location),
+      city: text(profileData.city),
+      province: text(profileData.province),
+      nationality: text(profileData.nationality),
+      nationalityCode: text(profileData.nationalityCode).toUpperCase(),
       degreeType: text(profileData.degreeType || profileData.highestQualification),
       highestQualification: text(profileData.highestQualification),
       homeLanguages: Array.isArray(profileData.homeLanguages) ? profileData.homeLanguages : [],

@@ -1,12 +1,20 @@
 import crypto from 'crypto'
 import type {HandlerEvent} from '@netlify/functions'
 import {getAdmin} from './_firebaseAdmin'
+import {sendTransactionalEmail} from './_notify'
 import {checkRateLimit, clientIpFromHeaders} from './_rateLimit'
 
 export const API_VERSION = 'v1'
 export const API_KEY_PREFIX = 'cu_live_'
+export const API_TEST_KEY_PREFIX = 'cu_test_'
 export const PUBLIC_RATE_LIMIT = 300
 export const PUBLIC_RATE_WINDOW_SECONDS = 10 * 60
+export const API_PLAN_MONTHLY_QUOTAS: Record<string, number> = {
+  pilot: 10_000,
+  starter: 25_000,
+  growth: 75_000,
+  enterprise: 250_000,
+}
 
 export const ALLOWED_API_SCOPES = new Set([
   'jobs:read',
@@ -24,6 +32,22 @@ export type ApiClient = {
   scopes: string[]
   rateLimitPerMinute: number
   allowedOrigins: string[]
+  environment: 'live' | 'test'
+  monthlyQuota: number
+  billingMode: string
+  apiPlan: string
+  overageRateCents: number
+}
+
+export type ApiEnvironment = 'live' | 'test'
+
+export function apiDataCollections(environment: ApiEnvironment) {
+  const sandbox = environment === 'test'
+  return {
+    jobs: sandbox ? 'apiSandboxJobs' : 'jobs',
+    applications: sandbox ? 'apiSandboxApplications' : 'applications',
+    idempotency: sandbox ? 'apiSandboxIdempotency' : 'apiIdempotency',
+  }
 }
 
 export class ApiError extends Error {
@@ -255,8 +279,31 @@ export function paginate<T>(items: T[], limit: number, offset: number) {
   }
 }
 
-function apiKeyHash(clientId: string, secret: string) {
+export function apiKeyHash(clientId: string, secret: string) {
   return crypto.createHash('sha256').update(`${clientId}.${secret}`, 'utf8').digest('hex')
+}
+
+export function apiCredentialMatches(
+  data: Record<string, any>,
+  clientId: string,
+  secret: string,
+  now = new Date(),
+) {
+  const suppliedHash = apiKeyHash(clientId, secret)
+  const currentHash = cleanText(data.keyHash, 128)
+  if (currentHash && secureEqual(suppliedHash, currentHash)) return 'current'
+
+  const previousHash = cleanText(data.previousKeyHash, 128)
+  const previousExpiry = timestampToIso(data.previousKeyExpiresAt)
+  if (
+    previousHash &&
+    previousExpiry &&
+    new Date(previousExpiry).getTime() > now.getTime() &&
+    secureEqual(suppliedHash, previousHash)
+  ) {
+    return 'previous'
+  }
+  return null
 }
 
 function secureEqual(left: string, right: string) {
@@ -265,12 +312,17 @@ function secureEqual(left: string, right: string) {
   return a.length === b.length && crypto.timingSafeEqual(a, b)
 }
 
-export function createApiCredential(clientId: string) {
+export function apiKeyPrefixFor(environment: unknown) {
+  return cleanText(environment, 20).toLowerCase() === 'test' ? API_TEST_KEY_PREFIX : API_KEY_PREFIX
+}
+
+export function createApiCredential(clientId: string, environment: 'live' | 'test' = 'live') {
   const secret = crypto.randomBytes(32).toString('base64url')
+  const prefix = apiKeyPrefixFor(environment)
   return {
-    apiKey: `${API_KEY_PREFIX}${clientId}.${secret}`,
+    apiKey: `${prefix}${clientId}.${secret}`,
     keyHash: apiKeyHash(clientId, secret),
-    keyPrefix: `${API_KEY_PREFIX}${clientId.slice(0, 8)}`,
+    keyPrefix: `${prefix}${clientId.slice(0, 8)}`,
   }
 }
 
@@ -278,19 +330,259 @@ function readApiKey(event: HandlerEvent) {
   const direct = event.headers['x-api-key'] || event.headers['X-Api-Key']
   if (direct) return direct.trim()
   const authorization = event.headers.authorization || event.headers.Authorization || ''
-  return authorization.startsWith('Bearer cu_live_') ? authorization.slice(7).trim() : ''
+  return authorization.startsWith('Bearer cu_live_') || authorization.startsWith('Bearer cu_test_')
+    ? authorization.slice(7).trim()
+    : ''
 }
 
 function parseApiKey(value: string) {
-  if (!value.startsWith(API_KEY_PREFIX)) return null
+  const prefix = value.startsWith(API_TEST_KEY_PREFIX)
+    ? API_TEST_KEY_PREFIX
+    : value.startsWith(API_KEY_PREFIX)
+      ? API_KEY_PREFIX
+      : ''
+  if (!prefix) return null
   const separator = value.indexOf('.')
-  if (separator < API_KEY_PREFIX.length + 1) return null
-  const clientId = value.slice(API_KEY_PREFIX.length, separator)
+  if (separator < prefix.length + 1) return null
+  const clientId = value.slice(prefix.length, separator)
   const secret = value.slice(separator + 1)
   if (!/^[A-Za-z0-9_-]{8,160}$/.test(clientId) || !/^[A-Za-z0-9_-]{32,160}$/.test(secret)) {
     return null
   }
-  return {clientId, secret}
+  return {clientId, secret, environment: prefix === API_TEST_KEY_PREFIX ? 'test' : 'live'}
+}
+
+function monthKey(date = new Date()) {
+  return date.toISOString().slice(0, 7)
+}
+
+function dayKey(date = new Date()) {
+  return date.toISOString().slice(0, 10)
+}
+
+function nextMonthRetrySeconds(date = new Date()) {
+  const next = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1, 0, 0, 0))
+  return Math.max(60, Math.ceil((next.getTime() - date.getTime()) / 1000))
+}
+
+function normalizedApiPlan(value: unknown) {
+  const plan = cleanText(value, 40).toLowerCase()
+  return API_PLAN_MONTHLY_QUOTAS[plan] ? plan : 'pilot'
+}
+
+export function monthlyQuotaForClient(data: Record<string, any>) {
+  const configured = Number(data.monthlyQuota)
+  if (Number.isFinite(configured) && Number.isInteger(configured) && configured >= 0) {
+    return Math.min(5_000_000, configured)
+  }
+  return API_PLAN_MONTHLY_QUOTAS[normalizedApiPlan(data.apiPlan)]
+}
+
+async function deliverApiAlertEmail(
+  ref: any,
+  options: {
+    clientId: string
+    recruiterId: string
+    type: string
+    severity: 'info' | 'warning' | 'critical'
+    message: string
+  },
+) {
+  const apiKey = cleanText(process.env.RESEND_API_KEY, 500)
+  const recipients = new Set<string>()
+  const addRecipient = (value: unknown) => {
+    const email = cleanText(value, 254).toLowerCase()
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) recipients.add(email)
+  }
+  addRecipient(process.env.API_ALERT_EMAIL)
+
+  if (options.clientId !== 'platform') {
+    const admin = getAdmin()
+    const [client, recruiter] = await Promise.all([
+      admin.firestore().doc(`apiClients/${options.clientId}`).get(),
+      admin.firestore().doc(`recruiters/${options.recruiterId}`).get(),
+    ])
+    cleanStringArray(client.data()?.alertEmails, 254, 10).forEach(addRecipient)
+    const recruiterData = recruiter.data() || {}
+    addRecipient(recruiterData.email)
+    addRecipient(recruiterData.contactEmail)
+    addRecipient(recruiterData.companyEmail)
+  }
+
+  if (!apiKey || !recipients.size) {
+    await ref.set({emailStatus: 'not_configured'}, {merge: true})
+    return
+  }
+  try {
+    await sendTransactionalEmail({
+      from: cleanText(process.env.API_ALERT_FROM_EMAIL, 254) || undefined,
+      to: [...recipients],
+      subject: `[${options.severity.toUpperCase()}] Career Unified API: ${options.type}`,
+      text: `${options.message}\n\nAPI client: ${options.clientId}\nReview: ${process.env.SITE_URL || process.env.URL || 'https://careerunified.com'}/api/admin.html`,
+      tag: 'api-alert',
+    })
+    await ref.set(
+      {
+        emailStatus: 'sent',
+        emailAttemptedAt: new Date().toISOString(),
+        emailRecipientCount: recipients.size,
+      },
+      {merge: true},
+    )
+  } catch {
+    await ref.set(
+      {emailStatus: 'failed', emailAttemptedAt: new Date().toISOString()},
+      {merge: true},
+    )
+  }
+}
+
+export async function createUsageAlert(options: {
+  admin: any
+  clientId: string
+  recruiterId: string
+  organizationId: string
+  type: string
+  severity: 'info' | 'warning' | 'critical'
+  message: string
+  dedupeKey: string
+}) {
+  const ref = options.admin.firestore().collection('apiAlerts').doc(options.dedupeKey)
+  const snapshot = await ref.get()
+  if (snapshot.exists) return
+  await ref.set({
+    clientId: options.clientId,
+    recruiterId: options.recruiterId,
+    organizationId: options.organizationId,
+    type: options.type,
+    severity: options.severity,
+    message: options.message,
+    acknowledged: false,
+    createdAt: options.admin.firestore.FieldValue.serverTimestamp(),
+  })
+  await deliverApiAlertEmail(ref, options)
+}
+
+async function recordKnownClientAuthenticationFailure(
+  admin: any,
+  clientId: string,
+  data: Record<string, any>,
+) {
+  const day = dayKey()
+  const ref = admin.firestore().doc(`apiSecurityDaily/${clientId}_${day}`)
+  let nextCount = 0
+  await admin.firestore().runTransaction(async (transaction: any) => {
+    const snapshot = await transaction.get(ref)
+    nextCount = Number(snapshot.data()?.failedAuthenticationCount || 0) + 1
+    transaction.set(
+      ref,
+      {
+        clientId,
+        day,
+        failedAuthenticationCount: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+    )
+  })
+  if (nextCount === 5 || nextCount === 20 || nextCount === 100) {
+    await createUsageAlert({
+      admin,
+      clientId,
+      recruiterId: cleanText(data.recruiterId, 160),
+      organizationId: cleanText(data.organizationId, 160) || cleanText(data.recruiterId, 160),
+      type: 'authentication_failures',
+      severity: nextCount >= 20 ? 'critical' : 'warning',
+      message: `This API client recorded ${nextCount} failed authentication attempts today.`,
+      dedupeKey: `${clientId}_${day}_authentication_failures_${nextCount}`,
+    })
+  }
+}
+
+async function recordApiUsage(options: {
+  admin: any
+  clientId: string
+  recruiterId: string
+  organizationId: string
+  requestId: string
+  method: string
+  route: string
+  environment: 'live' | 'test'
+  monthlyQuota: number
+}) {
+  const now = new Date()
+  const day = dayKey(now)
+  const month = monthKey(now)
+  const db = options.admin.firestore()
+  const monthRef = db.doc(`apiUsageMonthly/${options.clientId}_${month}`)
+  const dayRef = db.doc(`apiUsageDaily/${options.clientId}_${day}`)
+  let nextCount = 0
+
+  await db.runTransaction(async (transaction: any) => {
+    const monthSnap = await transaction.get(monthRef)
+    const current = Number(monthSnap.data()?.requestCount || 0)
+    if (options.monthlyQuota > 0 && current >= options.monthlyQuota) {
+      throw new ApiError(429, 'monthly_quota_exceeded', 'The monthly API quota has been reached.', {
+        retryAfterSeconds: nextMonthRetrySeconds(now),
+      })
+    }
+    nextCount = current + 1
+    const usagePayload = {
+      clientId: options.clientId,
+      recruiterId: options.recruiterId,
+      organizationId: options.organizationId,
+      environment: options.environment,
+      lastRequestId: options.requestId,
+      lastMethod: options.method,
+      lastRoute: options.route,
+      updatedAt: options.admin.firestore.FieldValue.serverTimestamp(),
+    }
+    transaction.set(
+      monthRef,
+      {
+        ...usagePayload,
+        month,
+        monthlyQuota: options.monthlyQuota,
+        requestCount: options.admin.firestore.FieldValue.increment(1),
+        createdAt: monthSnap.exists
+          ? monthSnap.data()?.createdAt || options.admin.firestore.FieldValue.serverTimestamp()
+          : options.admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+    )
+    transaction.set(
+      dayRef,
+      {
+        ...usagePayload,
+        day,
+        month,
+        requestCount: options.admin.firestore.FieldValue.increment(1),
+        createdAt: options.admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+    )
+  })
+
+  if (options.monthlyQuota > 0) {
+    const percentUsed = nextCount / options.monthlyQuota
+    if (percentUsed >= 1) {
+      await createUsageAlert({
+        ...options,
+        type: 'quota_exhausted',
+        severity: 'critical',
+        message: 'This API client has exhausted its monthly quota.',
+        dedupeKey: `${options.clientId}_${month}_quota_exhausted`,
+      })
+    } else if (percentUsed >= 0.8) {
+      await createUsageAlert({
+        ...options,
+        type: 'quota_warning',
+        severity: 'warning',
+        message: 'This API client has used more than 80% of its monthly quota.',
+        dedupeKey: `${options.clientId}_${month}_quota_warning`,
+      })
+    }
+  }
 }
 
 export async function authenticateApiClient(event: HandlerEvent, id: string): Promise<ApiClient> {
@@ -304,12 +596,15 @@ export async function authenticateApiClient(event: HandlerEvent, id: string): Pr
     throw new ApiError(401, 'invalid_api_key', 'A valid partner API key is required.')
 
   const data = clientSnap.data() || {}
-  const expectedHash = cleanText(data.keyHash, 128)
-  if (
-    data.active !== true ||
-    !expectedHash ||
-    !secureEqual(apiKeyHash(parsed.clientId, parsed.secret), expectedHash)
-  ) {
+  const environment = cleanText(data.environment, 20).toLowerCase() === 'test' ? 'test' : 'live'
+  if (parsed.environment !== environment) {
+    throw new ApiError(401, 'invalid_api_key', 'A valid partner API key is required.')
+  }
+  const matchedCredential = apiCredentialMatches(data, parsed.clientId, parsed.secret)
+  if (data.active !== true || !matchedCredential) {
+    if (data.active === true) {
+      await recordKnownClientAuthenticationFailure(admin, parsed.clientId, data)
+    }
     throw new ApiError(401, 'invalid_api_key', 'A valid partner API key is required.')
   }
 
@@ -333,6 +628,7 @@ export async function authenticateApiClient(event: HandlerEvent, id: string): Pr
   const rateLimitPerMinute = Number.isFinite(configuredRateLimit)
     ? Math.min(5000, Math.max(30, Math.trunc(configuredRateLimit)))
     : 600
+  const monthlyQuota = monthlyQuotaForClient(data)
 
   const rate = await checkRateLimit({
     admin,
@@ -342,15 +638,40 @@ export async function authenticateApiClient(event: HandlerEvent, id: string): Pr
     windowSeconds: 60,
   })
   if (!rate.allowed) {
+    await createUsageAlert({
+      admin,
+      clientId: parsed.clientId,
+      recruiterId,
+      organizationId: cleanText(data.organizationId, 160) || recruiterId,
+      type: 'rate_limit_exceeded',
+      severity: 'warning',
+      message: 'This API client hit its per-minute rate limit.',
+      dedupeKey: `${parsed.clientId}_${dayKey()}_rate_limit_exceeded`,
+    })
     throw new ApiError(429, 'rate_limit_exceeded', 'The API rate limit has been exceeded.', {
       retryAfterSeconds: rate.retryAfterSeconds,
     })
   }
 
+  await recordApiUsage({
+    admin,
+    clientId: parsed.clientId,
+    recruiterId,
+    organizationId: cleanText(data.organizationId, 160) || recruiterId,
+    requestId: id,
+    method: event.httpMethod,
+    route: routeParts(event).join('/'),
+    environment,
+    monthlyQuota,
+  })
+
   await clientRef.set(
     {
       lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
       lastRequestId: id,
+      ...(matchedCredential === 'previous'
+        ? {previousKeyLastUsedAt: admin.firestore.FieldValue.serverTimestamp()}
+        : {}),
     },
     {merge: true},
   )
@@ -363,6 +684,11 @@ export async function authenticateApiClient(event: HandlerEvent, id: string): Pr
     scopes,
     rateLimitPerMinute,
     allowedOrigins,
+    environment,
+    monthlyQuota,
+    billingMode: cleanText(data.billingMode, 40) || 'included',
+    apiPlan: cleanText(data.apiPlan, 40) || 'pilot',
+    overageRateCents: Math.max(0, Number(data.overageRateCents || 0)),
   }
 }
 
@@ -375,7 +701,7 @@ export function requireScope(client: ApiClient, scope: string) {
 export async function authenticateAdmin(event: HandlerEvent) {
   const authorization = event.headers.authorization || event.headers.Authorization || ''
   const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : ''
-  if (!token || token.startsWith(API_KEY_PREFIX)) {
+  if (!token || token.startsWith(API_KEY_PREFIX) || token.startsWith(API_TEST_KEY_PREFIX)) {
     throw new ApiError(
       401,
       'admin_authentication_required',
@@ -395,6 +721,78 @@ export async function authenticateAdmin(event: HandlerEvent) {
       'invalid_admin_session',
       'The administrator session is invalid or expired.',
     )
+  }
+}
+
+export async function authenticateApiPartner(event: HandlerEvent) {
+  const authorization = event.headers.authorization || event.headers.Authorization || ''
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : ''
+  if (!token || token.startsWith(API_KEY_PREFIX) || token.startsWith(API_TEST_KEY_PREFIX)) {
+    throw new ApiError(
+      401,
+      'partner_authentication_required',
+      'Recruiter authentication is required.',
+    )
+  }
+  try {
+    const decoded: any = await getAdmin().auth().verifyIdToken(token)
+    if (decoded.admin === true) return decoded
+    if (decoded.recruiter !== true) {
+      throw new ApiError(403, 'partner_access_required', 'Approved recruiter access is required.')
+    }
+    const recruiter = await getAdmin().firestore().doc(`recruiters/${decoded.uid}`).get()
+    if (!recruiter.exists || recruiter.data()?.apiSelfServiceEnabled !== true) {
+      throw new ApiError(
+        403,
+        'partner_access_required',
+        'API self-service is not enabled for this organisation.',
+      )
+    }
+    return decoded
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(
+      401,
+      'invalid_partner_session',
+      'The recruiter session is invalid or expired.',
+    )
+  }
+}
+
+export async function recordApiHealth(options: {
+  requestId: string
+  method: string
+  route: string
+  statusCode: number
+  durationMs: number
+}) {
+  try {
+    const admin = getAdmin()
+    const day = dayKey()
+    const ref = admin.firestore().doc(`apiHealthDaily/${day}`)
+    const isError = options.statusCode >= 500
+    await ref.set(
+      {
+        day,
+        totalRequests: admin.firestore.FieldValue.increment(1),
+        totalLatencyMs: admin.firestore.FieldValue.increment(
+          Math.max(0, Math.round(options.durationMs)),
+        ),
+        serverErrors: admin.firestore.FieldValue.increment(isError ? 1 : 0),
+        clientErrors: admin.firestore.FieldValue.increment(
+          options.statusCode >= 400 && options.statusCode < 500 ? 1 : 0,
+        ),
+        lastStatusCode: options.statusCode,
+        lastRequestId: options.requestId,
+        lastMethod: cleanText(options.method, 20),
+        lastRoute: cleanText(options.route, 300),
+        ...(isError ? {lastServerErrorAt: admin.firestore.FieldValue.serverTimestamp()} : {}),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+    )
+  } catch {
+    // Monitoring must never interrupt an API response.
   }
 }
 
@@ -741,6 +1139,7 @@ export async function writeAuditLog(entry: {
     action: entry.action,
     resourceType: entry.resourceType,
     resourceId: entry.resourceId,
+    environment: entry.client.environment,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   })
 }
