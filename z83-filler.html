@@ -49,23 +49,53 @@
 <body>
   <nav class="main-nav">
     <div class="main-nav__inner">
-      <a href="/" class="logo" aria-label="Career Unified home">
-        <img class="logo-mark" src="/android-chrome-192x192.png" alt="" width="40" height="40">
+      <a href="/" class="logo desktop-nav" aria-label="Career Unified home">
+        <img class="logo-mark main-nav-brand-mark" src="/android-chrome-192x192.png" alt="" width="40" height="40">
         <span>Career Unified</span>
       </a>
-      <div class="nav-links">
+      <div class="nav-links desktop-nav">
         <a href="/jobs">Jobs</a>
         <a href="/bursaries">Bursaries</a>
         <a href="/varsity">Varsities</a>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/z83-filler" class="active">Z83 Filler</a>
       </div>
-      <div class="nav-actions">
+      <div class="nav-actions desktop-nav">
         <a class="nav-cta nav-cta--outline" href="/contact-us">Contact us</a>
         <a class="nav-cta nav-cta--primary" href="/cv-generator/">Generate CV</a>
       </div>
+
+      <div class="mobile-nav">
+        <a href="/" class="mobile-logo" aria-label="Career Unified home">
+          <img class="logo-mark main-nav-brand-mark" src="/android-chrome-192x192.png" alt="" width="30" height="30">
+          <span>Career Unified</span>
+        </a>
+        <div class="mobile-nav-right">
+          <a href="/account-page.html" class="icon-btn" aria-label="My Account">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </a>
+          <button class="icon-btn" id="menuBtn" type="button" aria-label="Main Menu" aria-expanded="false" aria-controls="mobileMenu">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/jobs">Jobs</a>
+    <a href="/bursaries">Bursaries</a>
+    <a href="/varsity">Varsities</a>
+    <a href="/cv-generator/">Generate CV</a>
+    <a href="/z83-filler" class="active">Z83 Filler</a>
+    <a href="/contact-us">Contact us</a>
+  </div>
 
   <header class="page-header">
     <div>
@@ -298,6 +328,37 @@
   <script src="/js/vendor/pdf-lib.min.js"></script>
   <script src="/js/vendor/fontkit.umd.min.js"></script>
   <script src="/js/z83-filler.js?v=20260622-flat"></script>
+  <script>
+    (() => {
+      const menuButton = document.getElementById('menuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (!menuButton || !mobileMenu) return;
+
+      const setMenuOpen = (isOpen) => {
+        mobileMenu.classList.toggle('is-open', isOpen);
+        menuButton.setAttribute('aria-expanded', String(isOpen));
+      };
+
+      menuButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        setMenuOpen(!mobileMenu.classList.contains('is-open'));
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (!target.closest('.mobile-nav') && !target.closest('.mobile-menu')) {
+          setMenuOpen(false);
+        }
+      });
+
+      mobileMenu.addEventListener('click', (event) => {
+        if (event.target instanceof Element && event.target.closest('a')) {
+          setMenuOpen(false);
+        }
+      });
+    })();
+  </script>
 <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

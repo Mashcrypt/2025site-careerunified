@@ -98,24 +98,21 @@
       line-height: 1.6;
     }
 
-    /* PAGE HERO — renamed from header to avoid semantic conflict with site <header> */
+    /* PAGE HERO — styled to match bursaries page */
     .page-hero {
       text-align: center;
       padding: 60px 20px 50px;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: #f9fbff;
+      color: #0f1623;
+      border-bottom: 1px solid #e8edf6;
     }
-    .page-hero h1 { margin: 0; font-size: 2.5rem; font-weight: 700; order: 1; }
-    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #e5e7eb; font-weight: 500; order: 2; }
+    .page-hero h1 { margin: 0; font-family: "Roboto Slab", Georgia, serif; font-size: 2.5rem; font-weight: 700; }
+    .page-hero p  { margin-top: 8px; font-size: 1.1rem; color: #66738c; font-weight: 500; }
     .page-hero .page-hero-proof {
       margin: 14px auto 0;
-      color: #bfdbfe;
+      color: #66738c;
       font-size: 0.88rem;
       font-weight: 600;
-      order: 3;
     }
 
     .jobs-container {
@@ -1042,6 +1039,124 @@
 @media (max-width: 980px) { .footer-shell { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .site-footer { padding: 42px 18px 30px; } .footer-grid { grid-template-columns: 1fr; } .footer-alerts h2 { font-size: 1.45rem; } .footer-alert-row { flex-direction: column; } .footer-alert-row button { width: 100%; } }
   </style>
+  <!-- Override navigation styling to match bursaries page -->
+  <style>
+/* Shared premium footer */
+.site-footer {
+  background: #ffffff;
+  color: #0f1623;
+  padding: 54px 20px 34px;
+  text-align: left;
+  border-top: 1px solid #e2e8f2;
+}
+
+.site-footer > .footer-links {
+  display: none;
+}
+
+.footer-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.15fr) minmax(420px, 1.7fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.footer-alerts h2,
+.footer-column h3 {
+  margin: 0 0 12px;
+  color: #475467;
+}
+
+.footer-alerts h2 {
+  font-size: 1.7rem;
+  color: #0f1623;
+  font-family: "Roboto Slab", Georgia, serif;
+  line-height: 1.2;
+}
+
+.footer-alerts p {
+  color: #66738c;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.footer-alert-form { margin-top: 18px; }
+.footer-alert-form label { display: block; color: #0f1623; font-weight: 600; margin-bottom: 8px; }
+.footer-alert-row { display: flex; gap: 8px; }
+.footer-alert-row input { min-width: 0; flex: 1; border: 1px solid #d8e0ee; border-radius: 999px; padding: 12px 14px; background: #ffffff; color: #0f1623; outline: none; }
+.footer-alert-row input::placeholder { color: #98a2b3; }
+.footer-alert-row input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14); }
+.footer-alert-row button { border: 0; border-radius: 999px; padding: 12px 16px; background: #2563eb; color: #fff; cursor: pointer; font-weight: 700; }
+.footer-alert-row button:hover,
+.footer-alert-row button:focus-visible { background: #1d4ed8; }
+.footer-alert-note { display: block; margin-top: 10px; color: #66738c; font-size: 0.83rem; }
+.footer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.footer-column h3 { font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.footer-column a { display: block; color: #66738c; text-decoration: none; font-weight: 500; margin: 9px 0; line-height: 1.35; }
+.footer-column a:hover,
+.footer-column a:focus-visible { color: #1d4ed8; text-decoration: none; }
+.site-footer > .footer-socials { max-width: 1180px; margin: 34px auto 20px; padding-top: 24px; border-top: 1px solid #e2e8f2; }
+.site-footer > p { text-align: center; color: #66738c; margin: 0; }
+.site-footer .footer-socials { display: flex; justify-content: center; gap: 18px; }
+.site-footer .footer-socials a { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid #d8e0ee; color: #2563eb; font-size: 18px; background: #fff; transition: all 0.2s ease; position: relative; overflow: hidden; text-decoration: none; }
+.site-footer .footer-socials a::before { content: ""; position: absolute; inset: 0; border-radius: 12px; opacity: 0; transition: opacity 0.35s ease; z-index: 0; }
+.site-footer .footer-socials a i { position: relative; z-index: 1; }
+.site-footer .footer-socials a:hover { transform: translateY(-2px); border-color: #bfdbfe; background: #eff6ff; box-shadow: none; }
+.site-footer .footer-socials a:nth-child(1):hover::before,
+.site-footer .footer-socials a:nth-child(2):hover::before,
+.site-footer .footer-socials a:nth-child(3):hover::before,
+.site-footer .footer-socials a:nth-child(4):hover::before,
+.site-footer .footer-socials a:nth-child(5):hover::before { background: #eff6ff; }
+.site-footer .footer-socials a:hover::before { opacity: 1; }
+.site-footer .footer-socials a:nth-child(1):hover { color: #1877f2; }
+.site-footer .footer-socials a:nth-child(2):hover { color: #ee2a7b; }
+.site-footer .footer-socials a:nth-child(3):hover { color: #0f1623; }
+.site-footer .footer-socials a:nth-child(4):hover { color: #25d366; }
+.site-footer .footer-socials a:nth-child(5):hover { color: #0077b5; }
+@media (max-width: 980px) { .footer-shell { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .site-footer { padding: 42px 18px 30px; } .footer-grid { grid-template-columns: 1fr; } .footer-alerts h2 { font-size: 1.45rem; } .footer-alert-row { flex-direction: column; } .footer-alert-row button { width: 100%; } }
+  </style>
+  <style>
+    .main-nav .icon-btn:focus-visible,
+    .main-nav .desktop-account-btn:hover,
+    .main-nav .desktop-account-btn:focus-visible {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+  </style>
+  <style>
+    /* Override Jobs navbar to match Bursaries styling */
+    .main-nav {
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid #e8edf6;
+    }
+    .main-nav .logo,
+    .main-nav .mobile-logo {
+      color: #0f1623;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .main-nav .nav-links a,
+    .main-nav .icon-btn {
+      color: #374151;
+      font-weight: 500;
+    }
+    .main-nav .nav-links a:hover,
+    .main-nav .nav-links a:focus-visible {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    .main-nav .icon-btn:hover,
+    .main-nav .icon-btn:focus-visible,
+    .main-nav .desktop-account-btn:hover,
+    .main-nav .desktop-account-btn:focus-visible {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+  </style>
   <!-- Google AdSense is loaded only for visitors without an active subscription. -->
   <script defer src="/js/ad-access.js"></script>
 </head>
@@ -1049,7 +1164,10 @@
 
   <!-- NAVIGATION -->
   <nav class="main-nav">
-    <a href="/" class="logo desktop-nav">Career Unified</a>
+    <a href="/" class="logo desktop-nav">
+      <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+      Career Unified
+    </a>
     <div class="nav-links desktop-nav">
       <a href="/jobs" aria-current="page">Jobs</a>
       <a href="/bursaries">Bursaries</a>
@@ -1064,7 +1182,10 @@
       </a>
     </div>
     <div class="mobile-nav">
-      <a href="/" class="mobile-logo">Career Unified</a>
+      <a href="/" class="mobile-logo">
+        <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+        Career Unified
+      </a>
       <div class="mobile-nav-right">
         <a href="account-page.html" class="icon-btn" aria-label="My Account">
           <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
