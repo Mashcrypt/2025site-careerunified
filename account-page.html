@@ -68,6 +68,20 @@
             letter-spacing: -0.02em;
         }
 
+        /* Show only one brand per viewport: hide desktop logo/links on mobile,
+           hide mobile nav row on desktop (overrides .logo display above) */
+        @media (max-width: 900px) {
+            .main-nav .desktop-nav {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 901px) {
+            .main-nav .mobile-nav {
+                display: none !important;
+            }
+        }
+
         .brand-mark {
             width: 34px;
             height: 34px;
@@ -304,7 +318,10 @@
             transition: all 0.2s;
             text-align: left;
             color: #374151;
+            font-family: inherit;
             font-size: 0.95rem;
+            font-weight: 400;
+            line-height: 1.5;
         }
 
         .nav-item:hover {
@@ -2636,27 +2653,27 @@
                     </div>
 
                     <div class="help-grid">
-                        <div class="help-card" role="button" tabindex="0" onclick="openHelp('getting-started')" onkeypress="if(event.key==='Enter'){openHelp('getting-started')}">
+                        <div class="help-card" role="button" tabindex="0" data-help-topic="getting-started">
                             <h3>Getting Started</h3>
                             <p>How to use Career Unified</p>
                         </div>
 
-                        <div class="help-card" role="button" tabindex="0" onclick="openHelp('ai-tools')" onkeypress="if(event.key==='Enter'){openHelp('ai-tools')}">
+                        <div class="help-card" role="button" tabindex="0" data-help-topic="ai-tools">
                             <h3>AI Tools & Locked Templates</h3>
                             <p>How AI Tailor works + why templates lock</p>
                         </div>
 
-                        <div class="help-card" role="button" tabindex="0" onclick="openHelp('faqs')" onkeypress="if(event.key==='Enter'){openHelp('faqs')}">
+                        <div class="help-card" role="button" tabindex="0" data-help-topic="faqs">
                             <h3>FAQs</h3>
                             <p>Common questions answered</p>
                         </div>
 
-                        <div class="help-card" role="button" tabindex="0" onclick="openHelp('contact')" onkeypress="if(event.key==='Enter'){openHelp('contact')}">
+                        <div class="help-card" role="button" tabindex="0" data-help-topic="contact">
                             <h3>Contact Support</h3>
                             <p>Get help from our team</p>
                         </div>
 
-                        <div class="help-card" role="button" tabindex="0" onclick="openHelp('report')" onkeypress="if(event.key==='Enter'){openHelp('report')}">
+                        <div class="help-card" role="button" tabindex="0" data-help-topic="report">
                             <h3>Report an Issue</h3>
                             <p>Tell us what broke (we include device info)</p>
                         </div>
@@ -2967,7 +2984,7 @@
 
                     
                 </div>
-                
+                `
             }
         };
 
@@ -2982,6 +2999,9 @@
         const modal = document.getElementById("helpModal");
         if (modal) modal.classList.remove("active");
     }
+
+    window.openHelp = openHelp;
+    window.closeHelp = closeHelp;
 
     // Close when clicking outside modal content
     document.addEventListener("click", (e) => {
@@ -3022,6 +3042,23 @@ Platform: ${navigator.platform}
         window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`[Issue] ${type} - ${subject}`)}&body=${encodeURIComponent(body)}`;
         closeHelp();
     }
+
+    window.submitIssue = submitIssue;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".help-card[data-help-topic]").forEach((card) => {
+            const helpType = card.getAttribute("data-help-topic");
+            if (!helpType) return;
+
+            card.addEventListener("click", () => openHelp(helpType));
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openHelp(helpType);
+                }
+            });
+        });
+    });
 
     // Update plan pill whenever window.CU_CONTEXT changes
     // (We trigger it manually from the module script by calling window.renderPlanPillFromModule())
