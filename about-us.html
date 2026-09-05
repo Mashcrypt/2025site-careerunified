@@ -19,7 +19,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#1b60a9">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
   <!-- Google Analytics -->
@@ -50,26 +50,66 @@
     }
 
     /* =============================== */
+    /* TOP NAV — match Bursaries page  */
+    /* =============================== */
+    .main-nav {
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid #e8edf6;
+    }
+
+    .main-nav .logo,
+    .main-nav .mobile-logo {
+      color: #0f1623;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .main-nav .nav-links a,
+    .main-nav .icon-btn {
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .main-nav .nav-links a:hover,
+    .main-nav .nav-links a:focus-visible {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .main-nav .icon-btn:hover,
+    .main-nav .icon-btn:focus-visible,
+    .main-nav .desktop-account-btn:hover,
+    .main-nav .desktop-account-btn:focus-visible {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    /* =============================== */
     /* HEADER                          */
     /* =============================== */
     header {
       text-align: center;
-      padding: 70px 20px 55px;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: #fff;
+      padding: 60px 20px 50px;
+      background: #f9fbff;
+      color: #0f1623;
+      border-bottom: 1px solid #e8edf6;
       width: 100%;
     }
 
     header h1 {
       margin: 0;
-      font-size: 2.75rem;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 2.5rem;
       font-weight: 700;
     }
 
     header p {
-      margin-top: 12px;
-      font-size: 1.15rem;
-      color: #e5e7eb;
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #66738c;
+      font-weight: 500;
       max-width: 640px;
       margin-left: auto;
       margin-right: auto;
@@ -292,12 +332,16 @@
   <nav class="main-nav">
 
     <!-- Desktop -->
-    <a href="/" class="logo desktop-nav">Career Unified</a>
+    <a href="/" class="logo desktop-nav">
+      <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+      Career Unified
+    </a>
     <div class="nav-links desktop-nav">
       <a href="/jobs">Jobs</a>
       <a href="/bursaries">Bursaries</a>
       <a href="/varsity">Varsities</a>
       <a href="/cv-generator/">Generate CV</a>
+      <a href="/cv-tips">CV Tips</a>
       <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
       <a href="signup.html">Sign Up</a>
       <a href="login.html">Login</a>
@@ -311,7 +355,10 @@
 
     <!-- Mobile -->
     <div class="mobile-nav">
-      <a href="/" class="mobile-logo">Career Unified</a>
+      <a href="/" class="mobile-logo">
+        <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+        Career Unified
+      </a>
       <div class="mobile-nav-right">
         <a href="account-page.html" class="icon-btn" aria-label="My Account">
           <svg viewBox="0 0 24 24">
@@ -335,6 +382,7 @@
   <div class="mobile-menu" id="mobileMenu">
     <a href="/jobs">Jobs</a>
     <a href="/bursaries">Bursaries</a>
+    <a href="/cv-tips">CV Tips</a>
     <a href="/varsity">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/z83-filler">Z83 Filler</a>

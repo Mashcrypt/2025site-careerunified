@@ -1798,6 +1798,67 @@
             padding-left: 18px;
             margin: 8px 0;
         }
+        /* FAQ accordion (Q1, Q2 ... style) */
+        .faq-list {
+            margin-top: 4px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .faq-item:first-child {
+            border-top: 1px solid #e5e7eb;
+        }
+        .faq-question {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #111827;
+        }
+        .faq-qnum {
+            font-weight: 700;
+            color: #111827;
+            flex-shrink: 0;
+        }
+        .faq-qtext {
+            font-weight: 600;
+            flex: 1;
+        }
+        .faq-chevron {
+            width: 18px;
+            height: 18px;
+            stroke: #6b7280;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .faq-item.open .faq-chevron {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            display: none;
+            padding: 0 4px 16px 34px;
+            color: #4b5563;
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+        .faq-answer ul {
+            padding-left: 18px;
+            margin: 8px 0;
+        }
         .help-actions {
             display: flex;
             gap: 10px;
@@ -2903,28 +2964,176 @@
             },
 
             "faqs": {
-                title: "FAQs",
+                title: "Frequently asked questions",
                 body: `
                 <div class="help-modal-section">
-                    <h4>Do I need an account?</h4>
-                    <p><b>Yes.</b> You must be logged in to subscribe, unlock premium templates, and use paid AI tools.</p>
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q1</span>
+                                <span class="faq-qtext">Do I need an account?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p><b>Yes.</b> You must be logged in to subscribe, unlock premium templates, and use paid AI tools.</p>
+                            </div>
+                        </div>
 
-                    <h4>Why is my template locked?</h4>
-                    <p>Locked templates are for users with an active paid plan AI Tailor premium plan. If you already paid, try refresh first.</p>
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q2</span>
+                                <span class="faq-qtext">Why is my template locked?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Locked templates are for users with an active paid plan AI Tailor premium plan. If you already paid, try refresh first.</p>
+                            </div>
+                        </div>
 
-                    <h4>My AI Tailor results are empty</h4>
-                    <ul>
-                        <li>Paste a full job description (not just the job title).</li>
-                        <li>Refresh and try again.</li>
-                        <li>Make sure your internet is stable.</li>
-                    </ul>
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q3</span>
+                                <span class="faq-qtext">My AI Tailor results are empty</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <ul>
+                                    <li>Paste a full job description (not just the job title).</li>
+                                    <li>Refresh and try again.</li>
+                                    <li>Make sure your internet is stable.</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <h4>Why can’t I upload my CV?</h4>
-                    <ul>
-                        <li>Only PDF/DOC/DOCX allowed.</li>
-                        <li>Max size 5MB.</li>
-                        <li>You must be logged in.</li>
-                    </ul>
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q4</span>
+                                <span class="faq-qtext">Why can’t I upload my CV?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <ul>
+                                    <li>Only PDF/DOC/DOCX allowed.</li>
+                                    <li>Max size 5MB.</li>
+                                    <li>You must be logged in.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q5</span>
+                                <span class="faq-qtext">Is Career Unified free to use?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p><b>Yes.</b> Browsing jobs, bursaries and varsity listings, saving items, job alerts, and applying to jobs is free. Paid plans only unlock premium CV templates and AI Tailor features.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q6</span>
+                                <span class="faq-qtext">How do I apply for a job?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Open a job listing and click <b>Apply Now</b>. Some applications happen directly on Career Unified, while others redirect you to the employer’s official application page.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q7</span>
+                                <span class="faq-qtext">How do I save jobs or bursaries for later?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Click the save/bookmark icon on any listing. You can find everything under <b>Saved Items</b> in your account menu. You must be logged in to save items.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q8</span>
+                                <span class="faq-qtext">How do job alerts work?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Set your preferences under <b>Job preferences</b> in your account, and we’ll notify you when new jobs matching your criteria are posted.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q9</span>
+                                <span class="faq-qtext">What is the Z83 form and how do I fill it in?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>The Z83 is the official application form for South African government jobs. Use our free <b>Z83 Filler</b> tool to complete it correctly, or read our step-by-step Z83 guide.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q10</span>
+                                <span class="faq-qtext">How do I track my job applications?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Applications made through Career Unified appear under <b>My Applications</b> in your account, where you can view their status.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q11</span>
+                                <span class="faq-qtext">How do I cancel my subscription?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>To cancel your subscription, email us at <b>contact@careerunified.com</b> from your account email address and your subscription will be cancelled with immediate effect.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q12</span>
+                                <span class="faq-qtext">I paid but my premium features are still locked</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <ul>
+                                    <li>Refresh the page first — payment sync can take a moment.</li>
+                                    <li>Sign out and sign back in.</li>
+                                    <li>Still locked? Use <b>Report an issue</b> below or email support with your payment reference.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q13</span>
+                                <span class="faq-qtext">How do I delete my account?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Go to <b>Account settings</b> and choose the delete account option. This permanently removes your profile, saved items and uploaded CVs.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+                                <span class="faq-qnum">Q14</span>
+                                <span class="faq-qtext">Are the jobs and bursaries on Career Unified verified?</span>
+                                <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>We source listings from employers and official portals and review them before publishing. Always be cautious: legitimate employers never ask you to pay to apply for a job.</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="help-actions">
                         <button class="btn btn-primary" onclick="openHelp('ai-tools')">AI Tools</button>

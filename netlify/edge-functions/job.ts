@@ -361,8 +361,8 @@ export default async (request: Request, context: EdgeContext) => {
     .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .actions>:only-child{grid-column:1/-1}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
-    .btn.green{background:#16a34a;color:#fff}
-    .btn.green:hover{background:#15803d}
+    .btn.green{background:#2563eb;color:#fff}
+    .btn.green:hover{background:#1e40af}
     .external-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.3}
     .ai-tailor-icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2;flex-shrink:0}
     .swipe-hint{display:none}
