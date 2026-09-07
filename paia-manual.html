@@ -18,7 +18,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#1b60a9">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
@@ -40,16 +40,71 @@
       overflow-x: hidden;
     }
 
+    /* =============================== */
+    /* TOP NAV — match Bursaries page  */
+    /* =============================== */
+    .main-nav {
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid #e8edf6;
+    }
+
+    .main-nav .logo,
+    .main-nav .mobile-logo {
+      color: #0f1623;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .main-nav .nav-links a,
+    .main-nav .icon-btn {
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .main-nav .nav-links a:hover,
+    .main-nav .nav-links a:focus-visible {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .main-nav .icon-btn:hover,
+    .main-nav .icon-btn:focus-visible,
+    .main-nav .desktop-account-btn:hover,
+    .main-nav .desktop-account-btn:focus-visible {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    /* =============================== */
+    /* HEADER                          */
+    /* =============================== */
     header {
       text-align: center;
-      padding: 70px 20px 55px;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color: #fff;
+      padding: 60px 20px 50px;
+      background: #f9fbff;
+      color: #0f1623;
+      border-bottom: 1px solid #e8edf6;
       width: 100%;
     }
 
-    header h1 { margin: 0; font-size: 2.75rem; font-weight: 700; }
-    header p { margin: 12px auto 0; max-width: 760px; font-size: 1.05rem; color: #e5e7eb; }
+    header h1 {
+      margin: 0;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #66738c;
+      font-weight: 500;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     main {
       max-width: 980px;
@@ -135,40 +190,165 @@
     }
 
     .main-footer {
-      background: #1e3a8a;
-      color: #fff;
       text-align: center;
       padding: 30px 20px;
-      margin-top: 60px;
+      background: #f9fbff;
+      color: #0f1623;
+      border-top: 1px solid #e8edf6;
+      width: 100%;
     }
 
     .footer-links {
+      margin-bottom: 12px;
       display: flex;
       justify-content: center;
-      gap: 18px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 12px;
     }
 
     .footer-links a {
-      color: #facc15;
+      color: #66738c;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 500;
     }
 
-    .footer-links a:hover { text-decoration: underline; }
+    .footer-links a:hover { color: #1d4ed8; text-decoration: none; }
 
-    @media (max-width: 768px) {
-      header { padding: 58px 18px 42px; }
+    @media (max-width: 900px) {
+      .desktop-nav {
+        display: none;
+      }
+      .mobile-nav {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .mobile-nav-right {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      header { padding: 50px 16px 40px; }
       header h1 { font-size: 2rem; }
-      main { margin: 34px auto; padding: 0 16px 44px; }
-      .content-card { padding: 26px 20px; border-radius: 14px; }
+      header p { font-size: 1rem; }
+      main { margin: 24px auto; padding: 0 16px 60px; }
+      .content-card { padding: 28px 20px; border-radius: 14px; }
       .record-grid { grid-template-columns: 1fr; }
       .footer-links { flex-direction: column; gap: 12px; }
+    }
+
+    @media (min-width: 901px) {
+      .mobile-nav {
+        display: none;
+      }
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      position: fixed;
+      top: 64px;
+      right: 0;
+      background: white;
+      width: 280px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 96px);
+      max-height: calc(100dvh - 96px);
+      overflow-y: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      padding: 8px 0;
+      z-index: 9999;
+      margin: 16px;
+      display: none;
+      animation: slideIn 0.2s ease;
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      text-decoration: none;
+      color: #1e3a8a;
+      font-weight: 600;
+      font-size: 15px;
+      transition: background 0.2s;
+    }
+
+    .mobile-menu a:hover {
+      background: #f0f7ff;
     }
   </style>
 </head>
 <body>
+  <!-- =============================== -->
+  <!-- NAVIGATION                      -->
+  <!-- =============================== -->
+  <nav class="main-nav">
+    <a href="/" class="logo desktop-nav">
+      <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+      Career Unified
+    </a>
+    <div class="nav-links desktop-nav">
+      <a href="/jobs">Jobs</a>
+      <a href="/bursaries">Bursaries</a>
+      <a href="/varsity">Varsities</a>
+      <a href="/cv-generator/">Generate CV</a>
+      <a href="/cv-tips">CV Tips</a>
+      <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+      <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+    </div>
+    <div class="mobile-nav">
+      <a href="/" class="mobile-logo">
+        <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+        Career Unified
+      </a>
+      <div class="mobile-nav-right">
+        <a href="account-page.html" class="icon-btn" aria-label="My Account">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/jobs">Jobs</a>
+    <a href="/bursaries">Bursaries</a>
+    <a href="/varsity">Varsities</a>
+    <a href="/cv-generator/">Generate CV</a>
+    <a href="/z83-filler">Z83 Filler</a>
+    <a href="/cv-tips">CV Tips</a>
+    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
+    <a href="saved-items.html">Saved Items</a>
+    <a href="signup.html">Sign Up</a>
+    <a href="login.html">Login</a>
+  </div>
+
+  <!-- =============================== -->
+  <!-- HEADER                          -->
+  <!-- =============================== -->
   <header>
     <h1>PAIA Manual</h1>
     <p>Guidance for requesting access to records held by Career Unified under South Africa's Promotion of Access to Information Act.</p>
@@ -386,5 +566,21 @@
   </footer>
 
   <script src="/js/cookie-notice.js"></script>
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+      });
+    }
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu')) {
+        mobileMenu.classList.remove('open');
+      }
+    });
+  </script>
 </body>
 </html>

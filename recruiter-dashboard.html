@@ -639,6 +639,1548 @@
 
   .jobs-header h3 { font-size: 16px; font-weight: 600; }
 
+  /* Career Site Tabs */
+  .career-site-tab {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+  }
+
+  .career-site-tab:hover {
+    color: #1e3a8a;
+  }
+
+  .career-site-tab.active {
+    color: #1e3a8a;
+    border-bottom-color: #1e3a8a;
+  }
+
+  .career-site-tab-content {
+    animation: fadeIn 0.2s ease;
+  }
+
+  .career-site-shell {
+    background: #ffffff;
+  }
+
+  .career-site-hidden-global {
+    display: none !important;
+  }
+
+  .people-page {
+    max-width: 1220px;
+  }
+
+  .people-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 24px 0 30px;
+  }
+
+  .people-tab {
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .people-tab.active {
+    border-color: #e2e8f0;
+    background: #e9edf2;
+  }
+
+  .people-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .people-intro h3 {
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 21px;
+  }
+
+  .people-intro p,
+  .people-description {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .people-members {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.75fr) minmax(430px, 1.65fr);
+    gap: 28px;
+    padding: 20px 0 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .people-members h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .people-controls {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .people-search {
+    position: relative;
+  }
+
+  .people-search i {
+    position: absolute;
+    top: 11px;
+    left: 12px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .people-search input {
+    width: 100%;
+    padding-left: 36px;
+  }
+
+  .people-invite {
+    white-space: nowrap;
+  }
+
+  .people-sort {
+    grid-column: 1 / -1;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  .people-sort strong {
+    color: #111827;
+  }
+
+  .member-list {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .member-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 80px;
+    padding: 12px 16px;
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .member-avatar {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 24px;
+  }
+
+  .member-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .member-info strong,
+  .member-info span {
+    display: block;
+  }
+
+  .member-info strong {
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .member-info span {
+    color: #334155;
+    font-size: 13px;
+  }
+
+  .member-role {
+    color: #334155;
+    font-size: 13px;
+  }
+
+  .member-teams {
+    margin-left: 4px;
+  }
+
+  .people-panel {
+    display: none;
+  }
+
+  .people-panel.active {
+    display: block;
+  }
+
+  .teams-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .teams-intro h3 {
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 21px;
+  }
+
+  .teams-intro p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+  }
+
+  .teams-content {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.75fr) minmax(430px, 1.65fr);
+    gap: 28px;
+    padding: 20px 0 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .teams-content h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .teams-description {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+  }
+
+  .auto-join-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .auto-join-intro h3 {
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 21px;
+  }
+
+  .auto-join-intro p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+  }
+
+  .auto-join-row {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.75fr) minmax(360px, 1.65fr);
+    gap: 28px;
+    padding: 20px 0 26px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .auto-join-row h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .auto-join-row p {
+    max-width: 370px;
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .auto-join-control {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .auto-join-topline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .auto-join-settings {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border: 1px solid #d8dee7;
+    border-radius: 7px;
+    background: #f1f3f6;
+    color: #334155;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .auto-join-details {
+    display: none;
+    gap: 12px;
+  }
+
+  .auto-join-details.visible {
+    display: grid;
+  }
+
+  .auto-join-warning {
+    padding: 12px 14px;
+    border-radius: 6px;
+    background: #fffbea;
+    color: #a0441b;
+    font-size: 13px;
+  }
+
+  .auto-join-warning strong,
+  .auto-join-warning span {
+    display: block;
+  }
+
+  .auto-join-warning strong {
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  .auto-join-url-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .auto-join-url-row .form-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .auto-join-external,
+  .auto-join-copy {
+    flex-shrink: 0;
+  }
+
+  .auto-join-external {
+    width: 40px;
+    border: 1px solid #dfe5ee;
+    border-radius: 7px;
+    background: #f1f3f6;
+    color: #475569;
+    cursor: pointer;
+  }
+
+  @media (max-width: 520px) {
+    .auto-join-url-row {
+      flex-wrap: wrap;
+    }
+
+    .auto-join-url-row .form-input {
+      flex-basis: 100%;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .auto-join-row {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  .teams-list-column {
+    min-width: 0;
+  }
+
+  .teams-toolbar {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 12px;
+  }
+
+  .teams-search {
+    position: relative;
+  }
+
+  .teams-search i {
+    position: absolute;
+    top: 11px;
+    left: 12px;
+    color: #94a3b8;
+    font-size: 18px;
+  }
+
+  .teams-search input {
+    width: 100%;
+    padding-left: 36px;
+  }
+
+  .team-count {
+    grid-column: 1 / -1;
+    color: #475569;
+    font-size: 13px;
+    text-align: right;
+  }
+
+  .team-card {
+    min-height: 82px;
+    padding: 14px 16px;
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .team-card h5 {
+    margin: 0 0 4px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .team-card p {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .team-member-avatar {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #1677ff;
+    color: #ffffff;
+    font-size: 14px;
+  }
+
+  @media (max-width: 800px) {
+    .teams-content {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .invite-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.42);
+  }
+
+  .invite-modal.open {
+    display: flex;
+  }
+
+  .invite-dialog {
+    width: min(512px, 100%);
+    overflow: hidden;
+    border-radius: 7px;
+    background: #ffffff;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
+  }
+
+  .invite-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .invite-dialog-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 17px;
+  }
+
+  .invite-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #d8dee7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .invite-dialog-body {
+    padding: 18px 16px 96px;
+  }
+
+  .invite-dialog-body > p {
+    margin: 0 0 6px;
+    color: #334155;
+    font-size: 14px;
+  }
+
+  .invite-field {
+    display: block;
+    margin-top: 10px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .invite-field input,
+  .invite-field select {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .invite-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #f8fafc;
+  }
+
+  .invite-cancel {
+    background: #ffffff;
+    color: #1f2937;
+  }
+
+  @media (max-width: 800px) {
+    .people-members {
+      grid-template-columns: 1fr;
+    }
+
+    .member-list {
+      grid-column: auto;
+      margin-top: 0;
+    }
+  }
+
+  .career-settings-sidebar {
+    background: #f6f7fb;
+    border-right: 1px solid #e5e7eb;
+    padding: 18px 12px;
+  }
+
+  .career-settings-sidebar .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+
+  .career-settings-sidebar .section-kicker {
+    display: block;
+    margin: 12px 10px 8px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .career-settings-sidebar .menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .career-settings-sidebar .menu-item + .menu-item { margin-top: 4px; }
+
+  .career-settings-sidebar .menu-item.active {
+    background: #e8f0ff;
+    color: #1e3a8a;
+    font-weight: 600;
+  }
+
+  .career-settings-body {
+    background: #ffffff;
+    min-width: 0;
+  }
+
+  .career-site-heading {
+    padding: 0 0 18px;
+  }
+
+  .career-site-heading h2 {
+    margin: 0 0 8px;
+    color: #050505;
+    font-size: 34px;
+    line-height: 1.15;
+  }
+
+  .career-site-hero {
+    padding: 0;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .career-site-hero strong {
+    color: #111827;
+  }
+
+  .career-site-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 0 20px;
+  }
+
+  .career-site-tabs .career-site-tab {
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .career-site-tabs .career-site-tab.active {
+    border-color: #e2e8f0;
+    background: #e9edf2;
+    color: #334155;
+  }
+
+  .career-site-main {
+    padding: 10px 0 32px;
+  }
+
+  .career-site-panel {
+    display: none;
+    padding: 10px 0 32px;
+  }
+
+  .career-site-panel.active {
+    display: block;
+  }
+
+  .media-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .media-intro h3 {
+    margin-bottom: 6px;
+  }
+
+  .media-section {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.75fr) minmax(360px, 1.45fr);
+    gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .media-section h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .media-section .setting-copy {
+    margin: 0;
+  }
+
+  .media-fields {
+    display: grid;
+    gap: 12px;
+  }
+
+  .media-social-fields {
+    display: grid;
+    gap: 12px;
+  }
+
+  .media-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .media-input-wrap {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .media-input-wrap input {
+    flex: 1;
+    min-width: 0;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .media-open-link {
+    width: 40px;
+    border: 1px solid #dfe5ee;
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    background: #f1f3f6;
+    color: #475569;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .media-toggles {
+    display: grid;
+    gap: 12px;
+    margin-top: 2px;
+  }
+
+  .media-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #334155;
+    font-size: 14px;
+  }
+
+  .media-toggle .switch {
+    width: 44px;
+  }
+
+  .media-upload {
+    min-height: 108px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #d6dce5;
+    border-radius: 3px;
+    color: #475569;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .media-upload i {
+    margin-bottom: 8px;
+    font-size: 28px;
+  }
+
+  .media-upload small {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 10px;
+  }
+
+  .content-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .content-editor {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.8fr) minmax(420px, 1.6fr);
+    gap: 28px;
+    padding: 24px 0 8px;
+  }
+
+  .content-list-group + .content-list-group {
+    margin-top: 24px;
+  }
+
+  .content-list-group h4 {
+    margin: 0 0 4px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .content-list-group > p {
+    margin: 0 0 12px;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .content-list {
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background: #ffffff;
+  }
+
+  .content-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 12px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+    font-size: 14px;
+  }
+
+  .content-list-item:last-child {
+    border-bottom: none;
+  }
+
+  .content-list-item .drag-icon {
+    color: #9ca3af;
+    font-size: 17px;
+  }
+
+  .content-list-item .item-icon {
+    color: #475569;
+    font-size: 18px;
+  }
+
+  .content-list-item span:nth-child(3) {
+    flex: 1;
+  }
+
+  .content-edit-button {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #d8dee7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+  }
+
+  .content-preview {
+    min-height: 430px;
+    overflow: hidden;
+    border: 5px solid #e5e7eb;
+    border-radius: 4px;
+    background: #ffffff;
+  }
+
+  .content-preview-bar {
+    height: 16px;
+    background: #eef0f2;
+  }
+
+  .content-preview-hero {
+    display: flex;
+    min-height: 225px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    background: #6bd88d;
+    color: #07130b;
+    text-align: center;
+  }
+
+  .content-preview-hero strong {
+    font-size: 20px;
+  }
+
+  .content-preview-hero span {
+    font-size: 14px;
+  }
+
+  .content-preview-hero button {
+    padding: 8px 14px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .content-preview-body {
+    padding: 18px 34px 24px;
+  }
+
+  .content-preview-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 280px;
+    margin: 0 auto 18px;
+  }
+
+  .content-preview-cards span {
+    display: block;
+    height: 54px;
+    border-radius: 3px;
+    background: #d9dadd;
+  }
+
+  .content-preview-title {
+    margin-bottom: 18px;
+    color: #334155;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .content-preview-job {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #475569;
+    font-size: 11px;
+  }
+
+  .content-preview-job b {
+    display: block;
+    margin-bottom: 4px;
+    color: #111827;
+  }
+
+  .content-preview-job button {
+    align-self: center;
+    border: none;
+    border-radius: 8px;
+    background: #6b6b6b;
+    color: #ffffff;
+    font-size: 9px;
+  }
+
+  .code-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .code-section {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.75fr) minmax(460px, 1.6fr);
+    gap: 28px;
+    padding: 32px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .code-section h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .code-section .setting-copy {
+    margin: 0;
+  }
+
+  .code-editor {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    min-height: 225px;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 5px;
+    background: #ffffff;
+    font-family: Consolas, 'Courier New', monospace;
+  }
+
+  .code-line-number {
+    padding: 12px 10px;
+    background: #f8fafc;
+    color: #7890a8;
+    font-size: 13px;
+    text-align: right;
+    user-select: none;
+  }
+
+  .code-editor textarea {
+    width: 100%;
+    min-height: 225px;
+    resize: vertical;
+    padding: 12px;
+    border: none;
+    outline: none;
+    color: #7890a8;
+    background: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .widget-intro {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .widget-section {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.75fr) minmax(460px, 1.6fr);
+    gap: 28px;
+    padding: 32px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .widget-section h4 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 16px;
+  }
+
+  .widget-section .setting-copy {
+    margin: 0;
+  }
+
+  .widget-options {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .widget-options strong {
+    color: #111827;
+    font-size: 14px;
+  }
+
+  .widget-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #1f2937;
+    font-size: 14px;
+  }
+
+  .widget-option input {
+    width: 19px;
+    height: 19px;
+    accent-color: #1677ff;
+  }
+
+  .widget-code-row {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .widget-code {
+    width: 100%;
+    min-height: 74px;
+    resize: vertical;
+    padding: 10px 12px;
+    border: 1px solid #dfe5ee;
+    border-radius: 5px;
+    color: #475569;
+    background: #ffffff;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .widget-copy {
+    align-self: flex-start;
+    flex-shrink: 0;
+    min-height: 40px;
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid #d8dee7;
+  }
+
+  .widget-help {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  @media (max-width: 900px) {
+    .widget-section {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .code-section {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .content-editor {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .media-section {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  .career-site-main h3 {
+    margin: 0 0 6px;
+    font-size: 22px;
+    color: #111827;
+  }
+
+  .career-site-main .subhead {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 700px) {
+    .career-site-heading h2 {
+      font-size: 28px;
+    }
+
+    .career-site-tabs .career-site-tab {
+      font-size: 13px;
+      padding: 9px 10px;
+    }
+
+    .setting-layout {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .layout-preview {
+      width: min(400px, 100%);
+    }
+  }
+
+  .settings-rule {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 20px 0 24px;
+  }
+
+  .setting-layout {
+    display: grid;
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+    gap: 14px 28px;
+    align-items: start;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef2f7;
+  }
+
+  .setting-layout:last-child {
+    border-bottom: none;
+  }
+
+  .setting-layout h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #111827;
+    font-weight: 600;
+  }
+
+  .setting-layout > div:first-child .setting-copy {
+    margin: 3px 0 0;
+  }
+
+  .setting-layout .setting-copy {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .setting-layout .setting-control {
+    min-width: 0;
+  }
+
+  .setting-layout input[type="text"],
+  .setting-layout input[type="url"],
+  .setting-layout input[type="color"],
+  .setting-layout select {
+    width: 100%;
+    max-width: 520px;
+    min-height: 38px;
+    padding: 10px 12px;
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+    background: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #111827;
+  }
+
+  .setting-layout input[type="color"] {
+    width: 56px;
+    min-width: 56px;
+    padding: 4px;
+    height: 38px;
+  }
+
+  .setting-layout .inline-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .setting-layout .inline-input span {
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2f7;
+  }
+
+  .switch-row:last-child {
+    border-bottom: none;
+  }
+
+  .switch-label {
+    min-width: 0;
+  }
+
+  .switch-label strong {
+    display: block;
+    color: #111827;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+
+  .switch-label small {
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #dfe7f4;
+    border-radius: 999px;
+    transition: 0.2s ease;
+  }
+
+  .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    transition: 0.2s ease;
+  }
+
+  .switch input:checked + .slider {
+    background: #2563eb;
+  }
+
+  .switch input:checked + .slider::before {
+    transform: translateX(20px);
+  }
+
+  .color-palette {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+  }
+
+  .color-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 0 10px;
+    width: 100%;
+    max-width: 180px;
+  }
+
+  .color-custom input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #111827;
+  }
+
+  .color-label {
+    display: block;
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 14px;
+  }
+
+  .color-clear {
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+  }
+
+  .career-site-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 24px 0 4px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 520px) {
+    .career-site-actions {
+      justify-content: stretch;
+      flex-direction: column;
+    }
+
+    .career-site-actions .primary-btn {
+      justify-content: center;
+    }
+  }
+
+  .layout-choice {
+    display: block;
+    max-width: 400px;
+    cursor: pointer;
+  }
+
+  .layout-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .layout-preview {
+    display: block;
+    width: 400px;
+    height: 220px;
+    box-sizing: border-box;
+    padding: 10px 12px 0;
+    border: 2px solid #1677ff;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(22,119,255,0.08);
+    overflow: hidden;
+  }
+
+  .layout-preview-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    height: 14px;
+    padding: 0 4px;
+  }
+
+  .layout-preview-nav i {
+    display: block;
+    width: 18px;
+    height: 5px;
+    border-radius: 5px;
+    background: #c8cdd4;
+  }
+
+  .layout-preview-hero {
+    height: 120px;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #ff9258;
+  }
+
+  .layout-preview-hero strong,
+  .layout-preview-hero small,
+  .layout-preview-hero b {
+    display: block;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .layout-preview-hero strong {
+    font-size: 16px;
+  }
+
+  .layout-preview-hero small {
+    font-size: 9px;
+    opacity: 0.9;
+  }
+
+  .layout-preview-hero b {
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: rgba(180, 78, 35, 0.45);
+    font-size: 8px;
+  }
+
+  .layout-preview-content {
+    display: grid;
+    grid-template-columns: 1fr 1.7fr;
+    gap: 20px;
+    padding: 15px 30px;
+  }
+
+  .layout-preview-content > i {
+    display: block;
+    height: 42px;
+    border-radius: 3px;
+    background: #dfe2e6;
+  }
+
+  .layout-preview-content > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .layout-preview-content > div i {
+    display: block;
+    height: 5px;
+    border-radius: 4px;
+    background: #dfe2e6;
+  }
+
+  .layout-choice-caption {
+    margin-top: 12px;
+  }
+
+  .layout-choice-caption strong {
+    display: block;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .layout-choice-caption span {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-item {
+    transition: background 0.2s;
+  }
+
+  .section-item:hover {
+    background: #f0f4f8;
+  }
+
+  .section-item input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  .form-input {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #1e3a8a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .primary-btn:hover {
+    background: #1d4ed8;
+  }
+
+  .primary-btn.btn-ghost {
+    background: transparent;
+    color: #1e3a8a;
+    border: 1px solid #dbeafe;
+  }
+
+  .primary-btn.btn-ghost:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+
   .filter {
     padding: 8px 12px;
     border-radius: 12px;
@@ -2987,6 +4529,8 @@
     <a onclick="showSection('jobs', this)"><i class='bx bx-briefcase'></i>Manage Jobs</a>
     <a onclick="showSection('cvs', this)"><i class='bx bx-file'></i>CV Library</a>
     <a id="applicationsNav" onclick="showSection('applications', this)"><i class='bx bx-user-check'></i>Applications</a>
+    <a id="careerSiteNav" onclick="showSection('career-site', this)"><i class='bx bx-globe'></i>Career Site</a>
+    <a id="peopleNav" onclick="showSection('people', this)"><i class='bx bx-group'></i>People</a>
     <a onclick="showSection('billing', this)"><i class='bx bx-credit-card'></i>Packages</a>
     <a onclick="showSection('analytics', this)"><i class='bx bx-bar-chart-alt-2'></i>Analytics</a>
     <a data-nav-public-listings onclick="showSection('public-listings', this)"><i class='bx bx-world'></i>View as Member</a>
@@ -2997,7 +4541,7 @@
 <!-- ================= MAIN ================= -->
 <div class="main">
 
-  <header class="dashboard-toolbar" aria-label="Recruiter dashboard tools">
+  <header id="recruiterDashboardToolbar" class="dashboard-toolbar" aria-label="Recruiter dashboard tools">
     <div class="dashboard-toolbar-copy">
       <span>Recruiter workspace</span>
       <strong id="desktopPageTitle">Dashboard</strong>
@@ -3019,7 +4563,7 @@
   </header>
 
   <!-- TOP STATS -->
-  <div class="stats">
+  <div id="recruiterDashboardStats" class="stats">
     <div class="stat"><div><h3 id="totalCVs">0</h3><span>Total CVs Available</span></div><i class='bx bx-file'></i></div>
     <div class="stat"><div><h3 id="unlockedCVs">0</h3><span>Unlocked CVs</span></div><i class='bx bx-lock-open'></i></div>
     <div class="stat"><div><h3 id="remainingUnlocks">0</h3><span>Remaining Unlocks</span></div><i class='bx bx-user-check'></i></div>
@@ -3503,7 +5047,19 @@
                 <label>Location <span class="required-mark">*</span></label>
                 <div class="job-location-pair">
                   <input type="text" name="city" required placeholder="City or town" aria-label="City or town">
-                  <input type="text" name="country" required placeholder="Country" aria-label="Country">
+                  <select name="country" required aria-label="Country">
+                    <option value="" disabled selected hidden>Country</option>
+                    <option>United States</option><option>Afghanistan</option><option>Åland Islands</option><option>Albania</option><option>Algeria</option><option>American Samoa</option><option>Andorra</option><option>Angola</option><option>Anguilla</option><option>Antarctica</option><option>Antigua and Barbuda</option><option>Argentina</option><option>Armenia</option><option>Aruba</option><option>Australia</option><option>Austria</option><option>Azerbaijan</option>
+                    <option>Bahamas</option><option>Bahrain</option><option>Bangladesh</option><option>Barbados</option><option>Belarus</option><option>Belgium</option><option>Belize</option><option>Benin</option><option>Bermuda</option><option>Bhutan</option><option>Bolivia</option><option>Bosnia and Herzegovina</option><option>Botswana</option><option>Bouvet Island</option><option>Brazil</option><option>British Indian Ocean Territory</option><option>Brunei Darussalam</option><option>Bulgaria</option><option>Burkina Faso</option><option>Burundi</option>
+                    <option>Cambodia</option><option>Cameroon</option><option>Canada</option><option>Cape Verde</option><option>Central African Republic</option><option>Chad</option><option>Chile</option><option>China</option><option>Christmas Island</option><option>Cocos (Keeling) Islands</option><option>Colombia</option><option>Comoros</option><option>Congo</option><option>Congo, The Democratic Republic of the</option><option>Cook Islands</option><option>Costa Rica</option><option>Côte d'Ivoire</option><option>Croatia</option><option>Cuba</option><option>Cyprus</option><option>Czech Republic</option>
+                    <option>Denmark</option><option>Djibouti</option><option>Dominica</option><option>Dominican Republic</option><option>Ecuador</option><option>Egypt</option><option>El Salvador</option><option>Equatorial Guinea</option><option>Eritrea</option><option>Estonia</option><option>Ethiopia</option><option>Falkland Islands (Malvinas)</option><option>Faroe Islands</option><option>Fiji</option><option>Finland</option><option>France</option><option>French Guiana</option><option>French Polynesia</option><option>French Southern Territories</option>
+                    <option>Gabon</option><option>Gambia</option><option>Georgia</option><option>Germany</option><option>Ghana</option><option>Gibraltar</option><option>Greece</option><option>Greenland</option><option>Grenada</option><option>Guadeloupe</option><option>Guam</option><option>Guatemala</option><option>Guernsey</option><option>Guinea</option><option>Guinea-Bissau</option><option>Guyana</option><option>Haiti</option><option>Heard Island and Mcdonald Islands</option><option>Holy See (Vatican City State)</option><option>Honduras</option><option>Hong Kong</option><option>Hungary</option>
+                    <option>Iceland</option><option>India</option><option>Indonesia</option><option>Iran, Islamic Republic Of</option><option>Iraq</option><option>Ireland</option><option>Isle of Man</option><option>Israel</option><option>Italy</option><option>Jamaica</option><option>Japan</option><option>Jersey</option><option>Jordan</option><option>Kazakhstan</option><option>Kenya</option><option>Kiribati</option><option>Korea, Democratic People's Republic of</option><option>Korea, Republic of</option><option>Kosovo</option><option>Kuwait</option>
+                    <option>Lao People's Democratic Republic</option><option>Latvia</option><option>Lebanon</option><option>Lesotho</option><option>Liberia</option><option>Libyan Arab Jamahiriya</option><option>Liechtenstein</option><option>Lithuania</option><option>Luxembourg</option><option>Macao</option><option>Macedonia, North Macedonia</option><option>Madagascar</option><option>Malawi</option><option>Malaysia</option><option>Maldives</option><option>Mali</option><option>Malta</option><option>Marshall Islands</option><option>Martinique</option><option>Mauritania</option><option>Mauritius</option><option>Mayotte</option><option>Mexico</option><option>Micronesia, Federated States of</option><option>Moldova, Republic of</option><option>Monaco</option><option>Mongolia</option><option>Montenegro</option><option>Montserrat</option><option>Morocco</option><option>Mozambique</option><option>Myanmar</option>
+                    <option>Namibia</option><option>Nauru</option><option>Nepal</option><option>Netherlands</option><option>Netherlands Antilles</option><option>New Caledonia</option><option>New Zealand</option><option>Nicaragua</option><option>Niger</option><option>Nigeria</option><option>Niue</option><option>Norfolk Island</option><option>Northern Mariana Islands</option><option>Norway</option><option>Oman</option><option>Pakistan</option><option>Palau</option><option>Palestinian Territory, Occupied</option><option>Panama</option><option>Papua New Guinea</option><option>Paraguay</option><option>Peru</option><option>Philippines</option><option>Pitcairn</option><option>Poland</option><option>Portugal</option><option>Puerto Rico</option>
+                    <option>Qatar</option><option>Reunion</option><option>Romania</option><option>Russian Federation</option><option>Rwanda</option><option>Saint Helena</option><option>Saint Kitts and Nevis</option><option>Saint Lucia</option><option>Saint Pierre and Miquelon</option><option>Saint Vincent and the Grenadines</option><option>Samoa</option><option>San Marino</option><option>Sao Tome and Principe</option><option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option><option>Singapore</option><option>Sint Maarten</option><option>Slovakia</option><option>Slovenia</option><option>Somalia</option><option>South Africa</option><option>South Georgia and the South Sandwich Islands</option><option>Spain</option><option>Sri Lanka</option><option>Sudan</option><option>Suriname</option><option>Svalbard and Jan Mayen</option><option>Swatini</option><option>Sweden</option><option>Switzerland</option><option>Syrian Arab Republic</option>
+                    <option>Taiwan</option><option>Tajikistan</option><option>Tanzania, United Republic of</option><option>Thailand</option><option>Timor-Leste</option><option>Togo</option><option>Tokelau</option><option>Tonga</option><option>Trinidad and Tobago</option><option>Tunisia</option><option>Turkey</option><option>Turkmenistan</option><option>Turks and Caicos Islands</option><option>Tuvalu</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States Minor Outlying Islands</option><option>Uruguay</option><option>Uzbekistan</option><option>Vanuatu</option><option>Venezuela</option><option>Vietnam</option><option>Virgin Islands, British</option><option>Virgin Islands, U.S.</option><option>Wallis and Futuna</option><option>Western Sahara</option><option>Yemen</option><option>Zambia</option><option>Zimbabwe</option><option>Worldwide</option>
+                  </select>
                 </div>
               </div>
               <div class="form-group">
@@ -3960,6 +5516,478 @@
     </div>
   </div>
 
+  <!-- CAREER SITE -->
+  <div id="career-site" class="section">
+    <div class="career-site-shell">
+      <main class="career-settings-body">
+        <div class="career-site-heading">
+          <h2>Career Site Settings</h2>
+          <div class="career-site-hero">
+            Build your public careers page and employee portal to showcase your company's brand and culture. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a>
+          </div>
+        </div>
+
+        <div class="career-site-tabs">
+          <button class="career-site-tab active" data-tab="general" onclick="switchCareerSiteTab('general', this)">General</button>
+          <button class="career-site-tab" data-tab="media" onclick="switchCareerSiteTab('media', this)">Media &amp; Links</button>
+          <button class="career-site-tab" data-tab="content" onclick="switchCareerSiteTab('content', this)">Content</button>
+          <button class="career-site-tab" data-tab="share" onclick="switchCareerSiteTab('share', this)">Share</button>
+          <button class="career-site-tab" data-tab="css" onclick="switchCareerSiteTab('css', this)">CSS/JS</button>
+          <button class="career-site-tab" data-tab="employee" onclick="switchCareerSiteTab('employee', this)">Employee Portal</button>
+          <button class="career-site-tab" data-tab="widget" onclick="switchCareerSiteTab('widget', this)">Embed Widget</button>
+        </div>
+
+        <div class="career-site-main">
+          <h3>General Settings</h3>
+          <div class="subhead">Customize company info and basic settings for your career and employee portals.</div>
+
+          <hr class="settings-rule">
+
+          <div class="setting-layout">
+            <div>
+              <h4>URL</h4>
+              <p class="setting-copy">The web address where candidates can see your open positions. You can also configure a custom domain and use your company's own web address.</p>
+            </div>
+            <div class="setting-control">
+              <div class="inline-input">
+                <span>https://</span>
+                <input type="text" value="all-media" aria-label="Career site subdomain">
+                <span>.</span>
+                <input type="text" value="breezy.hr" aria-label="Career site domain" style="max-width:160px;">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Logo</h4>
+              <p class="setting-copy">We support PNGs, JPEGs and GIFs under 10MB.</p>
+            </div>
+            <div class="setting-control">
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                <div style="width:72px;height:72px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <i class='bx bx-image' style="font-size:32px;color:#9ca3af;"></i>
+                </div>
+                <button class="primary-btn" type="button"><i class='bx bx-upload'></i> Upload Image</button>
+                <button class="primary-btn btn-ghost" type="button">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Layout</h4>
+              <p class="setting-copy">Choose a layout style for your career portal.</p>
+            </div>
+            <div class="setting-control">
+              <label class="layout-choice">
+                <input type="radio" name="careerSiteLayout" value="bold" checked>
+                <span class="layout-preview" aria-hidden="true">
+                  <span class="layout-preview-nav"><i></i><i></i><i></i></span>
+                  <span class="layout-preview-hero"><strong>Find work that matters</strong><small>Build your future with us</small><b>View open roles</b></span>
+                  <span class="layout-preview-content"><i></i><div><i></i><i></i><i></i><i></i></div></span>
+                </span>
+                <span class="layout-choice-caption">
+                  <strong>Bold (recommended)</strong>
+                  <span>A vibrant, highly customizable careers site</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Company website</h4>
+              <p class="setting-copy">Enter your company's website address so candidates can look around.</p>
+            </div>
+            <div class="setting-control">
+              <input type="url" value="https://www.yourcompany.com" aria-label="Company website">
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Apply with LinkedIn</h4>
+              <p class="setting-copy">Allow candidates to apply with LinkedIn.</p>
+            </div>
+            <div class="setting-control">
+              <div class="switch-row">
+                <label class="switch" aria-label="Toggle apply with LinkedIn">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Apply with Indeed</h4>
+              <p class="setting-copy">Allow candidates to apply with Indeed.</p>
+            </div>
+            <div class="setting-control">
+              <div class="switch-row">
+                <label class="switch" aria-label="Toggle apply with Indeed">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Favicon</h4>
+              <p class="setting-copy">The favicon is a small icon that is displayed on the browser tab of your web page. Enter the URL of your website's favicon.</p>
+            </div>
+            <div class="setting-control">
+              <input type="url" value="https://yourcompany.com/favicon.ico" aria-label="Favicon URL" placeholder="https://yourcompany.com/favicon.ico">
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Buttons &amp; Link Colors</h4>
+              <p class="setting-copy">Customize the colors of your buttons and links to match your brand and create a consistent, engaging look throughout your site.</p>
+            </div>
+            <div class="setting-control">
+              <div class="color-palette" style="margin-bottom:10px;">
+                <span class="color-swatch" style="background:#0d6efd; border-color:#0d6efd;"></span>
+                <span class="color-swatch" style="background:#7c3aed;"></span>
+                <span class="color-swatch" style="background:#dc2626;"></span>
+                <span class="color-swatch" style="background:#16a34a;"></span>
+                <span class="color-swatch" style="background:#14b8b5;"></span>
+                <span class="color-swatch" style="background:#f4c542;"></span>
+                <span class="color-swatch" style="background:#f59e0b;"></span>
+              </div>
+              <label class="color-label" for="careerSiteCustomColor">Custom Color</label>
+              <div class="color-custom">
+                <span style="width:16px;height:16px;border-radius:50%;background:#0d6efd;display:inline-block;"></span>
+                <input type="text" id="careerSiteCustomColor" value="#0D6EFD" aria-label="Custom color">
+                <button type="button" class="color-clear" aria-label="Clear custom color">&times;</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>Language</h4>
+              <p class="setting-copy">We default to English, but your career portal can be shown in a variety of languages.</p>
+            </div>
+            <div class="setting-control">
+              <select aria-label="Career site language">
+                <option>Dynamic</option>
+                <option>English</option>
+                <option>Afrikaans</option>
+                <option>Zulu</option>
+                <option>Xhosa</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="career-site-actions">
+            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()">
+              <i class='bx bx-show'></i> View Career Site
+            </button>
+            <button class="primary-btn" type="button" onclick="saveCareerSiteGeneral()">
+              <i class='bx bx-save'></i> Save Changes
+            </button>
+          </div>
+
+        </div>
+
+        <div id="careerSiteMediaPanel" class="career-site-panel">
+          <div class="media-intro">
+            <h3>Media &amp; Links</h3>
+            <div class="subhead">Show candidates what it's like to work at your company.</div>
+          </div>
+
+          <div class="media-section">
+            <div>
+              <h4>Videos</h4>
+              <p class="setting-copy">Have a recruiting or marketing video that shows off your employer brand and culture?</p>
+            </div>
+            <div class="media-fields">
+              <div class="media-field">
+                <label for="careerSiteVimeo">Vimeo</label>
+                <div class="media-input-wrap">
+                  <input id="careerSiteVimeo" type="url" class="form-input" placeholder="https://vimeo.com/12345">
+                  <button class="media-open-link" type="button" aria-label="Open Vimeo link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="careerSiteYoutube">Youtube</label>
+                <div class="media-input-wrap">
+                  <input id="careerSiteYoutube" type="url" class="form-input" placeholder="https://youtube.com/v/1234">
+                  <button class="media-open-link" type="button" aria-label="Open Youtube link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-toggles">
+                <span style="color:#111827;font-size:14px;">Display</span>
+                <label class="media-toggle">
+                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  Include on Openings page
+                </label>
+                <label class="media-toggle">
+                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  Include on position detail pages
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="media-section">
+            <div>
+              <h4>Images</h4>
+              <p class="setting-copy">Share some photos of work life. Interesting office features, events, office pets, and happy employees are always nice. 😊 You'll need at least 3 (we recommend 8 or more).</p>
+            </div>
+            <div>
+              <label class="media-upload" for="careerSiteImageUpload">
+                <i class='bx bx-plus-circle'></i>
+                <span>Drag &amp; Drop or Click to Upload</span>
+                <small>10 MB max</small>
+              </label>
+              <input id="careerSiteImageUpload" type="file" accept="image/*" multiple hidden>
+            </div>
+          </div>
+
+          <div class="media-section">
+            <div>
+              <h4>Websites &amp; Social</h4>
+              <p class="setting-copy">Add links for your blog and social profiles.</p>
+            </div>
+            <div class="media-social-fields">
+              <div class="media-field">
+                <label for="socialWebsite">Blog</label>
+                <div class="media-input-wrap">
+                  <input id="socialWebsite" type="url" class="form-input" placeholder="https://www.yourcompany.com/blog">
+                  <button class="media-open-link" type="button" aria-label="Open blog link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialFacebook">Facebook</label>
+                <div class="media-input-wrap">
+                  <input id="socialFacebook" type="url" class="form-input" placeholder="https://www.facebook.com/yourcompany">
+                  <button class="media-open-link" type="button" aria-label="Open Facebook link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialX">X</label>
+                <div class="media-input-wrap">
+                  <input id="socialX" type="url" class="form-input" placeholder="https://twitter.com/yourcompany">
+                  <button class="media-open-link" type="button" aria-label="Open X link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialLinkedin">LinkedIn</label>
+                <div class="media-input-wrap">
+                  <input id="socialLinkedin" type="url" class="form-input" placeholder="https://www.linkedin.com/company/yourcompany">
+                  <button class="media-open-link" type="button" aria-label="Open LinkedIn link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialInstagram">Instagram</label>
+                <div class="media-input-wrap">
+                  <input id="socialInstagram" type="url" class="form-input" placeholder="https://www.instagram.com/yourcompany">
+                  <button class="media-open-link" type="button" aria-label="Open Instagram link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialAngelList">AngelList</label>
+                <div class="media-input-wrap">
+                  <input id="socialAngelList" type="url" class="form-input" placeholder="https://angel.co/company/yourcompany">
+                  <button class="media-open-link" type="button" aria-label="Open AngelList link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-field">
+                <label for="socialGlassdoor">Glassdoor Company ID</label>
+                <div class="media-input-wrap">
+                  <input id="socialGlassdoor" type="text" class="form-input" placeholder="Enter your Glassdoor Company ID">
+                  <button class="media-open-link" type="button" aria-label="Open Glassdoor link"><i class='bx bx-link-external'></i></button>
+                </div>
+              </div>
+              <div class="media-toggles">
+                <span style="color:#111827;font-size:14px;">Display</span>
+                <label class="media-toggle">
+                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  Include on openings page
+                </label>
+                <label class="media-toggle">
+                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  Include on position detail pages
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="career-site-actions">
+            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()">
+              <i class='bx bx-show'></i> View Career Site
+            </button>
+            <button class="primary-btn" type="button" onclick="saveCareerSiteMedia()">
+              <i class='bx bx-save'></i> Save Changes
+            </button>
+          </div>
+        </div>
+
+        <div id="careerSiteContentPanel" class="career-site-panel">
+          <div class="content-intro">
+            <h3>Content</h3>
+            <div class="subhead">Customize the content sections and layout of the main page of your career portal.</div>
+          </div>
+
+          <div class="content-editor">
+            <div>
+              <div class="content-list-group">
+                <h4>Display</h4>
+                <p>These sections are live for visitors to see. Drag sections between Display and Stored to control what appears on your page.</p>
+                <div class="content-list" id="careerSiteSections">
+                  <div class="content-list-item" data-section-id="hero" data-order="0">
+                    <i class='bx bx-image item-icon'></i><span>Hero</span><button class="content-edit-button" type="button" aria-label="Edit Hero"><i class='bx bx-pencil'></i></button>
+                  </div>
+                  <div class="content-list-item" data-section-id="images" data-order="1">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bx-image item-icon'></i><span>Images</span>
+                  </div>
+                  <div class="content-list-item" data-section-id="positions" data-order="2">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bx-list-ul item-icon'></i><span>Positions</span><button class="content-edit-button" type="button" aria-label="Edit Positions"><i class='bx bx-pencil'></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content-list-group">
+                <h4>Stored</h4>
+                <p>These sections are hidden from visitors and only visible to you.</p>
+                <div class="content-list">
+                  <div class="content-list-item" data-section-id="description" data-order="3">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bx-align-left item-icon'></i><span>Description</span><button class="content-edit-button" type="button" aria-label="Edit Description"><i class='bx bx-pencil'></i></button>
+                  </div>
+                  <div class="content-list-item" data-section-id="benefits" data-order="4">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bx-gift item-icon'></i><span>Perks &amp; Benefits</span><button class="content-edit-button" type="button" aria-label="Edit Perks and Benefits"><i class='bx bx-pencil'></i></button>
+                  </div>
+                  <div class="content-list-item" data-section-id="testimonials" data-order="5">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bxs-conversation item-icon'></i><span>Testimonials</span><button class="content-edit-button" type="button" aria-label="Edit Testimonials"><i class='bx bx-pencil'></i></button>
+                  </div>
+                  <div class="content-list-item" data-section-id="employees" data-order="6">
+                    <i class='bx bx-menu drag-icon'></i><i class='bx bxs-group item-icon'></i><span>Employees</span><button class="content-edit-button" type="button" aria-label="Edit Employees"><i class='bx bx-pencil'></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-preview" aria-label="Career site preview">
+              <div class="content-preview-bar"></div>
+              <div class="content-preview-hero">
+                <strong>Come work with us.</strong>
+                <span>We're looking for great people to join our growing team.</span>
+                <button type="button">View Openings</button>
+              </div>
+              <div class="content-preview-body">
+                <div class="content-preview-cards"><span></span><span></span><span></span></div>
+                <div class="content-preview-title">Our Openings</div>
+                <div class="content-preview-job">
+                  <div><b>testing</b><span>📍 Pretoria, ZA<br>▣ Full-Time</span></div>
+                  <button type="button">Apply</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="career-site-actions">
+            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()"><i class='bx bx-show'></i> View Career Site</button>
+            <button class="primary-btn" type="button" onclick="saveCareerSiteContent()"><i class='bx bx-save'></i> Save Changes</button>
+          </div>
+        </div>
+
+        <div id="careerSiteCssPanel" class="career-site-panel">
+          <div class="code-intro">
+            <h3>CSS &amp; Javascript</h3>
+            <div class="subhead">Need a little more personalization on your career portal? Or maybe a third-party analytics tracking code? No problem. Add your own custom CSS and JavaScript.</div>
+          </div>
+
+          <div class="code-section">
+            <div>
+              <h4>Custom CSS</h4>
+              <p class="setting-copy">Want to really make things your own? Add your own custom CSS here.</p>
+            </div>
+            <div class="code-editor">
+              <div class="code-line-number">1</div>
+              <textarea id="careerSiteCustomCss" spellcheck="false" aria-label="Custom CSS" placeholder="/* Add your custom CSS here */"></textarea>
+            </div>
+          </div>
+
+          <div class="code-section">
+            <div>
+              <h4>Custom JS</h4>
+              <p class="setting-copy">Add your own custom JavaScript here. It'll be added at the bottom of your Career Site pages.</p>
+            </div>
+            <div class="code-editor">
+              <div class="code-line-number">1</div>
+              <textarea id="careerSiteCustomJs" spellcheck="false" aria-label="Custom JavaScript" placeholder="// Add your custom JavaScript here"></textarea>
+            </div>
+          </div>
+
+          <div class="code-section">
+            <div>
+              <h4>Custom JS - Application Submission</h4>
+              <p class="setting-copy">Add your own custom JavaScript here to track candidate applications submitted through your Career Site.</p>
+            </div>
+            <div class="code-editor">
+              <div class="code-line-number">1</div>
+              <textarea id="careerSiteApplicationJs" spellcheck="false" aria-label="Application submission JavaScript" placeholder="// Add your custom JavaScript for application tracking"></textarea>
+            </div>
+          </div>
+
+          <div class="code-section">
+            <div>
+              <h4>Facebook Domain Verification</h4>
+              <p class="setting-copy">Verify your career portal domain with Facebook.<br><a href="#" style="color:#475569;text-decoration:underline;">Learn more</a></p>
+            </div>
+            <div class="setting-control">
+              <input id="careerSiteFacebookVerification" type="text" class="form-input" placeholder="Enter Facebook domain verification code" aria-label="Facebook domain verification code">
+            </div>
+          </div>
+
+          <div class="career-site-actions">
+            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()"><i class='bx bx-show'></i> View Career Site</button>
+            <button class="primary-btn" type="button" onclick="saveCareerSiteCode()"><i class='bx bx-save'></i> Save Changes</button>
+          </div>
+        </div>
+
+        <div id="careerSiteWidgetPanel" class="career-site-panel">
+          <div class="widget-intro">
+            <h3>Embed Widget</h3>
+            <div class="subhead">Easily embed and customize the look and feel of open jobs on your company website.</div>
+          </div>
+
+          <div class="widget-section">
+            <div>
+              <h4>HTML Snippet</h4>
+              <p class="setting-copy">Embed your open positions with full control over layout and design.</p>
+            </div>
+            <div>
+              <div class="widget-options">
+                <strong>Group positions by</strong>
+                <label class="widget-option"><input type="radio" name="widgetGroup" value="none" checked onchange="updateWidgetSnippet()"> None</label>
+                <label class="widget-option"><input type="radio" name="widgetGroup" value="department" onchange="updateWidgetSnippet()"> Department</label>
+                <label class="widget-option"><input type="radio" name="widgetGroup" value="location" onchange="updateWidgetSnippet()"> Location</label>
+              </div>
+              <div class="widget-code-row">
+                <textarea id="careerSiteWidgetCode" class="widget-code" readonly aria-label="Embed widget HTML snippet"><div id='careerUnifiedOpeningsContainer'></div><script src='https://careerunified.com/embed.js?inline=true&amp;group_by=none'></script></textarea>
+                <button class="primary-btn widget-copy" type="button" onclick="copyWidgetSnippet()"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <p class="widget-help">Include this snippet of HTML in your webpage at the point where you'd like your positions to display</p>
+            </div>
+          </div>
+
+          <div class="career-site-actions">
+            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()"><i class='bx bx-show'></i> View Career Site</button>
+            <button class="primary-btn" type="button" onclick="saveCareerSiteWidget()"><i class='bx bx-save'></i> Save Changes</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
   <!-- CV LIBRARY -->
   <div id="cvs" class="section">
     <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -4115,6 +6143,145 @@
     <div id="cvGrid" class="cv-grid">
       <p style="text-align: center; color: #6b7280;">Loading CVs...</p>
     </div>
+  </div>
+
+  <!-- PEOPLE -->
+  <div id="people" class="section">
+    <div class="people-page">
+      <h2>People</h2>
+
+      <div class="people-tabs" role="tablist" aria-label="People settings">
+        <button class="people-tab active" type="button" role="tab" aria-selected="true" onclick="switchPeopleTab('members', this)">Members</button>
+        <button class="people-tab" type="button" role="tab" aria-selected="false" onclick="switchPeopleTab('teams', this)">Teams</button>
+        <button class="people-tab" type="button" role="tab" aria-selected="false" onclick="switchPeopleTab('auto-join', this)">Auto-Join</button>
+      </div>
+
+      <div id="peopleMembersPanel" class="people-panel active">
+        <div class="people-intro">
+        <h3>Manage Members</h3>
+        <p>Manage the team involved in hiring at Career Unified. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a></p>
+        </div>
+
+        <div class="people-members">
+        <div>
+          <h4>Active Members</h4>
+          <p class="people-description">Add and remove members, change roles, and assign to teams.</p>
+        </div>
+
+        <div class="people-controls">
+          <div class="people-search">
+            <i class='bx bx-search'></i>
+            <input id="peopleMemberSearch" class="form-input" type="search" placeholder="Search" aria-label="Search members" oninput="filterPeopleMembers(this.value)">
+          </div>
+          <button class="primary-btn people-invite" type="button" onclick="openInviteMembersModal()"><i class='bx bx-user-plus'></i> Invite Members</button>
+          <div class="people-sort">Sort: <strong>Alphabetical</strong> <i class='bx bx-caret-up'></i></div>
+        </div>
+
+        <div class="member-list" id="peopleMemberList">
+          <article class="member-card" data-member-search="jay mash contact careerunified.com administrator">
+            <div class="member-avatar" aria-hidden="true">J</div>
+            <div class="member-info">
+              <strong>Jay Mash</strong>
+              <span>contact@careerunified.com</span>
+            </div>
+            <span class="member-role">Administrator</span>
+            <button class="primary-btn btn-ghost member-teams" type="button" onclick="showToast('info', 'Teams', 'Team assignments will be available soon.')"><i class='bx bx-group'></i> Teams</button>
+          </article>
+        </div>
+        </div>
+      </div>
+
+      <div id="peopleTeamsPanel" class="people-panel">
+        <div class="teams-intro">
+          <h3>Teams</h3>
+          <p>Organize users into groups you can easily add to hiring teams. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a></p>
+        </div>
+
+        <div class="teams-content">
+          <div>
+            <h4>Available Teams</h4>
+            <p class="teams-description">Add or assign members to your teams.</p>
+          </div>
+          <div class="teams-list-column">
+            <div class="teams-toolbar">
+              <div class="teams-search">
+                <i class='bx bx-search'></i>
+                <input id="peopleTeamSearch" class="form-input" type="search" placeholder="Search teams" aria-label="Search teams" oninput="filterPeopleTeams(this.value)">
+              </div>
+              <button class="primary-btn" type="button" onclick="showToast('info', 'Create Team', 'Team creation will be available soon.')"><i class='bx bx-plus'></i> Team</button>
+              <div class="team-count">1/50</div>
+            </div>
+            <article class="team-card" data-team-search="all members">
+              <h5>All Members</h5>
+              <p>All members of this company are automatically added to this team.</p>
+              <div class="team-member-avatar" aria-label="Jay Mash">J</div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div id="peopleAutoJoinPanel" class="people-panel">
+        <div class="auto-join-intro">
+          <h3>Employee Auto-Join</h3>
+          <p>Let your employees use their company email address to automatically join your account. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a></p>
+        </div>
+
+        <div class="auto-join-row">
+          <div>
+            <h4>Auto-Join URL</h4>
+            <p>Give your team a URL where they can join Career Unified automatically.</p>
+          </div>
+          <div class="auto-join-control">
+            <div class="auto-join-topline">
+              <label class="switch" aria-label="Enable employee auto-join">
+                <input id="peopleAutoJoinToggle" type="checkbox" onchange="togglePeopleAutoJoin(this)">
+                <span class="slider"></span>
+              </label>
+              <button class="auto-join-settings" type="button" onclick="showToast('info', 'Auto-Join Settings', 'Choose the company email domains allowed to join automatically.')">
+                <i class='bx bx-cog'></i> Settings
+              </button>
+            </div>
+            <div id="autoJoinDetails" class="auto-join-details">
+              <div class="auto-join-warning">
+                <strong><i class='bx bx-info-circle'></i> Minimum Domain Needed</strong>
+                <span>You must provide at least one email domain.</span>
+              </div>
+              <div class="auto-join-url-row">
+                <input id="peopleAutoJoinUrl" class="form-input" type="url" value="https://careerunified.com/signup/yourcompany" readonly aria-label="Auto-Join URL">
+                <button class="auto-join-external" type="button" aria-label="Open Auto-Join URL" onclick="openPeopleAutoJoinUrl()"><i class='bx bx-link-external'></i></button>
+                <button class="primary-btn btn-ghost auto-join-copy" type="button" onclick="copyPeopleAutoJoinUrl()">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="inviteMembersModal" class="invite-modal" role="dialog" aria-modal="true" aria-labelledby="inviteMembersTitle" onclick="closeInviteMembersModal(event)">
+    <form class="invite-dialog" onsubmit="sendMemberInvites(event)">
+      <div class="invite-dialog-header">
+        <h3 id="inviteMembersTitle">Invite Users</h3>
+        <button class="invite-close" type="button" aria-label="Close invite dialog" onclick="closeInviteMembersModal()">&times;</button>
+      </div>
+      <div class="invite-dialog-body">
+        <p>Enter email addresses to add new users to your account. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a></p>
+        <label class="invite-field" for="inviteEmailAddresses">Email Address
+          <input id="inviteEmailAddresses" class="form-input" type="text" placeholder="e.g., kyle@yourcompany.com, julia@yourcompany.com" oninput="updateInviteButtonState()" required>
+        </label>
+        <label class="invite-field" for="inviteRole">Choose a role
+          <select id="inviteRole" class="form-input" onchange="updateInviteButtonState()" required>
+            <option value="">Select an option</option>
+            <option value="Administrator">Administrator</option>
+            <option value="Member">Member</option>
+          </select>
+        </label>
+      </div>
+      <div class="invite-dialog-footer">
+        <button class="primary-btn invite-cancel" type="button" onclick="closeInviteMembersModal()">Cancel</button>
+        <button id="sendInviteButton" class="primary-btn" type="submit" disabled>Send Invite</button>
+      </div>
+    </form>
   </div>
 
   <!-- BILLING -->
@@ -4385,6 +6552,10 @@ function showSection(id, el) {
   document.getElementById(id).classList.add('active');
   document.querySelector('.main')?.classList.toggle('post-job-open', id === 'post-job');
 
+  const isStandaloneSettingsPage = id === 'career-site' || id === 'people';
+  document.getElementById('recruiterDashboardToolbar')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
+  document.getElementById('recruiterDashboardStats')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
+
   document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
   if (el) el.classList.add('active');
 
@@ -4420,6 +6591,365 @@ function openRecruiterInboxShortcut() {
     heading?.focus({preventScroll: true});
   });
 }
+
+/* ======================================================
+   CAREER SITE
+====================================================== */
+
+// Career Site Tab Switching
+function switchCareerSiteTab(tabId, el) {
+  document.querySelectorAll('.career-site-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.career-site-tab-content').forEach(c => c.style.display = 'none');
+  el?.classList.add('active');
+
+  const generalPanel = document.querySelector('.career-site-main');
+  const mediaPanel = document.getElementById('careerSiteMediaPanel');
+  const contentPanel = document.getElementById('careerSiteContentPanel');
+  const cssPanel = document.getElementById('careerSiteCssPanel');
+  const widgetPanel = document.getElementById('careerSiteWidgetPanel');
+  if (generalPanel) generalPanel.style.display = tabId === 'general' ? 'block' : 'none';
+  if (mediaPanel) mediaPanel.classList.toggle('active', tabId === 'media');
+  if (contentPanel) contentPanel.classList.toggle('active', tabId === 'content');
+  if (cssPanel) cssPanel.classList.toggle('active', tabId === 'css');
+  if (widgetPanel) widgetPanel.classList.toggle('active', tabId === 'widget');
+}
+
+// Career Site URL
+function copyCareerSiteUrl() {
+  const url = document.getElementById('careerSiteUrl')?.textContent || document.getElementById('careerSiteSlug')?.value;
+  if (url) {
+    const fullUrl = url.startsWith('http') ? url : 'https://' + url;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      showToast('success', 'Copied', 'Career Site URL copied to clipboard');
+    });
+  }
+}
+
+function viewCareerSite() {
+  const slug = document.getElementById('careerSiteSlug')?.value || 'yourcompany';
+  window.open('https://' + slug + '.careerunified.com', '_blank');
+}
+
+function copyShareUrl() {
+  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
+  if (url) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('success', 'Copied', 'URL copied to clipboard');
+    });
+  }
+}
+
+// Logo Upload Preview
+function previewCareerSiteLogo(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('careerSiteLogoPreview');
+      preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function previewCareerSiteFavicon(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('careerSiteFaviconPreview');
+      preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function previewCareerSiteSocialImage(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('careerSiteSocialImagePreview');
+      preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Image Gallery
+function addCareerSiteImages(input) {
+  const container = document.getElementById('careerSiteImagesContainer');
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;';
+      div.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
+        '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;">×</button>';
+      container.insertBefore(div, container.lastElementChild);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Social Sharing
+function shareToLinkedIn() {
+  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
+  if (url) window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank');
+}
+
+function shareToFacebook() {
+  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
+  if (url) window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
+}
+
+function shareToWhatsApp() {
+  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
+  if (url) window.open('https://wa.me/?text=' + encodeURIComponent('Check out our Career Site: ' + url), '_blank');
+}
+
+function shareToEmail() {
+  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
+  if (url) window.open('mailto:?subject=Career Opportunities&body=Check out our Career Site: ' + encodeURIComponent(url), '_blank');
+}
+
+function copyEmbedCode() {
+  const code = document.querySelector('#careerSiteShareTab pre code')?.textContent || 
+    '<a href="https://yourcompany.careerunified.com" target="_blank" style="display:inline-block;padding:12px 24px;background:#1e3a8a;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">View Careers at YourCompany</a>';
+  navigator.clipboard.writeText(code).then(() => {
+    showToast('Embed code copied to clipboard');
+  });
+}
+
+// Save Functions
+async function saveCareerSiteGeneral() {
+  const data = {
+    slug: document.getElementById('careerSiteSlug')?.value,
+    website: document.getElementById('careerSiteWebsite')?.value,
+    primaryColor: document.getElementById('careerSitePrimaryColorHex')?.value,
+    secondaryColor: document.getElementById('careerSiteSecondaryColorHex')?.value,
+    language: document.getElementById('careerSiteLanguage')?.value,
+    layout: document.getElementById('careerSiteLayout')?.value,
+    status: document.querySelector('input[name="careerSiteStatus"]:checked')?.value
+  };
+  console.log('Save Career Site General:', data);
+  showToast('success', 'Saved', 'General settings saved');
+}
+
+async function saveCareerSiteMedia() {
+  const data = {
+    youtube: document.getElementById('careerSiteYoutube')?.value,
+    vimeo: document.getElementById('careerSiteVimeo')?.value,
+    social: {
+      website: document.getElementById('socialWebsite')?.value,
+      linkedin: document.getElementById('socialLinkedin')?.value,
+      facebook: document.getElementById('socialFacebook')?.value,
+      instagram: document.getElementById('socialInstagram')?.value,
+      x: document.getElementById('socialX')?.value,
+      youtube: document.getElementById('socialYoutube')?.value,
+      tiktok: document.getElementById('socialTiktok')?.value,
+      angelList: document.getElementById('socialAngelList')?.value,
+      glassdoor: document.getElementById('socialGlassdoor')?.value
+    }
+  };
+  console.log('Save Career Site Media:', data);
+  showToast('success', 'Saved', 'Media & Links saved');
+}
+
+async function saveCareerSiteContent() {
+  const sections = [];
+  document.querySelectorAll('#careerSiteSections [data-section-id]').forEach(item => {
+    sections.push({
+      id: item.dataset.sectionId,
+      enabled: item.closest('.content-list-group')?.querySelector('h4')?.textContent.trim() === 'Display',
+      order: parseInt(item.dataset.order)
+    });
+  });
+  console.log('Save Career Site Content:', sections);
+  showToast('success', 'Saved', 'Content settings saved');
+}
+
+async function saveCareerSiteCode() {
+  const data = {
+    css: document.getElementById('careerSiteCustomCss')?.value || '',
+    javascript: document.getElementById('careerSiteCustomJs')?.value || '',
+    applicationJavascript: document.getElementById('careerSiteApplicationJs')?.value || '',
+    facebookVerification: document.getElementById('careerSiteFacebookVerification')?.value || ''
+  };
+  console.log('Save Career Site CSS/JS:', data);
+  showToast('success', 'Saved', 'CSS and JavaScript settings saved');
+}
+
+function updateWidgetSnippet() {
+  const groupBy = document.querySelector('input[name="widgetGroup"]:checked')?.value || 'none';
+  const code = `<div id='careerUnifiedOpeningsContainer'></div><script src='https://careerunified.com/embed.js?inline=true&group_by=${groupBy}'><\/script>`;
+  const field = document.getElementById('careerSiteWidgetCode');
+  if (field) field.value = code;
+}
+
+function copyWidgetSnippet() {
+  const code = document.getElementById('careerSiteWidgetCode')?.value;
+  if (!code) return;
+  navigator.clipboard.writeText(code).then(() => {
+    showToast('success', 'Copied', 'Embed widget code copied to clipboard');
+  });
+}
+
+async function saveCareerSiteWidget() {
+  const groupBy = document.querySelector('input[name="widgetGroup"]:checked')?.value || 'none';
+  console.log('Save Career Site Widget:', {groupBy});
+  showToast('success', 'Saved', 'Embed widget settings saved');
+}
+
+function filterPeopleMembers(query) {
+  const search = String(query || '').trim().toLowerCase();
+  document.querySelectorAll('#peopleMemberList [data-member-search]').forEach(member => {
+    member.hidden = Boolean(search && !member.dataset.memberSearch.includes(search));
+  });
+}
+
+function switchPeopleTab(tabId, button) {
+  document.querySelectorAll('.people-tab').forEach(tab => {
+    const isActive = tab === button;
+    tab.classList.toggle('active', isActive);
+    tab.setAttribute('aria-selected', String(isActive));
+  });
+  document.getElementById('peopleMembersPanel')?.classList.toggle('active', tabId === 'members');
+  document.getElementById('peopleTeamsPanel')?.classList.toggle('active', tabId === 'teams');
+  document.getElementById('peopleAutoJoinPanel')?.classList.toggle('active', tabId === 'auto-join');
+}
+
+function filterPeopleTeams(query) {
+  const search = String(query || '').trim().toLowerCase();
+  document.querySelectorAll('#peopleTeamsPanel [data-team-search]').forEach(team => {
+    team.hidden = Boolean(search && !team.dataset.teamSearch.includes(search));
+  });
+}
+
+function togglePeopleAutoJoin(toggle) {
+  document.getElementById('autoJoinDetails')?.classList.toggle('visible', toggle.checked);
+  showToast(
+    toggle.checked ? 'success' : 'info',
+    toggle.checked ? 'Auto-Join enabled' : 'Auto-Join disabled',
+    toggle.checked ? 'Employees can join with their company email address.' : 'Employee Auto-Join is turned off.'
+  );
+}
+
+function openPeopleAutoJoinUrl() {
+  const url = document.getElementById('peopleAutoJoinUrl')?.value;
+  if (url) window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function copyPeopleAutoJoinUrl() {
+  const url = document.getElementById('peopleAutoJoinUrl')?.value;
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('success', 'Copied', 'Auto-Join URL copied to clipboard');
+  });
+}
+
+function openInviteMembersModal() {
+  const modal = document.getElementById('inviteMembersModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.getElementById('inviteEmailAddresses')?.focus();
+  updateInviteButtonState();
+}
+
+function closeInviteMembersModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('inviteMembersModal')?.classList.remove('open');
+}
+
+function updateInviteButtonState() {
+  const emailField = document.getElementById('inviteEmailAddresses');
+  const roleField = document.getElementById('inviteRole');
+  const sendButton = document.getElementById('sendInviteButton');
+  if (!emailField || !roleField || !sendButton) return;
+
+  const emails = emailField.value.split(',').map(email => email.trim()).filter(Boolean);
+  const validEmails = emails.length > 0 && emails.every(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+  sendButton.disabled = !validEmails || !roleField.value;
+}
+
+function sendMemberInvites(event) {
+  event.preventDefault();
+  const emailField = document.getElementById('inviteEmailAddresses');
+  const roleField = document.getElementById('inviteRole');
+  const emails = emailField.value.split(',').map(email => email.trim()).filter(Boolean);
+  const list = document.getElementById('peopleMemberList');
+
+  emails.forEach(email => {
+    const displayName = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+    const member = document.createElement('article');
+    member.className = 'member-card';
+    member.dataset.memberSearch = `${displayName} ${email} ${roleField.value}`.toLowerCase();
+    member.innerHTML = `<div class="member-avatar" aria-hidden="true">${escapeDashboard(displayName.charAt(0) || '?')}</div>
+      <div class="member-info"><strong>${escapeDashboard(displayName)}</strong><span>${escapeDashboard(email)}</span></div>
+      <span class="member-role">${escapeDashboard(roleField.value)}</span>
+      <button class="primary-btn btn-ghost member-teams" type="button" onclick="showToast('info', 'Teams', 'Team assignments will be available soon.')"><i class='bx bx-group'></i> Teams</button>`;
+    list?.appendChild(member);
+  });
+
+  closeInviteMembersModal();
+  event.target.reset();
+  updateInviteButtonState();
+  showToast('success', 'Invitation sent', `${emails.length} invitation${emails.length === 1 ? '' : 's'} added to your member list.`);
+}
+
+async function saveCareerSiteAdvanced() {
+  const data = {
+    seoTitle: document.getElementById('careerSiteSeoTitle')?.value,
+    seoDescription: document.getElementById('careerSiteSeoDescription')?.value,
+    customDomain: document.getElementById('careerSiteCustomDomain')?.value
+  };
+  console.log('Save Career Site Advanced:', data);
+  showToast('success', 'Saved', 'Advanced settings saved');
+}
+
+// Initialize Career Site Sections
+function initCareerSiteSections() {
+  const sections = [
+    { id: 'hero', label: 'Hero', enabled: true },
+    { id: 'open-positions', label: 'Open Positions', enabled: true },
+    { id: 'about-us', label: 'About Us', enabled: true },
+    { id: 'why-work-with-us', label: 'Why Work With Us', enabled: true },
+    { id: 'company-culture', label: 'Company Culture', enabled: true },
+    { id: 'benefits', label: 'Benefits', enabled: true },
+    { id: 'testimonials', label: 'Testimonials', enabled: false },
+    { id: 'gallery', label: 'Gallery', enabled: false },
+    { id: 'video', label: 'Video', enabled: false },
+    { id: 'contact', label: 'Contact', enabled: true }
+  ];
+
+  const container = document.getElementById('careerSiteSections');
+  if (!container) return;
+  if (container.children.length) return;
+
+  sections.forEach((section, index) => {
+    const div = document.createElement('div');
+    div.className = 'section-item';
+    div.dataset.sectionId = section.id;
+    div.dataset.order = index;
+    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;';
+    div.innerHTML = `
+      <input type="checkbox" ${section.enabled ? 'checked' : ''} onchange="updateSectionOrder()" style="width:18px;height:18px;accent-color:#2563eb;">
+      <span style="font-weight:500;flex:1;">${section.label}</span>
+      <i class='bx bx-dots-vertical-rounded' style="color:#9ca3af;cursor:grab;font-size:20px;"></i>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateSectionOrder() {
+  // Reorder logic would go here if using drag-and-drop
+  console.log('Section order updated');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initCareerSiteSections();
+});
 
 /* ======================================================
    MODAL
@@ -4993,7 +7523,7 @@ function setupApplicationBuilder() {
     }
     scheduleJobDraftSave();
   });
-  document.querySelector('#jobForm [name="country"]')?.addEventListener("input", () => {
+  document.querySelector('#jobForm [name="country"]')?.addEventListener("change", () => {
     let changed = false;
     screeningQuestionsDraft.forEach(question => {
       if (question.templateKey !== "work_authorisation") return;
@@ -9809,6 +12339,8 @@ window.showSection = function(id, el) {
     'jobs': 'Manage Jobs',
     'cvs': 'CV Library',
     'applications': 'Applications',
+    'career-site': 'Career Site',
+    'people': 'People',
     'job-workspace': 'Vacancy Workspace',
     'billing': 'Packages',
     'analytics': 'Analytics',
@@ -9827,6 +12359,7 @@ window.showSection = function(id, el) {
   if (id === 'applications') loadRecruiterApplications();
   if (id === 'analytics') updateCharts();
   if (id === 'public-listings') loadPublicListings();
+  if (id === 'career-site') initCareerSiteSections();
 }
 
 window.addEventListener('load', handleMobileLayout);

@@ -1805,8 +1805,8 @@
         .faq-item {
             border-bottom: 1px solid #e5e7eb;
         }
-        .faq-item:first-child {
-            border-top: 1px solid #e5e7eb;
+        .faq-item:last-child {
+            border-bottom: none;
         }
         .faq-question {
             width: 100%;
@@ -1821,11 +1821,6 @@
             font-family: inherit;
             font-size: 0.95rem;
             color: #111827;
-        }
-        .faq-qnum {
-            font-weight: 700;
-            color: #111827;
-            flex-shrink: 0;
         }
         .faq-qtext {
             font-weight: 600;
@@ -2721,7 +2716,7 @@
 
                         <div class="help-card" role="button" tabindex="0" data-help-topic="ai-tools">
                             <h3>AI Tools & Locked Templates</h3>
-                            <p>How AI Tailor works + why templates lock</p>
+                            <p>How AI Tailor works and why templates lock</p>
                         </div>
 
                         <div class="help-card" role="button" tabindex="0" data-help-topic="faqs">
@@ -2970,7 +2965,6 @@
                     <div class="faq-list">
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q1</span>
                                 <span class="faq-qtext">Do I need an account?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -2981,7 +2975,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q2</span>
                                 <span class="faq-qtext">Why is my template locked?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -2992,7 +2985,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q3</span>
                                 <span class="faq-qtext">My AI Tailor results are empty</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3007,7 +2999,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q4</span>
                                 <span class="faq-qtext">Why can’t I upload my CV?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3022,7 +3013,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q5</span>
                                 <span class="faq-qtext">Is Career Unified free to use?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3033,7 +3023,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q6</span>
                                 <span class="faq-qtext">How do I apply for a job?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3044,7 +3033,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q7</span>
                                 <span class="faq-qtext">How do I save jobs or bursaries for later?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3055,7 +3043,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q8</span>
                                 <span class="faq-qtext">How do job alerts work?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3066,7 +3053,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q9</span>
                                 <span class="faq-qtext">What is the Z83 form and how do I fill it in?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3077,7 +3063,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q10</span>
                                 <span class="faq-qtext">How do I track my job applications?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3088,7 +3073,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q11</span>
                                 <span class="faq-qtext">How do I cancel my subscription?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3099,7 +3083,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q12</span>
                                 <span class="faq-qtext">I paid but my premium features are still locked</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3114,7 +3097,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q13</span>
                                 <span class="faq-qtext">How do I delete my account?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
@@ -3125,7 +3107,6 @@
 
                         <div class="faq-item">
                             <button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
-                                <span class="faq-qnum">Q14</span>
                                 <span class="faq-qtext">Are the jobs and bursaries on Career Unified verified?</span>
                                 <svg class="faq-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                             </button>

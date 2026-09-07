@@ -29,6 +29,16 @@ export const SITE_SHELL_STYLES = `
   .site-detail-footer-links a{display:block;margin:9px 0;color:#facc15;font-size:14px;font-weight:650;line-height:1.35;text-decoration:none}
   .site-detail-footer-links a:hover{text-decoration:underline}
   .site-detail-footer-bottom{width:min(1120px,100%);margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.82);text-align:center;font-size:13px}
+  .job-detail-page .main-nav{background:#fff;border-bottom:1px solid #e5e7eb}
+  .job-detail-page .logo,.job-detail-page .nav-links a,.job-detail-page .mobile-logo{color:#1e3a8a}
+  .job-detail-page .nav-links a:hover,.job-detail-page .nav-links a[aria-current="page"]{color:#2563eb}
+  .job-detail-page .desktop-account-btn,.job-detail-page .icon-btn{color:#1e3a8a}
+  .job-detail-page .desktop-account-btn:hover,.job-detail-page .icon-btn:hover{background:#eff6ff;color:#2563eb}
+  .job-detail-page .site-detail-footer{background:#fff;color:#1e3a8a;border-top:1px solid #e5e7eb}
+  .job-detail-page .site-detail-footer-brand strong,.job-detail-page .site-detail-footer-links h2{color:#1e3a8a}
+  .job-detail-page .site-detail-footer-brand p,.job-detail-page .site-detail-footer-bottom{color:#64748b}
+  .job-detail-page .site-detail-footer-links a{color:#2563eb}
+  .job-detail-page .site-detail-footer-bottom{border-top-color:#e5e7eb}
   @media(max-width:1000px){.site-detail-page .nav-links{gap:11px}.site-detail-page .nav-links a{font-size:14px}}
   @media(max-width:900px){
     .site-detail-page .desktop-nav{display:none}

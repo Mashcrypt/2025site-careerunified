@@ -404,7 +404,7 @@ export default async (request: Request, context: EdgeContext) => {
     }
   </style>
 </head>
-<body class="site-detail-page">
+<body class="site-detail-page job-detail-page">
   ${renderSiteNavigation("jobs")}
   <header>
     <div class="inner">

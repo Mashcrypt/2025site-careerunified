@@ -70,7 +70,54 @@
   </nav>
 
   <main>
-    <article class="blog-article">
+    <section class="blog-index" aria-labelledby="blog-title">
+      <div class="blog-index__hero">
+        <div>
+          <p class="blog-eyebrow">Career Unified insights</p>
+          <h1 id="blog-title">Our Blog &amp; Insights</h1>
+          <p class="blog-index__intro">Practical guidance for finding opportunities, preparing stronger applications and making confident career decisions.</p>
+        </div>
+      </div>
+
+      <div class="blog-index__toolbar" aria-label="Filter articles">
+        <div class="blog-filters" role="list">
+          <button class="blog-filter is-active" type="button" data-filter="all">All</button>
+          <button class="blog-filter" type="button" data-filter="guides">Guides</button>
+          <button class="blog-filter" type="button" data-filter="job-seekers">Job seekers</button>
+          <button class="blog-filter" type="button" data-filter="recruiters">Recruiters</button>
+        </div>
+        <label class="blog-category-select">Category <select id="blogCategory"><option value="all">All articles</option><option value="guides">Guides</option><option value="job-seekers">Job seekers</option><option value="recruiters">Recruiters</option></select></label>
+      </div>
+
+      <div class="blog-card-grid">
+        <article class="blog-card" data-category="guides" data-date="18 July 2026">
+          <a class="blog-card__image" href="/guides/how-to-complete-z83-form"><img src="/assets/images/z83-application-guide-hero.webp" alt="Guide to completing a Z83 application form" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Guides <span>·</span> 7 min read</p><h2><a href="/guides/how-to-complete-z83-form">How to complete the Z83 form correctly</a></h2><p>Work through the post details, personal information, qualifications, references and supporting documents with confidence.</p></div>
+        </article>
+        <article class="blog-card" data-category="job-seekers" data-date="11 August 2026">
+          <a class="blog-card__image" href="/cv-tips"><img src="/assets/images/recruiter-structured-application-review.webp" alt="A structured CV and application review" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Job seekers <span>·</span> 6 min read</p><h2><a href="/cv-tips">Build a CV that is clear, truthful and easy to review</a></h2><p>Simple checks for structure, evidence, keywords and readable formatting before you submit an application.</p></div>
+        </article>
+        <article class="blog-card" data-category="job-seekers" data-date="11 August 2026">
+          <a class="blog-card__image" href="/cv-tips"><img src="/assets/images/recruiter-candidate-review.webp" alt="Reviewing a candidate application" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Job seekers <span>·</span> 5 min read</p><h2><a href="/cv-tips">How to use ATS and AI feedback responsibly</a></h2><p>Turn useful feedback into clearer evidence while keeping every claim, date and achievement accurate.</p></div>
+        </article>
+        <article class="blog-card" data-category="recruiters" data-date="12 August 2026">
+          <a class="blog-card__image" href="/for-recruiters"><img src="/assets/images/recruiter-candidate-communication.webp" alt="Recruiter communicating with a candidate" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Recruiters <span>·</span> 6 min read</p><h2><a href="/for-recruiters">A clearer direct-application workflow for recruiters</a></h2><p>Bring job posts, screening questions, candidate records and communication into one focused workflow.</p></div>
+        </article>
+        <article class="blog-card" data-category="guides" data-date="13 August 2026">
+          <a class="blog-card__image" href="/guides"><img src="/assets/images/recruiter-diverse-candidate-search.webp" alt="Candidates exploring career opportunities" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Guides <span>·</span> 4 min read</p><h2><a href="/guides">From opportunity to application: a practical checklist</a></h2><p>Verify the opportunity, prepare the requested documents and keep track of what you submitted.</p></div>
+        </article>
+        <article class="blog-card" data-category="recruiters" data-date="14 August 2026">
+          <a class="blog-card__image" href="/for-recruiters"><img src="/assets/images/recruiter-platform.webp" alt="Recruiter workspace for managing applications" loading="lazy" width="640" height="400"></a>
+          <div class="blog-card__body"><p class="blog-card__meta">Recruiters <span>·</span> 5 min read</p><h2><a href="/for-recruiters">What candidates need from a good job post</a></h2><p>Clear requirements, realistic expectations and a visible application route help the right people respond.</p></div>
+        </article>
+      </div>
+    </section>
+  </main>
+      <!-- Legacy single-article layout retained in source for reference; the blog index above is the live view.
       <header class="blog-article__header">
         <a class="blog-category" href="/guides">Career guidance</a>
         <h1>Career advice and recruitment insights</h1>
@@ -182,7 +229,7 @@
         </aside>
       </div>
     </article>
-  </main>
+  </main> -->
 
   <footer class="resource-footer">
     <div class="resource-footer__inner">
@@ -197,5 +244,27 @@
   </footer>
   <script src="/js/resource-pages.js"></script>
   <script src="/js/cookie-notice.js"></script>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll('.blog-card')];
+      cards.forEach((card) => {
+        const meta = card.querySelector('.blog-card__meta');
+        if (meta) {
+          const readingTime = meta.textContent.split('·').pop().trim();
+          const category = card.dataset.category.replace('-', ' ');
+          meta.innerHTML = `<span class="blog-card__tag">${category}</span><span class="blog-card__details">${card.dataset.date} <span aria-hidden="true">·</span> ${readingTime}</span>`;
+        }
+      });
+      const filters = [...document.querySelectorAll('.blog-filter')];
+      const select = document.querySelector('#blogCategory');
+      const applyFilter = (value) => {
+        cards.forEach((card) => card.classList.toggle('is-hidden', value !== 'all' && card.dataset.category !== value));
+        filters.forEach((filter) => filter.classList.toggle('is-active', filter.dataset.filter === value));
+        if (select && select.value !== value) select.value = value;
+      };
+      filters.forEach((filter) => filter.addEventListener('click', () => applyFilter(filter.dataset.filter)));
+      select?.addEventListener('change', (event) => applyFilter(event.target.value));
+    })();
+  </script>
 </body>
 </html>
