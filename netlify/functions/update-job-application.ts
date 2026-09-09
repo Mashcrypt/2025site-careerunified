@@ -137,7 +137,7 @@ export const handler: Handler = async (event) => {
     const application = applicationSnap.data() || {};
 
     const isAdmin = decoded.admin === true;
-    const isRecruiterOwner = decoded.recruiter === true && application.recruiterId === decoded.uid;
+    const isRecruiterOwner = decoded.recruiter === true && application.recruiterId === (decoded.companyId || decoded.uid);
     const isCandidateOwner = application.candidateId === decoded.uid;
     if (!isAdmin && !isRecruiterOwner && !isCandidateOwner) {
       throw new ApplicationError(403, "You do not have access to this application.");
@@ -207,6 +207,7 @@ export const handler: Handler = async (event) => {
       applicationUpdates.updatedAt = now;
       await applicationRef.update(applicationUpdates);
     }
+
 
     if (note && (isRecruiterOwner || isAdmin)) {
       await db.doc(`applicationNotes/${applicationId}`).set(

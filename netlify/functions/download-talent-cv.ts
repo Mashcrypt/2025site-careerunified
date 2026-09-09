@@ -58,7 +58,7 @@ export const handler: Handler = async event => {
 
     const db = admin.firestore();
     const [recruiterSnapshot, cvSnapshot] = await Promise.all([
-      db.doc(`recruiters/${decoded.uid}`).get(),
+      db.doc(`recruiters/${decoded.companyId || decoded.uid}`).get(),
       db.doc(`cvs/${cvId}`).get(),
     ]);
     if (!cvSnapshot.exists || cvSnapshot.data()?.status === "inactive") {

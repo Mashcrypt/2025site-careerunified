@@ -148,8 +148,8 @@ a:hover {
 }
 
 .hero-search button {
-  background: #facc15;
-  color: #1e3a8a;
+  background: #2563eb;
+  color: white;
   border: none;
   padding: 0 32px;
   font-weight: 700;
@@ -158,7 +158,7 @@ a:hover {
 }
 
 .hero-search button:hover {
-  background: #eab308;
+  background: #1d4ed8;
 }
 
 /* ====================================

@@ -50,7 +50,7 @@ export const handler: Handler = async (event) => {
       const application = applicationSnap.data() || {};
       const canRead = isAdmin
         || application.candidateId === decoded.uid
-        || (decoded.recruiter === true && application.recruiterId === decoded.uid);
+        || (decoded.recruiter === true && application.recruiterId === (decoded.companyId || decoded.uid));
       if (!canRead) throw new ApplicationError(403, "You do not have access to this application.");
       messagesQuery = db.collection("applicationMessages").where("applicationId", "==", applicationId);
     } else {

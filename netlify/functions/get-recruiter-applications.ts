@@ -83,9 +83,10 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    const companyId = decoded.companyId || decoded.uid;
     const snapshot = await admin.firestore()
       .collection("applications")
-      .where("recruiterId", "==", decoded.uid)
+      .where("recruiterId", "==", companyId)
       .limit(MAX_APPLICATIONS)
       .get();
 

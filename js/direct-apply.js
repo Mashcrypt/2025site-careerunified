@@ -935,6 +935,9 @@ async function submitApplication(event) {
       },
       body: JSON.stringify({
         jobId,
+        ...(new URLSearchParams(window.location.search).get("careerSite") === "1"
+          ? {source: "career_site", companyId: new URLSearchParams(window.location.search).get("companyId") || "", sourceHostname: window.location.hostname}
+          : {}),
         cvId,
         contact: {
           fullName: form.fullName.value,

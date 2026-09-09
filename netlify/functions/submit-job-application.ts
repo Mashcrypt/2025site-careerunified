@@ -347,6 +347,12 @@ export const handler: Handler = async (event) => {
 
     const recruiterId = cleanText(job.recruiterId, 160);
     if (!recruiterId) throw new ApplicationError(400, "This job is missing recruiter information.");
+    const requestedSource = cleanText(body.source, 40);
+    const companyId = cleanText(body.companyId, 160);
+    const sourceHostname = cleanText(body.sourceHostname, 253).toLowerCase();
+    if (requestedSource === "career_site" && companyId !== recruiterId) {
+      throw new ApplicationError(403, "This career site cannot submit applications for that vacancy.");
+    }
 
     if (!cvSnap.exists) throw new ApplicationError(404, "The selected CV could not be found.");
     const cv = cvSnap.data() || {};
@@ -692,7 +698,8 @@ export const handler: Handler = async (event) => {
       talentPool: false,
       privacyVersion: "2026-08-21",
       termsVersion: "2026-07-24",
-      source: "career_unified_direct_apply",
+      source: requestedSource === "career_site" ? "career_site" : "career_unified_direct_apply",
+      ...(requestedSource === "career_site" ? {companyId: recruiterId, sourceHostname} : {}),
     };
 
     await db.runTransaction(async (transaction: any) => {
@@ -771,7 +778,7 @@ export const handler: Handler = async (event) => {
       const delivery = await sendTransactionalEmail({
         to: email,
         ...confirmationMessage,
-        tag: "direct-apply-confirmation",
+        tag: application.source === "career_site" ? "career-site-application" : "direct-apply-confirmation",
       });
       candidateConfirmationEmail = {
         status: "sent",

@@ -5525,6 +5525,13 @@
           <div class="career-site-hero">
             Build your public careers page and employee portal to showcase your company's brand and culture. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a>
           </div>
+          <div class="career-site-status" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;">
+            <strong id="careerSiteStatus">Loading career site...</strong>
+            <a id="careerSiteUrl" href="#" target="_blank" rel="noopener" hidden></a>
+            <button class="primary-btn btn-ghost" id="copyCareerSiteLinkBtn" type="button" onclick="copyCareerSiteUrl()" hidden><i class='bx bx-copy'></i> Copy link</button>
+            <button class="primary-btn btn-ghost" id="previewCareerSiteBtn" type="button" onclick="viewCareerSite()" hidden><i class='bx bx-show'></i> Preview</button>
+            <button class="primary-btn" id="publishCareerSiteBtn" type="button" onclick="toggleCareerSitePublication()" hidden></button>
+          </div>
         </div>
 
         <div class="career-site-tabs">
@@ -5551,9 +5558,9 @@
             <div class="setting-control">
               <div class="inline-input">
                 <span>https://</span>
-                <input type="text" value="all-media" aria-label="Career site subdomain">
+                <input id="careerSiteSlug" type="text" value="" aria-label="Career site subdomain" readonly>
                 <span>.</span>
-                <input type="text" value="breezy.hr" aria-label="Career site domain" style="max-width:160px;">
+                <input id="careerSiteDomain" type="text" value="careerunified.com" aria-label="Career site domain" style="max-width:180px;" readonly>
               </div>
             </div>
           </div>
@@ -5566,10 +5573,10 @@
             <div class="setting-control">
               <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
                 <div style="width:72px;height:72px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-                  <i class='bx bx-image' style="font-size:32px;color:#9ca3af;"></i>
+                  <img id="careerSiteLogoPreview" src="/android-chrome-192x192.png" alt="Company logo preview" style="width:100%;height:100%;object-fit:contain;">
                 </div>
-                <button class="primary-btn" type="button"><i class='bx bx-upload'></i> Upload Image</button>
-                <button class="primary-btn btn-ghost" type="button">Remove</button>
+                <button class="primary-btn" type="button" onclick="document.getElementById('cp_logo_file')?.click()"><i class='bx bx-upload'></i> Upload Image</button>
+                <button class="primary-btn btn-ghost" type="button" onclick="removeCareerSiteLogo()">Remove</button>
               </div>
             </div>
           </div>
@@ -5581,7 +5588,7 @@
             </div>
             <div class="setting-control">
               <label class="layout-choice">
-                <input type="radio" name="careerSiteLayout" value="bold" checked>
+                <input id="careerSiteLayoutBold" type="radio" name="careerSiteLayout" value="bold" checked>
                 <span class="layout-preview" aria-hidden="true">
                   <span class="layout-preview-nav"><i></i><i></i><i></i></span>
                   <span class="layout-preview-hero"><strong>Find work that matters</strong><small>Build your future with us</small><b>View open roles</b></span>
@@ -5591,6 +5598,15 @@
                   <strong>Bold (recommended)</strong>
                   <span>A vibrant, highly customizable careers site</span>
                 </span>
+              </label>
+              <label class="layout-choice" style="margin-top:12px;">
+                <input id="careerSiteLayoutClean" type="radio" name="careerSiteLayout" value="clean">
+                <span class="layout-preview" aria-hidden="true">
+                  <span class="layout-preview-nav"><i></i><i></i><i></i></span>
+                  <span class="layout-preview-hero" style="background:#e8f0ff;color:#14213d"><strong>Build your future</strong><small>Explore open roles</small><b style="background:#0d47ff">See opportunities</b></span>
+                  <span class="layout-preview-content"><i></i><div><i></i><i></i><i></i></div></span>
+                </span>
+                <span class="layout-choice-caption"><strong>Clean</strong><span>A focused careers page for easy browsing</span></span>
               </label>
             </div>
           </div>
@@ -6616,7 +6632,7 @@ function switchCareerSiteTab(tabId, el) {
 
 // Career Site URL
 function copyCareerSiteUrl() {
-  const url = document.getElementById('careerSiteUrl')?.textContent || document.getElementById('careerSiteSlug')?.value;
+  const url = document.getElementById('careerSiteUrl')?.href || document.getElementById('careerSiteSlug')?.value;
   if (url) {
     const fullUrl = url.startsWith('http') ? url : 'https://' + url;
     navigator.clipboard.writeText(fullUrl).then(() => {
@@ -6626,8 +6642,80 @@ function copyCareerSiteUrl() {
 }
 
 function viewCareerSite() {
-  const slug = document.getElementById('careerSiteSlug')?.value || 'yourcompany';
-  window.open('https://' + slug + '.careerunified.com', '_blank');
+  const url = document.getElementById('careerSiteUrl')?.href;
+  if (url && url !== '#') window.open(url, '_blank', 'noopener');
+}
+
+let careerSiteConfig = null;
+
+function careerSiteUrl(site) {
+  const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? `${window.location.protocol}//${site.slug}.localhost:${window.location.port || '8888'}`
+    : `https://${site.slug}.${site.baseDomain || 'careerunified.com'}`;
+  return base;
+}
+
+async function loadCareerSiteSettings() {
+  const status = document.getElementById('careerSiteStatus');
+  try {
+    const recruiter = window.currentRecruiter;
+    if (!recruiter) throw new Error('Your recruiter session is still loading. Please try again.');
+    const token = await recruiter.getIdToken(true);
+    const response = await fetch('/.netlify/functions/career-site-admin', {headers: {Authorization: `Bearer ${token}`} });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || 'Could not load the career site.');
+    careerSiteConfig = payload.site;
+    const url = careerSiteUrl(careerSiteConfig);
+    const slugField = document.getElementById('careerSiteSlug');
+    const domainField = document.getElementById('careerSiteDomain');
+    const logoPreview = document.getElementById('careerSiteLogoPreview');
+    if (slugField) slugField.value = careerSiteConfig.slug || '';
+    if (domainField) domainField.value = careerSiteConfig.baseDomain || 'careerunified.com';
+    if (logoPreview) logoPreview.src = careerSiteConfig.logo || companyProfile?.logo || '/android-chrome-192x192.png';
+    document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
+      input.checked = input.value === (careerSiteConfig.layout || 'bold');
+    });
+    const urlElement = document.getElementById('careerSiteUrl');
+    urlElement.href = url;
+    urlElement.textContent = url;
+    urlElement.hidden = false;
+    document.getElementById('copyCareerSiteLinkBtn').hidden = false;
+    document.getElementById('previewCareerSiteBtn').hidden = false;
+    const publishButton = document.getElementById('publishCareerSiteBtn');
+    publishButton.hidden = false;
+    publishButton.textContent = careerSiteConfig.status === 'published' ? 'Unpublish' : 'Publish';
+    status.textContent = careerSiteConfig.status === 'published' ? 'Published' : 'Unpublished';
+    status.style.color = careerSiteConfig.status === 'published' ? '#15803d' : '#9a3412';
+  } catch (error) {
+    status.textContent = error.message || 'Career site unavailable';
+    status.style.color = '#b91c1c';
+  }
+}
+
+async function saveCareerSiteConfig(updates) {
+  const recruiter = window.currentRecruiter;
+  if (!recruiter) throw new Error('Your recruiter session is still loading. Please try again.');
+  const token = await recruiter.getIdToken(true);
+  const response = await fetch('/.netlify/functions/career-site-admin', {
+    method: 'PUT', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify({...careerSiteConfig, ...updates})
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || 'Could not save the career site.');
+  careerSiteConfig = payload.site;
+  await loadCareerSiteSettings();
+}
+
+async function toggleCareerSitePublication() {
+  if (!careerSiteConfig) return;
+  try { await saveCareerSiteConfig({status: careerSiteConfig.status === 'published' ? 'unpublished' : 'published'}); showToast('success', 'Saved', 'Career site publication status updated.'); }
+  catch (error) { showToast('error', 'Could not update career site', error.message); }
+}
+
+function removeCareerSiteLogo() {
+  if (!careerSiteConfig) return;
+  saveCareerSiteConfig({logo: ''})
+    .then(() => showToast('success', 'Logo removed', 'The Career Site will use the default brand mark.'))
+    .catch(error => showToast('error', 'Logo not removed', error.message || 'Could not remove the logo.'));
 }
 
 function copyShareUrl() {
@@ -6723,17 +6811,18 @@ function copyEmbedCode() {
 
 // Save Functions
 async function saveCareerSiteGeneral() {
-  const data = {
-    slug: document.getElementById('careerSiteSlug')?.value,
-    website: document.getElementById('careerSiteWebsite')?.value,
-    primaryColor: document.getElementById('careerSitePrimaryColorHex')?.value,
-    secondaryColor: document.getElementById('careerSiteSecondaryColorHex')?.value,
-    language: document.getElementById('careerSiteLanguage')?.value,
-    layout: document.getElementById('careerSiteLayout')?.value,
-    status: document.querySelector('input[name="careerSiteStatus"]:checked')?.value
-  };
-  console.log('Save Career Site General:', data);
-  showToast('success', 'Saved', 'General settings saved');
+  if (!careerSiteConfig) return;
+  try {
+    await saveCareerSiteConfig({
+      displayName: document.getElementById('cp_name')?.value || careerSiteConfig.displayName,
+      about: document.getElementById('cp_about')?.value || careerSiteConfig.about,
+      logo: document.getElementById('cp_logo')?.value || careerSiteConfig.logo,
+      layout: document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig.layout || 'bold',
+      contact: {...careerSiteConfig.contact, email: document.getElementById('cp_email')?.value || careerSiteConfig.contact?.email, website: document.getElementById('cp_website')?.value || careerSiteConfig.contact?.website},
+      brandColors: {...careerSiteConfig.brandColors, primary: document.getElementById('careerSiteCustomColor')?.value || careerSiteConfig.brandColors.primary},
+    });
+    showToast('success', 'Saved', 'General settings saved');
+  } catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 async function saveCareerSiteMedia() {
@@ -6801,13 +6890,6 @@ async function saveCareerSiteWidget() {
   showToast('success', 'Saved', 'Embed widget settings saved');
 }
 
-function filterPeopleMembers(query) {
-  const search = String(query || '').trim().toLowerCase();
-  document.querySelectorAll('#peopleMemberList [data-member-search]').forEach(member => {
-    member.hidden = Boolean(search && !member.dataset.memberSearch.includes(search));
-  });
-}
-
 function switchPeopleTab(tabId, button) {
   document.querySelectorAll('.people-tab').forEach(tab => {
     const isActive = tab === button;
@@ -6872,29 +6954,33 @@ function updateInviteButtonState() {
   sendButton.disabled = !validEmails || !roleField.value;
 }
 
-function sendMemberInvites(event) {
+async function sendMemberInvites(event) {
   event.preventDefault();
   const emailField = document.getElementById('inviteEmailAddresses');
   const roleField = document.getElementById('inviteRole');
   const emails = emailField.value.split(',').map(email => email.trim()).filter(Boolean);
-  const list = document.getElementById('peopleMemberList');
-
-  emails.forEach(email => {
-    const displayName = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
-    const member = document.createElement('article');
-    member.className = 'member-card';
-    member.dataset.memberSearch = `${displayName} ${email} ${roleField.value}`.toLowerCase();
-    member.innerHTML = `<div class="member-avatar" aria-hidden="true">${escapeDashboard(displayName.charAt(0) || '?')}</div>
-      <div class="member-info"><strong>${escapeDashboard(displayName)}</strong><span>${escapeDashboard(email)}</span></div>
-      <span class="member-role">${escapeDashboard(roleField.value)}</span>
-      <button class="primary-btn btn-ghost member-teams" type="button" onclick="showToast('info', 'Teams', 'Team assignments will be available soon.')"><i class='bx bx-group'></i> Teams</button>`;
-    list?.appendChild(member);
-  });
-
-  closeInviteMembersModal();
-  event.target.reset();
-  updateInviteButtonState();
-  showToast('success', 'Invitation sent', `${emails.length} invitation${emails.length === 1 ? '' : 's'} added to your member list.`);
+  const sendButton = document.getElementById('sendInviteButton');
+  sendButton.disabled = true;
+  sendButton.textContent = 'Sending...';
+  try {
+    const token = await currentRecruiter.getIdToken(true);
+    const response = await fetch('/.netlify/functions/recruiter-invite', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`},
+      body: JSON.stringify({emails, role: roleField.value}),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'The invitations could not be sent.');
+    closeInviteMembersModal();
+    event.target.reset();
+    updateInviteButtonState();
+    showToast('success', 'Invitation sent', `${result.invitations?.length || emails.length} invitation${emails.length === 1 ? '' : 's'} sent by email.`);
+  } catch (error) {
+    showToast('error', 'Invitation failed', error.message || 'The invitations could not be sent.');
+    sendButton.disabled = false;
+  } finally {
+    sendButton.textContent = 'Send Invite';
+  }
 }
 
 async function saveCareerSiteAdvanced() {
@@ -7020,6 +7106,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentRecruiter = null;
+let workspaceCompanyId = null;
 let recruiterData = null;
 let allCVsCount = 0;
 let screeningQuestionsDraft = [];
@@ -8237,10 +8324,13 @@ onAuthStateChanged(auth, async (user) => {
   }
 
     currentRecruiter = user;
+    window.currentRecruiter = user;
+    workspaceCompanyId = token.claims.companyId || user.uid;
 
   await loadRecruiterData();
   await loadCompanyProfile();          // ✅ NEW
   wireCompanyProfileUI();              // ✅ NEW
+  await loadCareerSiteSettings();
 
   const paymentReturn = new URLSearchParams(window.location.search).get("payment");
   if (paymentReturn === "single-job-pending") {
@@ -8355,7 +8445,7 @@ onAuthStateChanged(auth, async (user) => {
 ====================================================== */
 async function loadRecruiterData() {
   try {
-    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
+    const recruiterRef = doc(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid);
     const recruiterSnap = await getDoc(recruiterRef);
 
     if (recruiterSnap.exists()) {
@@ -8404,7 +8494,7 @@ function normalizeUrl(u) {
 
 async function loadCompanyProfile() {
   try {
-    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
+    const recruiterRef = doc(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid);
     const snap = await getDoc(recruiterRef);
     const data = snap.exists() ? snap.data() : null;
 
@@ -8635,6 +8725,11 @@ async function uploadCompanyLogo(file) {
       logo: payload.logoUrl || "",
       logoPath: payload.logoPath || ""
     };
+    if (careerSiteConfig) {
+      saveCareerSiteConfig({logo: payload.logoUrl || ""}).catch(error => {
+        console.warn("career site logo sync failed:", error);
+      });
+    }
     companyProfileVersion = payload.companyProfileVersion || companyProfileVersion;
     setCompanyLogoThumb(payload.logoUrl);
     renderCompanyPreview({...getCompanyFormValue(), logo: payload.logoUrl});
@@ -8710,7 +8805,7 @@ function prefillCompanyFromAccount(silent=false) {
 async function syncCompanyPublicFieldsToJobs(updates) {
   const jobsSnapshot = await getDocs(query(
     collection(db, "jobs"),
-    where("recruiterId", "==", currentRecruiter.uid)
+    where("recruiterId", "==", workspaceCompanyId || currentRecruiter.uid)
   ));
   await Promise.all(jobsSnapshot.docs.map(job => updateDoc(job.ref, {
     ...updates,
@@ -8736,7 +8831,7 @@ async function saveCompanyProfile() {
 
     const version = new Date().toISOString();
 
-    const recruiterRef = doc(db, 'recruiters', currentRecruiter.uid);
+    const recruiterRef = doc(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid);
     await setDoc(recruiterRef, {
       companyProfile: p,
       companyProfileVersion: version,
@@ -8981,7 +9076,7 @@ async function saveCurrentHiringTemplate() {
   };
   const hiringTemplates = [...customHiringTemplates(), template].slice(-10);
   try {
-    await setDoc(doc(db, 'recruiters', currentRecruiter.uid), {
+    await setDoc(doc(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid), {
       hiringTemplates,
       hiringTemplatesUpdatedAt: serverTimestamp(),
     }, {merge: true});
@@ -9190,7 +9285,7 @@ async function saveJob(status) {
       : [],
     hiringProcess: [...JOB_HIRING_PROCESS],
     status: status === 'draft' ? 'draft' : 'active',
-    recruiterId: currentRecruiter.uid,
+    recruiterId: workspaceCompanyId || currentRecruiter.uid,
     updatedAt: serverTimestamp(),
     applicationsCount: editingJobId
       ? Number(recruiterJobsCache.find(job => job.id === editingJobId)?.applicationsCount || 0)
@@ -9467,7 +9562,7 @@ async function loadManageJobs() {
 
     const q = query(
       collection(db, "jobs"),
-      where("recruiterId", "==", currentRecruiter.uid),
+      where("recruiterId", "==", workspaceCompanyId || currentRecruiter.uid),
       orderBy("createdAt", "desc")
     );
 
@@ -11363,7 +11458,7 @@ async function updateCharts() {
     const start = startDateFromRangeDays(range);
     const q = query(
       collection(db, "jobs"),
-      where("recruiterId", "==", currentRecruiter.uid),
+      where("recruiterId", "==", workspaceCompanyId || currentRecruiter.uid),
       orderBy("createdAt", "desc")
     );
     const snap = await getDocs(q);
@@ -11618,7 +11713,7 @@ function talentPipelineStageFor(cvId) {
 }
 
 function talentPipelineDoc(cvId) {
-  return doc(db, 'recruiters', currentRecruiter.uid, 'pipeline', cvId);
+  return doc(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid, 'pipeline', cvId);
 }
 
 async function loadTalentPipelineState() {
@@ -11627,7 +11722,7 @@ async function loadTalentPipelineState() {
   const nextFavorites = [];
 
   try {
-    const snapshot = await getDocs(collection(db, 'recruiters', currentRecruiter.uid, 'pipeline'));
+    const snapshot = await getDocs(collection(db, 'recruiters', workspaceCompanyId || currentRecruiter.uid, 'pipeline'));
     const saved = new Map();
     snapshot.forEach(item => saved.set(item.id, item.data() || {}));
 
@@ -11663,7 +11758,7 @@ async function persistTalentCandidateState(cvId) {
   const notes = Array.isArray(candidateNotes[cvId]) ? candidateNotes[cvId].slice(-20) : [];
   await setDoc(talentPipelineDoc(cvId), {
     candidateId: cvId,
-    recruiterId: currentRecruiter.uid,
+    recruiterId: workspaceCompanyId || currentRecruiter.uid,
     stage: talentPipelineStageFor(cvId),
     favorite: favorites.includes(cvId),
     notes: notes.map(note => ({

@@ -86,7 +86,8 @@ export const handler: Handler = async event => {
     }
 
     const db = admin.firestore();
-    const recruiterSnapshot = await db.doc(`recruiters/${decoded.uid}`).get();
+    const companyId = decoded.companyId || decoded.uid;
+    const recruiterSnapshot = await db.doc(`recruiters/${companyId}`).get();
     if (!recruiterSnapshot.exists && decoded.admin !== true) {
       throw new ApplicationError(403, "Recruiter profile not found.");
     }

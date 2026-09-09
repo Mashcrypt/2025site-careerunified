@@ -122,9 +122,9 @@
       {
         "@type": "ListItem",
         "position": 5,
-        "name": "CV Tips and Interview Prep",
+        "name": "CV Tips, ATS Checker & Interview Prep",
         "description": "Read CV tips, ATS checker guidance, and shared interview questions for South African job seekers.",
-        "url": "https://careerunified.com/cv-tips"
+        "url": "https://careerunified.com/articles/cv-tips-ats-interview-prep.html"
       },
       {
         "@type": "ListItem",
@@ -152,6 +152,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/css/style.css?v=20260814">
+
+  <style>
+    .main-nav {
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid #e8edf6;
+    }
+    .main-nav .logo,
+    .main-nav .mobile-logo {
+      color: #0f1623;
+      font-family: "Roboto Slab", Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .main-nav .nav-links a,
+    .main-nav .icon-btn {
+      color: #374151;
+      font-weight: 500;
+    }
+    .main-nav .nav-links a:hover,
+    .main-nav .nav-links a:focus-visible {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    .main-nav .icon-btn:hover,
+    .main-nav .icon-btn:focus-visible,
+    .main-nav .desktop-account-btn:hover,
+    .main-nav .desktop-account-btn:focus-visible {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .hero {
+      background: #f9fbff;
+      color: #0f1623;
+      border-bottom: 1px solid #e8edf6;
+    }
+    .hero .slogan {
+      color: #66738c;
+    }
+  </style>
 
   <!-- SMART SEARCH OVERLAY STYLES -->
   <style>
@@ -534,61 +573,49 @@
 
 <!-- NAVIGATION -->
 <nav class="main-nav">
-
-  <!-- DESKTOP VIEW -->
-  <a href="/" class="logo desktop-nav">Career Unified</a>
-
+  <a href="/" class="logo desktop-nav">
+    <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+    Career Unified
+  </a>
   <div class="nav-links desktop-nav">
     <a href="/jobs">Jobs</a>
     <a href="/bursaries">Bursaries</a>
     <a href="/varsity">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
+    <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
     <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
-
     <a href="account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
-      <svg viewBox="0 0 24 24">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </a>
   </div>
-
-  <!-- MOBILE VIEW -->
   <div class="mobile-nav">
-    <a href="/" class="mobile-logo">Career Unified</a>
-
+    <a href="/" class="mobile-logo">
+      <img src="/android-chrome-512x512.png" alt="Career Unified Logo" class="logo-img" style="height:24px; margin-right:8px; vertical-align:middle;">
+      Career Unified
+    </a>
     <div class="mobile-nav-right">
       <a href="account-page.html" class="icon-btn" aria-label="My Account">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </a>
-
       <button class="icon-btn" id="menuBtn" aria-label="Main Menu">
-        <svg viewBox="0 0 24 24">
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
   </div>
-
 </nav>
 
-<!-- MOBILE SLIDE MENU -->
+<!-- Mobile Slide Menu -->
 <div class="mobile-menu" id="mobileMenu">
   <a href="/jobs">Jobs</a>
   <a href="/bursaries">Bursaries</a>
   <a href="/varsity">Varsities</a>
   <a href="/cv-generator/">Generate CV</a>
   <a href="/z83-filler">Z83 Filler</a>
-  <a href="/cv-tips">CV Tips</a>
+  <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
   <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
-  <a href="saved-items.html"> Saved Items</a>
+  <a href="saved-items.html">Saved Items</a>
   <a href="signup.html">Sign Up</a>
   <a href="login.html">Login</a>
 </div>
@@ -847,9 +874,10 @@
         <h3>Career Tools</h3>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/cv-generator/?tab=ai">AI Tailor</a>
-        <a href="/cv-tips">CV Tips</a>
-        <a href="/cv-tips#interview-prep">Interview Prep</a>
+        <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
+        <a href="/articles/cv-tips-ats-interview-prep.html#interview-prep">Interview Prep</a>
         <a href="/z83-filler">Z83 Filler</a>
+        <a href="/blog">Blog</a>
       </div>
       <div class="footer-column">
         <h3>Company</h3>
@@ -858,7 +886,6 @@
         <a href="/contact-us">Contact Us</a>
         <a href="/privacy">Privacy Policy</a>
         <a href="/terms">Terms &amp; Conditions</a>
-        <a href="/paia-manual">PAIA</a>
       </div>
     </nav>
   </div>

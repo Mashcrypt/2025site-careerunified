@@ -91,7 +91,7 @@ export const handler: Handler = async (event) => {
 
     const unauthorized = snapshots.find((snapshot: any) => {
       const data = snapshot.data() || {};
-      return decoded.admin !== true && data.recruiterId !== decoded.uid;
+      return decoded.admin !== true && data.recruiterId !== (decoded.companyId || decoded.uid);
     });
     if (unauthorized) {
       throw new ApplicationError(403, "You do not have access to every selected application.");

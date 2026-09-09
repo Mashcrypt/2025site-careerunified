@@ -14,7 +14,7 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "test": "npm run test:api",
-    "test:api": "tsc -p tsconfig.api-tests.json && node --test .api-test-dist/tests/api-contract.test.js"
+    "test:api": "tsc -p tsconfig.api-tests.json && node --test .api-test-dist/tests/api-contract.test.js .api-test-dist/tests/career-site.test.js"
   },
   "keywords": [
     "sanity"

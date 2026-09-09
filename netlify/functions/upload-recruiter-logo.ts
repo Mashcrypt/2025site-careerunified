@@ -272,8 +272,8 @@ export const handler: Handler = async event => {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`;
     const bucket = admin.storage().bucket(bucketName);
-    const storagePath =
-      `company-logos/${decoded.uid}/company-logo-${Date.now()}-${randomUUID()}.${detectedType}`;
+      const storagePath =
+        `company-logos/${decoded.companyId || decoded.uid}/company-logo-${Date.now()}-${randomUUID()}.${detectedType}`;
     const downloadToken = randomUUID();
     uploadedPath = storagePath;
 
@@ -284,7 +284,7 @@ export const handler: Handler = async event => {
         cacheControl: "public, max-age=31536000, immutable",
         metadata: {
           firebaseStorageDownloadTokens: downloadToken,
-          ownerUid: decoded.uid,
+            ownerUid: decoded.companyId || decoded.uid,
           validatedBy: "upload-recruiter-logo",
         },
       },
@@ -293,7 +293,8 @@ export const handler: Handler = async event => {
     const logoUrl = `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(
       bucketName,
     )}/o/${encodeURIComponent(storagePath)}?alt=media&token=${encodeURIComponent(downloadToken)}`;
-    const recruiterRef = admin.firestore().doc(`recruiters/${decoded.uid}`);
+      const companyId = decoded.companyId || decoded.uid;
+      const recruiterRef = admin.firestore().doc(`recruiters/${companyId}`);
     const recruiterSnapshot = await recruiterRef.get();
     const recruiter = recruiterSnapshot.data() || {};
     const previousProfile =
@@ -319,7 +320,7 @@ export const handler: Handler = async event => {
     let syncedJobs = 0;
     let syncComplete = true;
     try {
-      syncedJobs = await syncLogoToJobs(admin, decoded.uid, logoUrl);
+        syncedJobs = await syncLogoToJobs(admin, companyId, logoUrl);
     } catch (syncError: any) {
       syncComplete = false;
       console.error(
@@ -332,7 +333,7 @@ export const handler: Handler = async event => {
       syncComplete &&
       previousPath &&
       previousPath !== storagePath &&
-      previousPath.startsWith(`company-logos/${decoded.uid}/`)
+        previousPath.startsWith(`company-logos/${companyId}/`)
     ) {
       await bucket.file(previousPath).delete({ignoreNotFound: true}).catch(() => undefined);
     }

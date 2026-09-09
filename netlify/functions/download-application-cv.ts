@@ -43,7 +43,7 @@ export const handler: Handler = async (event) => {
     const allowed =
       decoded.admin === true ||
       application.candidateId === decoded.uid ||
-      (decoded.recruiter === true && application.recruiterId === decoded.uid);
+      (decoded.recruiter === true && application.recruiterId === (decoded.companyId || decoded.uid));
     if (!allowed) throw new ApplicationError(403, "You do not have access to this CV.");
 
     const blobKey = cleanText(application.cvSnapshot?.blobKey, 800);

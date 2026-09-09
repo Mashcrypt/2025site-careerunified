@@ -90,7 +90,7 @@ export const handler: Handler = async (event) => {
     if (!applicationSnap.exists) throw new ApplicationError(404, "Application not found.");
     const application = applicationSnap.data() || {};
     const isAdmin = decoded.admin === true;
-    const isRecruiterOwner = decoded.recruiter === true && application.recruiterId === decoded.uid;
+    const isRecruiterOwner = decoded.recruiter === true && application.recruiterId === (decoded.companyId || decoded.uid);
     if (!isAdmin && !isRecruiterOwner) {
       throw new ApplicationError(403, "You do not have access to this application.");
     }

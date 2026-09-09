@@ -348,14 +348,14 @@ export const handler: Handler = async (event) => {
     const applicationSnap = await applicationRef.get();
     if (!applicationSnap.exists) throw new ApplicationError(404, "Application not found.");
     const application = applicationSnap.data() || {};
-    if (decoded.admin !== true && application.recruiterId !== decoded.uid) {
+    if (decoded.admin !== true && application.recruiterId !== (decoded.companyId || decoded.uid)) {
       throw new ApplicationError(403, "You do not have access to this application.");
     }
 
     const jobSnap = await db.doc(`jobs/${cleanText(application.jobId, 180)}`).get();
     if (!jobSnap.exists) throw new ApplicationError(404, "The vacancy linked to this application was not found.");
     const job = jobSnap.data() || {};
-    if (decoded.admin !== true && job.recruiterId !== decoded.uid) {
+    if (decoded.admin !== true && job.recruiterId !== (decoded.companyId || decoded.uid)) {
       throw new ApplicationError(403, "You do not have access to this vacancy.");
     }
 

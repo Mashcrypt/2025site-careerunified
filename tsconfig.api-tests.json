@@ -12,9 +12,14 @@
   },
   "include": [
     "tests/api-contract.test.ts",
+    "tests/career-site.test.ts",
+    "netlify/functions/_careerSite.ts",
     "netlify/functions/_apiV1.ts",
     "netlify/functions/_partnerWebhooks.ts",
     "netlify/functions/_firebaseAdmin.ts",
     "netlify/functions/_rateLimit.ts"
+    ,"netlify/functions/recruiter-invite.ts"
+    ,"netlify/functions/recruiter-invite-accept.ts"
+    ,"netlify/functions/publish-recruiter-job.ts"
   ]
 }

@@ -14,6 +14,10 @@ service cloud.firestore {
       return signedIn() && request.auth.token.recruiter == true;
     }
 
+    function managesCompany(companyId) {
+      return isRecruiter() && (request.auth.uid == companyId || request.auth.token.companyId == companyId);
+    }
+
     function isAdmin() {
       return signedIn()
         && (request.auth.token.admin == true || request.auth.uid in ['X3eReX1WGpQSR1svO4JIBFDqFUJ3']);
@@ -129,6 +133,10 @@ service cloud.firestore {
         && request.resource.data.get('lastSingleJobPaymentVerifiedAt', null) == resource.data.get('lastSingleJobPaymentVerifiedAt', null);
     }
 
+    function recruiterCareerSiteUnchanged() {
+      return request.resource.data.get('careerSite', null) == resource.data.get('careerSite', null);
+    }
+
     function jobPromotionUnchanged() {
       return request.resource.data.get('listingTier', null) == resource.data.get('listingTier', null)
         && request.resource.data.get('badge', null) == resource.data.get('badge', null)
@@ -167,10 +175,10 @@ service cloud.firestore {
 
     match /jobs/{jobId} {
       allow read: if resource.data.status == 'active'
-        || (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+        || managesCompany(resource.data.recruiterId)
         || isAdmin();
       allow create: if isRecruiter()
-        && request.resource.data.recruiterId == request.auth.uid
+        && managesCompany(request.resource.data.recruiterId)
         && request.resource.data.status == 'draft'
         && request.resource.data.get('listingTier', null) == null
         && request.resource.data.get('badge', null) == null
@@ -178,19 +186,19 @@ service cloud.firestore {
         && request.resource.data.get('singleJobOffer', false) == false;
       allow update: if isAdmin()
         || (isRecruiter()
-          && resource.data.recruiterId == request.auth.uid
-          && request.resource.data.recruiterId == request.auth.uid
+          && managesCompany(resource.data.recruiterId)
+          && managesCompany(request.resource.data.recruiterId)
           && (resource.data.status != 'draft' || request.resource.data.status == 'draft')
           && jobPromotionUnchanged());
       allow delete: if isAdmin()
-          || (isRecruiter() && resource.data.recruiterId == request.auth.uid);
+          || managesCompany(resource.data.recruiterId);
     }
 
     match /applications/{applicationId} {
       allow read: if signedIn()
         && (
           resource.data.candidateId == request.auth.uid
-          || (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+          || managesCompany(resource.data.recruiterId)
           || isAdmin()
         );
       allow create, update, delete: if isAdmin();
@@ -199,14 +207,14 @@ service cloud.firestore {
     match /applicationNotes/{applicationId} {
       allow read: if signedIn()
         && (
-          (isRecruiter() && resource.data.recruiterId == request.auth.uid)
+          managesCompany(resource.data.recruiterId)
           || isAdmin()
         );
       allow create, update, delete: if isAdmin();
     }
 
     match /recruiters/{recruiterId} {
-      allow read: if isOwner(recruiterId) || isAdmin();
+      allow read: if managesCompany(recruiterId) || isAdmin();
       allow create: if (isOwner(recruiterId)
           && isRecruiter()
           && request.resource.data.get('plan', 'free') == 'free'
@@ -228,16 +236,17 @@ service cloud.firestore {
           && request.resource.data.get('lastSingleJobPaymentRef', null) == null
           && request.resource.data.get('lastSingleJobPaymentVerifiedAt', null) == null)
         || isAdmin();
-      allow update: if (isOwner(recruiterId)
+      allow update: if (managesCompany(recruiterId)
           && isRecruiter()
-          && recruiterBillingUnchanged())
+          && recruiterBillingUnchanged()
+          && recruiterCareerSiteUnchanged())
         || isAdmin();
       allow delete: if isAdmin();
 
       match /pipeline/{candidateId} {
-        allow read: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+        allow read: if managesCompany(recruiterId) || isAdmin();
         allow create, update: if isAdmin()
-          || (isOwner(recruiterId)
+          || (managesCompany(recruiterId)
             && isRecruiter()
             && request.resource.data.recruiterId == recruiterId
             && request.resource.data.candidateId == candidateId
@@ -245,8 +254,16 @@ service cloud.firestore {
             && request.resource.data.favorite is bool
             && request.resource.data.notes is list
             && request.resource.data.notes.size() <= 20);
-        allow delete: if (isOwner(recruiterId) && isRecruiter()) || isAdmin();
+        allow delete: if managesCompany(recruiterId) || isAdmin();
       }
+    }
+
+    match /recruiterInvites/{inviteId} {
+      allow read, write: if false;
+    }
+
+    match /recruiterMembers/{memberId} {
+      allow read, write: if false;
     }
 
     match /recruiterApplications/{applicationId} {

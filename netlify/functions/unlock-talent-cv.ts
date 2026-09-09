@@ -53,7 +53,7 @@ export const handler: Handler = async event => {
     }
 
     const db = admin.firestore();
-    const recruiterRef = db.doc(`recruiters/${decoded.uid}`);
+    const recruiterRef = db.doc(`recruiters/${decoded.companyId || decoded.uid}`);
     const cvRef = db.doc(`cvs/${cvId}`);
     const result = await db.runTransaction(async (transaction: any) => {
       const [recruiterSnapshot, cvSnapshot] = await Promise.all([

@@ -263,7 +263,8 @@ export const handler: Handler = async (event) => {
     }
 
     const db = admin.firestore();
-    const recruiterRef = db.doc(`recruiters/${decoded.uid}`);
+    const companyId = decoded.companyId || decoded.uid;
+    const recruiterRef = db.doc(`recruiters/${companyId}`);
     const jobRef = jobId ? db.doc(`jobs/${jobId}`) : db.collection("jobs").doc();
     const now = new Date();
 
@@ -274,7 +275,7 @@ export const handler: Handler = async (event) => {
 
       const existingSnap = jobId ? await tx.get(jobRef) : null;
       const existing = existingSnap?.exists ? existingSnap.data() || {} : null;
-      if (existing && existing.recruiterId !== decoded.uid) throw new PublishError(403, "You cannot edit this vacancy.");
+      if (existing && existing.recruiterId !== companyId) throw new PublishError(403, "You cannot edit this vacancy.");
 
       const alreadyPublished = existing?.status === "active";
       const hasPlanAccess = hasActiveRecruiterAccess(recruiter, now);
@@ -287,7 +288,7 @@ export const handler: Handler = async (event) => {
 
       const data: Record<string, unknown> = {
         ...job,
-        recruiterId: decoded.uid,
+        recruiterId: companyId,
         applicationsCount: Number(existing?.applicationsCount || 0),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };

@@ -34,6 +34,15 @@
   status = 301
   force = true
 
+# Wildcard career-site domains use the host-aware public shell. Configure the
+# wildcard DNS/TLS certificate before enabling this redirect in production.
+[[redirects]]
+  from = "/*"
+  to = "/career-site.html"
+  status = 200
+  force = true
+  conditions = {Host = ["*.careerunified.com"]}
+
 # Static browser-only admin panels are not safe to expose publicly.
 [[redirects]]
   from = "/admin.html"
