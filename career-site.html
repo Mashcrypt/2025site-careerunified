@@ -13,13 +13,13 @@
   <link rel="stylesheet" href="/css/career-site.css">
 </head>
 <body>
-  <header class="site-header"><a class="brand" href="/" aria-label="Company careers home"><img id="siteLogo" alt=""><span id="siteName">Careers</span></a><a class="powered" href="https://careerunified.com">Powered by Career Unified</a></header>
+  <header class="site-header"><a class="brand" href="/" aria-label="Company careers home"><img id="siteLogo" alt=""><span id="siteName">Careers</span></a><nav class="site-nav" aria-label="Career site navigation"><a href="#jobs">Open roles</a><a href="#about">About us</a></nav><a class="powered" href="https://careerunified.com">Powered by Career Unified</a></header>
   <main>
-    <section class="intro" aria-labelledby="siteHeading"><p class="eyebrow">Join the team</p><h1 id="siteHeading">Find your next role</h1><p id="siteTagline"></p><p id="siteAbout"></p></section>
-    <section class="jobs-section" aria-labelledby="jobsHeading"><div class="section-heading"><div><p class="eyebrow">Open positions</p><h2 id="jobsHeading">Work with us</h2></div><label class="search"><span>Search jobs</span><input id="jobSearch" type="search" autocomplete="off"></label></div><div id="jobList" class="job-list" aria-live="polite"></div><p id="siteError" class="state" hidden></p></section>
+    <section class="intro" id="about" aria-labelledby="siteHeading"><p class="eyebrow">Join the team</p><h1 id="siteHeading">Find your next role</h1><p id="siteTagline"></p><p id="siteAbout"></p><a class="button intro-button" href="#jobs">Explore open roles <span aria-hidden="true">&#8595;</span></a></section>
+    <section class="jobs-section" id="jobs" aria-labelledby="jobsHeading"><div class="section-heading"><div><p class="eyebrow">Open positions</p><h2 id="jobsHeading">Work with us</h2><p class="section-lede">Find a role where your work can make a difference.</p></div><label class="search"><span>Search jobs</span><input id="jobSearch" type="search" autocomplete="off" placeholder="Search by title or location"></label></div><div id="jobList" class="job-list" aria-live="polite"></div><p id="siteError" class="state" hidden></p></section>
     <section id="jobDetail" class="job-detail" aria-labelledby="detailTitle" hidden><a href="/" id="backToJobs">&larr; All open positions</a><p class="eyebrow">Position details</p><h2 id="detailTitle"></h2><p id="detailMeta" class="job-meta"></p><div id="detailDescription" class="job-description"></div><a id="applyLink" class="button" href="/apply.html">Apply through Career Unified</a></section>
   </main>
-  <footer><span id="contactDetails"></span></footer>
+  <footer><span id="contactDetails"></span><a class="footer-powered" href="https://careerunified.com">Powered by Career Unified</a></footer>
   <script src="/js/career-site.js" defer></script>
 </body>
 </html>

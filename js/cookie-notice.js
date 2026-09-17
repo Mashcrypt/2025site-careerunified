@@ -117,7 +117,7 @@
     notice.setAttribute("aria-label", "Cookie notice");
     notice.innerHTML = `
       <p class="cu-cookie-notice__text">
-        <strong>Career Unified uses cookies</strong> and browser storage to remember preferences,
+        Career Unified uses cookies and browser storage to remember preferences,
         improve features, understand site usage, and support advertising on selected content pages.
         <a href="/privacy" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a>
         <span class="cu-cookie-notice__consent">By clicking &ldquo;Accept&rdquo;, you agree that cookies and similar browser storage may be stored on your device.</span>

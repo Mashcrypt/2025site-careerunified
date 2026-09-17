@@ -340,7 +340,7 @@ export default async (request: Request) => {
     }
   </style>
 </head>
-<body class="site-detail-page">
+<body class="site-detail-page bursary-detail-page">
   ${renderSiteNavigation("bursaries")}
   <header>
     <div class="inner">

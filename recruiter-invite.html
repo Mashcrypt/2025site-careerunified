@@ -27,7 +27,12 @@
         const idToken = await credential.user.getIdToken(true);
         const response = await fetch("/.netlify/functions/recruiter-invite-accept", {method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${idToken}`},body:JSON.stringify({token:inviteToken})});
         const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.error || "This invitation could not be accepted.");
-        await credential.user.getIdToken(true); status.className = "status success"; status.textContent = "Invitation accepted. Opening your recruiter dashboard..."; setTimeout(() => location.href = "/recruiter-dashboard.html", 700);
+        await credential.user.getIdToken(true);
+        const refreshedClaims = await credential.user.getIdTokenResult(true);
+        if (refreshedClaims.claims.recruiter !== true || !refreshedClaims.claims.companyId) {
+          throw new Error("Your invitation was accepted, but your team access is still being prepared. Please wait a moment and try opening the invitation again.");
+        }
+        status.className = "status success"; status.textContent = "Invitation accepted. Opening your recruiter dashboard..."; setTimeout(() => location.href = "/recruiter-dashboard.html", 700);
       } catch (error) { status.className = "status error"; status.textContent = error.message || "This invitation could not be accepted."; button.disabled = false; }
     });
   </script>

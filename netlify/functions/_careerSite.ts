@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import type {Firestore, DocumentSnapshot} from "firebase-admin/firestore";
+import {getStore} from "@netlify/blobs";
 
 export const RESERVED_CAREER_SUBDOMAINS = new Set(["www", "api", "app", "admin", "mail", "support", "status", "help", "localhost"]);
 
@@ -16,7 +17,11 @@ export type CareerSiteConfig = {
   status: "published" | "unpublished";
   seo: {title: string; description: string};
   baseDomain?: string;
-  layout?: "bold" | "clean";
+  layout?: "bold" | "clean" | "editorial" | "split";
+  media?: Record<string, unknown>;
+  contentSections?: Array<Record<string, unknown>>;
+  customCode?: Record<string, string>;
+  widget?: Record<string, string>;
   createdAt?: unknown;
   updatedAt?: unknown;
 };
@@ -52,12 +57,17 @@ export function configFromRecruiter(companyId: string, recruiter: Record<string,
   const profile = recruiter.companyProfile || {};
   const displayName = cleanSiteText(existing?.displayName || profile.name || recruiter.companyName, 160) || "Your company";
   const config = {
-    companyId, slug: cleanSiteText(existing?.slug, 60), displayName, baseDomain: process.env.CAREER_SITE_BASE_DOMAIN || "careerunified.com", layout: existing?.layout === "clean" ? "clean" : "bold",
+    companyId, slug: cleanSiteText(existing?.slug, 60), displayName, baseDomain: process.env.CAREER_SITE_BASE_DOMAIN || "careerunified.com", layout: ["bold", "clean", "editorial", "split"].includes(existing?.layout as string) ? existing?.layout as CareerSiteConfig["layout"] : "bold",
     logo: safeUrl(existing?.logo || profile.logo),
     brandColors: {primary: safeColor(existing?.brandColors?.primary, "#0d47ff"), secondary: safeColor(existing?.brandColors?.secondary, "#14213d")},
     tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000),
     contact: {email: cleanSiteText(existing?.contact?.email || profile.email || recruiter.email, 254).toLowerCase(), website: safeUrl(existing?.contact?.website || profile.website), phone: cleanSiteText(existing?.contact?.phone || profile.phone, 40)},
-    socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks), status: existing?.status === "published" ? "published" : "unpublished",
+    socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks),
+    media: existing?.media && typeof existing.media === "object" ? existing.media : {},
+    contentSections: Array.isArray(existing?.contentSections) ? existing.contentSections : [],
+    customCode: existing?.customCode && typeof existing.customCode === "object" ? existing.customCode : {},
+    widget: existing?.widget && typeof existing.widget === "object" ? existing.widget : {},
+    status: existing?.status === "published" ? "published" : "unpublished",
     seo: {title: cleanSiteText(existing?.seo?.title, 160) || `${displayName} careers`, description: cleanSiteText(existing?.seo?.description, 320) || `Explore careers and open positions at ${displayName}.`},
   } as CareerSiteConfig;
   return config;
@@ -135,4 +145,25 @@ export async function getPublicCareerSite(db: Firestore, companySlug: string) {
   if (snapshot.empty) return null;
   const config = snapshot.docs[0].data().careerSite as CareerSiteConfig;
   return config?.status === "published" ? {companyId: snapshot.docs[0].id, config} : null;
+}
+
+const PUBLIC_CACHE_TTL_SECONDS = 60;
+const publicCareerStore = () => getStore("career-unified-public-career-sites");
+
+export async function getCachedPublicCareerSite(db: Firestore, companySlug: string) {
+  const key = `site:${companySlug}`;
+  const cached = await publicCareerStore().get(key, {type: "json"}) as {expiresAt: number; value: {companyId: string; config: CareerSiteConfig}} | null;
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  const value = await getPublicCareerSite(db, companySlug);
+  if (value) await publicCareerStore().setJSON(key, {expiresAt: Date.now() + PUBLIC_CACHE_TTL_SECONDS * 1000, value});
+  return value;
+}
+
+export async function getCachedPublishedJobsForCompany(db: Firestore, companyId: string, companySlug: string) {
+  const key = `jobs:${companySlug}`;
+  const cached = await publicCareerStore().get(key, {type: "json"}) as {expiresAt: number; value: any[]} | null;
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  const value = await getPublishedJobsForCompany(db, companyId);
+  await publicCareerStore().setJSON(key, {expiresAt: Date.now() + PUBLIC_CACHE_TTL_SECONDS * 1000, value});
+  return value;
 }

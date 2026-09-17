@@ -94,6 +94,7 @@ function allowedAssetUrl(rawUrl: string) {
 
 export const handler: Handler = async event => {
   const origin = event.headers.origin || event.headers.Origin;
+  let exportStage = "request";
 
   if (event.httpMethod === "OPTIONS") {
     return {statusCode: 204, headers: corsHeaders(origin), body: ""};
@@ -123,6 +124,7 @@ export const handler: Handler = async event => {
       return json(413, {error: "The CV preview is too large to export."}, origin);
     }
 
+    exportStage = "authentication";
     const admin = getAdmin();
     const token = bearerToken(event);
     let identifier = `ip:${clientIpFromHeaders(event.headers as Record<string, string | undefined>)}`;
@@ -155,7 +157,12 @@ export const handler: Handler = async event => {
       .toString()
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
-    const executablePath = await chromium.executablePath();
+    exportStage = "chromium-path";
+    // Netlify functions can only write to /tmp. Supplying the extraction path
+    // avoids the package default resolving to the unavailable /var/bin path.
+    chromium.graphicsMode = false;
+    const executablePath = await chromium.executablePath("/tmp/chromium");
+    exportStage = "chromium-launch";
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
@@ -164,6 +171,7 @@ export const handler: Handler = async event => {
     });
 
     try {
+      exportStage = "page-setup";
       const page = await browser.newPage();
       await page.setJavaScriptEnabled(false);
       await page.setRequestInterception(true);
@@ -180,10 +188,12 @@ export const handler: Handler = async event => {
       page.setDefaultNavigationTimeout(12_000);
       page.setDefaultTimeout(12_000);
 
+      exportStage = "render";
       await page.setContent(payload.html, {waitUntil: "domcontentloaded", timeout: 12_000});
       await page.emulateMediaType("screen");
       await new Promise(resolve => setTimeout(resolve, 500));
 
+      exportStage = "pdf-render";
       const pdfBuffer = await page.pdf({
         format: "A4",
         printBackground: true,
@@ -206,7 +216,7 @@ export const handler: Handler = async event => {
       await browser.close();
     }
   } catch (error) {
-    console.error("EXPORT_PDF_ERROR", error instanceof Error ? error.message : "Unknown error");
+    console.error("EXPORT_PDF_ERROR", {stage: exportStage, error: error instanceof Error ? error.stack || error.message : error});
     return json(500, {error: "PDF generation failed. Please try again."}, origin);
   }
 };

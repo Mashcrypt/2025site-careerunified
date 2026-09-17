@@ -14,7 +14,7 @@
 <meta name="theme-color" content="#0d47ff">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
 
 <!-- Charts (Analytics) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -554,6 +554,27 @@
   ====================================================== */
   #post-job h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
   #post-job p { font-size: 13px; color: #6b7280; }
+  .job-ai-write { display:inline-flex; align-items:center; gap:5px; margin-left:8px; padding:5px 9px; border:0; border-radius:7px; background:#eef2ff; color:#4f46e5; font:600 11px inherit; cursor:pointer; }
+  .job-ai-write::before { content:"✦"; font-size:14px; line-height:1; }
+  .job-ai-write:hover,.job-ai-write:focus-visible { background:#e0e7ff; color:#3730a3; }
+  .job-ai-write i { display:none; }
+  .job-ai-modal { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; padding:20px; background:rgba(15,23,42,.5); }
+  .job-ai-modal[hidden] { display:none; }
+  .job-ai-dialog { position:relative; width:min(620px,100%); padding:28px; border-radius:12px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.25); }
+  .job-ai-dialog h2 { margin:0 0 8px; color:#172554; font-size:22px; }
+  .job-ai-dialog p { margin:0 0 18px; line-height:1.55; }
+  .job-ai-dialog textarea { width:100%; min-height:130px; resize:vertical; box-sizing:border-box; padding:13px; border:1px solid #dbe3ef; border-radius:8px; font:inherit; }
+  .job-ai-close { position:absolute; top:12px; right:14px; border:0; background:transparent; color:#64748b; font-size:26px; cursor:pointer; }
+  .job-ai-dialog-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; }
+  #jobAiStatus { color:#64748b; font-size:12px; }
+  .job-ai-title-icon { color:#6d28d9; margin-right:6px; vertical-align:-2px; }
+  .job-hiring-intro { display:flex; align-items:flex-start; gap:12px; margin:4px 0 22px; padding:16px 18px; border:1px solid #dbeafe; border-radius:10px; background:#f8fbff; }
+  .job-hiring-intro__icon { display:grid; flex:0 0 34px; width:34px; height:34px; place-items:center; border-radius:9px; background:#dbeafe; color:#2563eb; font-size:19px; }
+  .job-hiring-intro strong { display:block; color:#172554; font-size:14px; }
+  .job-hiring-intro p { margin:4px 0 0; color:#64748b; font-size:12px; line-height:1.5; }
+  .job-section-divider--pipeline { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .job-section-divider--pipeline > div { min-width:0; }
+  .job-pipeline-badge { display:inline-flex; align-items:center; gap:5px; flex:0 0 auto; padding:6px 9px; border-radius:999px; background:#ecfdf5; color:#15803d; font-size:11px; font-weight:700; }
   #post-job .cv-card { padding: 28px; }
   #post-job h3 { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 14px; }
 
@@ -1996,6 +2017,10 @@
     cursor: pointer;
   }
 
+  .layout-choice input:checked + .layout-preview { border-color: #1677ff; box-shadow: 0 0 0 3px rgba(22,119,255,.14); }
+  .layout-choice input:not(:checked) + .layout-preview { border-color: #d8dee8; box-shadow: none; }
+  .career-layout-grid { display:grid; grid-template-columns:repeat(2,minmax(0,400px)); gap:18px 14px; }
+
   .layout-choice input {
     position: absolute;
     opacity: 0;
@@ -2008,7 +2033,7 @@
     height: 220px;
     box-sizing: border-box;
     padding: 10px 12px 0;
-    border: 2px solid #1677ff;
+    border: 2px solid #d8dee8;
     border-radius: 9px;
     background: #ffffff;
     box-shadow: 0 0 0 1px rgba(22,119,255,0.08);
@@ -2109,10 +2134,54 @@
     font-size: 13px;
   }
 
+  .career-preview-toolbar { margin-bottom: 14px; }
+  .career-preview-modal { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 24px; background: rgba(15,23,42,.58); }
+  .career-preview-modal[hidden] { display: none; }
+  .career-preview-dialog { width: min(960px, 100%); max-height: min(820px, 92vh); overflow: auto; background: #fff; border-radius: 14px; box-shadow: 0 24px 80px rgba(15,23,42,.28); }
+  .career-preview-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 22px; border-bottom:1px solid #e5e7eb; }
+  .career-preview-header h2 { margin:0; font-size:20px; color:#14213d; }
+  .career-preview-close { border:0; background:transparent; font-size:28px; line-height:1; color:#64748b; cursor:pointer; }
+  .career-preview-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 20px; background:#fbfcff; border-bottom:1px solid #e5e7eb; }
+  .career-preview-modes { display:flex; gap:4px; padding:4px; border:1px solid #dbe3ef; border-radius:8px; background:#fff; }
+  .career-preview-mode { border:0; border-radius:6px; background:transparent; color:#64748b; padding:8px 11px; cursor:pointer; font-weight:700; font-size:12px; }
+  .career-preview-mode:hover, .career-preview-mode.active { background:#e8f0ff; color:#155eef; }
+  .career-preview-state { color:#64748b; font-size:12px; font-weight:600; }
+  .career-preview-frame { margin:20px; min-height:430px; display:flex; justify-content:center; align-items:flex-start; border:1px solid #e5e7eb; border-radius:10px; overflow:auto; background:#e8edf5; padding:18px; transition:padding .2s ease; }
+  .career-preview-frame[data-device="mobile"] { padding-left:calc((100% - 390px) / 2); padding-right:calc((100% - 390px) / 2); }
+  .career-preview-frame[data-device="tablet"] { padding-left:calc((100% - 720px) / 2); padding-right:calc((100% - 720px) / 2); }
+  .career-preview-frame[data-device="mobile"] .career-preview-site { width:390px; min-width:390px; }
+  .career-preview-frame[data-device="tablet"] .career-preview-site { width:720px; min-width:720px; }
+  .career-preview-frame[data-device="desktop"] .career-preview-site { width:100%; min-width:680px; }
+  .career-preview-site { --preview-primary:#0d47ff; font-family:Arial,sans-serif; color:#14213d; }
+  .career-preview-site[data-layout="bold"] .career-preview-hero { background:linear-gradient(135deg,var(--preview-primary),#14213d); color:#fff; }
+  .career-preview-site[data-layout="clean"] .career-preview-hero { background:#eef4ff; color:#14213d; }
+  .career-preview-site[data-layout="editorial"] .career-preview-hero { background:#14213d; color:#fff; text-align:left; }
+  .career-preview-site[data-layout="editorial"] .career-preview-hero p { margin-left:0; }
+  .career-preview-site[data-layout="editorial"] .career-preview-card { border-width:0 0 1px; border-radius:0; }
+  .career-preview-site[data-layout="split"] .career-preview-hero { background:var(--preview-primary); color:#fff; }
+  .career-preview-site[data-layout="split"] .career-preview-body { grid-template-columns:repeat(3,1fr); }
+  .career-preview-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; background:#fff; border-bottom:1px solid #e5e7eb; }
+  .career-preview-brand { display:flex; align-items:center; gap:10px; font-weight:700; }
+  .career-preview-brand img { width:36px; height:36px; object-fit:contain; border-radius:8px; }
+  .career-preview-nav span { color:#64748b; font-size:13px; }
+  .career-preview-hero { padding:46px 24px; text-align:center; }
+  .career-preview-hero h3 { margin:0 0 8px; font-size:32px; }
+  .career-preview-hero p { margin:0 auto 18px; max-width:560px; opacity:.82; }
+  .career-preview-hero button { border:0; border-radius:6px; padding:11px 18px; background:var(--preview-primary); color:#fff; font-weight:700; }
+  .career-preview-site[data-layout="bold"] .career-preview-hero button { background:#fff; color:#14213d; }
+  .career-preview-body { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:24px; }
+  .career-preview-card { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:18px; }
+  .career-preview-card h4 { margin:0 0 8px; font-size:16px; }
+  .career-preview-card p { margin:0; color:#64748b; font-size:13px; }
+  .career-preview-footer { padding:18px 24px; background:#14213d; color:#cbd5e1; font-size:12px; display:flex; justify-content:space-between; gap:12px; }
+  @media (max-width:650px) { .career-preview-toolbar { align-items:flex-start; flex-direction:column; } .career-preview-body { grid-template-columns:1fr; } .career-preview-hero h3 { font-size:25px; } }
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  @media (max-width: 900px) { .career-layout-grid { grid-template-columns:1fr; } }
 
   .section-item {
     transition: background 0.2s;
@@ -2219,14 +2288,16 @@
 
   .status { font-weight: 700; font-size: 12px; padding: 6px 10px; border-radius: 999px; display:inline-flex; width: fit-content; }
   .status.active { color: #065f46; background: #d1fae5; }
-  .status.draft { color: #92400e; background: #ffedd5; }
+  .status.draft, .status.unpublished { color: #92400e; background: #ffedd5; }
+  .job-status-select { border:1px solid #dbe3ef; border-radius:7px; padding:6px 26px 6px 10px; background:#fff; color:#475569; font:600 12px inherit; cursor:pointer; }
+  .job-status-select.published { color:#166534; border-color:#bbf7d0; background:#f0fdf4; }
 
   .actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content:flex-end; }
 
   .actions button {
     border: none;
-    background: #eef2ff;
-    color: #1e3a8a;
+    background: transparent;
+    color: #98a2b3;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2239,7 +2310,9 @@
     font-size: 17px;
     transition: .2s;
   }
-  .actions button:hover { background: #e0e7ff; }
+  .actions button:hover { background: #f2f4f7; color: #667085; }
+  .actions button.is-pinned { background: transparent; color: #667085; }
+  .job-pinned-mark { color: #2563eb; font-size: 14px; vertical-align: 1px; }
   .actions button svg {
     width: 18px;
     height: 18px;
@@ -2696,6 +2769,56 @@
     grid-template-columns: minmax(0, 1.25fr) minmax(110px, .75fr);
     gap: 8px;
   }
+
+  .country-combobox { position: relative; min-width: 0; }
+  .country-combobox-input {
+    padding-right: 34px;
+    background: #fff !important;
+    cursor: text;
+  }
+  .country-combobox-input::placeholder { color: #94a3b8; }
+  .country-combobox::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 13px;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid #64748b;
+    border-bottom: 1px solid #64748b;
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+  }
+  .country-combobox-list {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 198px;
+    padding: 6px 0;
+    overflow-y: auto;
+    border: 1px solid #dfe4ea;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, .14);
+  }
+  .country-combobox-list[hidden] { display: none; }
+  .country-combobox-option {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    border: 0;
+    background: transparent;
+    color: #475569;
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .country-combobox-option:hover,
+  .country-combobox-option:focus { background: #eef2f5; outline: 0; }
+  .country-combobox-empty { padding: 6px 10px; color: #94a3b8; font-size: 13px; }
 
   .job-wizard-section-title {
     margin: 12px 0 18px;
@@ -3214,6 +3337,8 @@
   }
 
   @media (max-width: 600px) {
+    .job-section-divider--pipeline { align-items:flex-start; flex-direction:column; }
+    .job-pipeline-badge { align-self:flex-start; }
     .job-form-grid,
     .hiring-route-grid,
     .job-hiring-route,
@@ -4530,7 +4655,7 @@
     <a onclick="showSection('cvs', this)"><i class='bx bx-file'></i>CV Library</a>
     <a id="applicationsNav" onclick="showSection('applications', this)"><i class='bx bx-user-check'></i>Applications</a>
     <a id="careerSiteNav" onclick="showSection('career-site', this)"><i class='bx bx-globe'></i>Career Site</a>
-    <a id="peopleNav" onclick="showSection('people', this)"><i class='bx bx-group'></i>People</a>
+    <a id="peopleNav" onclick="showSection('people', this)"><i class='bx bx-group'></i>Teams</a>
     <a onclick="showSection('billing', this)"><i class='bx bx-credit-card'></i>Packages</a>
     <a onclick="showSection('analytics', this)"><i class='bx bx-bar-chart-alt-2'></i>Analytics</a>
     <a data-nav-public-listings onclick="showSection('public-listings', this)"><i class='bx bx-world'></i>View as Member</a>
@@ -5047,7 +5172,10 @@
                 <label>Location <span class="required-mark">*</span></label>
                 <div class="job-location-pair">
                   <input type="text" name="city" required placeholder="City or town" aria-label="City or town">
-                  <select name="country" required aria-label="Country">
+                  <div class="country-combobox">
+                    <input type="text" class="country-combobox-input" placeholder="Country *" aria-label="Country" role="combobox" aria-expanded="false" aria-controls="jobCountryOptions" autocomplete="off">
+                    <div id="jobCountryOptions" class="country-combobox-list" role="listbox" hidden></div>
+                  <select name="country" required aria-label="Country" hidden>
                     <option value="" disabled selected hidden>Country</option>
                     <option>United States</option><option>Afghanistan</option><option>Åland Islands</option><option>Albania</option><option>Algeria</option><option>American Samoa</option><option>Andorra</option><option>Angola</option><option>Anguilla</option><option>Antarctica</option><option>Antigua and Barbuda</option><option>Argentina</option><option>Armenia</option><option>Aruba</option><option>Australia</option><option>Austria</option><option>Azerbaijan</option>
                     <option>Bahamas</option><option>Bahrain</option><option>Bangladesh</option><option>Barbados</option><option>Belarus</option><option>Belgium</option><option>Belize</option><option>Benin</option><option>Bermuda</option><option>Bhutan</option><option>Bolivia</option><option>Bosnia and Herzegovina</option><option>Botswana</option><option>Bouvet Island</option><option>Brazil</option><option>British Indian Ocean Territory</option><option>Brunei Darussalam</option><option>Bulgaria</option><option>Burkina Faso</option><option>Burundi</option>
@@ -5060,6 +5188,7 @@
                     <option>Qatar</option><option>Reunion</option><option>Romania</option><option>Russian Federation</option><option>Rwanda</option><option>Saint Helena</option><option>Saint Kitts and Nevis</option><option>Saint Lucia</option><option>Saint Pierre and Miquelon</option><option>Saint Vincent and the Grenadines</option><option>Samoa</option><option>San Marino</option><option>Sao Tome and Principe</option><option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option><option>Singapore</option><option>Sint Maarten</option><option>Slovakia</option><option>Slovenia</option><option>Somalia</option><option>South Africa</option><option>South Georgia and the South Sandwich Islands</option><option>Spain</option><option>Sri Lanka</option><option>Sudan</option><option>Suriname</option><option>Svalbard and Jan Mayen</option><option>Swatini</option><option>Sweden</option><option>Switzerland</option><option>Syrian Arab Republic</option>
                     <option>Taiwan</option><option>Tajikistan</option><option>Tanzania, United Republic of</option><option>Thailand</option><option>Timor-Leste</option><option>Togo</option><option>Tokelau</option><option>Tonga</option><option>Trinidad and Tobago</option><option>Tunisia</option><option>Turkey</option><option>Turkmenistan</option><option>Turks and Caicos Islands</option><option>Tuvalu</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States Minor Outlying Islands</option><option>Uruguay</option><option>Uzbekistan</option><option>Vanuatu</option><option>Venezuela</option><option>Vietnam</option><option>Virgin Islands, British</option><option>Virgin Islands, U.S.</option><option>Wallis and Futuna</option><option>Western Sahara</option><option>Yemen</option><option>Zambia</option><option>Zimbabwe</option><option>Worldwide</option>
                   </select>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -5205,7 +5334,7 @@
             </div>
 
             <div class="form-group">
-              <label for="job_description">Job Brief <span class="required-mark">*</span></label>
+              <label for="job_description">Job Brief <span class="required-mark">*</span> <button type="button" class="job-ai-write" data-ai-field="job_description"><i class='bx bx-sparkles'></i> Create with AI</button></label>
               <textarea id="job_description" class="job-brief-input" name="description" rows="7" required placeholder="Describe the role, its purpose, and the team the successful candidate will join."></textarea>
               <div class="job-plain-toolbar" aria-label="Job brief formatting">
                 <button type="button" data-text-list-target="job_description" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5214,7 +5343,7 @@
             </div>
 
             <div class="form-group">
-              <label for="job_responsibilities">Responsibilities</label>
+                <label for="job_responsibilities">Responsibilities <button type="button" class="job-ai-write" data-ai-field="job_responsibilities"><i class='bx bx-sparkles'></i> Create with AI</button></label>
               <textarea id="job_responsibilities" name="responsibilities" rows="5" placeholder="List the main responsibilities for this role."></textarea>
               <div class="job-plain-toolbar" aria-label="Responsibilities formatting">
                 <button type="button" data-text-list-target="job_responsibilities" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5223,7 +5352,7 @@
             </div>
 
             <div class="form-group">
-              <label for="job_requirements">Requirements and Skills</label>
+                <label for="job_requirements">Requirements and Skills <button type="button" class="job-ai-write" data-ai-field="job_requirements"><i class='bx bx-sparkles'></i> Create with AI</button></label>
               <textarea id="job_requirements" name="requirements" rows="5" placeholder="List required qualifications, experience, and skills."></textarea>
               <div class="job-plain-toolbar" aria-label="Requirements formatting">
                 <button type="button" data-text-list-target="job_requirements" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5312,9 +5441,14 @@
               </div>
             </div>
 
+            <div class="job-hiring-intro">
+              <span class="job-hiring-intro__icon"><i class='bx bx-bullseye'></i></span>
+              <div><strong>Make the next step clear for candidates</strong><p>Choose how applications should arrive, set a realistic closing date, and give your team a consistent review path.</p></div>
+            </div>
+
             <div class="job-hiring-route">
               <div class="form-group">
-                <label for="applicationMethod">Application Method <span class="required-mark">*</span></label>
+                <label for="applicationMethod">How candidates apply <span class="required-mark">*</span></label>
                 <select name="applicationMethod" id="applicationMethod" required>
                   <option value="direct">Apply on Career Unified (Recommended)</option>
                   <option value="external">External application website</option>
@@ -5322,7 +5456,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="job_deadline">Application Deadline</label>
+                <label for="job_deadline">Closing date</label>
                 <input id="job_deadline" type="text" name="deadline" placeholder="e.g. 31 Jan 2027">
               </div>
             </div>
@@ -5332,9 +5466,9 @@
               <input type="url" name="applyLink" id="job_apply_link" placeholder="https://company.com/careers/apply">
             </div>
 
-            <div class="job-section-divider">
-              <h4>Candidate Pipeline</h4>
-              <p>Direct applications move through this clear review process.</p>
+            <div class="job-section-divider job-section-divider--pipeline">
+              <div><h4>Candidate Pipeline</h4><p>Keep every application moving through the same clear stages.</p></div>
+              <span class="job-pipeline-badge"><i class='bx bx-check-shield'></i> Ready to review</span>
             </div>
             <ol class="job-hiring-pipeline" aria-label="Candidate pipeline">
               <li><span>1</span><div><strong>Submitted</strong><small>New applications arrive with a CV and profile.</small></div></li>
@@ -5587,6 +5721,10 @@
               <p class="setting-copy">Choose a layout style for your career portal.</p>
             </div>
             <div class="setting-control">
+              <div class="career-preview-toolbar">
+                <button class="primary-btn btn-ghost" type="button" onclick="openCareerSitePreview()"><i class='bx bx-show'></i> Preview selected layout</button>
+              </div>
+              <div class="career-layout-grid">
               <label class="layout-choice">
                 <input id="careerSiteLayoutBold" type="radio" name="careerSiteLayout" value="bold" checked>
                 <span class="layout-preview" aria-hidden="true">
@@ -5599,7 +5737,7 @@
                   <span>A vibrant, highly customizable careers site</span>
                 </span>
               </label>
-              <label class="layout-choice" style="margin-top:12px;">
+              <label class="layout-choice">
                 <input id="careerSiteLayoutClean" type="radio" name="careerSiteLayout" value="clean">
                 <span class="layout-preview" aria-hidden="true">
                   <span class="layout-preview-nav"><i></i><i></i><i></i></span>
@@ -5608,6 +5746,25 @@
                 </span>
                 <span class="layout-choice-caption"><strong>Clean</strong><span>A focused careers page for easy browsing</span></span>
               </label>
+              <label class="layout-choice">
+                <input type="radio" name="careerSiteLayout" value="editorial">
+                <span class="layout-preview" aria-hidden="true">
+                  <span class="layout-preview-nav"><i></i><i></i><i></i></span>
+                  <span class="layout-preview-hero" style="background:#14213d"><strong>People-first careers</strong><small>Discover where you can make an impact</small><b style="background:#d9a441">Meet our team</b></span>
+                  <span class="layout-preview-content" style="grid-template-columns:1.7fr 1fr"><div><i></i><i></i><i></i><i></i></div><i style="background:#e8edf5"></i></span>
+                </span>
+                <span class="layout-choice-caption"><strong>Editorial</strong><span>A story-led employer brand experience</span></span>
+              </label>
+              <label class="layout-choice">
+                <input type="radio" name="careerSiteLayout" value="split">
+                <span class="layout-preview" aria-hidden="true">
+                  <span class="layout-preview-nav"><i></i><i></i><i></i></span>
+                  <span class="layout-preview-content" style="grid-template-columns:1fr 1fr;gap:10px;padding:12px;background:#f1f5f9"><i style="height:105px;background:#cbd5e1"></i><div style="justify-content:center"><i style="height:16px;background:#14213d"></i><i></i><i style="width:55%;background:#0d47ff"></i></div></span>
+                  <span class="layout-preview-hero" style="height:70px;margin-top:0;background:#0d47ff"><strong>Find your next chapter</strong><small>Browse open opportunities</small></span>
+                </span>
+                <span class="layout-choice-caption"><strong>Split</strong><span>A modern visual layout for fast scanning</span></span>
+              </label>
+              </div>
             </div>
           </div>
 
@@ -6194,15 +6351,7 @@
         </div>
 
         <div class="member-list" id="peopleMemberList">
-          <article class="member-card" data-member-search="jay mash contact careerunified.com administrator">
-            <div class="member-avatar" aria-hidden="true">J</div>
-            <div class="member-info">
-              <strong>Jay Mash</strong>
-              <span>contact@careerunified.com</span>
-            </div>
-            <span class="member-role">Administrator</span>
-            <button class="primary-btn btn-ghost member-teams" type="button" onclick="showToast('info', 'Teams', 'Team assignments will be available soon.')"><i class='bx bx-group'></i> Teams</button>
-          </article>
+          <p class="people-loading">Loading team members...</p>
         </div>
         </div>
       </div>
@@ -6224,7 +6373,7 @@
                 <i class='bx bx-search'></i>
                 <input id="peopleTeamSearch" class="form-input" type="search" placeholder="Search teams" aria-label="Search teams" oninput="filterPeopleTeams(this.value)">
               </div>
-              <button class="primary-btn" type="button" onclick="showToast('info', 'Create Team', 'Team creation will be available soon.')"><i class='bx bx-plus'></i> Team</button>
+              <button class="primary-btn" type="button" onclick="openInviteMembersModal()"><i class='bx bx-user-plus'></i> Invite members</button>
               <div class="team-count">1/50</div>
             </div>
             <article class="team-card" data-team-search="all members">
@@ -6675,6 +6824,12 @@ async function loadCareerSiteSettings() {
     document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
       input.checked = input.value === (careerSiteConfig.layout || 'bold');
     });
+    const media = careerSiteConfig.media || {};
+    const social = careerSiteConfig.socialLinks || {};
+    const setCareerField = (id, value) => { const field = document.getElementById(id); if (field && value) field.value = value; };
+    setCareerField('careerSiteYoutube', media.youtube); setCareerField('careerSiteVimeo', media.vimeo);
+    setCareerField('socialWebsite', social.website); setCareerField('socialFacebook', social.facebook); setCareerField('socialX', social.twitter); setCareerField('socialLinkedin', social.linkedin); setCareerField('socialInstagram', social.instagram);
+    const widgetGroup = careerSiteConfig.widget?.groupBy || 'none'; const widgetRadio = document.querySelector(`input[name="widgetGroup"][value="${widgetGroup}"]`); if (widgetRadio) widgetRadio.checked = true;
     const urlElement = document.getElementById('careerSiteUrl');
     urlElement.href = url;
     urlElement.textContent = url;
@@ -6809,6 +6964,38 @@ function copyEmbedCode() {
   });
 }
 
+function openCareerSitePreview() {
+  const modal = document.getElementById('careerSitePreviewModal');
+  const site = document.getElementById('careerSitePreviewSite');
+  if (!modal || !site) return;
+  const selectedLayout = document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig?.layout || 'bold';
+  const name = document.getElementById('cp_name')?.value || careerSiteConfig?.displayName || 'Your company';
+  const about = document.getElementById('cp_about')?.value || careerSiteConfig?.about || 'Explore opportunities and build your future with us.';
+  const logo = document.getElementById('careerSiteLogoPreview')?.src || careerSiteConfig?.logo || '/android-chrome-192x192.png';
+  const primary = document.getElementById('careerSiteCustomColor')?.value || careerSiteConfig?.brandColors?.primary || '#0d47ff';
+  site.dataset.layout = selectedLayout;
+  site.style.setProperty('--preview-primary', /^#[0-9a-f]{6}$/i.test(primary) ? primary : '#0d47ff');
+  document.getElementById('careerPreviewName').textContent = name;
+  document.getElementById('careerPreviewHeading').textContent = name;
+  document.getElementById('careerPreviewAbout').textContent = about;
+  document.getElementById('careerPreviewLogo').src = logo;
+  modal.hidden = false;
+}
+
+function closeCareerSitePreview() {
+  const modal = document.getElementById('careerSitePreviewModal');
+  if (modal) modal.hidden = true;
+}
+
+function setCareerPreviewDevice(device, button) {
+  const frame = document.getElementById('careerPreviewFrame');
+  if (!frame) return;
+  frame.dataset.device = device;
+  document.querySelectorAll('.career-preview-mode').forEach(item => item.classList.toggle('active', item === button));
+}
+
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCareerSitePreview(); });
+
 // Save Functions
 async function saveCareerSiteGeneral() {
   if (!careerSiteConfig) return;
@@ -6841,8 +7028,8 @@ async function saveCareerSiteMedia() {
       glassdoor: document.getElementById('socialGlassdoor')?.value
     }
   };
-  console.log('Save Career Site Media:', data);
-  showToast('success', 'Saved', 'Media & Links saved');
+  try { await saveCareerSiteConfig({media: data, socialLinks: {facebook: data.social.facebook, instagram: data.social.instagram, twitter: data.social.x, linkedin: data.social.linkedin}}); showToast('success', 'Saved', 'Media & Links saved'); }
+  catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 async function saveCareerSiteContent() {
@@ -6854,8 +7041,8 @@ async function saveCareerSiteContent() {
       order: parseInt(item.dataset.order)
     });
   });
-  console.log('Save Career Site Content:', sections);
-  showToast('success', 'Saved', 'Content settings saved');
+  try { await saveCareerSiteConfig({contentSections: sections}); showToast('success', 'Saved', 'Content settings saved'); }
+  catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 async function saveCareerSiteCode() {
@@ -6865,8 +7052,8 @@ async function saveCareerSiteCode() {
     applicationJavascript: document.getElementById('careerSiteApplicationJs')?.value || '',
     facebookVerification: document.getElementById('careerSiteFacebookVerification')?.value || ''
   };
-  console.log('Save Career Site CSS/JS:', data);
-  showToast('success', 'Saved', 'CSS and JavaScript settings saved');
+  try { await saveCareerSiteConfig({customCode: data}); showToast('success', 'Saved', 'CSS and JavaScript settings saved'); }
+  catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 function updateWidgetSnippet() {
@@ -6886,8 +7073,8 @@ function copyWidgetSnippet() {
 
 async function saveCareerSiteWidget() {
   const groupBy = document.querySelector('input[name="widgetGroup"]:checked')?.value || 'none';
-  console.log('Save Career Site Widget:', {groupBy});
-  showToast('success', 'Saved', 'Embed widget settings saved');
+  try { await saveCareerSiteConfig({widget: {groupBy}}); showToast('success', 'Saved', 'Embed widget settings saved'); }
+  catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 function switchPeopleTab(tabId, button) {
@@ -6899,6 +7086,40 @@ function switchPeopleTab(tabId, button) {
   document.getElementById('peopleMembersPanel')?.classList.toggle('active', tabId === 'members');
   document.getElementById('peopleTeamsPanel')?.classList.toggle('active', tabId === 'teams');
   document.getElementById('peopleAutoJoinPanel')?.classList.toggle('active', tabId === 'auto-join');
+  if (tabId === 'members') loadPeopleMembers();
+}
+
+async function loadPeopleMembers() {
+  const list = document.getElementById('peopleMemberList');
+  if (!list || !currentRecruiter) return;
+  list.innerHTML = '<p class="people-loading">Loading team members...</p>';
+  try {
+    const token = await currentRecruiter.getIdToken(true);
+    const response = await fetch('/.netlify/functions/recruiter-team', {headers: {Authorization: `Bearer ${token}`} });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || 'Could not load team members.');
+    const members = Array.isArray(payload.members) ? payload.members : [];
+    list.replaceChildren();
+    if (!members.length) { list.innerHTML = '<p class="people-empty">No team members yet. Invite someone to start collaborating.</p>'; return; }
+    members.forEach(member => {
+      const email = String(member.email || '');
+      const name = String(member.displayName || email.split('@')[0] || 'Team member');
+      const card = document.createElement('article'); card.className = 'member-card'; card.dataset.memberSearch = `${name} ${email} ${member.role || 'Member'}`.toLowerCase();
+      const avatar = document.createElement('div'); avatar.className = 'member-avatar'; avatar.textContent = name.charAt(0).toUpperCase();
+      const info = document.createElement('div'); info.className = 'member-info';
+      const strong = document.createElement('strong'); strong.textContent = name;
+      const span = document.createElement('span'); span.textContent = email; info.append(strong, span);
+      const role = document.createElement('span'); role.className = 'member-role'; role.textContent = member.owner ? 'Administrator' : (member.role || 'Member');
+      const status = document.createElement('span'); status.className = 'member-status'; status.textContent = member.status === 'pending' ? 'Invitation pending' : 'Active';
+      card.append(avatar, info, role, status); list.append(card);
+    });
+    filterPeopleMembers(document.getElementById('peopleMemberSearch')?.value || '');
+  } catch (error) { list.innerHTML = `<p class="people-empty">${String(error.message || 'Could not load team members.')}</p>`; }
+}
+
+function filterPeopleMembers(query) {
+  const search = String(query || '').trim().toLowerCase();
+  document.querySelectorAll('#peopleMemberList [data-member-search]').forEach(member => { member.hidden = Boolean(search && !member.dataset.memberSearch.includes(search)); });
 }
 
 function filterPeopleTeams(query) {
@@ -7610,6 +7831,52 @@ function setupApplicationBuilder() {
     }
     scheduleJobDraftSave();
   });
+  const countrySelect = document.querySelector('#jobForm [name="country"]');
+  const countryInput = document.querySelector('#jobForm .country-combobox-input');
+  const countryOptions = document.getElementById('jobCountryOptions');
+  if (countrySelect && countryInput && countryOptions) {
+    const options = [...countrySelect.options].filter(option => option.value);
+    const closeCountryOptions = () => {
+      countryOptions.hidden = true;
+      countryInput.setAttribute('aria-expanded', 'false');
+    };
+    const renderCountryOptions = (query = '') => {
+      const normalizedQuery = query.trim().toLowerCase();
+      const matches = options.filter(option => option.textContent.toLowerCase().includes(normalizedQuery));
+      countryOptions.innerHTML = matches.length
+        ? matches.map(option => `<button type="button" class="country-combobox-option" role="option" data-value="${option.value.replace(/"/g, '&quot;')}">${option.textContent}</button>`).join('')
+        : '<div class="country-combobox-empty">No countries found</div>';
+    };
+    const openCountryOptions = () => {
+      renderCountryOptions(countryInput.value);
+      countryOptions.hidden = false;
+      countryInput.setAttribute('aria-expanded', 'true');
+    };
+    countryInput.value = countrySelect.value;
+    countryInput.addEventListener('focus', openCountryOptions);
+    countryInput.addEventListener('input', () => {
+      countrySelect.value = '';
+      countrySelect.dispatchEvent(new Event('change', {bubbles: true}));
+      openCountryOptions();
+    });
+    countryInput.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closeCountryOptions();
+    });
+    countryOptions.addEventListener('click', event => {
+      const option = event.target.closest('.country-combobox-option');
+      if (!option) return;
+      countrySelect.value = option.dataset.value;
+      countryInput.value = option.textContent;
+      countrySelect.dispatchEvent(new Event('change', {bubbles: true}));
+      closeCountryOptions();
+    });
+    countrySelect.addEventListener('change', () => {
+      countryInput.value = countrySelect.value;
+    });
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.country-combobox')) closeCountryOptions();
+    });
+  }
   document.querySelector('#jobForm [name="country"]')?.addEventListener("change", () => {
     let changed = false;
     screeningQuestionsDraft.forEach(question => {
@@ -8316,9 +8583,15 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  const token = await getIdTokenResult(user, true);
+  let token = await getIdTokenResult(user, true);
+  // Custom claims are written when an invitation is accepted. Firebase can
+  // briefly return the previous token while that claim propagates.
+  for (let attempt = 0; !token.claims.recruiter && attempt < 3; attempt += 1) {
+    await new Promise(resolve => setTimeout(resolve, 900));
+    token = await getIdTokenResult(user, true);
+  }
   if (!token.claims.recruiter) {
-    alert('Recruiter access only');
+    alert('Your account is not connected to a recruiter workspace yet. Open the invitation email again, sign in with the invited email address, and accept it before opening the dashboard.');
     window.location.replace('index.html');
     return;
   }
@@ -9579,6 +9852,7 @@ async function loadManageJobs() {
           return created ? created >= start : true;
         })
       : recruiterJobsCache;
+    filtered.sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)));
 
     renderPublicListings(recruiterJobsCache);
     renderRecruiterInbox();
@@ -9597,14 +9871,14 @@ async function loadManageJobs() {
       const expiresText = j.deadline ? j.deadline : "—";
 
       const status = (j.status || "active").toLowerCase();
-      const statusClass = status === "draft" ? "status draft" : "status active";
+      const statusClass = status === "draft" ? "status unpublished" : "status active";
 
       const row = document.createElement("div");
       row.className = "jobs-row";
 
       row.innerHTML = `
         <div data-label="Title">
-          <strong>${escapeDashboard(j.title, "Untitled")}</strong>
+          <strong>${j.pinned ? '<span class="job-pinned-mark" title="Pinned listing" aria-label="Pinned listing">&#128204;</span> ' : ''}${escapeDashboard(j.title, "Untitled")}</strong>
           <div class="job-location">
             <i class='bx bx-map'></i> ${j.remote ? "Remote" : escapeDashboard(`${j.city || ""}${j.country ? ", " + j.country : ""}`.trim(), "Location not set")}
           </div>
@@ -9620,9 +9894,10 @@ async function loadManageJobs() {
           <small>Expires: ${expiresText}</small>
         </div>
 
-        <div data-label="Status"><span class="${statusClass}">${(j.status || "active").toUpperCase()}</span></div>
+        <div data-label="Status"><select class="job-status-select ${status === 'draft' ? 'unpublished' : 'published'}" aria-label="Job publication status" data-status-job-id="${escapeDashboard(j.id)}"><option value="active" ${status !== 'draft' ? 'selected' : ''}>Published</option><option value="draft" ${status === 'draft' ? 'selected' : ''}>Unpublished</option></select></div>
 
         <div data-label="Actions" class="actions">
+          <button type="button" class="${j.pinned ? 'is-pinned' : ''}" aria-label="${j.pinned ? 'Unpin job' : 'Pin job'}" data-tooltip="${j.pinned ? 'Unpin' : 'Pin'}" data-action="pin" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l-1 6 3 3v2H6v-2l3-3-1-6Z"></path><path d="M12 14v7"></path></svg></button>
           <button type="button" aria-label="Open vacancy workspace" data-tooltip="Manage" data-action="workspace" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></button>
           <button type="button" aria-label="View job" data-tooltip="View" data-action="view" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg></button>
           <button type="button" aria-label="Edit job" data-tooltip="Edit" data-action="edit" data-id="${escapeDashboard(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.2-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m13.8 7.2 3 3"></path></svg></button>
@@ -9723,6 +9998,40 @@ document.addEventListener('click', async (e) => {
     openJobWorkspace(id);
   }
 
+  if (action === 'pin') {
+    try {
+      await updateDoc(doc(db, 'jobs', id), {pinned: !Boolean(job.pinned), updatedAt: serverTimestamp()});
+      showToast('success', job.pinned ? 'Job unpinned' : 'Job pinned', job.pinned ? 'The listing was removed from the top of your jobs.' : 'The listing will appear at the top of your jobs.', 2800);
+      await loadManageJobs();
+    } catch (err) {
+      console.error('pin job error:', err);
+      showToast('error', 'Pin failed', 'The job could not be updated.', 3500);
+    }
+  }
+
+  if (action === 'toggle-publish') {
+    try {
+      if (dashboardText(job.status, 'active').toLowerCase() !== 'draft') {
+        await updateDoc(doc(db, 'jobs', id), {status: 'draft', updatedAt: serverTimestamp()});
+        showToast('success', 'Job unpublished', 'The listing is hidden from candidates but remains available in your dashboard.', 3200);
+      } else {
+        const token = await currentRecruiter.getIdToken();
+        const response = await fetch('/.netlify/functions/publish-recruiter-job', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`},
+          body: JSON.stringify({jobId: id, job: job}),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'The job could not be published.');
+        showToast('success', 'Job published', 'The listing is now visible to candidates.', 3200);
+      }
+      await loadManageJobs();
+    } catch (err) {
+      console.error('toggle publish error:', err);
+      showToast('error', 'Update failed', err.message || 'The job status could not be changed.', 3800);
+    }
+  }
+
   if (action === 'edit') {
     editRecruiterJob(job);
   }
@@ -9741,6 +10050,34 @@ document.addEventListener('click', async (e) => {
       console.error("delete job error:", err);
       showToast('error', 'Delete failed', 'Failed to delete job.', 3800);
     }
+  }
+});
+
+document.addEventListener('change', async (e) => {
+  const select = e.target.closest('select[data-status-job-id]');
+  if (!select) return;
+  const id = select.getAttribute('data-status-job-id');
+  const job = recruiterJobsCache.find(item => item.id === id);
+  if (!job) return;
+  const nextStatus = select.value;
+  select.disabled = true;
+  try {
+    if (nextStatus === 'draft') {
+      await updateDoc(doc(db, 'jobs', id), {status: 'draft', updatedAt: serverTimestamp()});
+      showToast('success', 'Job unpublished', 'The listing is hidden from candidates but remains saved.', 3200);
+    } else {
+      const token = await currentRecruiter.getIdToken();
+      const response = await fetch('/.netlify/functions/publish-recruiter-job', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify({jobId: id, job})});
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'The job could not be published.');
+      showToast('success', 'Job published', 'The listing is now visible to candidates.', 3200);
+    }
+    await loadManageJobs();
+  } catch (error) {
+    select.value = dashboardText(job.status, 'active').toLowerCase() === 'draft' ? 'draft' : 'active';
+    showToast('error', 'Status update failed', error.message || 'The job status could not be changed.', 3800);
+  } finally {
+    select.disabled = false;
   }
 });
 
@@ -11228,13 +11565,21 @@ async function sendRecruiterApplicationMessage(form) {
   }
 
   try {
-    await postApplicationMessage(applicationId, {
+    const result = await postApplicationMessage(applicationId, {
       type,
       subject,
       message,
       clientMessageId: nextApplicationMessageId(),
     });
-    showToast('success', 'Email sent', 'The candidate can also see this update in their application history.', 3600);
+    const portalOnly = result?.emailSent === false || result?.portalOnly === true;
+    showToast(
+      'success',
+      portalOnly ? 'Message saved' : 'Email sent',
+      portalOnly
+        ? 'The candidate can read this update in their application history. Email notifications are disabled for this candidate.'
+        : 'The candidate can also see this update in their application history.',
+      4200,
+    );
     await openRecruiterApplication(applicationId);
   } catch (error) {
     showToast('error', 'Email not sent', error.message || 'Could not send this email.', 4200);
@@ -12455,21 +12800,93 @@ window.showSection = function(id, el) {
   if (id === 'analytics') updateCharts();
   if (id === 'public-listings') loadPublicListings();
   if (id === 'career-site') initCareerSiteSections();
+  if (id === 'people') loadPeopleMembers();
 }
 
 window.addEventListener('load', handleMobileLayout);
 window.addEventListener('resize', handleMobileLayout);
 
+  const jobAiModal = document.getElementById('jobAiModal');
+const jobAiPrompt = document.getElementById('jobAiPrompt');
+const jobAiStatus = document.getElementById('jobAiStatus');
+let jobAiField = null;
+document.querySelectorAll('[data-ai-field]').forEach((button) => button.addEventListener('click', () => {
+  jobAiField = button.dataset.aiField;
+  jobAiModal.hidden = false;
+  jobAiPrompt.value = '';
+  jobAiStatus.textContent = '';
+  jobAiPrompt.focus();
+}));
+document.getElementById('jobAiClose')?.addEventListener('click', () => { jobAiModal.hidden = true; });
+document.getElementById('jobAiGenerate')?.addEventListener('click', async () => {
+  if (!jobAiField || jobAiPrompt.value.trim().length < 20) { jobAiStatus.textContent = 'Please add more role details first.'; return; }
+  const button = document.getElementById('jobAiGenerate');
+  button.disabled = true; jobAiStatus.textContent = 'Writing a draft...';
+  try {
+    const token = await currentRecruiter?.getIdToken(true);
+    if (!token) throw new Error('Please sign in again before using the writing assistant.');
+    const jobForm = document.getElementById('jobForm');
+    const fieldValue = name => dashboardText(jobForm?.elements?.namedItem(name)?.value);
+    const contextFields = [
+      ['Job title', 'title'],
+      ['Industry', 'category'],
+      ['City or town', 'city'],
+      ['Country', 'country'],
+      ['Work preference', 'workPreference'],
+      ['Employment type', 'type'],
+      ['Job seniority', 'experience'],
+      ['Minimum qualification', 'minimumQualification'],
+      ['Security clearance', 'securityClearance'],
+      ["Driver's licence", 'driversLicence'],
+      ['Visa sponsorship', 'visaSponsorship']
+    ];
+    const context = contextFields.map(([label, name]) => {
+      const currentValue = fieldValue(name);
+      return currentValue ? `${label}: ${currentValue}` : '';
+    }).filter(Boolean).join('\n');
+    const response = await fetch('/.netlify/functions/generate-job-section', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify({field: jobAiField, prompt: jobAiPrompt.value, context})});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Could not generate a draft.');
+    const target = document.getElementById(jobAiField);
+    target.value = result.text;
+    target.dispatchEvent(new Event('input', {bubbles: true}));
+    jobAiModal.hidden = true;
+  } catch (error) { jobAiStatus.textContent = error.message; }
+  finally { button.disabled = false; }
+});
+
 </script>
 
-<script src="/js/cookie-notice.js"></script>
+  <script src="/js/cookie-notice.js"></script>
+  <div class="career-preview-modal" id="careerSitePreviewModal" hidden>
+    <div class="career-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="careerPreviewTitle">
+      <div class="career-preview-header"><h2 id="careerPreviewTitle">Career site preview</h2><button class="career-preview-close" type="button" onclick="closeCareerSitePreview()" aria-label="Close preview">&times;</button></div>
+      <div class="career-preview-toolbar">
+        <span class="career-preview-state"><i class='bx bx-check-circle'></i> Draft preview</span>
+        <div class="career-preview-modes" role="group" aria-label="Preview device">
+          <button class="career-preview-mode active" type="button" data-device="desktop" onclick="setCareerPreviewDevice('desktop', this)"><i class='bx bx-desktop'></i> Desktop</button>
+          <button class="career-preview-mode" type="button" data-device="tablet" onclick="setCareerPreviewDevice('tablet', this)"><i class='bx bx-tab'></i> Tablet</button>
+          <button class="career-preview-mode" type="button" data-device="mobile" onclick="setCareerPreviewDevice('mobile', this)"><i class='bx bx-mobile'></i> Mobile</button>
+        </div>
+      </div>
+      <div class="career-preview-frame" id="careerPreviewFrame" data-device="desktop">
+        <div class="career-preview-site" id="careerSitePreviewSite" data-layout="bold">
+          <div class="career-preview-nav"><div class="career-preview-brand"><img id="careerPreviewLogo" src="/android-chrome-192x192.png" alt=""><span id="careerPreviewName">Your company</span></div><span>Open positions</span></div>
+          <div class="career-preview-hero"><h3 id="careerPreviewHeading">Your company</h3><p id="careerPreviewAbout">Explore opportunities and build your future with us.</p><button type="button">View open roles</button></div>
+          <div class="career-preview-body"><div class="career-preview-card"><h4>Example open position</h4><p>Location · Full-time · Apply through Career Unified</p></div><div class="career-preview-card"><h4>Meet the team</h4><p>Your company story and candidate information will appear here.</p></div></div>
+          <div class="career-preview-footer"><span>Build your next chapter with us.</span><span>Powered by Career Unified</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="job-ai-modal" id="jobAiModal" hidden>
+    <div class="job-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="jobAiTitle">
+      <button type="button" class="job-ai-close" id="jobAiClose" aria-label="Close writing assistant">&times;</button>
+      <h2 id="jobAiTitle"><i class='bx bx-sparkles job-ai-title-icon' aria-hidden="true"></i>Create with AI</h2>
+      <p>Describe the role in your own words. Career Unified will draft this section for you to review and edit.</p>
+      <textarea id="jobAiPrompt" rows="5" maxlength="1200" placeholder="Include the role, team, seniority, key tasks, and anything candidates should know."></textarea>
+      <div class="job-ai-dialog-actions"><span id="jobAiStatus" aria-live="polite"></span><button type="button" class="primary-btn" id="jobAiGenerate"><i class='bx bx-sparkles'></i> Generate draft</button></div>
+    </div>
+  </div>
 </body>
 </html>
-
-
-
-
-
-
-
-

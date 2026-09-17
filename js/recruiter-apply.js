@@ -4,6 +4,7 @@ import {
   getAuth,
   getIdToken,
   onAuthStateChanged,
+  reload,
   sendEmailVerification,
   updateProfile,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -73,6 +74,10 @@ const LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const LOGO_MAX_BYTES = 2 * 1024 * 1024;
 const LOGO_MIN_WIDTH = 400;
 const LOGO_MIN_HEIGHT = 200;
+const PERSONAL_EMAIL_DOMAINS = new Set([
+  "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.za", "outlook.com", "hotmail.com",
+  "live.com", "icloud.com", "aol.com", "proton.me", "protonmail.com", "mail.com",
+]);
 
 let currentUser = null;
 let authResolved = false;
@@ -368,6 +373,32 @@ function clearAccountContext() {
 
 function updateSubmitAvailability() {
   submitButton.disabled = !authResolved || applicationBlocked || isSubmitting;
+}
+
+function emailDomain(value) {
+  return String(value || "").trim().toLowerCase().split("@").pop() || "";
+}
+
+function websiteDomain(value) {
+  try {
+    return new URL(normalizeUrl(value, "company website")).hostname.toLowerCase().replace(/^www\./, "");
+  } catch (_) {
+    return "";
+  }
+}
+
+function validateCompanyDomain() {
+  const domain = emailDomain(email.value);
+  if (!domain || PERSONAL_EMAIL_DOMAINS.has(domain)) {
+    email.setCustomValidity("Use your company email address, not a personal email address.");
+    return false;
+  }
+  const siteDomain = websiteDomain(value("companyWebsite"));
+  if (!siteDomain || (siteDomain !== domain && !siteDomain.endsWith(`.${domain}`) && !domain.endsWith(`.${siteDomain}`))) {
+    document.getElementById("companyWebsite")?.setCustomValidity("Your company website domain must match your company email domain.");
+    return false;
+  }
+  return true;
 }
 
 function splitName(displayName) {
@@ -739,6 +770,7 @@ async function submitApplication(event) {
   syncUrlValidity();
   syncSoleProprietorState();
   syncBillingAddressState();
+  validateCompanyDomain();
   renderInvalidFields();
 
   if (!form.checkValidity()) {
@@ -772,7 +804,21 @@ async function submitApplication(event) {
       await updateProfile(user, {displayName: `${value("firstName")} ${value("lastName")}`.trim()});
     }
 
+    await reload(user);
+    if (!user.emailVerified) {
+      try {
+        await sendEmailVerification(user);
+        setStatus("Verify your company email using the link we sent, then return here and submit again.");
+      } catch (verificationError) {
+        setStatus("We could not send the verification email. Please wait a moment and try again.");
+        console.warn("RECRUITER_EMAIL_VERIFICATION_ERROR", verificationError?.code || "unknown");
+      }
+      return;
+    }
+
     const website = normalizeUrl(value("companyWebsite"), "company website");
+    const companyEmailDomain = emailDomain(user.email || email.value);
+    const companyWebsiteDomain = websiteDomain(website);
     const logo = await uploadLogo(user);
     const address = mainAddress();
     const invoiceAddress = billingAddress(address);
@@ -790,6 +836,10 @@ async function submitApplication(event) {
       recruitmentAgency: document.getElementById("recruitmentAgency").checked,
       companyName: value("companyName"),
       companyWebsite: website,
+      companyEmailDomain,
+      companyWebsiteDomain,
+      companyDomainVerified: companyEmailDomain === companyWebsiteDomain,
+      emailVerified: user.emailVerified === true,
       companyLogoUrl: logo.logoUrl,
       companyLogoPath: logo.logoPath,
       soleProprietor: soleProprietor.checked,
@@ -815,6 +865,11 @@ async function submitApplication(event) {
       recruiterApplicationId: applicationRef.id,
       companyName: value("companyName"),
       companyWebsite: website,
+      companyEmailDomain,
+      companyWebsiteDomain,
+      companyDomainVerified: companyEmailDomain === companyWebsiteDomain,
+      emailVerified: user.emailVerified === true,
+      candidateAccessVerified: false,
       email: user.email || email.value.trim(),
       updatedAt: serverTimestamp(),
     };
@@ -822,20 +877,8 @@ async function submitApplication(event) {
     batch.set(userRef, userData, {merge: true});
     await batch.commit();
 
-    let verificationSent = false;
-    if (!user.emailVerified) {
-      try {
-        await sendEmailVerification(user);
-        verificationSent = true;
-      } catch (verificationError) {
-        console.warn("RECRUITER_EMAIL_VERIFICATION_ERROR", verificationError?.code || "unknown");
-      }
-    }
-
     layout.hidden = true;
-    successMessage.textContent = verificationSent
-      ? "Thank you. We will review your company information and have sent an email verification link to your address."
-      : "Thank you. We will review your company information and contact you using the email address provided.";
+    successMessage.textContent = "Your company email is verified. We will review your company information and contact you using the email address provided.";
     successPanel.hidden = false;
     successPanel.scrollIntoView({behavior: "smooth", block: "start"});
     track("recruiter_application_success", {

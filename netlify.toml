@@ -74,6 +74,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/companies/:slug/jobs"
+  to = "/.netlify/functions/career-site-jobs?slug=:slug"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/v1"
   to = "/.netlify/functions/api-v1"
   status = 200

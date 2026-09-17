@@ -36,6 +36,14 @@ function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function brandedSender(companyName: string) {
+  const configured = cleanText(process.env.RESEND_FROM_EMAIL || "no-reply@mail.careerunified.com", 254);
+  const addressMatch = configured.match(/<([^<>\s]+@[^<>\s]+)>/) || configured.match(/([^<>\s]+@[^<>\s]+)/);
+  const address = addressMatch?.[1] || "no-reply@mail.careerunified.com";
+  const name = cleanText(companyName, 120).replace(/[<>]/g, "") || "Career Unified";
+  return `${name} <${address}>`;
+}
+
 function messageIdFor(applicationId: string, recruiterId: string, clientMessageId: string) {
   return crypto
     .createHash("sha256")
@@ -127,6 +135,7 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    let emailDeliveryAllowed = true;
     if (candidateId) {
       const isApplicationUpdate = APPLICATION_UPDATE_TYPES.has(type);
       const notificationDecision = await userAllowsNotification({
@@ -136,12 +145,7 @@ export const handler: Handler = async (event) => {
         updateType: isApplicationUpdate ? "applicationUpdates" : "recruiterMessages",
         allowWhenMissing: isApplicationUpdate,
       });
-      if (!notificationDecision.allowed) {
-        throw new ApplicationError(
-          409,
-          "This candidate has disabled this type of email notification. The message was not sent.",
-        );
-      }
+      emailDeliveryAllowed = notificationDecision.allowed;
     }
 
     const messageRef = db.doc(
@@ -154,6 +158,8 @@ export const handler: Handler = async (event) => {
         return json(200, origin, {
           messageId: existingMessage.id,
           status: "sent",
+          emailSent: existing.emailSent !== false,
+          portalOnly: existing.emailSent === false,
           message: "This email was already sent.",
         });
       }
@@ -204,6 +210,8 @@ export const handler: Handler = async (event) => {
       type,
       channel: "email",
       status: "sending",
+      delivery: emailDeliveryAllowed ? "email_pending" : "portal_only",
+      emailSent: false,
       subject,
       body: message,
       recipientEmail: candidateEmail,
@@ -213,9 +221,28 @@ export const handler: Handler = async (event) => {
       sentBy: decoded.uid,
     });
 
+    if (!emailDeliveryAllowed) {
+      await messageRef.update({
+        status: "sent",
+        delivery: "portal_only",
+        emailSent: false,
+        sentAt: admin.firestore.Timestamp.now(),
+      });
+
+      return json(201, origin, {
+        messageId: messageRef.id,
+        status: "sent",
+        emailSent: false,
+        portalOnly: true,
+        message: "Message saved to the candidate portal. Email notifications are disabled for this candidate.",
+        remaining: rateLimit.remaining,
+      });
+    }
+
     try {
       const email = await sendTransactionalEmail({
         to: candidateEmail,
+        from: brandedSender(companyName),
         subject,
         text: `${message}\n\nSent through Career Unified`,
         replyTo,
@@ -224,6 +251,8 @@ export const handler: Handler = async (event) => {
 
       await messageRef.update({
         status: "sent",
+        delivery: "email",
+        emailSent: true,
         providerMessageId: email.id || null,
         sentAt: admin.firestore.Timestamp.now(),
       });
@@ -239,6 +268,8 @@ export const handler: Handler = async (event) => {
     return json(201, origin, {
       messageId: messageRef.id,
       status: "sent",
+      emailSent: true,
+      portalOnly: false,
       message: "Candidate email sent.",
       remaining: rateLimit.remaining,
     });

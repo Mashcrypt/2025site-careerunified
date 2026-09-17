@@ -29,13 +29,13 @@ export const SITE_SHELL_STYLES = `
   .site-detail-footer-links a{display:block;margin:9px 0;color:#facc15;font-size:14px;font-weight:650;line-height:1.35;text-decoration:none}
   .site-detail-footer-links a:hover{text-decoration:underline}
   .site-detail-footer-bottom{width:min(1120px,100%);margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.82);text-align:center;font-size:13px}
-  .job-detail-page .main-nav{background:#fff;border-bottom:1px solid #e5e7eb}
-  .job-detail-page .logo,.job-detail-page .nav-links a,.job-detail-page .mobile-logo{color:#1e3a8a}
-  .job-detail-page .nav-links a:hover,.job-detail-page .nav-links a[aria-current="page"]{color:#2563eb}
-  .job-detail-page .desktop-account-btn,.job-detail-page .icon-btn{color:#1e3a8a}
-  .job-detail-page .desktop-account-btn:hover,.job-detail-page .icon-btn:hover{background:#eff6ff;color:#2563eb}
-  .job-detail-page .site-detail-footer{background:#fff;color:#1e3a8a;border-top:1px solid #e5e7eb}
-  .job-detail-page .site-detail-footer-inner{display:block;width:min(1180px,100%)}
+  .job-detail-page .main-nav,.bursary-detail-page .main-nav{background:#fff;border-bottom:1px solid #e5e7eb}
+  .job-detail-page .logo,.job-detail-page .nav-links a,.job-detail-page .mobile-logo,.bursary-detail-page .logo,.bursary-detail-page .nav-links a,.bursary-detail-page .mobile-logo{color:#1e3a8a}
+  .job-detail-page .nav-links a:hover,.job-detail-page .nav-links a[aria-current="page"],.bursary-detail-page .nav-links a:hover,.bursary-detail-page .nav-links a[aria-current="page"]{color:#2563eb}
+  .job-detail-page .desktop-account-btn,.job-detail-page .icon-btn,.bursary-detail-page .desktop-account-btn,.bursary-detail-page .icon-btn{color:#1e3a8a}
+  .job-detail-page .desktop-account-btn:hover,.job-detail-page .icon-btn:hover,.bursary-detail-page .desktop-account-btn:hover,.bursary-detail-page .icon-btn:hover{background:#eff6ff;color:#2563eb}
+  .job-detail-page .site-detail-footer,.bursary-detail-page .site-detail-footer{background:#fff;color:#1e3a8a;border-top:1px solid #e5e7eb}
+  .job-detail-page .site-detail-footer-inner,.bursary-detail-page .site-detail-footer-inner{display:block;width:min(1180px,100%)}
   .job-detail-page .site-detail-footer-main{display:grid;grid-template-columns:minmax(220px,1.15fr) minmax(420px,1.7fr);gap:34px;align-items:start}
   .job-detail-page .site-detail-footer-alerts h2,.job-detail-page .site-detail-footer-column h3{margin:0 0 12px;color:#0f1623}
   .job-detail-page .site-detail-footer-alerts h2{font-family:Georgia,serif;font-size:1.7rem;line-height:1.2}
@@ -58,6 +58,17 @@ export const SITE_SHELL_STYLES = `
   .job-detail-page .site-detail-footer-socials svg{width:18px;height:18px;fill:currentColor}
   .job-detail-page .site-detail-footer-socials a:hover{background:#eff6ff;border-color:#bfdbfe;transform:translateY(-2px)}
   .job-detail-page .site-detail-footer-bottom{width:min(1180px,100%);margin:0 auto;padding-top:0;border-top:0;color:#66738c}
+  .bursary-detail-page .site-detail-footer-main{display:grid;grid-template-columns:minmax(220px,1.15fr) minmax(420px,1.7fr);gap:34px;align-items:start}
+  .bursary-detail-page .site-detail-footer-alerts h2,.bursary-detail-page .site-detail-footer-column h3{margin:0 0 12px;color:#0f1623}
+  .bursary-detail-page .site-detail-footer-alerts h2{font-family:Georgia,serif;font-size:1.7rem;line-height:1.2}
+  .bursary-detail-page .site-detail-footer-alerts p{margin:0;color:#66738c;line-height:1.65}
+  .bursary-detail-page .site-detail-footer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+  .bursary-detail-page .site-detail-footer-column h3{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+  .bursary-detail-page .site-detail-footer-column a{display:block;margin:9px 0;color:#66738c;font-size:14px;font-weight:500;line-height:1.35;text-decoration:none}
+  .bursary-detail-page .site-detail-footer-column a:hover{color:#1d4ed8}
+  .bursary-detail-page .site-detail-footer-socials{display:flex;justify-content:center;gap:18px;width:min(1180px,100%);margin:34px auto 20px;padding-top:24px;border-top:1px solid #e2e8f2}
+  .bursary-detail-page .site-detail-footer-socials a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #d8e0ee;border-radius:12px;background:#fff;color:#2563eb;font-size:18px;font-weight:700;text-decoration:none}
+  .bursary-detail-page .site-detail-footer-bottom{width:min(1180px,100%);margin:0 auto;padding-top:0;border-top:0;color:#66738c}
   @media(max-width:1000px){.site-detail-page .nav-links{gap:11px}.site-detail-page .nav-links a{font-size:14px}}
   @media(max-width:900px){
     .site-detail-page .desktop-nav{display:none}
@@ -68,9 +79,9 @@ export const SITE_SHELL_STYLES = `
     .site-detail-page .mobile-menu a{display:flex;align-items:center;padding:14px 20px;color:#1e3a8a;font-size:15px;font-weight:600;text-decoration:none}
     .site-detail-page .mobile-menu a:hover{background:#f0f7ff}
   }
-  @media(max-width:980px){.job-detail-page .site-detail-footer-main{grid-template-columns:1fr}.job-detail-page .site-detail-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:980px){.job-detail-page .site-detail-footer-main,.bursary-detail-page .site-detail-footer-main{grid-template-columns:1fr}.job-detail-page .site-detail-footer-grid,.bursary-detail-page .site-detail-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:800px){.site-detail-footer-inner{grid-template-columns:1fr}.site-detail-footer-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:560px){.job-detail-page .site-detail-footer{padding:42px 18px 30px}.job-detail-page .site-detail-footer-grid{grid-template-columns:1fr}.job-detail-page .site-detail-footer-alert-row{flex-direction:column}.job-detail-page .site-detail-footer-alert-row button{width:100%}.site-detail-footer-links{grid-template-columns:1fr}.site-detail-footer{padding-inline:16px}}
+  @media(max-width:560px){.job-detail-page .site-detail-footer,.bursary-detail-page .site-detail-footer{padding:42px 18px 30px}.job-detail-page .site-detail-footer-grid,.bursary-detail-page .site-detail-footer-grid{grid-template-columns:1fr}.job-detail-page .site-detail-footer-alert-row,.bursary-detail-page .site-detail-footer-alert-row{flex-direction:column}.job-detail-page .site-detail-footer-alert-row button,.bursary-detail-page .site-detail-footer-alert-row button{width:100%}.site-detail-footer-links{grid-template-columns:1fr}.site-detail-footer{padding-inline:16px}}
 `;
 
 export function renderSiteNavigation(activeSection: ActiveSection) {

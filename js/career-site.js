@@ -44,6 +44,9 @@ async function loadCareerSite() {
   byId("siteTagline").textContent = site.tagline; byId("siteAbout").textContent = site.about;
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;
   byId("contactDetails").textContent = site.contact?.email || "";
+  const structuredData = {"@context":"https://schema.org", "@type":"Organization", name:site.displayName, url:location.origin, logo:site.logo || undefined, sameAs:Object.values(site.socialLinks || {}).filter(Boolean)};
+  const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify(structuredData); document.head.append(schema);
+  const jobPostingList = document.createElement("script"); jobPostingList.type = "application/ld+json"; jobPostingList.textContent = JSON.stringify({"@context":"https://schema.org", "@type":"ItemList", itemListElement:jobs.map((job, index) => ({"@type":"ListItem", position:index + 1, url:`${location.origin}/jobs/${encodeURIComponent(job.slug || job.id)}`, name:job.title}))}); document.head.append(jobPostingList);
   renderJobs();
   const pathJob = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
   const selected = jobs.find(job => job.slug === pathJob || job.id === pathJob);

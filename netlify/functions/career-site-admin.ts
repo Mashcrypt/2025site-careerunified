@@ -20,7 +20,8 @@ export const handler: Handler = async (event) => {
     const snapshot = await ref.get();
     if (!snapshot.exists) return json(404, event.headers.origin, {error: "Company not found."});
     const current = snapshot.data()?.careerSite || {};
-    const next = configFromRecruiter(companyId, snapshot.data() || {}, {...current, displayName: body.displayName, logo: body.logo, tagline: body.tagline, about: body.about, brandColors: body.brandColors, contact: body.contact, socialLinks: body.socialLinks, layout: body.layout === "clean" ? "clean" : "bold", status: body.status === "published" ? "published" : "unpublished", seo: body.seo});
+    const layout = ["bold", "clean", "editorial", "split"].includes(body.layout) ? body.layout : "bold";
+    const next = configFromRecruiter(companyId, snapshot.data() || {}, {...current, displayName: body.displayName, logo: body.logo, tagline: body.tagline, about: body.about, brandColors: body.brandColors, contact: body.contact, socialLinks: body.socialLinks, media: body.media, contentSections: body.contentSections, customCode: body.customCode, widget: body.widget, layout, status: body.status === "published" ? "published" : "unpublished", seo: body.seo});
     await ref.set({careerSite: {...next, createdAt: current.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString()}}, {merge: true});
     return json(200, event.headers.origin, {site: next});
   } catch (error) {
