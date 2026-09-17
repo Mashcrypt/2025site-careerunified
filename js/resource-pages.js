@@ -17,6 +17,9 @@
   const pageName = document.body.dataset.resourcePage
   if (pageName && typeof window.gtag === 'function') {
     window.gtag('event', 'resource_page_view', {resource_page: pageName})
+    if (pageName === 'blog') {
+      window.gtag('event', 'blog_page_view', {page_path: window.location.pathname})
+    }
   }
 
   document.addEventListener('click', (event) => {

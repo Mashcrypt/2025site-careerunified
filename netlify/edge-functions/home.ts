@@ -2,6 +2,7 @@ import {getActiveBursaries, getActiveJobs, getUniversities} from "../lib/sanity.
 
 type EdgeContext = {
   next: () => Promise<Response>;
+  rewrite: (url: URL) => Promise<Response>;
 };
 
 type JobSummary = {
@@ -49,7 +50,15 @@ function replaceFirst(html: string, search: string, replacement: string) {
   return html.includes(search) ? html.replace(search, replacement) : html;
 }
 
-export default async (_request: Request, context: EdgeContext) => {
+export default async (request: Request, context: EdgeContext) => {
+  // The home edge function also matches `/` on wildcard career-site hosts.
+  // Rewrite those requests before the main homepage is rendered.
+  const host = (request.headers.get("x-forwarded-host") || request.headers.get("host") || "")
+    .split(",")[0].trim().toLowerCase().split(":")[0];
+  if (host.endsWith(".careerunified.com") && host !== "www.careerunified.com") {
+    return context.rewrite(new URL("/career-site.html", request.url));
+  }
+
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
 
