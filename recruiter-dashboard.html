@@ -6971,6 +6971,7 @@ function openCareerSitePreview() {
   const selectedLayout = document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig?.layout || 'bold';
   const name = document.getElementById('cp_name')?.value || careerSiteConfig?.displayName || 'Your company';
   const about = document.getElementById('cp_about')?.value || careerSiteConfig?.about || 'Explore opportunities and build your future with us.';
+  const tagline = document.getElementById('careerSiteTagline')?.value || careerSiteConfig?.tagline || 'Find your next opportunity.';
   const logo = document.getElementById('careerSiteLogoPreview')?.src || careerSiteConfig?.logo || '/android-chrome-192x192.png';
   const primary = document.getElementById('careerSiteCustomColor')?.value || careerSiteConfig?.brandColors?.primary || '#0d47ff';
   site.dataset.layout = selectedLayout;
@@ -6978,7 +6979,22 @@ function openCareerSitePreview() {
   document.getElementById('careerPreviewName').textContent = name;
   document.getElementById('careerPreviewHeading').textContent = name;
   document.getElementById('careerPreviewAbout').textContent = about;
+  document.getElementById('careerPreviewTagline').textContent = tagline;
   document.getElementById('careerPreviewLogo').src = logo;
+  document.getElementById('careerPreviewAboutCard').textContent = about;
+  const jobs = recruiterJobsCache.filter(job => job.status === 'active' && !job.deleted && !job.archived);
+  const jobsTarget = document.getElementById('careerPreviewJobs');
+  if (jobsTarget) {
+    jobsTarget.replaceChildren();
+    (jobs.length ? jobs.slice(0, 4) : [{title: 'Example open position', location: 'Your location', type: 'Full-time'}]).forEach(job => {
+      const card = document.createElement('div'); card.className = 'career-preview-card';
+      const title = document.createElement('h4'); title.textContent = job.title || 'Open position';
+      const meta = document.createElement('p'); meta.textContent = [job.location || [job.city, job.country].filter(Boolean).join(', '), job.type].filter(Boolean).join(' · ') || 'Apply through Career Unified';
+      card.append(title, meta); jobsTarget.append(card);
+    });
+  }
+  const previewSocial = document.getElementById('careerPreviewSocial');
+  if (previewSocial) previewSocial.textContent = Object.values(careerSiteConfig?.socialLinks || {}).filter(Boolean).length ? 'Social links included' : 'Add social links in Media & Links';
   modal.hidden = false;
 }
 
@@ -12872,8 +12888,8 @@ document.getElementById('jobAiGenerate')?.addEventListener('click', async () => 
       <div class="career-preview-frame" id="careerPreviewFrame" data-device="desktop">
         <div class="career-preview-site" id="careerSitePreviewSite" data-layout="bold">
           <div class="career-preview-nav"><div class="career-preview-brand"><img id="careerPreviewLogo" src="/android-chrome-192x192.png" alt=""><span id="careerPreviewName">Your company</span></div><span>Open positions</span></div>
-          <div class="career-preview-hero"><h3 id="careerPreviewHeading">Your company</h3><p id="careerPreviewAbout">Explore opportunities and build your future with us.</p><button type="button">View open roles</button></div>
-          <div class="career-preview-body"><div class="career-preview-card"><h4>Example open position</h4><p>Location · Full-time · Apply through Career Unified</p></div><div class="career-preview-card"><h4>Meet the team</h4><p>Your company story and candidate information will appear here.</p></div></div>
+          <div class="career-preview-hero"><h3 id="careerPreviewHeading">Your company</h3><p id="careerPreviewTagline">Find your next opportunity.</p><p id="careerPreviewAbout">Explore opportunities and build your future with us.</p><button type="button">View open roles</button></div>
+          <div class="career-preview-body"><div id="careerPreviewJobs" class="career-preview-jobs"></div><div class="career-preview-card"><h4>About the company</h4><p id="careerPreviewAboutCard">Your company story and candidate information will appear here.</p><small id="careerPreviewSocial"></small></div></div>
           <div class="career-preview-footer"><span>Build your next chapter with us.</span><span>Powered by Career Unified</span></div>
         </div>
       </div>
