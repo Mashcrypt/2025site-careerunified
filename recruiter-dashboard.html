@@ -15,6 +15,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/recruiter-integrations.css">
 
 <!-- Charts (Analytics) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -23,7 +24,7 @@
   /* ======================================================
      SECURITY: HIDE PAGE UNTIL AUTH CHECK
   ====================================================== */
-  body { display: none !important; }
+  body { display: flex !important; }
   body.authorized { display: flex !important; }
 
   /* ======================================================
@@ -86,6 +87,16 @@
   .nav a:hover {
     background: #eef2ff;
     color: #1e3a8a;
+  }
+
+  .nav-section-label {
+    display: block;
+    margin: 20px 14px 7px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
   }
 
   /* ======================================================
@@ -4609,7 +4620,6 @@
 </head>
 
 <body>
-
 <!-- Mobile Header -->
 <div class="mobile-header" style="display: none;">
   <h1 id="mobilePageTitle">Dashboard</h1>
@@ -4658,6 +4668,8 @@
     <a id="peopleNav" onclick="showSection('people', this)"><i class='bx bx-group'></i>Teams</a>
     <a onclick="showSection('billing', this)"><i class='bx bx-credit-card'></i>Packages</a>
     <a onclick="showSection('analytics', this)"><i class='bx bx-bar-chart-alt-2'></i>Analytics</a>
+    <span class="nav-section-label">Settings</span>
+    <a id="integrationsNav" onclick="showSection('integrations', this)"><i class='bx bx-plug'></i>Integrations</a>
     <a data-nav-public-listings onclick="showSection('public-listings', this)"><i class='bx bx-world'></i>View as Member</a>
     <a onclick="logoutUser()"><i class='bx bx-log-out'></i>Logout</a>
   </div>
@@ -5334,7 +5346,7 @@
             </div>
 
             <div class="form-group">
-              <label for="job_description">Job Brief <span class="required-mark">*</span> <button type="button" class="job-ai-write" data-ai-field="job_description"><i class='bx bx-sparkles'></i> Create with AI</button></label>
+              <label for="job_description">Job Brief <span class="required-mark">*</span> <button type="button" class="job-ai-write" data-ai-field="job_all"><i class='bx bx-sparkles'></i> Create all with AI</button></label>
               <textarea id="job_description" class="job-brief-input" name="description" rows="7" required placeholder="Describe the role, its purpose, and the team the successful candidate will join."></textarea>
               <div class="job-plain-toolbar" aria-label="Job brief formatting">
                 <button type="button" data-text-list-target="job_description" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5343,7 +5355,7 @@
             </div>
 
             <div class="form-group">
-                <label for="job_responsibilities">Responsibilities <button type="button" class="job-ai-write" data-ai-field="job_responsibilities"><i class='bx bx-sparkles'></i> Create with AI</button></label>
+                <label for="job_responsibilities">Responsibilities</label>
               <textarea id="job_responsibilities" name="responsibilities" rows="5" placeholder="List the main responsibilities for this role."></textarea>
               <div class="job-plain-toolbar" aria-label="Responsibilities formatting">
                 <button type="button" data-text-list-target="job_responsibilities" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5352,7 +5364,7 @@
             </div>
 
             <div class="form-group">
-                <label for="job_requirements">Requirements and Skills <button type="button" class="job-ai-write" data-ai-field="job_requirements"><i class='bx bx-sparkles'></i> Create with AI</button></label>
+                <label for="job_requirements">Requirements and Skills</label>
               <textarea id="job_requirements" name="requirements" rows="5" placeholder="List required qualifications, experience, and skills."></textarea>
               <div class="job-plain-toolbar" aria-label="Requirements formatting">
                 <button type="button" data-text-list-target="job_requirements" data-list-prefix="- " title="Add a bullet list"><i class='bx bx-list-ul'></i></button>
@@ -5873,6 +5885,23 @@
           <div class="media-intro">
             <h3>Media &amp; Links</h3>
             <div class="subhead">Show candidates what it's like to work at your company.</div>
+          </div>
+
+          <div class="media-section">
+            <div>
+              <h4>Career site banner</h4>
+              <p class="setting-copy">Add a wide company or workplace image for the career-site hero area.</p>
+            </div>
+            <div class="media-fields">
+              <div class="media-field">
+                <label for="careerSiteBannerImage">Banner image URL</label>
+                <div class="media-input-wrap">
+                  <input id="careerSiteBannerImage" type="url" class="form-input" placeholder="https://.../company-banner.jpg">
+                  <button class="media-open-link" type="button" aria-label="Open banner image link"><i class='bx bx-link-external'></i></button>
+                </div>
+                <small class="setting-copy">Use a public HTTPS image URL. The blue background remains as a fallback.</small>
+              </div>
+            </div>
           </div>
 
           <div class="media-section">
@@ -6449,6 +6478,51 @@
     </form>
   </div>
 
+  <!-- INTEGRATIONS -->
+  <div id="integrations" class="section">
+    <div class="integrations-page">
+      <div class="integrations-heading">
+        <div>
+          <h2>Integration</h2>
+          <p>Connect and manage the tools your recruiting team uses every day.</p>
+        </div>
+        <label class="integration-top-search" for="integrationSearch">
+          <i class="bx bx-search" aria-hidden="true"></i>
+          <input id="integrationSearch" type="search" placeholder="Search anything..." aria-label="Search integrations">
+        </label>
+      </div>
+
+      <div class="integration-summary-grid" aria-label="Integration summary">
+        <div class="integration-summary-card"><span><i class="bx bx-check-circle"></i> Connected Integrations</span><strong id="integrationConnectedMetric">0</strong><small id="integrationConnectedTotal">/12</small></div>
+        <div class="integration-summary-card"><span><i class="bx bx-cog"></i> Unconfigured</span><strong id="integrationUnconfiguredMetric">0</strong><small>controls</small></div>
+        <div class="integration-summary-card"><span><i class="bx bx-heart-circle"></i> Healthy Integrations</span><strong id="integrationHealthyMetric">0</strong><small id="integrationHealthyTotal">/12</small></div>
+      </div>
+
+      <div class="integration-filter-row">
+        <div class="integration-category-pills" id="integrationCategoryPills" aria-label="Integration categories"></div>
+        <select id="integrationCategory" aria-label="Filter integrations by category"></select>
+      </div>
+      <div id="integrationGroups"></div>
+      <div class="integration-empty-state" id="integrationEmptyState" hidden>No integrations match your search or category filter.</div>
+    </div>
+  </div>
+
+  <div class="integration-confirm-modal" id="integrationConfirmModal" role="dialog" aria-modal="true" aria-labelledby="integrationModalTitle" hidden>
+    <div class="integration-confirm-dialog">
+      <h3 id="integrationModalTitle">Connect integration</h3>
+      <p id="integrationModalDescription"></p>
+      <div class="integration-scope-box">
+        <strong>Permissions this integration will need in a future live connection</strong>
+        <ul id="integrationModalScopes"></ul>
+      </div>
+      <p class="integration-modal-note" id="integrationModalNote"></p>
+      <div class="integration-confirm-actions">
+        <button class="primary-btn btn-ghost" id="integrationModalCancel" type="button">Cancel</button>
+        <button class="primary-btn" id="integrationModalConfirm" type="button">Confirm connection</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BILLING -->
   <div id="billing" class="section">
     <div class="recruiter-pricing-head">
@@ -6708,6 +6782,7 @@
 </div>
 
 <!-- ================= SCRIPT ================= -->
+<script src="/js/recruiter-integrations.js"></script>
 <script>
 /* ======================================================
    NAVIGATION
@@ -6717,7 +6792,7 @@ function showSection(id, el) {
   document.getElementById(id).classList.add('active');
   document.querySelector('.main')?.classList.toggle('post-job-open', id === 'post-job');
 
-  const isStandaloneSettingsPage = id === 'career-site' || id === 'people';
+  const isStandaloneSettingsPage = id === 'career-site' || id === 'people' || id === 'integrations';
   document.getElementById('recruiterDashboardToolbar')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
   document.getElementById('recruiterDashboardStats')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
 
@@ -6827,7 +6902,7 @@ async function loadCareerSiteSettings() {
     const media = careerSiteConfig.media || {};
     const social = careerSiteConfig.socialLinks || {};
     const setCareerField = (id, value) => { const field = document.getElementById(id); if (field && value) field.value = value; };
-    setCareerField('careerSiteYoutube', media.youtube); setCareerField('careerSiteVimeo', media.vimeo);
+    setCareerField('careerSiteBannerImage', media.bannerImage); setCareerField('careerSiteYoutube', media.youtube); setCareerField('careerSiteVimeo', media.vimeo);
     setCareerField('socialWebsite', social.website); setCareerField('socialFacebook', social.facebook); setCareerField('socialX', social.twitter); setCareerField('socialLinkedin', social.linkedin); setCareerField('socialInstagram', social.instagram);
     const widgetGroup = careerSiteConfig.widget?.groupBy || 'none'; const widgetRadio = document.querySelector(`input[name="widgetGroup"][value="${widgetGroup}"]`); if (widgetRadio) widgetRadio.checked = true;
     const urlElement = document.getElementById('careerSiteUrl');
@@ -7030,6 +7105,7 @@ async function saveCareerSiteGeneral() {
 
 async function saveCareerSiteMedia() {
   const data = {
+    bannerImage: document.getElementById('careerSiteBannerImage')?.value,
     youtube: document.getElementById('careerSiteYoutube')?.value,
     vimeo: document.getElementById('careerSiteVimeo')?.value,
     social: {
@@ -8615,6 +8691,13 @@ onAuthStateChanged(auth, async (user) => {
     currentRecruiter = user;
     window.currentRecruiter = user;
     workspaceCompanyId = token.claims.companyId || user.uid;
+    workspaceCompanyId = await resolveRecruiterWorkspace(user.uid, workspaceCompanyId);
+    window.initRecruiterIntegrations?.({
+      companyId: workspaceCompanyId,
+      userId: user.uid,
+      getIdToken: () => user.getIdToken(),
+      canManage: user.uid === workspaceCompanyId || token.claims.recruiterRole === 'Administrator',
+    });
 
   await loadRecruiterData();
   await loadCompanyProfile();          // ✅ NEW
@@ -8632,6 +8715,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   document.body.classList.add('authorized');
+  renderRecruiterInbox();
 
   // Wire company form
   document.getElementById('companyForm')?.addEventListener('submit', async (e) => {
@@ -8766,8 +8850,22 @@ async function loadRecruiterData() {
 
   } catch (error) {
     console.error('Error loading recruiter data:', error);
+    showToast?.('error', 'Recruiter profile could not be read', `Firestore rejected recruiters/${workspaceCompanyId || currentRecruiter?.uid}. Check the recruiter claim and workspace ID.`, 7000);
     recruiterData = { plan: 'free', singleJobCredits: 0, unlocksRemaining: 10, unlockedCVs: [] };
   }
+}
+
+async function resolveRecruiterWorkspace(userId, claimedCompanyId) {
+  const candidates = [...new Set([claimedCompanyId, userId].filter(Boolean))];
+  for (const companyId of candidates) {
+    try {
+      const snapshot = await getDoc(doc(db, 'recruiters', companyId));
+      if (snapshot.exists()) return companyId;
+    } catch (error) {
+      console.warn('Unable to inspect recruiter workspace', companyId, error);
+    }
+  }
+  return claimedCompanyId || userId;
 }
 
 /* ======================================================
@@ -8804,6 +8902,7 @@ async function loadCompanyProfile() {
 
   } catch (err) {
     console.error("loadCompanyProfile error:", err);
+    showToast?.('error', 'Company profile could not be read', `Firestore rejected recruiters/${workspaceCompanyId || currentRecruiter?.uid}.`, 7000);
     companyProfile = null;
     companyProfileVersion = "";
     updateCompanyPills();
@@ -9928,6 +10027,7 @@ async function loadManageJobs() {
   } catch (err) {
     console.error("loadManageJobs error:", err);
     wrap.innerHTML = `<p style="color:#ef4444;">Failed to load your jobs.</p>`;
+    renderRecruiterInbox();
   }
 }
 
@@ -10468,6 +10568,9 @@ async function loadRecruiterApplications() {
   } catch (error) {
     console.error("loadRecruiterApplications error:", error);
     list.innerHTML = `<p style="color:#b91c1c;">${escapeDashboard(error?.message, 'Applications could not be loaded. Please refresh and try again.')}</p>`;
+    renderRecruiterInbox();
+    const summary = document.getElementById('recruiterInboxSummary');
+    if (summary) summary.textContent = 'Inbox data could not be loaded. Use Refresh to try again.';
   }
 }
 
@@ -10775,6 +10878,14 @@ function localInterviewValue(value) {
 
 function interviewMarkup(application) {
   const interview = application.interviewSchedule || {};
+  const hasGoogleCalendar = window.recruiterIntegrations?.some?.(i => i.providerId === 'google-calendar' && i.status === 'connected') || false;
+  const hasOffice365Calendar = window.recruiterIntegrations?.some?.(i => i.providerId === 'office-365-calendar' && i.status === 'connected') || false;
+  const hasCalendar = hasGoogleCalendar || hasOffice365Calendar;
+  
+  let calendarOptions = '<option value="">No external calendar</option>';
+  if (hasGoogleCalendar) calendarOptions += '<option value="google-calendar">Google Calendar</option>';
+  if (hasOffice365Calendar) calendarOptions += '<option value="office-365-calendar">Office 365 Calendar</option>';
+  
   return `
     <form class="structured-section structured-form" id="applicationInterviewForm" data-application-id="${escapeDashboard(application.id)}">
       <div class="structured-section-head">
@@ -10796,6 +10907,11 @@ function interviewMarkup(application) {
           </select>
         </label>
         <label>Location or meeting link<input name="locationOrLink" maxlength="500" value="${escapeDashboard(interview.locationOrLink)}" placeholder="Office address or secure meeting link"></label>
+        ${hasCalendar ? `<label>External calendar
+          <select name="calendarProvider">
+            ${calendarOptions}
+          </select>
+        </label>` : ''}
       </div>
       <label style="margin-top:12px;">Candidate instructions<textarea name="notes" maxlength="1200" placeholder="Arrival instructions, contact person, or what to prepare">${escapeDashboard(interview.notes)}</textarea></label>
       <div class="structured-form-actions">
@@ -10956,21 +11072,106 @@ async function saveApplicationInterview(form) {
     locationOrLink: data.get('locationOrLink'),
     notes: data.get('notes'),
   };
+  const calendarProvider = data.get('calendarProvider') || '';
   try {
     await postApplicationUpdate(applicationId, {status: 'interview', interview});
     const application = recruiterApplicationsCache.find(item => item.id === applicationId);
     if (application) Object.assign(application, {status: 'interview', interviewSchedule: interview});
+    
+    // Create external calendar event if a calendar provider is selected
+    let calendarEventCreated = false;
+    let calendarResult = {};
+    if (calendarProvider && (calendarProvider === 'google-calendar' || calendarProvider === 'office-365-calendar')) {
+      try {
+        const token = await currentRecruiter.getIdToken();
+        const candidate = application?.candidateSnapshot || {};
+        const job = application?.jobSnapshot || {};
+        const candidateName = dashboardText(candidate.fullName, 'Candidate');
+        const role = dashboardText(job.title, 'Interview');
+        const company = dashboardText(job.company || companyProfile?.name, 'the recruitment team');
+        const attendees = [];
+        if (candidate.email) attendees.push({email: candidate.email, displayName: candidate.fullName || 'Candidate'});
+        if (companyProfile?.email) attendees.push({email: companyProfile.email, displayName: company});
+        
+        const calendarResponse = await fetch('/.netlify/functions/calendar-interview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            action: 'create-event',
+            providerId: calendarProvider,
+            applicationId,
+            interviewId: applicationId,
+            summary: `Interview: ${role} with ${candidateName}`,
+            description: `Interview for ${role} at ${company}.\n\n${interview.notes || ''}`,
+            location: interview.locationOrLink || '',
+            start: interview.startsAt,
+            end: new Date(new Date(interview.startsAt).getTime() + interview.durationMinutes * 60000).toISOString(),
+            timeZone: interview.timezone,
+            attendees,
+            conferenceData: ['teams', 'zoom', 'google_meet'].includes(interview.mode),
+            isOnlineMeeting: ['teams', 'zoom', 'google_meet'].includes(interview.mode),
+          }),
+        });
+        calendarResult = await calendarResponse.json().catch(() => ({}));
+        if (calendarResponse.ok && calendarResult.eventId) {
+          calendarEventCreated = true;
+          // Save calendar event metadata on the application
+          await postApplicationUpdate(applicationId, {
+            interviewSchedule: {
+              ...interview,
+              providerEventId: calendarResult.eventId,
+              providerCalendarId: calendarProvider === 'google-calendar' ? 'primary' : 'primary',
+              providerId: calendarProvider,
+              hangoutLink: calendarResult.hangoutLink || '',
+              webLink: calendarResult.webLink || calendarResult.htmlLink || '',
+              onlineMeetingJoinUrl: calendarResult.onlineMeeting?.joinUrl || '',
+            },
+          });
+          if (application) {
+            application.interviewSchedule = {
+              ...interview,
+              providerEventId: calendarResult.eventId,
+              providerCalendarId: calendarProvider === 'google-calendar' ? 'primary' : 'primary',
+              providerId: calendarProvider,
+              hangoutLink: calendarResult.hangoutLink || '',
+              webLink: calendarResult.webLink || calendarResult.htmlLink || '',
+              onlineMeetingJoinUrl: calendarResult.onlineMeeting?.joinUrl || '',
+            };
+          }
+        }
+      } catch (calendarError) {
+        console.error('Calendar event creation error:', calendarError);
+        showToast('warn', 'Calendar event not created', 'The interview was saved but the external calendar event could not be created.', 4200);
+      }
+    }
+    
     let candidateNotified = false;
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dashboardText(application?.candidateSnapshot?.email))) {
       const role = dashboardText(application?.jobSnapshot?.title, 'your application');
       const company = dashboardText(application?.jobSnapshot?.company || companyProfile?.name, 'the recruitment team');
       const when = startsAt.toLocaleString('en-ZA', {dateStyle: 'full', timeStyle: 'short'});
       const method = dashboardText(form.elements.namedItem('mode')?.selectedOptions?.[0]?.textContent, 'Interview');
+      let message = `Hi ${dashboardText(application?.candidateSnapshot?.fullName, 'there')},\n\nYour interview for ${role} has been scheduled for ${when}.\nMethod: ${method}${interview.locationOrLink ? `\nLocation or link: ${interview.locationOrLink}` : ''}${interview.notes ? `\n\nPreparation notes:\n${interview.notes}` : ''}`;
+      if (calendarEventCreated) {
+        const calendarName = calendarProvider === 'google-calendar' ? 'Google Calendar' : 'Office 365 Calendar';
+        message += `\n\nThe interview has been added to your ${calendarName}.`;
+        if (calendarProvider === 'google-calendar' && calendarResult.hangoutLink) {
+          message += `\nVideo meeting link: ${calendarResult.hangoutLink}`;
+        } else if (calendarProvider === 'office-365-calendar' && calendarResult.onlineMeeting?.joinUrl) {
+          message += `\nVideo meeting link: ${calendarResult.onlineMeeting.joinUrl}`;
+        } else if (calendarResult.webLink) {
+          message += `\nCalendar event: ${calendarResult.webLink}`;
+        }
+      }
+      message += `\n\nYou can also view these details in your Career Unified application profile.\n\nKind regards,\n${company}`;
       try {
         await postApplicationMessage(applicationId, {
           type: 'interview',
           subject: `Interview details: ${role}`,
-          message: `Hi ${dashboardText(application?.candidateSnapshot?.fullName, 'there')},\n\nYour interview for ${role} has been scheduled for ${when}.\nMethod: ${method}${interview.locationOrLink ? `\nLocation or link: ${interview.locationOrLink}` : ''}${interview.notes ? `\n\nPreparation notes:\n${interview.notes}` : ''}\n\nYou can also view these details in your Career Unified application profile.\n\nKind regards,\n${company}`,
+          message,
           clientMessageId: nextApplicationMessageId(),
         });
         candidateNotified = true;
@@ -11032,9 +11233,41 @@ function downloadInterviewCalendar(applicationId) {
 async function cancelApplicationInterview(applicationId) {
   if (!confirm('Cancel the saved interview details?')) return;
   try {
-    await postApplicationUpdate(applicationId, {interview: {status: 'cancelled'}});
     const application = recruiterApplicationsCache.find(item => item.id === applicationId);
-    if (application) application.interviewSchedule = {status: 'cancelled'};
+    const interview = application?.interviewSchedule || {};
+    const providerEventId = interview.providerEventId;
+    const providerId = interview.providerId;
+    const providerCalendarId = interview.providerCalendarId;
+    
+    // Cancel external calendar event if one exists
+    if (providerEventId && providerId && (providerId === 'google-calendar' || providerId === 'office-365-calendar')) {
+      try {
+        const token = await currentRecruiter.getIdToken();
+        await fetch('/.netlify/functions/calendar-interview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            action: 'delete-event',
+            providerId,
+            applicationId,
+            interviewId: applicationId,
+            eventId: providerEventId,
+            calendarId: providerCalendarId || 'primary',
+            sendUpdates: 'all',
+          }),
+        });
+      } catch (calendarError) {
+        console.error('Calendar event cancellation error:', calendarError);
+        showToast('warn', 'Calendar event not cancelled', 'The interview was cancelled but the external calendar event could not be removed.', 4200);
+      }
+    }
+    
+    await postApplicationUpdate(applicationId, {interview: {status: 'cancelled'}});
+    const updatedApplication = recruiterApplicationsCache.find(item => item.id === applicationId);
+    if (updatedApplication) updatedApplication.interviewSchedule = {status: 'cancelled'};
     showToast('success', 'Interview cancelled', 'The saved interview details were removed from the candidate view.', 3200);
     await openRecruiterApplication(applicationId);
   } catch (error) {
@@ -11097,8 +11330,8 @@ function applicationEmailTemplate(application, type = 'application_update') {
       message: `Hi ${name},\n\nWe are pleased to let you know that we would like to progress your application for ${role} to the offer stage. We will share the formal details and next steps with you shortly.\n\nKind regards,\n${company}`,
     },
     outcome: {
-      subject: `Application outcome: ${role}`,
-      message: `Hi ${name},\n\nThank you for the time and effort you invested in applying for ${role}. After careful consideration, we will not be progressing your application further. We appreciate your interest and wish you well with your job search.\n\nKind regards,\n${company}`,
+      subject: `Notification of Application Status: ${role} at ${company}`,
+      message: `Hi ${name},\n\nThank you for applying for ${role} at ${company} and for the time you invested in your application. After careful consideration, we have decided not to move forward with your application for this role.\n\nThis decision is specific to this opportunity, and we encourage you to apply again for future roles at ${company} that match your experience and interests. We wish you every success in your job search.\n\nKind regards,\n${company}`,
     },
     custom: {
       subject: `Your application for ${role}`,
@@ -11130,7 +11363,7 @@ function applicationMessageHistoryMarkup(messages) {
       <h4>Sent email history</h4>
       ${sentMessages.slice(0, 8).map(message => `
         <details class="application-message-item">
-          <summary>${escapeDashboard(message.subject, 'Candidate update')} <span>· ${escapeDashboard(applicationMessageDate(message.sentAt || message.createdAt))}</span></summary>
+          <summary>${escapeDashboard(message.subject, 'Candidate update')} <span>· ${escapeDashboard(message.senderProvider === 'gmail' ? 'Gmail' : message.senderProvider === 'outlook-email' ? 'Outlook Email' : 'Career Unified')} · ${escapeDashboard(applicationMessageDate(message.sentAt || message.createdAt))}</span></summary>
           <p>${escapeDashboard(message.body)}</p>
         </details>`).join('')}
     </div>`;
@@ -11341,6 +11574,13 @@ async function openRecruiterApplication(applicationId) {
           ${hasCandidateEmail ? `
             <form class="application-message-composer" id="applicationMessageForm" data-application-id="${escapeDashboard(applicationId)}" hidden>
               <div class="application-message-grid">
+                <label>Send from
+                  <select id="applicationMessageSender" name="senderProvider">
+                    <option value="resend">Career Unified</option>
+                    <option value="gmail" disabled>Gmail · Connect in Integrations</option>
+                    <option value="outlook-email" disabled>Outlook · Connect in Integrations</option>
+                  </select>
+                </label>
                 <label>Email type
                   <select id="applicationMessageType" name="type">
                     <option value="application_update">Application update</option>
@@ -11348,7 +11588,7 @@ async function openRecruiterApplication(applicationId) {
                     <option value="request_information">Request information</option>
                     <option value="interview">Interview invitation</option>
                     <option value="offer">Offer stage</option>
-                    <option value="outcome">Application outcome</option>
+                    <option value="outcome">Rejection email</option>
                     <option value="custom">Write a custom message</option>
                   </select>
                 </label>
@@ -11395,6 +11635,7 @@ async function openRecruiterApplication(applicationId) {
     </div>`;
 
   modal.hidden = false;
+  window.updateRecruiterEmailAccountSelectors?.();
   document.body.style.overflow = "hidden";
   activateCandidateReviewTab("application");
 }
@@ -11566,6 +11807,7 @@ async function openApplicationCv(applicationId, download = false, triggerButton 
 async function sendRecruiterApplicationMessage(form) {
   const applicationId = dashboardText(form.dataset.applicationId);
   const type = dashboardText(form.querySelector('[name="type"]')?.value, 'application_update');
+  const senderProvider = dashboardText(form.querySelector('[name="senderProvider"]')?.value, 'resend');
   const subject = dashboardText(form.querySelector('[name="subject"]')?.value);
   const message = dashboardText(form.querySelector('[name="message"]')?.value);
   const submitButton = form.querySelector('button[type="submit"]');
@@ -11583,6 +11825,7 @@ async function sendRecruiterApplicationMessage(form) {
   try {
     const result = await postApplicationMessage(applicationId, {
       type,
+      senderProvider,
       subject,
       message,
       clientMessageId: nextApplicationMessageId(),
@@ -12860,12 +13103,34 @@ document.getElementById('jobAiGenerate')?.addEventListener('click', async () => 
       const currentValue = fieldValue(name);
       return currentValue ? `${label}: ${currentValue}` : '';
     }).filter(Boolean).join('\n');
-    const response = await fetch('/.netlify/functions/generate-job-section', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify({field: jobAiField, prompt: jobAiPrompt.value, context})});
+    const sectionFields = [
+      ['Current Job Brief', 'description'],
+      ['Current Responsibilities', 'responsibilities'],
+      ['Current Requirements and Skills', 'requirements']
+    ].map(([label, name]) => {
+      const currentValue = fieldValue(name);
+      return currentValue ? `${label}:\n${currentValue}` : '';
+    }).filter(Boolean).join('\n');
+    const fullContext = [context, sectionFields].filter(Boolean).join('\n');
+    const response = await fetch('/.netlify/functions/generate-job-section', {method: 'POST', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify({field: jobAiField, prompt: jobAiPrompt.value, context: fullContext})});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Could not generate a draft.');
-    const target = document.getElementById(jobAiField);
-    target.value = result.text;
-    target.dispatchEvent(new Event('input', {bubbles: true}));
+    if (jobAiField === 'job_all') {
+      let drafts = result.sections || result.text;
+      if (typeof drafts === 'string') {
+        try { drafts = JSON.parse(drafts.replace(/^```json\s*|```$/g, '').trim()); } catch { drafts = null; }
+      }
+      if (!drafts?.jobDescription || !drafts?.responsibilities || !drafts?.requirements) throw new Error('The writing assistant returned an incomplete draft. Please try again.');
+      [['job_description', drafts.jobDescription], ['job_responsibilities', drafts.responsibilities], ['job_requirements', drafts.requirements]].forEach(([id, value]) => {
+        const target = document.getElementById(id);
+        target.value = value;
+        target.dispatchEvent(new Event('input', {bubbles: true}));
+      });
+    } else {
+      const target = document.getElementById(jobAiField);
+      target.value = result.text;
+      target.dispatchEvent(new Event('input', {bubbles: true}));
+    }
     jobAiModal.hidden = true;
   } catch (error) { jobAiStatus.textContent = error.message; }
   finally { button.disabled = false; }

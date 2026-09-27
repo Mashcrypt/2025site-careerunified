@@ -158,10 +158,12 @@ export const handler: Handler = async event => {
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
     exportStage = "chromium-path";
-    // Netlify functions can only write to /tmp. Supplying the extraction path
-    // avoids the package default resolving to the unavailable /var/bin path.
+    // Let @sparticuz/chromium choose its writable temporary extraction path.
+    // Passing a guessed directory can make Netlify resolve the bundled binary
+    // to an unavailable path such as /var/bin.
     chromium.graphicsMode = false;
-    const executablePath = await chromium.executablePath("/tmp/chromium");
+    const executablePath = process.env.CHROMIUM_PATH || await chromium.executablePath();
+    if (!executablePath) throw new Error("Chromium executable path is unavailable.");
     exportStage = "chromium-launch";
     const browser = await puppeteer.launch({
       args: chromium.args,

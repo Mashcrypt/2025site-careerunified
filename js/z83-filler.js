@@ -28,12 +28,12 @@
 
   const rowTemplates = {
     language: () => row('language', `
-      <label>Language<input data-field="language" maxlength="24"></label>
+      <label>Language<input data-field="language" list="southAfricanLanguages" maxlength="40" autocomplete="off"></label>
       ${ratingSelect('speak', 'Speak')}
       ${ratingSelect('readWrite', 'Write or read')}
     `),
     education: () => row('education', `
-      <label>School or college<input data-field="institution"></label>
+      <label>School or college<input data-field="institution" list="southAfricanInstitutions" autocomplete="off"></label>
       <label>Qualification obtained<input data-field="qualification"></label>
       <label>Year obtained<input data-field="year" inputmode="numeric" maxlength="4"></label>
     `),

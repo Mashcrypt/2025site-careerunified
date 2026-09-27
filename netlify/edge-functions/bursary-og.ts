@@ -300,8 +300,8 @@ export default async (request: Request) => {
     .description-link:hover,.description-link:focus-visible{color:#1d4ed8}
     .actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:16px;font-weight:700;text-decoration:none;text-align:center}
-    .btn.green{background:#16a34a;color:#fff}
-    .btn.green:hover{background:#15803d}
+    .btn.green{background:#2563eb;color:#fff}
+    .btn.green:hover{background:#1d4ed8}
     .external-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.3}
     .swipe-hint{display:none}
     @media(max-width:680px){

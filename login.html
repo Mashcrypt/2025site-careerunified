@@ -567,8 +567,12 @@ document.getElementById('togglePassword').onclick = () => {
 /* ================= REDIRECT BASED ON CLAIMS ================= */
 async function redirectUser(user) {
   try {
-    const tokenResult = await getIdTokenResult(user);
-    if (tokenResult.claims.recruiter) {
+    let tokenResult = await getIdTokenResult(user, true);
+    for (let attempt = 0; !tokenResult.claims.recruiter && attempt < 3; attempt += 1) {
+      await new Promise(resolve => setTimeout(resolve, 900));
+      tokenResult = await getIdTokenResult(user, true);
+    }
+    if (tokenResult.claims.recruiter === true) {
       window.location.href = "recruiter-dashboard.html";
     } else {
       const returnUrl = sessionStorage.getItem("careerUnifiedReturnUrl");
@@ -629,6 +633,14 @@ loginBtn.onclick = async () => {
       message = 'This account has been disabled.';
     } else if (error.code === 'auth/too-many-requests') {
       message = 'Too many failed attempts. Please try again later.';
+    } else if (error.code === 'auth/invalid-credential') {
+      message = 'The email or password is incorrect. Please try again.';
+    } else if (error.code === 'auth/network-request-failed') {
+      message = 'Network error. Check your connection and try again.';
+    } else if (error.code === 'auth/operation-not-allowed') {
+      message = 'Email and password sign-in is disabled in Firebase Authentication.';
+    } else if (error.code === 'auth/unauthorized-domain') {
+      message = 'This local address is not authorized in Firebase Authentication. Add localhost to Firebase authorized domains.';
     }
     
     showError(message);

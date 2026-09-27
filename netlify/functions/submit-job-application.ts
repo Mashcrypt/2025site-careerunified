@@ -106,12 +106,14 @@ function applicationConfirmationEmail({
   fullName,
   jobTitle,
   companyName,
+  companyLogo,
   applicationId,
   submittedAt,
 }: {
   fullName: string;
   jobTitle: string;
   companyName: string;
+  companyLogo?: string;
   applicationId: string;
   submittedAt: Date;
 }) {
@@ -121,6 +123,9 @@ function applicationConfirmationEmail({
     dateStyle: "long",
     timeZone: "Africa/Johannesburg",
   }).format(submittedAt);
+  const logo = /^https:\/\//i.test(companyLogo || "")
+    ? `<img src="${escapeEmailHtml(companyLogo)}" alt="${escapeEmailHtml(companyName)}" width="120" style="display:block;max-width:120px;height:auto;margin:0 auto 10px;">`
+    : "";
   const subject = `Application received: ${jobTitle}`;
   const text = `Hi ${firstName},
 
@@ -139,7 +144,8 @@ The recruiter will contact you directly or update your application when there is
 
 Good luck with your application.
 
-Career Unified`;
+  Sincerely,
+  ${companyName}`;
   const html = `<!doctype html>
 <html lang="en">
   <body style="margin:0;background:#f4f7fb;color:#14213d;font-family:Arial,sans-serif;">
@@ -164,7 +170,10 @@ Career Unified`;
             <p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#475467;">Follow your progress from <strong>Profile &gt; My Applications</strong>. You can also review your submission, withdraw it, or make any available changes there.</p>
             <p style="margin:0 0 24px;"><a href="${escapeEmailHtml(applicationsUrl)}" style="display:inline-block;background:#2864dc;color:#ffffff;text-decoration:none;font-weight:700;padding:13px 20px;">View My Applications</a></p>
             <p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#667085;">The recruiter will contact you directly or update your application when there is news. You do not need to apply again for this vacancy.</p>
-            <p style="margin:24px 0 0;font-size:16px;color:#344054;">Good luck with your application.<br><strong>Career Unified</strong></p>
+            <p style="margin:24px 0 0;font-size:16px;color:#344054;">Good luck with your application.</p>
+          </td></tr>
+          <tr><td style="padding:20px 30px 26px;border-top:1px solid #e5eaf2;text-align:center;color:#667085;font-size:13px;">
+            ${logo}<div>Sincerely,<br><strong>${escapeEmailHtml(companyName)}</strong></div>
           </td></tr>
         </table>
       </td></tr>
@@ -670,6 +679,7 @@ export const handler: Handler = async (event) => {
       jobSnapshot: {
         title: cleanText(job.title || job.jobTitle, 200),
         company: cleanText(job.company || job.companyName, 160),
+        companyLogo: cleanText(job.logo || job.companyLogo, 2000),
         location: cleanText(job.location || [job.city, job.country].filter(Boolean).join(", "), 160),
         slug: cleanText(job.slug, 220),
         deadline: cleanText(job.deadline, 80),
@@ -770,6 +780,7 @@ export const handler: Handler = async (event) => {
       fullName,
       jobTitle: application.jobSnapshot.title || "this position",
       companyName: application.jobSnapshot.company || "the employer",
+      companyLogo: application.jobSnapshot.companyLogo || "",
       applicationId,
       submittedAt: now.toDate(),
     });

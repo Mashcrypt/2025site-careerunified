@@ -18,12 +18,60 @@ function renderJobs() {
 }
 
 function renderDetail(job) {
-  byId("jobList").hidden = true; byId("jobDetail").hidden = false;
+  byId("jobDetail").hidden = false;
   byId("detailTitle").textContent = job.title;
   byId("detailMeta").textContent = [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
-  byId("detailDescription").textContent = job.description;
+  renderFormattedText(byId("detailDescription"), job.overview || job.description);
+  renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
+  renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
+  renderCompanySocialLinks();
   byId("applyLink").href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
   history.replaceState({}, "", `/?job=${encodeURIComponent(job.slug || job.id)}`);
+  document.body.classList.add("job-detail-open");
+}
+
+function renderCompanySocialLinks() {
+  const container = byId("companySocialLinks");
+  container.replaceChildren();
+  const links = [
+    ["linkedin", "LinkedIn", "in"], ["twitter", "X", "X"],
+    ["instagram", "Instagram", "◎"], ["facebook", "Facebook", "f"]
+  ].filter(([key]) => /^https:\/\//i.test(text(site.socialLinks?.[key])));
+  if (!links.length) { container.hidden = true; return; }
+  container.hidden = false;
+  const label = document.createElement("span"); label.className = "company-social-label"; label.textContent = "Follow this employer"; container.append(label);
+  links.forEach(([key, name, icon]) => { const link = document.createElement("a"); link.href = site.socialLinks[key]; link.target = "_blank"; link.rel = "noopener noreferrer"; link.className = `company-social-link company-social-${key}`; link.title = `Follow on ${name}`; link.setAttribute("aria-label", `Follow on ${name}`); link.innerHTML = `<span aria-hidden="true">${icon}</span>`; container.append(link); });
+}
+
+function closeDetail() {
+  byId("jobDetail").hidden = true;
+  document.body.classList.remove("job-detail-open");
+  history.pushState({}, "", "/");
+}
+
+function renderFormattedText(container, value) {
+  container.replaceChildren();
+  const lines = text(value).split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  let list = null;
+  lines.forEach(line => {
+    const bullet = line.match(/^[-*]\s+(.*)$/);
+    const numbered = line.match(/^\d+[.)]\s+(.*)$/);
+    if (bullet || numbered) {
+      const type = numbered ? "ol" : "ul";
+      if (!list || list.tagName.toLowerCase() !== type) { list = document.createElement(type); container.append(list); }
+      const item = document.createElement("li"); item.textContent = (bullet || numbered)[1]; list.append(item);
+      return;
+    }
+    list = null;
+    const paragraph = document.createElement("p"); paragraph.textContent = line; container.append(paragraph);
+  });
+}
+
+function renderDetailSection(sectionId, contentId, value) {
+  const section = byId(sectionId); const content = byId(contentId);
+  const present = Boolean(text(value));
+  section.hidden = !present;
+  if (present) renderFormattedText(content, value);
 }
 
 async function loadCareerSite() {
@@ -40,6 +88,8 @@ async function loadCareerSite() {
   byId("ogDescription").content = site.seo?.description || "Explore open roles and careers.";
   document.documentElement.style.setProperty("--primary", site.brandColors?.primary || "#0d47ff");
   document.body.dataset.layout = site.layout || "bold";
+  const bannerImage = text(site.media?.bannerImage);
+  if (bannerImage) document.documentElement.style.setProperty("--hero-image", `url("${bannerImage.replace(/"/g, "\\\"")}")`);
   byId("siteName").textContent = site.displayName; byId("siteHeading").textContent = site.displayName;
   byId("siteTagline").textContent = site.tagline; byId("siteAbout").textContent = site.about;
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;
@@ -55,5 +105,7 @@ async function loadCareerSite() {
 }
 
 byId("jobSearch")?.addEventListener("input", renderJobs);
-byId("backToJobs")?.addEventListener("click", event => { event.preventDefault(); byId("jobDetail").hidden = true; byId("jobList").hidden = false; history.pushState({}, "", "/"); });
+byId("backToJobs")?.addEventListener("click", closeDetail);
+byId("jobDetail")?.addEventListener("click", event => { if (event.target === event.currentTarget) closeDetail(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape" && !byId("jobDetail")?.hidden) closeDetail(); });
 loadCareerSite().catch(error => { byId("siteError").hidden = false; byId("siteError").textContent = error.message; });

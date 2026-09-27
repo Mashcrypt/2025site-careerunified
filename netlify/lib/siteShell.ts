@@ -62,6 +62,15 @@ export const SITE_SHELL_STYLES = `
   .bursary-detail-page .site-detail-footer-alerts h2,.bursary-detail-page .site-detail-footer-column h3{margin:0 0 12px;color:#0f1623}
   .bursary-detail-page .site-detail-footer-alerts h2{font-family:Georgia,serif;font-size:1.7rem;line-height:1.2}
   .bursary-detail-page .site-detail-footer-alerts p{margin:0;color:#66738c;line-height:1.65}
+  .bursary-detail-page .site-detail-footer-alert-form{margin-top:18px}
+  .bursary-detail-page .site-detail-footer-alert-form label{display:block;margin-bottom:8px;color:#0f1623;font-weight:600}
+  .bursary-detail-page .site-detail-footer-alert-row{display:flex;gap:8px}
+  .bursary-detail-page .site-detail-footer-alert-row input{min-width:0;flex:1;border:1px solid #d8e0ee;border-radius:999px;padding:12px 14px;background:#fff;color:#0f1623;outline:0}
+  .bursary-detail-page .site-detail-footer-alert-row input::placeholder{color:#98a2b3}
+  .bursary-detail-page .site-detail-footer-alert-row input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+  .bursary-detail-page .site-detail-footer-alert-row button{border:0;border-radius:999px;padding:12px 16px;background:#2563eb;color:#fff;cursor:pointer;font-weight:700}
+  .bursary-detail-page .site-detail-footer-alert-row button:hover,.bursary-detail-page .site-detail-footer-alert-row button:focus-visible{background:#1d4ed8}
+  .bursary-detail-page .site-detail-footer-alert-note{display:block;margin-top:10px;color:#66738c;font-size:.83rem}
   .bursary-detail-page .site-detail-footer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
   .bursary-detail-page .site-detail-footer-column h3{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
   .bursary-detail-page .site-detail-footer-column a{display:block;margin:9px 0;color:#66738c;font-size:14px;font-weight:500;line-height:1.35;text-decoration:none}

@@ -58,15 +58,26 @@
       alt: "Recruiters discussing candidate screening evidence"
     },
     collaboration: {
-      headline: "Keep vacancy decisions understandable to your team",
-      body: "Review the same candidate evidence, add private notes, update stages, and use direct contact actions from the workspace so follow-up does not disappear into separate tools.",
+      headline: "Bring the right people into every hiring decision",
+      body: "Invite teammates or trusted external recruiters to collaborate in one workspace. Everyone can review the same candidate evidence, add private notes, update stages, and keep follow-up moving without losing context across separate tools.",
       bullets: [
-        "Private recruiter notes on each application",
-        "Shared vacancy stages for consistent review",
-        "Direct candidate follow-up when your team is ready"
+        "Invite team members and external recruiters in a few clicks",
+        "Private notes and shared vacancy stages keep everyone aligned",
+        "Give collaborators a clear role in the process while you stay in control"
       ],
       image: "/assets/images/recruiter-team.webp",
       alt: "South African hiring team collaborating on candidate decisions"
+    },
+    integrations: {
+      headline: "Connect the tools your team already uses",
+      body: "Bring email, calendars, assessments, background checks, and HR systems into one connected recruitment workflow. Spend less time switching between platforms and more time moving the right candidates forward.",
+      bullets: [
+        "Connect Gmail and Outlook for recruiter communication",
+        "Sync calendars, assessments, and candidate screening tools",
+        "Add HRIS and payroll connections as your organisation grows"
+      ],
+      image: "/assets/images/recruiter-platform.webp",
+      alt: "Connected recruitment tools supporting a hiring team"
     }
   };
 
@@ -151,6 +162,8 @@
   const body = panel?.querySelector("[data-feature-body]");
   const bulletList = panel?.querySelector("[data-feature-bullets]");
   const featureImage = panel?.querySelector("[data-feature-image]");
+  const featureLogoGrid = panel?.querySelector("[data-feature-logo-grid]");
+  const featureVisual = panel?.querySelector("[data-feature-visual]");
 
   function selectFeature(key, track) {
     const content = featureContent[key];
@@ -173,6 +186,10 @@
       return item;
     }));
 
+    const isIntegrations = key === "integrations";
+    featureVisual?.classList.toggle("is-integrations", isIntegrations);
+    featureImage.hidden = isIntegrations;
+    if (featureLogoGrid) featureLogoGrid.hidden = !isIntegrations;
     featureImage.classList.add("is-changing");
     window.setTimeout(() => {
       featureImage.src = content.image;

@@ -14,6 +14,16 @@ function emailAddress(value: unknown) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character] || character);
+}
+
 function inviteUrl(token: string) {
   const site = (process.env.URL || process.env.SITE_URL || "https://careerunified.com").replace(/\/$/, "");
   return `${site}/recruiter-invite.html?token=${encodeURIComponent(token)}`;
@@ -49,11 +59,57 @@ export const handler: Handler = async (event) => {
         expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
       const link = inviteUrl(rawToken);
+      const safeCompanyName = escapeHtml(companyName);
+      const safeRole = escapeHtml(role);
+      const safeLink = escapeHtml(link);
       await sendTransactionalEmail({
         to: email,
         subject: `${companyName} invited you to Career Unified`,
         text: `You have been invited to join ${companyName} on Career Unified as a ${role}. Accept the invitation within 7 days: ${link}`,
-        html: `<p>You have been invited to join <strong>${companyName.replace(/[<&>]/g, "")}</strong> on Career Unified as a ${role}.</p><p><a href="${link}">Accept invitation</a></p><p>This invitation expires in 7 days.</p>`,
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join ${safeCompanyName} on Career Unified</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#16213d;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;">
+          <tr>
+            <td align="center" style="padding:32px 24px 20px;">
+              <img src="https://careerunified.com/android-chrome-192x192.png" alt="Career Unified" width="96" height="96" style="display:block;width:96px;height:96px;object-fit:contain;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 40px 40px;">
+              <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#16213d;">You are invited to join ${safeCompanyName}</h1>
+              <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">Hello,</p>
+              <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">${safeCompanyName} has invited you to join its Career Unified recruiting team as a <strong>${safeRole}</strong>.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
+                <tr>
+                  <td style="border-radius:6px;background:#2563eb;">
+                    <a href="${safeLink}" style="display:inline-block;padding:14px 24px;color:#fff;text-decoration:none;font-size:16px;font-weight:bold;">Accept invitation</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="font-size:14px;line-height:1.6;color:#5d6b85;margin:0;">This invitation expires in 7 days. If you were not expecting this invitation, you can safely ignore this email.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 40px;background:#f8fafc;text-align:center;">
+              <p style="font-size:13px;line-height:1.5;color:#718096;margin:0 0 8px;">Career Unified helps people find jobs, bursaries, university opportunities, and career tools.</p>
+              <p style="font-size:13px;margin:0;"><a href="https://careerunified.com" style="color:#2563eb;">Visit Career Unified</a>&nbsp;|&nbsp;<a href="https://careerunified.com/privacy" style="color:#2563eb;">Privacy Policy</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
         tag: "recruiter-invitation",
       });
       results.push({email, status: "sent"});

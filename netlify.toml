@@ -41,6 +41,13 @@
   to = "/career-site.html"
   status = 200
   force = true
+  conditions = {Host = ["*.localhost", "*.127.0.0.1", "*.nip.io"]}
+
+[[redirects]]
+  from = "/*"
+  to = "/career-site.html"
+  status = 200
+  force = true
   conditions = {Host = ["*.careerunified.com"]}
 
 # Static browser-only admin panels are not safe to expose publicly.
@@ -492,6 +499,7 @@
 
 [functions."export-pdf"]
   external_node_modules = ["puppeteer-core", "@sparticuz/chromium"]
+  included_files = ["node_modules/@sparticuz/chromium/bin/**"]
   memory = 1024
   timeout = 26
 
@@ -509,3 +517,6 @@
 
 [functions."daily-bursary-draft"]
   schedule = "30 8,17 * * *"
+
+[functions."background-inbox-sync"]
+  schedule = "*/15 * * * *"

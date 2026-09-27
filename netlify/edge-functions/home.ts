@@ -55,7 +55,9 @@ export default async (request: Request, context: EdgeContext) => {
   // Rewrite those requests before the main homepage is rendered.
   const host = (request.headers.get("x-forwarded-host") || request.headers.get("host") || "")
     .split(",")[0].trim().toLowerCase().split(":")[0];
-  if (host.endsWith(".careerunified.com") && host !== "www.careerunified.com") {
+  const isProductionCareerHost = host.endsWith(".careerunified.com") && host !== "www.careerunified.com";
+  const isLocalCareerHost = host.endsWith(".localhost") || host.endsWith(".127.0.0.1") || host.endsWith(".nip.io");
+  if (isProductionCareerHost || isLocalCareerHost) {
     return context.rewrite(new URL("/career-site.html", request.url));
   }
 

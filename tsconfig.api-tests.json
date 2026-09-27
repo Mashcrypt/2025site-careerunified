@@ -17,9 +17,14 @@
     "netlify/functions/_apiV1.ts",
     "netlify/functions/_partnerWebhooks.ts",
     "netlify/functions/_firebaseAdmin.ts",
-    "netlify/functions/_rateLimit.ts"
-    ,"netlify/functions/recruiter-invite.ts"
-    ,"netlify/functions/recruiter-invite-accept.ts"
-    ,"netlify/functions/publish-recruiter-job.ts"
+    "netlify/functions/_rateLimit.ts",
+    "netlify/functions/recruiter-invite.ts",
+    "netlify/functions/recruiter-invite-accept.ts",
+    "netlify/functions/publish-recruiter-job.ts",
+    "netlify/functions/_recruiterIntegrations.ts",
+    "netlify/functions/recruiter-integrations.ts",
+    "netlify/functions/recruiter-integration-oauth.ts",
+    "netlify/functions/_recruiterProviderAdapters.ts",
+    "netlify/functions/_connectedEmail.ts"
   ]
 }

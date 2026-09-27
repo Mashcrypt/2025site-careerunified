@@ -912,6 +912,86 @@ h4 {
   opacity: 0.35;
 }
 
+.hf-integration-logos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+  padding: 22px;
+  background: #fff;
+}
+
+.hf-product__visual [hidden] {
+  display: none !important;
+}
+
+.hf-product__visual.is-integrations {
+  aspect-ratio: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hf-product__visual.is-integrations .hf-integration-logos {
+  padding: 8px 0;
+  background: transparent;
+}
+
+.hf-integration-logo {
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--hf-ink);
+  text-align: center;
+}
+
+.hf-integration-logo span {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #f1f5fb;
+  color: var(--hf-blue);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.hf-integration-logo img {
+  width: 48px;
+  height: 38px;
+  display: block;
+  object-fit: contain;
+}
+
+.hf-integration-logo strong {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.hf-integration-logo--gmail span { color: #4285f4; }
+.hf-integration-logo--outlook span { color: #0078d4; }
+.hf-integration-logo--calendar span { color: #34a853; }
+.hf-integration-logo--office span { color: #f25022; }
+.hf-integration-logo--indeed span { color: #2164f3; }
+.hf-integration-logo--testgorilla span { color: #7138d8; }
+.hf-integration-logo--hirevue span { color: #e83e8c; }
+.hf-integration-logo--vetting span { color: #0b8c83; }
+.hf-integration-logo--sage span { color: #00a651; }
+.hf-integration-logo--oracle span { color: #c74634; }
+.hf-integration-logo--sap span { color: #0874bd; }
+.hf-integration-logo--payspace span { color: #f2a900; }
+
 .hf-stories {
   background: var(--hf-soft);
 }
@@ -1590,6 +1670,10 @@ h4 {
 
   .hf-product__copy h3 {
     font-size: 27px;
+  }
+
+  .hf-integration-logos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hf-footer__bottom {
