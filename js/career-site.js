@@ -2,10 +2,44 @@ const byId = id => document.getElementById(id);
 const text = value => String(value || "").trim();
 let site = null;
 let jobs = [];
+let wirelessFilters = {category: "", location: "", type: ""};
+
+function renderWirelessFilters() {
+  const aside = byId("wirelessFilters");
+  if (!aside) return;
+  aside.replaceChildren();
+  const addGroup = (label, values, key) => {
+    if (!values.length) return;
+    const group = document.createElement("fieldset");
+    const legend = document.createElement("legend");
+    const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "wireless-filter-toggle"; toggle.setAttribute("aria-expanded", "true");
+    const title = document.createElement("span"); title.textContent = label;
+    const arrow = document.createElement("span"); arrow.className = "wireless-filter-arrow"; arrow.textContent = "⌃"; arrow.setAttribute("aria-hidden", "true");
+    toggle.append(title, arrow); legend.append(toggle); group.append(legend);
+    const options = document.createElement("div"); options.className = "wireless-filter-options";
+    toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; toggle.setAttribute("aria-expanded", String(!expanded)); options.hidden = expanded; arrow.textContent = expanded ? "⌄" : "⌃"; });
+    const counts = new Map(values.map(value => [value, jobs.filter(job => text(job[key]) === value).length]));
+    values.forEach(value => {
+      const item = document.createElement("label"); item.className = "wireless-filter-option";
+      const input = document.createElement("input"); input.type = "checkbox"; input.checked = wirelessFilters[key] === value; input.setAttribute("aria-label", `${label}: ${value}`);
+      input.addEventListener("change", () => { wirelessFilters[key] = input.checked ? value : ""; renderWirelessFilters(); renderJobs(); });
+      const textNode = document.createElement("span"); textNode.textContent = `${value} (${counts.get(value) || 0})`; item.append(input, textNode); options.append(item);
+    });
+    group.append(options); aside.append(group);
+  };
+  const categories = [...new Set(jobs.map(job => text(job.category)).filter(Boolean))].sort();
+  const locations = [...new Set(jobs.map(job => text(job.location)).filter(Boolean))].sort();
+  const types = [...new Set(jobs.map(job => text(job.type)).filter(Boolean))].sort();
+  addGroup("Job category", categories, "category");
+  addGroup("Locations", locations, "location");
+  addGroup("Job type", types, "type");
+}
 
 function renderJobs() {
   const query = text(byId("jobSearch")?.value).toLowerCase();
-  const visible = jobs.filter(job => [job.title, job.location, job.type, job.category].join(" ").toLowerCase().includes(query));
+  const visible = jobs.filter(job => [job.title, job.location, job.type, job.category].join(" ").toLowerCase().includes(query)
+    && (!wirelessFilters.category || text(job.category) === wirelessFilters.category)
+    && (!wirelessFilters.location || text(job.location) === wirelessFilters.location));
   const list = byId("jobList");
   list.replaceChildren();
   if (!visible.length) { const empty = document.createElement("p"); empty.className = "state"; empty.textContent = query ? "No open positions match your search." : "There are no open positions right now."; list.append(empty); return; }
@@ -21,6 +55,13 @@ function renderDetail(job) {
   byId("jobDetail").hidden = false;
   byId("detailTitle").textContent = job.title;
   byId("detailMeta").textContent = [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
+  byId("detailPosted").textContent = job.postedAt ? `Posted ${job.postedAt}` : "Open position";
+  byId("detailFactLocation").textContent = job.location || "Not specified";
+  byId("detailFactType").textContent = job.type || "Not specified";
+  byId("detailType").textContent = job.type || "Not specified";
+  byId("detailLocation").textContent = job.location || "Not specified";
+  byId("detailCategory").textContent = job.category || "Not specified";
+  byId("detailDeadline").textContent = job.deadline || "Open until filled";
   renderFormattedText(byId("detailDescription"), job.overview || job.description);
   renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
   renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
@@ -97,7 +138,7 @@ async function loadCareerSite() {
   const structuredData = {"@context":"https://schema.org", "@type":"Organization", name:site.displayName, url:location.origin, logo:site.logo || undefined, sameAs:Object.values(site.socialLinks || {}).filter(Boolean)};
   const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify(structuredData); document.head.append(schema);
   const jobPostingList = document.createElement("script"); jobPostingList.type = "application/ld+json"; jobPostingList.textContent = JSON.stringify({"@context":"https://schema.org", "@type":"ItemList", itemListElement:jobs.map((job, index) => ({"@type":"ListItem", position:index + 1, url:`${location.origin}/jobs/${encodeURIComponent(job.slug || job.id)}`, name:job.title}))}); document.head.append(jobPostingList);
-  renderJobs();
+  renderWirelessFilters(); renderJobs();
   const pathJob = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
   const requestedJob = new URLSearchParams(location.search).get("job") || "";
   const selected = jobs.find(job => job.slug === (requestedJob || pathJob) || job.id === (requestedJob || pathJob));

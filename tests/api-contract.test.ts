@@ -162,6 +162,8 @@ test('integration provider mapping uses least-privilege OAuth scopes and explici
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/gmail.metadata',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
   ])
   assert.equal(PROVIDER_CONFIG['google-calendar'].oauth, 'google')
   assert.equal(providerStatus({}, 'testgorilla').status, 'api_access_required')

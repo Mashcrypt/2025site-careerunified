@@ -59,6 +59,25 @@ body[data-layout="editorial"] .intro { max-width:none; padding:68px 0 54px; bord
 body[data-layout="editorial"] .intro h1 { font-family:Georgia,serif; font-size:clamp(42px,7vw,82px); }
 body[data-layout="editorial"] .job-list { grid-template-columns:1fr; }
 body[data-layout="editorial"] .job-card { border-width:0 0 1px; border-radius:0; padding:26px 4px; }
+body[data-layout="editorial"] .job-detail { background:#f5f8fa; }
+body[data-layout="editorial"] .job-detail-panel { display:block; max-width:1000px; min-height:100%; margin:0 auto; padding:22px 0 64px; background:#fff; }
+body[data-layout="editorial"] .job-detail-main { padding:0 22px; }
+body[data-layout="editorial"] .job-detail-actions { display:flex; }
+body[data-layout="editorial"] .editorial-detail-actions { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; color:#777; font-size:11px; }
+body[data-layout="editorial"] .editorial-detail-actions .button { order:2; padding:9px 23px; border-radius:4px; background:#41b34b; }
+body[data-layout="editorial"] .job-detail-panel h2 { margin-bottom:6px; font-size:30px; }
+body[data-layout="editorial"] .job-detail-panel .eyebrow { display:none; }
+body[data-layout="editorial"] .editorial-detail-facts { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px -22px 0; padding:22px; background:#f1f7fa; }
+body[data-layout="editorial"] .editorial-detail-facts div { display:grid; grid-template-columns:38px 1fr; grid-template-rows:auto auto; align-items:center; column-gap:10px; }
+body[data-layout="editorial"] .editorial-detail-facts div > span { grid-row:1 / span 2; display:grid; width:38px; height:38px; place-items:center; border-radius:50%; color:#479f65; background:#ddf1e7; font-weight:700; }
+body[data-layout="editorial"] .editorial-detail-facts strong { font-size:13px; }
+body[data-layout="editorial"] .editorial-detail-facts small { color:#888; font-size:10px; }
+body[data-layout="editorial"] .editorial-detail-tabs { display:flex; gap:32px; margin:12px -22px 26px; padding:18px 22px 0; border-bottom:1px solid #e7e7e7; font-size:14px; font-weight:700; }
+body[data-layout="editorial"] .editorial-detail-tabs span { padding-bottom:13px; color:#777; }
+body[data-layout="editorial"] .editorial-detail-tabs .active { color:#222; border-bottom:3px solid var(--primary); }
+body[data-layout="editorial"] .job-detail-sidebar { display:none; }
+body[data-layout="editorial"] .job-detail-close { top:12px; right:12px; }
+body[data-layout="editorial"] .job-detail-powered { margin-top:40px; }
 body[data-layout="split"] .intro { max-width:none; padding:56px 48px; background:var(--ink); color:#fff; border-radius:10px; }
 body[data-layout="split"] .intro p:not(.eyebrow) { color:#dbe5f5; }
 body[data-layout="split"] .jobs-section { border-top:0; padding-top:56px; }
@@ -74,5 +93,50 @@ body[data-layout="bold"] .jobs-section { padding-top:56px; }
 body[data-layout="split"] .intro { display:grid; grid-template-columns:1.2fr 1fr; column-gap:32px; align-items:end; }
 body[data-layout="split"] .intro .eyebrow, body[data-layout="split"] .intro h1 { grid-column:1; }
 body[data-layout="split"] .intro p, body[data-layout="split"] .intro .intro-button { grid-column:2; }
+/* Wireless is an opt-in employer theme. Keep it separate from the existing layouts. */
+body[data-layout="wireless"] { --wireless-orange:#e8752a; --wireless-ink:#252525; background:#f4f4f4; color:var(--wireless-ink); font-family:Arial,Helvetica,sans-serif; }
+body[data-layout="wireless"] .site-header { max-width:1120px; margin:0 auto; border-bottom:0; position:relative; }
+body[data-layout="wireless"] .brand, body[data-layout="wireless"] .site-nav a { color:var(--wireless-ink); }
+body[data-layout="wireless"] main { max-width:1120px; padding:0 24px 72px; }
+body[data-layout="wireless"] .intro { max-width:none; min-height:220px; margin:0 -24px; padding:68px max(24px,calc((100% - 1000px)/2)); color:#fff; background:linear-gradient(90deg,#303c4dcc,#d66c4ccc),var(--hero-image,linear-gradient(90deg,#3f4b5c,#b96754)); background-position:center; background-size:cover; }
+body[data-layout="wireless"] .intro h1 { max-width:680px; margin:0 0 12px; font-size:clamp(30px,4vw,48px); }
+body[data-layout="wireless"] .intro p:not(.eyebrow) { max-width:680px; margin:0 0 8px; color:#fff; font-size:14px; line-height:1.45; }
+body[data-layout="wireless"] .intro .eyebrow { color:#fff; }
+body[data-layout="wireless"] .intro-button { margin-top:14px; padding:10px 16px; color:#fff; background:var(--wireless-orange); border-radius:2px; }
+body[data-layout="wireless"] .jobs-section { border:0; padding-top:34px; }
+body[data-layout="wireless"] .section-heading { display:flex; margin-left:244px; }
+body[data-layout="wireless"] .section-heading .search { position:absolute; left:max(24px,calc((100% - 1072px)/2)); margin-top:0; width:220px; padding:18px; background:#fff; border:1px solid #e5e5e5; }
+body[data-layout="wireless"] .search input { min-width:0; width:100%; border-radius:0; border-color:#e5e5e5; }
+body[data-layout="wireless"] .wireless-job-layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:24px; align-items:start; }
+body[data-layout="wireless"] .wireless-filters { min-height:360px; padding:18px; background:#fff; border:1px solid #e5e5e5; }
+body[data-layout="wireless"] .wireless-filters fieldset { margin:0; padding:0; border:0; }
+body[data-layout="wireless"] .wireless-filters fieldset + fieldset { margin-top:28px; }
+body[data-layout="wireless"] .wireless-filters legend { width:100%; margin-bottom:14px; color:#555; font-size:12px; }
+body[data-layout="wireless"] .wireless-filter-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0; border:0; color:#555; background:transparent; font:inherit; text-align:left; cursor:pointer; }
+body[data-layout="wireless"] .wireless-filter-arrow { color:var(--wireless-orange); font-size:17px; font-weight:700; line-height:1; }
+body[data-layout="wireless"] .wireless-filter-options[hidden] { display:none; }
+body[data-layout="wireless"] .wireless-filter-option { display:flex; align-items:center; gap:7px; margin:9px 0; color:#666; font-size:12px; cursor:pointer; }
+body[data-layout="wireless"] .wireless-filter-option input { accent-color:var(--wireless-orange); }
+body[data-layout="wireless"] .job-list { grid-template-columns:1fr; gap:0; }
+body[data-layout="wireless"] .job-card { border:0; border-top:3px solid var(--wireless-orange); border-radius:0; margin-bottom:14px; padding:18px 20px; background:#fff; box-shadow:0 1px 4px #0000000d; }
+body[data-layout="wireless"] .job-card:hover { border-color:var(--wireless-orange); box-shadow:0 3px 12px #00000014; }
+body[data-layout="wireless"] .job-card h3 { margin-bottom:8px; font-size:17px; }
+body[data-layout="wireless"] .job-card .tags { margin-top:10px; color:var(--wireless-orange); }
+body[data-layout="wireless"] .job-detail { background:#f4f4f4; }
+body[data-layout="wireless"] .job-detail-panel { display:grid; grid-template-columns:minmax(0,1fr) 250px; gap:28px; max-width:1120px; min-height:100%; margin:0 auto; padding:42px 24px 72px; background:#f4f4f4; color:var(--wireless-ink); }
+body[data-layout="wireless"] .job-detail-main { padding:24px; background:#fff; border-top:3px solid var(--wireless-orange); }
+body[data-layout="wireless"] .job-detail-sidebar { align-self:start; padding:20px; background:#fff; border-top:3px solid var(--wireless-orange); }
+body[data-layout="wireless"] .job-detail-sidebar h3 { margin:0 0 18px; font-size:16px; }
+body[data-layout="wireless"] .job-detail-sidebar dl { margin:0; }
+body[data-layout="wireless"] .job-detail-sidebar dl div { padding:12px 0; border-top:1px solid #eee; }
+body[data-layout="wireless"] .job-detail-sidebar dt { color:#888; font-size:11px; }
+body[data-layout="wireless"] .job-detail-sidebar dd { margin:4px 0 0; font-size:13px; }
+body[data-layout="wireless"] .job-detail-panel h2 { font-size:32px; }
+body[data-layout="wireless"] .job-detail-panel .eyebrow, body[data-layout="wireless"] .job-detail-section h3 { color:var(--wireless-orange); }
+body[data-layout="wireless"] .job-detail-panel .button { border-radius:2px; background:var(--wireless-orange); }
+body[data-layout="wireless"] .job-detail-close { top:12px; right:12px; border-radius:2px; }
+body[data-layout="wireless"] footer { max-width:1120px; margin:0 auto; background:#fff; }
+@media (max-width:700px) { body[data-layout="wireless"] .section-heading, body[data-layout="wireless"] .wireless-job-layout, body[data-layout="wireless"] .job-detail-panel { display:block; } body[data-layout="wireless"] .section-heading { margin-left:0; } body[data-layout="wireless"] .section-heading .search { position:static; width:auto; margin:18px 0; } body[data-layout="wireless"] .wireless-filters { min-height:0; margin-bottom:18px; } body[data-layout="wireless"] .job-detail-sidebar { margin-top:20px; } }
 @media (max-width:700px) { main { padding-top:44px; } .site-header { flex-wrap:wrap; } .site-nav { order:3; width:100%; justify-content:space-between; padding-top:8px; border-top:1px solid var(--line); } .powered { margin-left:auto; } .section-heading { display:block; } .search { margin-top:20px; } .search input { min-width:0; width:100%; } .job-list, body[data-layout="split"] .job-list { grid-template-columns:1fr; } body[data-layout="split"] .intro { display:block; padding:36px 24px; } footer { align-items:flex-start; flex-direction:column; } }
 @media (max-width:700px) { .job-detail-panel { padding:56px 24px 64px; } }
+@media (max-width:700px) { body[data-layout="editorial"] .job-detail-panel { padding:18px 0 56px; } body[data-layout="editorial"] .editorial-detail-facts { grid-template-columns:1fr; } body[data-layout="editorial"] .editorial-detail-actions { padding-right:34px; } }

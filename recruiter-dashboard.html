@@ -2170,6 +2170,9 @@
   .career-preview-site[data-layout="editorial"] .career-preview-hero p { margin-left:0; }
   .career-preview-site[data-layout="editorial"] .career-preview-card { border-width:0 0 1px; border-radius:0; }
   .career-preview-site[data-layout="split"] .career-preview-hero { background:var(--preview-primary); color:#fff; }
+  .career-preview-site[data-layout="wireless"] .career-preview-hero { background:linear-gradient(90deg,#3f4b5c,#b96754); color:#fff; text-align:left; }
+  .career-preview-site[data-layout="wireless"] .career-preview-body { grid-template-columns:80px 1fr; background:#f4f4f4; }
+  .career-preview-site[data-layout="wireless"] .career-preview-card { border:0; border-top:3px solid #e8752a; border-radius:0; }
   .career-preview-site[data-layout="split"] .career-preview-body { grid-template-columns:repeat(3,1fr); }
   .career-preview-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; background:#fff; border-bottom:1px solid #e5e7eb; }
   .career-preview-brand { display:flex; align-items:center; gap:10px; font-weight:700; }
@@ -2180,6 +2183,14 @@
   .career-preview-hero p { margin:0 auto 18px; max-width:560px; opacity:.82; }
   .career-preview-hero button { border:0; border-radius:6px; padding:11px 18px; background:var(--preview-primary); color:#fff; font-weight:700; }
   .career-preview-site[data-layout="bold"] .career-preview-hero button { background:#fff; color:#14213d; }
+  .layout-preview-wireless { display:flex; flex-direction:column; gap:7px; padding:0 !important; background:#f4f4f4 !important; }
+  .layout-preview-wireless-hero { display:flex; flex-direction:column; gap:4px; padding:13px; color:#fff; background:linear-gradient(90deg,#3f4b5c,#b96754); font-size:9px; }
+  .layout-preview-wireless-hero small { opacity:.8; }
+  .layout-preview-wireless-body { display:grid; grid-template-columns:36px 1fr; gap:7px; padding:7px; flex:1; }
+  .layout-preview-wireless-body > i, .layout-preview-wireless-body b { display:block; background:#fff; border:1px solid #e5e5e5; }
+  .layout-preview-wireless-body > i { min-height:55px; }
+  .layout-preview-wireless-body div { display:grid; gap:5px; }
+  .layout-preview-wireless-body b { height:18px; border-top:2px solid #e8752a; }
   .career-preview-body { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:24px; }
   .career-preview-card { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:18px; }
   .career-preview-card h4 { margin:0 0 8px; font-size:16px; }
@@ -5775,6 +5786,14 @@
                   <span class="layout-preview-hero" style="height:70px;margin-top:0;background:#0d47ff"><strong>Find your next chapter</strong><small>Browse open opportunities</small></span>
                 </span>
                 <span class="layout-choice-caption"><strong>Split</strong><span>A modern visual layout for fast scanning</span></span>
+              </label>
+              <label class="layout-choice">
+                <input type="radio" name="careerSiteLayout" value="wireless">
+                <span class="layout-preview layout-preview-wireless" aria-hidden="true">
+                  <span class="layout-preview-wireless-hero"><strong>Wireless careers</strong><small>Build your future with us</small></span>
+                  <span class="layout-preview-wireless-body"><i></i><div><b></b><b></b><b></b></div></span>
+                </span>
+                <span class="layout-choice-caption"><strong>Wireless</strong><span>A structured employer site with filters and job information</span></span>
               </label>
               </div>
             </div>
