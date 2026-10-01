@@ -134,12 +134,12 @@ export function renderSiteNavigation(activeSection: ActiveSection) {
   </div>`;
 }
 
-export function renderSiteFooter() {
+export function renderSiteFooter(alertTitle = "Job Alerts", alertLabel = "Job Alerts") {
   return `<footer class="site-detail-footer">
     <div class="site-detail-footer-inner">
       <div class="site-detail-footer-main">
-        <section class="site-detail-footer-alerts" aria-label="Job Alerts">
-          <h2>Job Alerts</h2>
+        <section class="site-detail-footer-alerts" aria-label="${alertLabel}">
+          <h2>${alertTitle}</h2>
           <p>Get new jobs, bursaries, and career tips sent to your inbox.</p>
           <form class="site-detail-footer-alert-form" name="job-alerts" action="/job-alerts-success.html" method="POST" data-netlify="true" netlify-honeypot="bot-field">
             <input type="hidden" name="form-name" value="job-alerts">

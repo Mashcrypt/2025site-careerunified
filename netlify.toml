@@ -500,7 +500,6 @@
 [functions."export-pdf"]
   external_node_modules = ["puppeteer-core", "@sparticuz/chromium"]
   included_files = ["node_modules/@sparticuz/chromium/bin/**"]
-  memory = 1024
   timeout = 26
 
 [functions."ai-tailor"]

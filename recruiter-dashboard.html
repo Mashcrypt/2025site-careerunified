@@ -6918,12 +6918,21 @@ async function loadCareerSiteSettings() {
     document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
       input.checked = input.value === (careerSiteConfig.layout || 'bold');
     });
+    const savedSections = Array.isArray(careerSiteConfig.contentSections) ? careerSiteConfig.contentSections : [];
+    if (savedSections.length) {
+      const sectionState = new Map(savedSections.map(section => [section.id, section.enabled !== false]));
+      document.querySelectorAll('#careerSiteContentPanel [data-section-id] .content-section-enabled').forEach(input => {
+        const id = input.closest('[data-section-id]')?.dataset.sectionId;
+        if (id && sectionState.has(id)) input.checked = sectionState.get(id);
+      });
+    }
     const media = careerSiteConfig.media || {};
     const social = careerSiteConfig.socialLinks || {};
     const setCareerField = (id, value) => { const field = document.getElementById(id); if (field && value) field.value = value; };
     setCareerField('careerSiteBannerImage', media.bannerImage); setCareerField('careerSiteYoutube', media.youtube); setCareerField('careerSiteVimeo', media.vimeo);
-    setCareerField('socialWebsite', social.website); setCareerField('socialFacebook', social.facebook); setCareerField('socialX', social.twitter); setCareerField('socialLinkedin', social.linkedin); setCareerField('socialInstagram', social.instagram);
+    setCareerField('socialWebsite', social.website); setCareerField('socialFacebook', social.facebook); setCareerField('socialX', social.twitter); setCareerField('socialLinkedin', social.linkedin); setCareerField('socialInstagram', social.instagram); setCareerField('socialYoutube', social.youtube); setCareerField('socialTiktok', social.tiktok); setCareerField('socialAngelList', social.angelList); setCareerField('socialGlassdoor', social.glassdoor);
     const widgetGroup = careerSiteConfig.widget?.groupBy || 'none'; const widgetRadio = document.querySelector(`input[name="widgetGroup"][value="${widgetGroup}"]`); if (widgetRadio) widgetRadio.checked = true;
+    updateWidgetSnippet();
     const urlElement = document.getElementById('careerSiteUrl');
     urlElement.href = url;
     urlElement.textContent = url;
@@ -7139,16 +7148,16 @@ async function saveCareerSiteMedia() {
       glassdoor: document.getElementById('socialGlassdoor')?.value
     }
   };
-  try { await saveCareerSiteConfig({media: data, socialLinks: {facebook: data.social.facebook, instagram: data.social.instagram, twitter: data.social.x, linkedin: data.social.linkedin}}); showToast('success', 'Saved', 'Media & Links saved'); }
+  try { await saveCareerSiteConfig({media: data, socialLinks: {website: data.social.website, facebook: data.social.facebook, instagram: data.social.instagram, twitter: data.social.x, linkedin: data.social.linkedin, youtube: data.social.youtube, tiktok: data.social.tiktok, angelList: data.social.angelList, glassdoor: data.social.glassdoor}}); showToast('success', 'Saved', 'Media & Links saved'); }
   catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
 async function saveCareerSiteContent() {
   const sections = [];
-  document.querySelectorAll('#careerSiteSections [data-section-id]').forEach(item => {
+  document.querySelectorAll('#careerSiteContentPanel [data-section-id]').forEach(item => {
     sections.push({
       id: item.dataset.sectionId,
-      enabled: item.closest('.content-list-group')?.querySelector('h4')?.textContent.trim() === 'Display',
+      enabled: item.querySelector('.content-section-enabled')?.checked ?? item.closest('.content-list-group')?.querySelector('h4')?.textContent.trim() === 'Display',
       order: parseInt(item.dataset.order)
     });
   });
@@ -7169,7 +7178,8 @@ async function saveCareerSiteCode() {
 
 function updateWidgetSnippet() {
   const groupBy = document.querySelector('input[name="widgetGroup"]:checked')?.value || 'none';
-  const code = `<div id='careerUnifiedOpeningsContainer'></div><script src='https://careerunified.com/embed.js?inline=true&group_by=${groupBy}'><\/script>`;
+  const slug = careerSiteConfig?.slug || document.getElementById('careerSiteSlug')?.value || '';
+  const code = `<div id='careerUnifiedOpeningsContainer'></div><script src='https://careerunified.com/embed.js?inline=true&slug=${encodeURIComponent(slug)}&group_by=${groupBy}'><\/script>`;
   const field = document.getElementById('careerSiteWidgetCode');
   if (field) field.value = code;
 }
@@ -7342,7 +7352,19 @@ function initCareerSiteSections() {
 
   const container = document.getElementById('careerSiteSections');
   if (!container) return;
-  if (container.children.length) return;
+  if (container.children.length) {
+    document.querySelectorAll('#careerSiteContentPanel [data-section-id]').forEach(item => {
+      if (item.querySelector('.content-section-enabled')) return;
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'content-section-enabled';
+      checkbox.checked = item.closest('.content-list-group')?.querySelector('h4')?.textContent.trim() === 'Display';
+      checkbox.setAttribute('aria-label', `Show ${item.querySelector('span')?.textContent || 'section'}`);
+      checkbox.style.cssText = 'width:18px;height:18px;accent-color:#2563eb;';
+      item.prepend(checkbox);
+    });
+    return;
+  }
 
   sections.forEach((section, index) => {
     const div = document.createElement('div');

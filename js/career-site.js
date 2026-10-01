@@ -71,6 +71,16 @@ function renderDetail(job) {
   document.body.classList.add("job-detail-open");
 }
 
+function applyContentSections() {
+  if (!site?.contentSections?.length) return;
+  const enabled = new Set(site.contentSections.filter(section => section.enabled !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0)).map(section => section.id));
+  const sectionMap = {hero: "about", positions: "jobs", "open-positions": "jobs"};
+  Object.entries(sectionMap).forEach(([id, target]) => {
+    const element = byId(target);
+    if (element) element.hidden = !enabled.has(id) && !enabled.has(target);
+  });
+}
+
 function renderCompanySocialLinks() {
   const container = byId("companySocialLinks");
   container.replaceChildren();
@@ -138,7 +148,7 @@ async function loadCareerSite() {
   const structuredData = {"@context":"https://schema.org", "@type":"Organization", name:site.displayName, url:location.origin, logo:site.logo || undefined, sameAs:Object.values(site.socialLinks || {}).filter(Boolean)};
   const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify(structuredData); document.head.append(schema);
   const jobPostingList = document.createElement("script"); jobPostingList.type = "application/ld+json"; jobPostingList.textContent = JSON.stringify({"@context":"https://schema.org", "@type":"ItemList", itemListElement:jobs.map((job, index) => ({"@type":"ListItem", position:index + 1, url:`${location.origin}/jobs/${encodeURIComponent(job.slug || job.id)}`, name:job.title}))}); document.head.append(jobPostingList);
-  renderWirelessFilters(); renderJobs();
+  applyContentSections(); renderWirelessFilters(); renderJobs();
   const pathJob = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
   const requestedJob = new URLSearchParams(location.search).get("job") || "";
   const selected = jobs.find(job => job.slug === (requestedJob || pathJob) || job.id === (requestedJob || pathJob));

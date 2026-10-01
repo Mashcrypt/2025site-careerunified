@@ -373,12 +373,12 @@ export default async (request: Request) => {
     </section>
     <section class="panel actions-panel">
       <div class="actions">
-        ${!expired && bursary.applicationLink ? `<a class="btn green" id="apply-bursary-link" href="${escapeHtml(ensureHttps(bursary.applicationLink))}" target="_blank" rel="noopener noreferrer">Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg></a>` : ""}
+        ${bursary.applicationLink ? `<a class="btn green" id="apply-bursary-link" href="${escapeHtml(ensureHttps(bursary.applicationLink))}" target="_blank" rel="noopener noreferrer">Apply Now <svg class="external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"></path></svg></a>` : ""}
       </div>
       ${(previousUrl || nextUrl) ? '<p class="swipe-hint">Swipe right or left to view another bursary</p>' : ""}
     </section>
   </main>
-  ${renderSiteFooter()}
+  ${renderSiteFooter("Bursary Alerts", "Bursary Alerts")}
   ${renderSiteNavigationScript()}
   <script>
     (() => {

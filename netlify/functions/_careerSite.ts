@@ -50,7 +50,12 @@ function safeUrl(value: unknown) {
 
 function socialLinks(value: unknown) {
   const input = value && typeof value === "object" ? value as Record<string, unknown> : {};
-  return Object.fromEntries(["facebook", "instagram", "twitter", "linkedin"].map((key) => [key, safeUrl(input[key])]));
+  return Object.fromEntries(["facebook", "instagram", "twitter", "linkedin", "website", "youtube", "tiktok", "angelList", "glassdoor"].map((key) => [key, safeUrl(input[key])]));
+}
+
+function media(value: unknown) {
+  const input = value && typeof value === "object" ? value as Record<string, unknown> : {};
+  return Object.fromEntries(["bannerImage", "youtube", "vimeo"].map((key) => [key, safeUrl(input[key])]));
 }
 
 export function configFromRecruiter(companyId: string, recruiter: Record<string, any>, existing?: Partial<CareerSiteConfig>): CareerSiteConfig {
@@ -63,7 +68,7 @@ export function configFromRecruiter(companyId: string, recruiter: Record<string,
     tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000),
     contact: {email: cleanSiteText(existing?.contact?.email || profile.email || recruiter.email, 254).toLowerCase(), website: safeUrl(existing?.contact?.website || profile.website), phone: cleanSiteText(existing?.contact?.phone || profile.phone, 40)},
     socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks),
-    media: existing?.media && typeof existing.media === "object" ? existing.media : {},
+    media: media(existing?.media),
     contentSections: Array.isArray(existing?.contentSections) ? existing.contentSections : [],
     customCode: existing?.customCode && typeof existing.customCode === "object" ? existing.customCode : {},
     widget: existing?.widget && typeof existing.widget === "object" ? existing.widget : {},
