@@ -64,7 +64,7 @@ body[data-layout="editorial"] .job-detail-panel { display:block; max-width:1000p
 body[data-layout="editorial"] .job-detail-main { padding:0 22px; }
 body[data-layout="editorial"] .job-detail-actions { display:flex; }
 body[data-layout="editorial"] .editorial-detail-actions { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; color:#777; font-size:11px; }
-body[data-layout="editorial"] .editorial-detail-actions .button { order:2; padding:9px 23px; border-radius:4px; background:#41b34b; }
+body[data-layout="editorial"] .editorial-detail-actions .button { order:2; padding:9px 23px; border-radius:4px; background:var(--primary); }
 body[data-layout="editorial"] .job-detail-panel h2 { margin-bottom:6px; font-size:30px; }
 body[data-layout="editorial"] .job-detail-panel .eyebrow { display:none; }
 body[data-layout="editorial"] .editorial-detail-facts { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px -22px 0; padding:22px; background:#f1f7fa; }
@@ -94,7 +94,7 @@ body[data-layout="split"] .intro { display:grid; grid-template-columns:1.2fr 1fr
 body[data-layout="split"] .intro .eyebrow, body[data-layout="split"] .intro h1 { grid-column:1; }
 body[data-layout="split"] .intro p, body[data-layout="split"] .intro .intro-button { grid-column:2; }
 /* Wireless is an opt-in employer theme. Keep it separate from the existing layouts. */
-body[data-layout="wireless"] { --wireless-orange:#e8752a; --wireless-ink:#252525; background:#f4f4f4; color:var(--wireless-ink); font-family:Arial,Helvetica,sans-serif; }
+body[data-layout="wireless"] { --wireless-orange:var(--primary); --wireless-ink:#252525; background:#f4f4f4; color:var(--wireless-ink); font-family:Arial,Helvetica,sans-serif; }
 body[data-layout="wireless"] .site-header { max-width:1120px; margin:0 auto; border-bottom:0; position:relative; }
 body[data-layout="wireless"] .brand, body[data-layout="wireless"] .site-nav a { color:var(--wireless-ink); }
 body[data-layout="wireless"] main { max-width:1120px; padding:0 24px 72px; }

@@ -137,7 +137,9 @@ async function loadCareerSite() {
   byId("canonicalUrl").href = location.origin + location.pathname;
   byId("ogTitle").content = document.title;
   byId("ogDescription").content = site.seo?.description || "Explore open roles and careers.";
-  document.documentElement.style.setProperty("--primary", site.brandColors?.primary || "#0d47ff");
+  const primaryColor = site.brandColors?.primary || "#0d47ff";
+  document.documentElement.style.setProperty("--primary", primaryColor);
+  document.documentElement.style.setProperty("--wireless-orange", primaryColor);
   document.body.dataset.layout = site.layout || "bold";
   const bannerImage = text(site.media?.bannerImage);
   if (bannerImage) document.documentElement.style.setProperty("--hero-image", `url("${bannerImage.replace(/"/g, "\\\"")}")`);
