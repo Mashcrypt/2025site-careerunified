@@ -219,6 +219,12 @@ export const handler: Handler = async (event) => {
   };
 
   try {
+    console.info("PAYFAST_ITN_RECEIVED", {
+      method: event.httpMethod,
+      contentType: event.headers["content-type"] || event.headers["Content-Type"] || null,
+      bodyLength: event.body?.length || 0,
+      requestId: event.headers["x-nf-request-id"] || event.headers["X-Nf-Request-Id"] || null,
+    });
     if (event.httpMethod !== "POST") return bad(405, "Method Not Allowed");
 
     const passphrase = process.env.PAYFAST_PASSPHRASE;
