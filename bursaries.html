@@ -676,6 +676,23 @@
 .site-footer .footer-socials a:nth-child(5):hover { color: #0077b5; }
 @media (max-width: 980px) { .footer-shell { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .site-footer { padding: 42px 18px 30px; } .footer-grid { grid-template-columns: 1fr; } .footer-alerts h2 { font-size: 1.45rem; } .footer-alert-row { flex-direction: column; } .footer-alert-row button { width: 100%; } }
+@media (max-width: 560px) {
+  .site-footer > .footer-socials {
+    justify-content: center;
+    gap: 14px;
+    margin: 24px auto 0;
+    padding-top: 28px;
+    border-top-color: #d9e3f0;
+  }
+  .site-footer > .footer-socials a {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-color: rgba(23, 52, 111, 0.12);
+    color: #4f607b;
+    background: #f7faff;
+  }
+}
   </style>
   <!-- Google AdSense is loaded only for visitors without an active subscription. -->
   <script defer src="/js/ad-access.js"></script>
@@ -808,6 +825,7 @@
   <div class="footer-links"><a href="/about-us">About Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/contact-us">Contact Us</a></div>
   <div class="footer-socials">
     <a href="https://whatsapp.com/channel/0029Vb7j7C7GJP89qB7k6e3i" target="_blank" aria-label="WhatsApp Channel"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.instagram.com/careerunified/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
     <a href="https://x.com/careerunified" target="_blank" rel="noopener noreferrer" aria-label="X" title="X"><i class="fab fa-x-twitter"></i></a>
     <a href="https://www.tiktok.com/@career.unified" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok"><i class="fab fa-tiktok"></i></a>
     <a href="https://www.linkedin.com/company/career-unified" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>

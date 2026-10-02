@@ -161,7 +161,7 @@ export const handler: Handler = async event => {
     // Let @sparticuz/chromium choose its writable temporary extraction path.
     // Passing a guessed directory can make Netlify resolve the bundled binary
     // to an unavailable path such as /var/bin.
-    chromium.graphicsMode = false;
+    chromium.setGraphicsMode = false;
     const executablePath = process.env.CHROMIUM_PATH || await chromium.executablePath();
     if (!executablePath) throw new Error("Chromium executable path is unavailable.");
     exportStage = "chromium-launch";

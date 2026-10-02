@@ -18,6 +18,7 @@ export type CareerSiteConfig = {
   seo: {title: string; description: string};
   baseDomain?: string;
   layout?: "bold" | "clean" | "editorial" | "split" | "wireless";
+  applicationOptions?: {linkedin: boolean; indeed: boolean};
   media?: Record<string, unknown>;
   contentSections?: Array<Record<string, unknown>>;
   customCode?: Record<string, string>;
@@ -65,6 +66,10 @@ export function configFromRecruiter(companyId: string, recruiter: Record<string,
     companyId, slug: cleanSiteText(existing?.slug, 60), displayName, baseDomain: process.env.CAREER_SITE_BASE_DOMAIN || "careerunified.com", layout: ["bold", "clean", "editorial", "split", "wireless"].includes(existing?.layout as string) ? existing?.layout as CareerSiteConfig["layout"] : "bold",
     logo: safeUrl(existing?.logo || profile.logo),
     brandColors: {primary: safeColor(existing?.brandColors?.primary, "#0d47ff"), secondary: safeColor(existing?.brandColors?.secondary, "#14213d")},
+    applicationOptions: {
+      linkedin: existing?.applicationOptions?.linkedin !== false,
+      indeed: existing?.applicationOptions?.indeed !== false,
+    },
     tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000),
     contact: {email: cleanSiteText(existing?.contact?.email || profile.email || recruiter.email, 254).toLowerCase(), website: safeUrl(existing?.contact?.website || profile.website), phone: cleanSiteText(existing?.contact?.phone || profile.phone, 40)},
     socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks),

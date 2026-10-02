@@ -25,6 +25,7 @@
     "netlify/functions/recruiter-integrations.ts",
     "netlify/functions/recruiter-integration-oauth.ts",
     "netlify/functions/_recruiterProviderAdapters.ts",
-    "netlify/functions/_connectedEmail.ts"
+    "netlify/functions/_connectedEmail.ts",
+    "netlify/functions/export-pdf.ts"
   ]
 }

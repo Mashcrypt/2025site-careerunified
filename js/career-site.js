@@ -8,6 +8,8 @@ function renderWirelessFilters() {
   const aside = byId("wirelessFilters");
   if (!aside) return;
   aside.replaceChildren();
+  aside.hidden = document.body.dataset.layout !== "wireless";
+  if (aside.hidden) return;
   const addGroup = (label, values, key) => {
     if (!values.length) return;
     const group = document.createElement("fieldset");
@@ -54,8 +56,21 @@ function renderJobs() {
 function renderDetail(job) {
   byId("jobDetail").hidden = false;
   byId("detailTitle").textContent = job.title;
-  byId("detailMeta").textContent = [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
-  byId("detailPosted").textContent = job.postedAt ? `Posted ${job.postedAt}` : "Open position";
+  byId("detailMeta").textContent = document.body.dataset.layout === "bold"
+    ? (job.deadline ? `Closes ${job.deadline}` : "Open until filled")
+    : [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
+  let postedValue = job.postedAt;
+  if (postedValue && typeof postedValue === "object") {
+    const seconds = Number(postedValue.seconds ?? postedValue._seconds);
+    postedValue = typeof postedValue.toDate === "function"
+      ? postedValue.toDate()
+      : Number.isFinite(seconds) ? seconds * 1000 : null;
+  }
+  const postedDate = postedValue ? new Date(postedValue) : null;
+  byId("detailPosted").textContent = postedDate && !Number.isNaN(postedDate.getTime())
+    ? `Posted ${postedDate.toLocaleDateString("en-ZA", {day: "numeric", month: "short", year: "numeric"})}`
+    : "Open position";
+  byId("detailSalary").textContent = text(job.salary) || "Negotiable";
   byId("detailFactLocation").textContent = job.location || "Not specified";
   byId("detailFactType").textContent = job.type || "Not specified";
   byId("detailType").textContent = job.type || "Not specified";
@@ -66,7 +81,31 @@ function renderDetail(job) {
   renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
   renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
   renderCompanySocialLinks();
-  byId("applyLink").href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
+  const applyLink = byId("applyLink");
+  applyLink.hidden = false;
+  applyLink.removeAttribute("target");
+  applyLink.removeAttribute("rel");
+  applyLink.textContent = "Apply Now";
+  if (text(job.applicationMethod).toLowerCase() === "external") {
+    let destination = null;
+    try {
+      const parsed = new URL(text(job.applyLink));
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") destination = parsed;
+    } catch (_) {}
+    const host = destination?.hostname.toLowerCase() || "";
+    const provider = /(^|\.)linkedin\.com$/.test(host) ? "linkedin" : /(^|\.)indeed\.com$/.test(host) ? "indeed" : "";
+    const providerEnabled = !provider || site.applicationOptions?.[provider] !== false;
+    if (destination && providerEnabled) {
+      applyLink.href = destination.href;
+      applyLink.target = "_blank";
+      applyLink.rel = "noopener noreferrer";
+      applyLink.textContent = provider ? `Apply on ${provider === "linkedin" ? "LinkedIn" : "Indeed"}` : "Continue to application";
+    } else {
+      applyLink.hidden = true;
+    }
+  } else {
+    applyLink.href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
+  }
   history.replaceState({}, "", `/?job=${encodeURIComponent(job.slug || job.id)}`);
   document.body.classList.add("job-detail-open");
 }
@@ -142,7 +181,20 @@ async function loadCareerSite() {
   document.documentElement.style.setProperty("--wireless-orange", primaryColor);
   document.body.dataset.layout = site.layout || "bold";
   const bannerImage = text(site.media?.bannerImage);
-  if (bannerImage) document.documentElement.style.setProperty("--hero-image", `url("${bannerImage.replace(/"/g, "\\\"")}")`);
+  let bannerImageUrl = "";
+  if (bannerImage) {
+    try {
+      const parsedBanner = new URL(bannerImage, location.href);
+      if (parsedBanner.protocol === "http:" || parsedBanner.protocol === "https:") bannerImageUrl = parsedBanner.href;
+    } catch (_) {}
+  }
+  if (bannerImageUrl) {
+    document.body.dataset.hasHeroImage = "true";
+    document.documentElement.style.setProperty("--hero-image", `url("${bannerImageUrl}")`);
+  } else {
+    delete document.body.dataset.hasHeroImage;
+    document.documentElement.style.removeProperty("--hero-image");
+  }
   byId("siteName").textContent = site.displayName; byId("siteHeading").textContent = site.displayName;
   byId("siteTagline").textContent = site.tagline; byId("siteAbout").textContent = site.about;
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;

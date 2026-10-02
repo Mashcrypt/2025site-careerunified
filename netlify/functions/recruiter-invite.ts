@@ -64,30 +64,31 @@ export const handler: Handler = async (event) => {
       const safeLink = escapeHtml(link);
       await sendTransactionalEmail({
         to: email,
-        subject: `${companyName} invited you to Career Unified`,
-        text: `You have been invited to join ${companyName} on Career Unified as a ${role}. Accept the invitation within 7 days: ${link}`,
+        subject: `You're invited to join ${companyName}'s recruiting team`,
+        text: `You have been invited to join ${companyName} on Career Unified as a ${role}. Great hiring is a team effort. We're excited for you to share ideas, support one another, and find the right people together. Accept the invitation within 7 days: ${link}`,
         html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join ${safeCompanyName} on Career Unified</title>
+  <title>Join ${safeCompanyName}'s recruiting team</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#16213d;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7fb;padding:32px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
           <tr>
             <td align="center" style="padding:32px 24px 20px;">
-              <img src="https://careerunified.com/android-chrome-192x192.png" alt="Career Unified" width="96" height="96" style="display:block;width:96px;height:96px;object-fit:contain;">
+              <img src="https://careerunified.com/socials/Careerunified%20social%20logo.jpg" alt="Career Unified" width="96" height="96" style="display:block;width:96px;height:96px;object-fit:contain;">
             </td>
           </tr>
           <tr>
             <td style="padding:12px 40px 40px;">
-              <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#16213d;">You are invited to join ${safeCompanyName}</h1>
+              <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#16213d;">Join ${safeCompanyName}'s recruiting team</h1>
               <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">Hello,</p>
-              <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">${safeCompanyName} has invited you to join its Career Unified recruiting team as a <strong>${safeRole}</strong>.</p>
+              <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">${safeCompanyName} has invited you to join its Career Unified recruiting team as a <strong>${safeRole}</strong>.</p>
+              <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">Great hiring is a team effort. We’re excited for you to share ideas, support one another, and find the right people together.</p>
               <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
                 <tr>
                   <td style="border-radius:6px;background:#2563eb;">
@@ -95,13 +96,21 @@ export const handler: Handler = async (event) => {
                   </td>
                 </tr>
               </table>
-              <p style="font-size:14px;line-height:1.6;color:#5d6b85;margin:0;">This invitation expires in 7 days. If you were not expecting this invitation, you can safely ignore this email.</p>
+              <p style="font-size:14px;line-height:1.6;color:#5d6b85;margin:0 0 16px;">This invitation expires in 7 days. If you were not expecting this invitation, you can safely ignore this email.</p>
             </td>
           </tr>
           <tr>
             <td style="padding:24px 40px;background:#f8fafc;text-align:center;">
-              <p style="font-size:13px;line-height:1.5;color:#718096;margin:0 0 8px;">Career Unified helps people find jobs, bursaries, university opportunities, and career tools.</p>
+              <p style="font-size:13px;line-height:1.5;color:#718096;margin:0 0 16px;">Career Unified helps people find jobs, bursaries, university opportunities, and career tools.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto 16px;">
+                <tr>
+                  <td style="padding:0 8px;"><a href="https://www.linkedin.com/company/career-unified" target="_blank" aria-label="Career Unified on LinkedIn" style="display:inline-block;text-decoration:none;"><img src="https://careerunified.com/socials/linkedin.png" alt="LinkedIn" width="34" height="34" style="display:block;width:34px;height:34px;border-radius:50%;"></a></td>
+                  <td style="padding:0 8px;"><a href="https://x.com/careerunified" target="_blank" aria-label="Career Unified on X" style="display:inline-block;text-decoration:none;"><img src="https://careerunified.com/socials/x.png" alt="X" width="34" height="34" style="display:block;width:34px;height:34px;border-radius:50%;"></a></td>
+                  <td style="padding:0 8px;"><a href="https://www.instagram.com/careerunified/" target="_blank" aria-label="Career Unified on Instagram" style="display:inline-block;text-decoration:none;"><img src="https://careerunified.com/socials/instagram.png" alt="Instagram" width="34" height="34" style="display:block;width:34px;height:34px;border-radius:50%;"></a></td>
+                </tr>
+              </table>
               <p style="font-size:13px;margin:0;"><a href="https://careerunified.com" style="color:#2563eb;">Visit Career Unified</a>&nbsp;|&nbsp;<a href="https://careerunified.com/privacy" style="color:#2563eb;">Privacy Policy</a></p>
+              <p style="font-size:12px;line-height:1.5;color:#718096;margin:12px 0 0;">© 2026 Career Unified. All rights reserved.</p>
             </td>
           </tr>
         </table>

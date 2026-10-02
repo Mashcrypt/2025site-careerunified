@@ -1516,145 +1516,25 @@
     background: #ffffff;
   }
 
-  .content-preview-bar {
-    height: 16px;
-    background: #eef0f2;
-  }
-
-  .content-preview-hero {
-    display: flex;
-    min-height: 225px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 24px;
-    background: #6bd88d;
-    color: #07130b;
-    text-align: center;
-  }
-
-  .content-preview-hero strong {
-    font-size: 20px;
-  }
-
-  .content-preview-hero span {
-    font-size: 14px;
-  }
-
-  .content-preview-hero button {
-    padding: 8px 14px;
-    border: 1px solid #ffffff;
-    background: transparent;
-    color: #ffffff;
-    font-weight: 600;
-  }
-
-  .content-preview-body {
-    padding: 18px 34px 24px;
-  }
-
-  .content-preview-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 280px;
-    margin: 0 auto 18px;
-  }
-
-  .content-preview-cards span {
-    display: block;
-    height: 54px;
-    border-radius: 3px;
-    background: #d9dadd;
-  }
-
-  .content-preview-title {
-    margin-bottom: 18px;
-    color: #334155;
-    font-size: 13px;
-    text-align: center;
-  }
-
-  .content-preview-job {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    color: #475569;
-    font-size: 11px;
-  }
-
-  .content-preview-job b {
-    display: block;
-    margin-bottom: 4px;
-    color: #111827;
-  }
-
-  .content-preview-job button {
-    align-self: center;
-    border: none;
-    border-radius: 8px;
-    background: #6b6b6b;
-    color: #ffffff;
-    font-size: 9px;
-  }
-
-  .code-intro {
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  .code-section {
-    display: grid;
-    grid-template-columns: minmax(240px, 0.75fr) minmax(460px, 1.6fr);
-    gap: 28px;
-    padding: 32px 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  .code-section h4 {
-    margin: 0 0 5px;
-    color: #111827;
-    font-size: 16px;
-  }
-
-  .code-section .setting-copy {
-    margin: 0;
-  }
-
-  .code-editor {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    min-height: 225px;
-    overflow: hidden;
-    border: 1px solid #dfe5ee;
-    border-radius: 5px;
-    background: #ffffff;
-    font-family: Consolas, 'Courier New', monospace;
-  }
-
-  .code-line-number {
-    padding: 12px 10px;
-    background: #f8fafc;
-    color: #7890a8;
-    font-size: 13px;
-    text-align: right;
-    user-select: none;
-  }
-
-  .code-editor textarea {
-    width: 100%;
-    min-height: 225px;
-    resize: vertical;
-    padding: 12px;
-    border: none;
-    outline: none;
-    color: #7890a8;
-    background: #ffffff;
-    font: inherit;
-    font-size: 13px;
-    line-height: 1.6;
-  }
+  .content-preview-site { min-height:430px; }
+  .content-preview .career-preview-nav { min-height:50px; padding:8px 16px; }
+  .content-preview .career-preview-brand { min-width:0; gap:8px; font-size:12px; }
+  .content-preview .career-preview-brand img { width:26px; height:26px; border-radius:5px; }
+  .content-preview .career-preview-nav > span { font-size:10px; }
+  .content-preview .career-preview-hero { min-height:190px; padding:28px 22px; }
+  .content-preview .career-preview-hero h3 { font-size:clamp(20px,2.5vw,30px); overflow-wrap:anywhere; }
+  .content-preview .career-preview-hero p { margin-bottom:9px; font-size:12px; line-height:1.5; }
+  .content-preview .career-preview-hero button { padding:8px 12px; font-size:11px; }
+  .content-preview .content-preview-eyebrow { margin:0 0 8px; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:.8; }
+  .content-preview .career-preview-body { grid-template-columns:minmax(0,1.4fr) minmax(130px,.8fr); gap:10px; padding:12px; }
+  .content-preview-openings h4 { margin:2px 0 8px; font-size:12px; }
+  .content-preview .career-preview-jobs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-content:start; gap:7px; }
+  .content-preview .career-preview-card { min-width:0; padding:9px; border-radius:6px; }
+  .content-preview .career-preview-card h4 { font-size:10px; overflow-wrap:anywhere; }
+  .content-preview .career-preview-card p { font-size:9px; line-height:1.4; overflow-wrap:anywhere; }
+  .content-preview .career-preview-empty { grid-column:1 / -1; margin:0; padding:10px; border:1px dashed #cbd5e1; border-radius:6px; color:#64748b; font-size:10px; }
+  .content-preview .career-preview-footer { padding:10px 14px; font-size:9px; }
+  @media (max-width:900px) { .content-preview .career-preview-body { grid-template-columns:1fr; } }
 
   .widget-intro {
     padding-bottom: 16px;
@@ -1742,13 +1622,6 @@
 
   @media (max-width: 900px) {
     .widget-section {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .code-section {
       grid-template-columns: 1fr;
       gap: 16px;
     }
@@ -2171,9 +2044,14 @@
   .career-preview-site[data-layout="editorial"] .career-preview-card { border-width:0 0 1px; border-radius:0; }
   .career-preview-site[data-layout="split"] .career-preview-hero { background:var(--preview-primary); color:#fff; }
   .career-preview-site[data-layout="wireless"] .career-preview-hero { background:linear-gradient(90deg,#3f4b5c,#b96754); color:#fff; text-align:left; }
+  .career-preview-site[data-has-banner="true"] .career-preview-hero { background-image:linear-gradient(90deg,rgba(20,33,61,.82),rgba(20,33,61,.58)),var(--preview-hero-image); background-position:center; background-size:cover; color:#fff; }
+  .career-preview-site[data-has-banner="true"] .career-preview-hero p,
+  .career-preview-site[data-has-banner="true"] .career-preview-hero .content-preview-eyebrow { color:#fff; }
   .career-preview-site[data-layout="wireless"] .career-preview-body { grid-template-columns:80px 1fr; background:#f4f4f4; }
   .career-preview-site[data-layout="wireless"] .career-preview-card { border:0; border-top:3px solid #e8752a; border-radius:0; }
   .career-preview-site[data-layout="split"] .career-preview-body { grid-template-columns:repeat(3,1fr); }
+  .content-preview .career-preview-site .career-preview-body { grid-template-columns:minmax(0,1.4fr) minmax(130px,.8fr); }
+  @media (max-width:900px) { .content-preview .career-preview-site .career-preview-body { grid-template-columns:1fr; } }
   .career-preview-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; background:#fff; border-bottom:1px solid #e5e7eb; }
   .career-preview-brand { display:flex; align-items:center; gap:10px; font-weight:700; }
   .career-preview-brand img { width:36px; height:36px; object-fit:contain; border-radius:8px; }
@@ -5680,7 +5558,7 @@
         <div class="career-site-heading">
           <h2>Career Site Settings</h2>
           <div class="career-site-hero">
-            Build your public careers page and employee portal to showcase your company's brand and culture. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a>
+            Build your public careers page to showcase your company's brand and culture. <a href="#" style="color:#475569;text-decoration:underline;">Learn More</a>
           </div>
           <div class="career-site-status" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;">
             <strong id="careerSiteStatus">Loading career site...</strong>
@@ -5695,15 +5573,12 @@
           <button class="career-site-tab active" data-tab="general" onclick="switchCareerSiteTab('general', this)">General</button>
           <button class="career-site-tab" data-tab="media" onclick="switchCareerSiteTab('media', this)">Media &amp; Links</button>
           <button class="career-site-tab" data-tab="content" onclick="switchCareerSiteTab('content', this)">Content</button>
-          <button class="career-site-tab" data-tab="share" onclick="switchCareerSiteTab('share', this)">Share</button>
-          <button class="career-site-tab" data-tab="css" onclick="switchCareerSiteTab('css', this)">CSS/JS</button>
-          <button class="career-site-tab" data-tab="employee" onclick="switchCareerSiteTab('employee', this)">Employee Portal</button>
           <button class="career-site-tab" data-tab="widget" onclick="switchCareerSiteTab('widget', this)">Embed Widget</button>
         </div>
 
         <div class="career-site-main">
           <h3>General Settings</h3>
-          <div class="subhead">Customize company info and basic settings for your career and employee portals.</div>
+          <div class="subhead">Customize company information and basic settings for your career site.</div>
 
           <hr class="settings-rule">
 
@@ -5817,7 +5692,7 @@
             <div class="setting-control">
               <div class="switch-row">
                 <label class="switch" aria-label="Toggle apply with LinkedIn">
-                  <input type="checkbox" checked>
+                  <input id="careerSiteApplyLinkedIn" type="checkbox" checked>
                   <span class="slider"></span>
                 </label>
               </div>
@@ -5832,7 +5707,7 @@
             <div class="setting-control">
               <div class="switch-row">
                 <label class="switch" aria-label="Toggle apply with Indeed">
-                  <input type="checkbox" checked>
+                  <input id="careerSiteApplyIndeed" type="checkbox" checked>
                   <span class="slider"></span>
                 </label>
               </div>
@@ -5866,7 +5741,7 @@
               </div>
               <label class="color-label" for="careerSiteCustomColor">Custom Color</label>
               <div class="color-custom">
-                <span style="width:16px;height:16px;border-radius:50%;background:#0d6efd;display:inline-block;"></span>
+                <span id="careerSiteCustomColorDot" style="width:16px;height:16px;border-radius:50%;background:#0d6efd;display:inline-block;"></span>
                 <input type="text" id="careerSiteCustomColor" value="#0D6EFD" aria-label="Custom color">
                 <button type="button" class="color-clear" aria-label="Clear custom color">&times;</button>
               </div>
@@ -5960,7 +5835,7 @@
           <div class="media-section">
             <div>
               <h4>Images</h4>
-              <p class="setting-copy">Share some photos of work life. Interesting office features, events, office pets, and happy employees are always nice. 😊 You'll need at least 3 (we recommend 8 or more).</p>
+              <p class="setting-copy">Give candidates a feel for your workplace. Add photos of your team, office, events, and everyday moments. Upload at least 3 images; 8 or more will create a richer picture of your company.</p>
             </div>
             <div>
               <label class="media-upload" for="careerSiteImageUpload">
@@ -6095,20 +5970,30 @@
               </div>
             </div>
 
-            <div class="content-preview" aria-label="Career site preview">
-              <div class="content-preview-bar"></div>
-              <div class="content-preview-hero">
-                <strong>Come work with us.</strong>
-                <span>We're looking for great people to join our growing team.</span>
-                <button type="button">View Openings</button>
-              </div>
-              <div class="content-preview-body">
-                <div class="content-preview-cards"><span></span><span></span><span></span></div>
-                <div class="content-preview-title">Our Openings</div>
-                <div class="content-preview-job">
-                  <div><b>testing</b><span>📍 Pretoria, ZA<br>▣ Full-Time</span></div>
-                  <button type="button">Apply</button>
+            <div class="content-preview" aria-label="Live career site preview">
+              <div class="career-preview-site content-preview-site" id="careerSiteContentPreviewSite" data-layout="bold" data-has-banner="false">
+                <div class="career-preview-nav">
+                  <div class="career-preview-brand"><img id="careerSiteContentPreviewLogo" src="/android-chrome-192x192.png" alt=""><span id="careerSiteContentPreviewName">Your company</span></div>
+                  <span>Open positions</span>
                 </div>
+                <section class="career-preview-hero" id="careerSiteContentPreviewHero">
+                  <p class="content-preview-eyebrow">Careers</p>
+                  <h3 id="careerSiteContentPreviewHeading">Your company</h3>
+                  <p id="careerSiteContentPreviewTagline">Explore opportunities and grow your career with us.</p>
+                  <p id="careerSiteContentPreviewAbout">Your company story will appear here.</p>
+                  <button type="button">View open roles</button>
+                </section>
+                <div class="career-preview-body">
+                  <section class="content-preview-openings" id="careerSiteContentPreviewOpenings">
+                    <h4>Open positions</h4>
+                    <div class="career-preview-jobs" id="careerSiteContentPreviewJobs"></div>
+                  </section>
+                  <aside class="career-preview-card" id="careerSiteContentPreviewAboutCard">
+                    <h4>About the company</h4>
+                    <p id="careerSiteContentPreviewAboutCardText">Your company story and candidate information will appear here.</p>
+                  </aside>
+                </div>
+                <div class="career-preview-footer"><span>Build your next chapter with us.</span><span>Career site preview</span></div>
               </div>
             </div>
           </div>
@@ -6116,61 +6001,6 @@
           <div class="career-site-actions">
             <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()"><i class='bx bx-show'></i> View Career Site</button>
             <button class="primary-btn" type="button" onclick="saveCareerSiteContent()"><i class='bx bx-save'></i> Save Changes</button>
-          </div>
-        </div>
-
-        <div id="careerSiteCssPanel" class="career-site-panel">
-          <div class="code-intro">
-            <h3>CSS &amp; Javascript</h3>
-            <div class="subhead">Need a little more personalization on your career portal? Or maybe a third-party analytics tracking code? No problem. Add your own custom CSS and JavaScript.</div>
-          </div>
-
-          <div class="code-section">
-            <div>
-              <h4>Custom CSS</h4>
-              <p class="setting-copy">Want to really make things your own? Add your own custom CSS here.</p>
-            </div>
-            <div class="code-editor">
-              <div class="code-line-number">1</div>
-              <textarea id="careerSiteCustomCss" spellcheck="false" aria-label="Custom CSS" placeholder="/* Add your custom CSS here */"></textarea>
-            </div>
-          </div>
-
-          <div class="code-section">
-            <div>
-              <h4>Custom JS</h4>
-              <p class="setting-copy">Add your own custom JavaScript here. It'll be added at the bottom of your Career Site pages.</p>
-            </div>
-            <div class="code-editor">
-              <div class="code-line-number">1</div>
-              <textarea id="careerSiteCustomJs" spellcheck="false" aria-label="Custom JavaScript" placeholder="// Add your custom JavaScript here"></textarea>
-            </div>
-          </div>
-
-          <div class="code-section">
-            <div>
-              <h4>Custom JS - Application Submission</h4>
-              <p class="setting-copy">Add your own custom JavaScript here to track candidate applications submitted through your Career Site.</p>
-            </div>
-            <div class="code-editor">
-              <div class="code-line-number">1</div>
-              <textarea id="careerSiteApplicationJs" spellcheck="false" aria-label="Application submission JavaScript" placeholder="// Add your custom JavaScript for application tracking"></textarea>
-            </div>
-          </div>
-
-          <div class="code-section">
-            <div>
-              <h4>Facebook Domain Verification</h4>
-              <p class="setting-copy">Verify your career portal domain with Facebook.<br><a href="#" style="color:#475569;text-decoration:underline;">Learn more</a></p>
-            </div>
-            <div class="setting-control">
-              <input id="careerSiteFacebookVerification" type="text" class="form-input" placeholder="Enter Facebook domain verification code" aria-label="Facebook domain verification code">
-            </div>
-          </div>
-
-          <div class="career-site-actions">
-            <button class="primary-btn btn-ghost" type="button" onclick="viewCareerSite()"><i class='bx bx-show'></i> View Career Site</button>
-            <button class="primary-btn" type="button" onclick="saveCareerSiteCode()"><i class='bx bx-save'></i> Save Changes</button>
           </div>
         </div>
 
@@ -6864,12 +6694,10 @@ function switchCareerSiteTab(tabId, el) {
   const generalPanel = document.querySelector('.career-site-main');
   const mediaPanel = document.getElementById('careerSiteMediaPanel');
   const contentPanel = document.getElementById('careerSiteContentPanel');
-  const cssPanel = document.getElementById('careerSiteCssPanel');
   const widgetPanel = document.getElementById('careerSiteWidgetPanel');
   if (generalPanel) generalPanel.style.display = tabId === 'general' ? 'block' : 'none';
   if (mediaPanel) mediaPanel.classList.toggle('active', tabId === 'media');
   if (contentPanel) contentPanel.classList.toggle('active', tabId === 'content');
-  if (cssPanel) cssPanel.classList.toggle('active', tabId === 'css');
   if (widgetPanel) widgetPanel.classList.toggle('active', tabId === 'widget');
 }
 
@@ -6912,12 +6740,19 @@ async function loadCareerSiteSettings() {
     const slugField = document.getElementById('careerSiteSlug');
     const domainField = document.getElementById('careerSiteDomain');
     const logoPreview = document.getElementById('careerSiteLogoPreview');
+    const primaryColorField = document.getElementById('careerSiteCustomColor');
     if (slugField) slugField.value = careerSiteConfig.slug || '';
     if (domainField) domainField.value = careerSiteConfig.baseDomain || 'careerunified.com';
-    if (logoPreview) logoPreview.src = careerSiteConfig.logo || companyProfile?.logo || '/android-chrome-192x192.png';
+    if (logoPreview) logoPreview.src = careerSiteConfig.logo || window.getRecruiterCareerSitePreviewState?.().companyProfile?.logo || '/android-chrome-192x192.png';
+    if (primaryColorField && /^#[0-9a-f]{6}$/i.test(careerSiteConfig.brandColors?.primary || '')) primaryColorField.value = careerSiteConfig.brandColors.primary;
     document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
       input.checked = input.value === (careerSiteConfig.layout || 'bold');
     });
+    const applicationOptions = careerSiteConfig.applicationOptions || {};
+    const linkedinApply = document.getElementById('careerSiteApplyLinkedIn');
+    const indeedApply = document.getElementById('careerSiteApplyIndeed');
+    if (linkedinApply) linkedinApply.checked = applicationOptions.linkedin !== false;
+    if (indeedApply) indeedApply.checked = applicationOptions.indeed !== false;
     const savedSections = Array.isArray(careerSiteConfig.contentSections) ? careerSiteConfig.contentSections : [];
     if (savedSections.length) {
       const sectionState = new Map(savedSections.map(section => [section.id, section.enabled !== false]));
@@ -6944,6 +6779,7 @@ async function loadCareerSiteSettings() {
     publishButton.textContent = careerSiteConfig.status === 'published' ? 'Unpublish' : 'Publish';
     status.textContent = careerSiteConfig.status === 'published' ? 'Published' : 'Unpublished';
     status.style.color = careerSiteConfig.status === 'published' ? '#15803d' : '#9a3412';
+    updateCareerSiteContentPreview();
   } catch (error) {
     status.textContent = error.message || 'Career site unavailable';
     status.style.color = '#b91c1c';
@@ -6974,15 +6810,6 @@ function removeCareerSiteLogo() {
   saveCareerSiteConfig({logo: ''})
     .then(() => showToast('success', 'Logo removed', 'The Career Site will use the default brand mark.'))
     .catch(error => showToast('error', 'Logo not removed', error.message || 'Could not remove the logo.'));
-}
-
-function copyShareUrl() {
-  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
-  if (url) {
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('success', 'Copied', 'URL copied to clipboard');
-    });
-  }
 }
 
 // Logo Upload Preview
@@ -7038,66 +6865,140 @@ function addCareerSiteImages(input) {
   });
 }
 
-// Social Sharing
-function shareToLinkedIn() {
-  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
-  if (url) window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank');
+function getCareerSitePreviewData() {
+  const recruiterState = window.getRecruiterCareerSitePreviewState?.() || {};
+  const profile = recruiterState.companyProfile || {};
+  const field = id => document.getElementById(id)?.value?.trim() || '';
+  const savedLogo = document.getElementById('careerSiteLogoPreview')?.getAttribute('src') || '';
+  const rawBanner = String(document.getElementById('careerSiteBannerImage')?.value ?? careerSiteConfig?.media?.bannerImage ?? '');
+  let bannerImage = '';
+  if (rawBanner.trim()) {
+    try {
+      const parsed = new URL(rawBanner.trim(), window.location.href);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') bannerImage = parsed.href;
+    } catch (_) {}
+  }
+  const primaryCandidate = normalizeCareerSiteColor(field('careerSiteCustomColor') || careerSiteConfig?.brandColors?.primary || '#0d47ff') || '#0d47ff';
+  return {
+    layout: document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig?.layout || 'bold',
+    name: field('cp_name') || careerSiteConfig?.displayName || profile.name || 'Your company',
+    about: field('cp_about') || careerSiteConfig?.about || profile.about || 'Explore opportunities and build your future with us.',
+    tagline: field('careerSiteTagline') || careerSiteConfig?.tagline || profile.tagline || 'Explore opportunities and grow your career with us.',
+    logo: field('cp_logo') || careerSiteConfig?.logo || profile.logo || savedLogo || '/android-chrome-192x192.png',
+    primary: primaryCandidate,
+    bannerImage
+  };
 }
 
-function shareToFacebook() {
-  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
-  if (url) window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
+function setCareerPreviewBranding(site, data) {
+  if (!site) return;
+  site.dataset.layout = data.layout;
+  site.dataset.hasBanner = data.bannerImage ? 'true' : 'false';
+  site.style.setProperty('--preview-primary', data.primary);
+  if (data.bannerImage) site.style.setProperty('--preview-hero-image', `url("${data.bannerImage}")`);
+  else site.style.removeProperty('--preview-hero-image');
 }
 
-function shareToWhatsApp() {
-  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
-  if (url) window.open('https://wa.me/?text=' + encodeURIComponent('Check out our Career Site: ' + url), '_blank');
-}
-
-function shareToEmail() {
-  const url = document.getElementById('shareCareerSiteUrl')?.textContent;
-  if (url) window.open('mailto:?subject=Career Opportunities&body=Check out our Career Site: ' + encodeURIComponent(url), '_blank');
-}
-
-function copyEmbedCode() {
-  const code = document.querySelector('#careerSiteShareTab pre code')?.textContent || 
-    '<a href="https://yourcompany.careerunified.com" target="_blank" style="display:inline-block;padding:12px 24px;background:#1e3a8a;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">View Careers at YourCompany</a>';
-  navigator.clipboard.writeText(code).then(() => {
-    showToast('Embed code copied to clipboard');
+function renderCareerPreviewJobs(target, maxItems = 3, emptyMessage = 'Your published open positions will appear here.') {
+  if (!target) return;
+  const recruiterJobs = window.getRecruiterCareerSitePreviewState?.().jobs || [];
+  const jobs = recruiterJobs.filter(job => String(job.status || 'active').toLowerCase() === 'active' && !job.deleted && !job.archived);
+  target.replaceChildren();
+  if (!jobs.length) {
+    const empty = document.createElement('p');
+    empty.className = 'career-preview-empty';
+    empty.textContent = emptyMessage;
+    target.append(empty);
+    return;
+  }
+  jobs.slice(0, maxItems).forEach(job => {
+    const card = document.createElement('div'); card.className = 'career-preview-card';
+    const title = document.createElement('h4'); title.textContent = job.title || 'Open position';
+    const meta = document.createElement('p');
+    meta.textContent = [job.location || [job.city, job.country].filter(Boolean).join(', '), job.type].filter(Boolean).join(' · ') || 'Open position';
+    card.append(title, meta); target.append(card);
   });
+}
+
+function updateCareerSiteContentPreview() {
+  const data = getCareerSitePreviewData();
+  const colorDot = document.getElementById('careerSiteCustomColorDot');
+  if (colorDot) colorDot.style.backgroundColor = data.primary;
+  document.querySelectorAll('.color-palette .color-swatch[data-color]').forEach(swatch => {
+    swatch.setAttribute('aria-pressed', normalizeCareerSiteColor(swatch.dataset.color) === data.primary ? 'true' : 'false');
+  });
+  const mini = document.getElementById('careerSiteContentPreviewSite');
+  const modalSite = document.getElementById('careerSitePreviewSite');
+  [mini, modalSite].forEach(site => setCareerPreviewBranding(site, data));
+
+  const textTargets = [
+    ['careerSiteContentPreviewName', data.name], ['careerSiteContentPreviewHeading', data.name],
+    ['careerSiteContentPreviewTagline', data.tagline], ['careerSiteContentPreviewAbout', data.about],
+    ['careerSiteContentPreviewAboutCardText', data.about], ['careerPreviewName', data.name],
+    ['careerPreviewHeading', data.name], ['careerPreviewTagline', data.tagline],
+    ['careerPreviewAbout', data.about], ['careerPreviewAboutCard', data.about]
+  ];
+  textTargets.forEach(([id, value]) => { const target = document.getElementById(id); if (target) target.textContent = value; });
+  ['careerSiteContentPreviewLogo', 'careerPreviewLogo'].forEach(id => {
+    const logo = document.getElementById(id);
+    if (logo) { logo.src = data.logo; logo.alt = `${data.name} logo`; }
+  });
+
+  renderCareerPreviewJobs(document.getElementById('careerSiteContentPreviewJobs'), 3);
+  renderCareerPreviewJobs(document.getElementById('careerPreviewJobs'), 4);
+
+  if (mini) {
+    const sectionEnabled = id => document.querySelector(`#careerSiteContentPanel [data-section-id="${id}"] .content-section-enabled`)?.checked
+      ?? document.querySelector(`#careerSiteContentPanel [data-section-id="${id}"]`)?.closest('.content-list-group')?.querySelector('h4')?.textContent.trim() === 'Display';
+    const hero = document.getElementById('careerSiteContentPreviewHero');
+    const openings = document.getElementById('careerSiteContentPreviewOpenings');
+    const aboutCard = document.getElementById('careerSiteContentPreviewAboutCard');
+    if (hero) hero.hidden = !sectionEnabled('hero');
+    if (openings) openings.hidden = !sectionEnabled('positions');
+    if (aboutCard) aboutCard.hidden = !sectionEnabled('description');
+  }
+
+  const previewSocial = document.getElementById('careerPreviewSocial');
+  if (previewSocial) previewSocial.textContent = Object.values(careerSiteConfig?.socialLinks || {}).filter(Boolean).length ? 'Social links included' : 'Add social links in Media & Links';
+}
+
+function normalizeCareerSiteColor(value) {
+  const raw = String(value || '').trim();
+  const color = raw.startsWith('#') ? raw : `#${raw}`;
+  if (/^#[0-9a-f]{3}$/i.test(color)) return `#${color.slice(1).split('').map(digit => digit + digit).join('')}`.toLowerCase();
+  return /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : '';
+}
+
+function chooseCareerSiteColor(value) {
+  const color = normalizeCareerSiteColor(value);
+  const input = document.getElementById('careerSiteCustomColor');
+  if (!color || !input) return;
+  input.value = color.toUpperCase();
+  updateCareerSiteContentPreview();
+}
+
+function initializeCareerSiteColorControls() {
+  document.querySelectorAll('.color-palette .color-swatch').forEach((swatch, index) => {
+    const match = swatch.getAttribute('style')?.match(/#[0-9a-f]{6}/i);
+    if (!match) return;
+    const color = match[0];
+    swatch.dataset.color = color;
+    swatch.setAttribute('role', 'button');
+    swatch.setAttribute('tabindex', '0');
+    swatch.setAttribute('aria-label', `Use color ${color}`);
+    swatch.setAttribute('aria-pressed', 'false');
+    swatch.addEventListener('click', () => chooseCareerSiteColor(color));
+    swatch.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); chooseCareerSiteColor(color); }
+    });
+  });
+  document.querySelector('.color-clear')?.addEventListener('click', () => chooseCareerSiteColor('#0d47ff'));
 }
 
 function openCareerSitePreview() {
   const modal = document.getElementById('careerSitePreviewModal');
-  const site = document.getElementById('careerSitePreviewSite');
-  if (!modal || !site) return;
-  const selectedLayout = document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig?.layout || 'bold';
-  const name = document.getElementById('cp_name')?.value || careerSiteConfig?.displayName || 'Your company';
-  const about = document.getElementById('cp_about')?.value || careerSiteConfig?.about || 'Explore opportunities and build your future with us.';
-  const tagline = document.getElementById('careerSiteTagline')?.value || careerSiteConfig?.tagline || 'Find your next opportunity.';
-  const logo = document.getElementById('careerSiteLogoPreview')?.src || careerSiteConfig?.logo || '/android-chrome-192x192.png';
-  const primary = document.getElementById('careerSiteCustomColor')?.value || careerSiteConfig?.brandColors?.primary || '#0d47ff';
-  site.dataset.layout = selectedLayout;
-  site.style.setProperty('--preview-primary', /^#[0-9a-f]{6}$/i.test(primary) ? primary : '#0d47ff');
-  document.getElementById('careerPreviewName').textContent = name;
-  document.getElementById('careerPreviewHeading').textContent = name;
-  document.getElementById('careerPreviewAbout').textContent = about;
-  document.getElementById('careerPreviewTagline').textContent = tagline;
-  document.getElementById('careerPreviewLogo').src = logo;
-  document.getElementById('careerPreviewAboutCard').textContent = about;
-  const jobs = recruiterJobsCache.filter(job => job.status === 'active' && !job.deleted && !job.archived);
-  const jobsTarget = document.getElementById('careerPreviewJobs');
-  if (jobsTarget) {
-    jobsTarget.replaceChildren();
-    (jobs.length ? jobs.slice(0, 4) : [{title: 'Example open position', location: 'Your location', type: 'Full-time'}]).forEach(job => {
-      const card = document.createElement('div'); card.className = 'career-preview-card';
-      const title = document.createElement('h4'); title.textContent = job.title || 'Open position';
-      const meta = document.createElement('p'); meta.textContent = [job.location || [job.city, job.country].filter(Boolean).join(', '), job.type].filter(Boolean).join(' · ') || 'Apply through Career Unified';
-      card.append(title, meta); jobsTarget.append(card);
-    });
-  }
-  const previewSocial = document.getElementById('careerPreviewSocial');
-  if (previewSocial) previewSocial.textContent = Object.values(careerSiteConfig?.socialLinks || {}).filter(Boolean).length ? 'Social links included' : 'Add social links in Media & Links';
+  if (!modal) return;
+  updateCareerSiteContentPreview();
   modal.hidden = false;
 }
 
@@ -7118,14 +7019,24 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') clos
 // Save Functions
 async function saveCareerSiteGeneral() {
   if (!careerSiteConfig) return;
+  const primary = normalizeCareerSiteColor(document.getElementById('careerSiteCustomColor')?.value);
+  if (!primary) {
+    showToast('warn', 'Invalid color', 'Enter a valid hex color, such as #1a73e8.');
+    document.getElementById('careerSiteCustomColor')?.focus();
+    return;
+  }
   try {
     await saveCareerSiteConfig({
       displayName: document.getElementById('cp_name')?.value || careerSiteConfig.displayName,
       about: document.getElementById('cp_about')?.value || careerSiteConfig.about,
       logo: document.getElementById('cp_logo')?.value || careerSiteConfig.logo,
       layout: document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig.layout || 'bold',
+      applicationOptions: {
+        linkedin: document.getElementById('careerSiteApplyLinkedIn')?.checked !== false,
+        indeed: document.getElementById('careerSiteApplyIndeed')?.checked !== false
+      },
       contact: {...careerSiteConfig.contact, email: document.getElementById('cp_email')?.value || careerSiteConfig.contact?.email, website: document.getElementById('cp_website')?.value || careerSiteConfig.contact?.website},
-      brandColors: {...careerSiteConfig.brandColors, primary: document.getElementById('careerSiteCustomColor')?.value || careerSiteConfig.brandColors.primary},
+      brandColors: {...(careerSiteConfig.brandColors || {}), primary},
     });
     showToast('success', 'Saved', 'General settings saved');
   } catch (error) { showToast('error', 'Save failed', error.message); }
@@ -7162,17 +7073,6 @@ async function saveCareerSiteContent() {
     });
   });
   try { await saveCareerSiteConfig({contentSections: sections}); showToast('success', 'Saved', 'Content settings saved'); }
-  catch (error) { showToast('error', 'Save failed', error.message); }
-}
-
-async function saveCareerSiteCode() {
-  const data = {
-    css: document.getElementById('careerSiteCustomCss')?.value || '',
-    javascript: document.getElementById('careerSiteCustomJs')?.value || '',
-    applicationJavascript: document.getElementById('careerSiteApplicationJs')?.value || '',
-    facebookVerification: document.getElementById('careerSiteFacebookVerification')?.value || ''
-  };
-  try { await saveCareerSiteConfig({customCode: data}); showToast('success', 'Saved', 'CSS and JavaScript settings saved'); }
   catch (error) { showToast('error', 'Save failed', error.message); }
 }
 
@@ -7388,7 +7288,16 @@ function updateSectionOrder() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+  initializeCareerSiteColorControls();
   initCareerSiteSections();
+  updateCareerSiteContentPreview();
+});
+
+document.addEventListener('input', event => {
+  if (event.target.matches('#cp_name, #cp_about, #cp_logo, #careerSiteCustomColor, #careerSiteBannerImage, #careerSiteTagline')) updateCareerSiteContentPreview();
+});
+document.addEventListener('change', event => {
+  if (event.target.matches('#cp_name, #cp_about, #cp_logo, #careerSiteCustomColor, #careerSiteBannerImage, #careerSiteTagline, input[name="careerSiteLayout"], #careerSiteContentPanel .content-section-enabled')) updateCareerSiteContentPreview();
 });
 
 /* ======================================================
@@ -8688,6 +8597,7 @@ let editingJobId = null;
 let duplicatingJob = false;
 let selectedWorkspaceJobId = null;
 let jobDraftSaveTimer = null;
+window.getRecruiterCareerSitePreviewState = () => ({companyProfile, jobs: recruiterJobsCache});
 
 /* ======================================================
    ANALYTICS state
@@ -9016,6 +8926,7 @@ function setCompanyForm(p) {
   setCompanyLogoStatus(p?.logo ? "Current company logo loaded." : "No image selected.");
   document.getElementById('cp_about').value = p?.about || "";
   document.getElementById('cp_contactName').value = p?.contactName || "";
+  updateCareerSiteContentPreview();
 }
 
 function renderCompanyPreview(p) {
@@ -9162,6 +9073,7 @@ async function uploadCompanyLogo(file) {
     companyProfileVersion = payload.companyProfileVersion || companyProfileVersion;
     setCompanyLogoThumb(payload.logoUrl);
     renderCompanyPreview({...getCompanyFormValue(), logo: payload.logoUrl});
+    updateCareerSiteContentPreview();
     applyCompanyProfileToJobForm({lock: true});
     if (payload.syncComplete === false) {
       setCompanyLogoStatus("Logo uploaded. Some existing job posts could not be refreshed yet.", "error");
@@ -10001,6 +9913,7 @@ async function loadManageJobs() {
     snap.forEach(d => {
       recruiterJobsCache.push({ id: d.id, ...d.data() });
     });
+    updateCareerSiteContentPreview();
 
     const filtered = start
       ? recruiterJobsCache.filter(j => {
