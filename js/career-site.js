@@ -2,18 +2,145 @@ const byId = id => document.getElementById(id);
 const text = value => String(value || "").trim();
 let site = null;
 let jobs = [];
+let candidateUser = null;
+let savedJobIds = new Set();
+let savedJobsUnsubscribe = null;
 let wirelessFilters = {category: "", location: "", type: ""};
+let editorialRefineTerms = [];
+
+function updateSplitBookmarkButtons() {
+  document.querySelectorAll("[data-saved-job-id]").forEach(button => {
+    const saved = savedJobIds.has(button.dataset.savedJobId);
+    button.setAttribute("aria-pressed", String(saved));
+  });
+}
+
+function loadCandidateSavedJobs(user) {
+  if (savedJobsUnsubscribe) {
+    savedJobsUnsubscribe();
+    savedJobsUnsubscribe = null;
+  }
+  candidateUser = user || null;
+  savedJobIds = new Set();
+  if (candidateUser) {
+    savedJobsUnsubscribe = firebase.firestore().collection("users").doc(candidateUser.uid).collection("saved").where("type", "==", "job").onSnapshot(snapshot => {
+      savedJobIds = new Set();
+      snapshot.forEach(doc => {
+        const jobId = doc.id.startsWith("job_") ? doc.id.slice(4) : "";
+        if (jobId) savedJobIds.add(jobId);
+      });
+      updateSplitBookmarkButtons();
+    }, error => {
+      console.error("Could not load saved career site jobs:", error);
+    });
+  }
+  updateSplitBookmarkButtons();
+}
+
+async function toggleCareerSiteJobBookmark(job, button) {
+  const host = location.hostname.toLowerCase();
+  const isLocalTenantHost = host.endsWith(".localhost");
+  const accountOrigin = isLocalTenantHost
+    ? `${location.protocol}//localhost:${location.port}`
+    : host === "localhost" || host.startsWith("127.") ? location.origin : "https://careerunified.com";
+
+  // Recruiter career sites often run on a separate subdomain or custom domain.
+  // Firebase Auth storage is origin scoped, so use the main Career Unified
+  // origin for these saves and let Saved Items persist them under its session.
+  if (!candidateUser || location.origin !== accountOrigin) {
+    const params = new URLSearchParams({
+      saveJob: job.id,
+      title: job.title || "Open position",
+      company: site.displayName || "",
+      location: job.location || "",
+      salary: job.salary || "",
+      deadline: job.deadline || "",
+      applyLink: text(job.applicationMethod).toLowerCase() === "external" ? job.applyLink || "" : `${location.origin}/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`,
+      slug: job.slug || "",
+      returnTo: location.href
+    });
+    location.href = `${accountOrigin}/saved-items.html?${params.toString()}`;
+    return;
+  }
+  const docId = `job_${job.id}`;
+  const savedRef = firebase.firestore().collection("users").doc(candidateUser.uid).collection("saved").doc(docId);
+  button.disabled = true;
+  try {
+    if (savedJobIds.has(job.id)) {
+      await savedRef.delete();
+      savedJobIds.delete(job.id);
+    } else {
+      const applyUrl = text(job.applicationMethod).toLowerCase() === "external" && job.applyLink
+        ? job.applyLink
+        : `${location.origin}/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
+      await savedRef.set({
+        type: "job",
+        title: job.title || "Open position",
+        company: site.displayName || null,
+        deadline: job.deadline || null,
+        deadlineDate: job.deadline || null,
+        location: job.location || null,
+        salary: job.salary || null,
+        applyLink: applyUrl,
+        slug: job.slug || null,
+        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      savedJobIds.add(job.id);
+    }
+    updateSplitBookmarkButtons();
+  } catch (error) {
+    console.error("Could not save career site job:", error);
+    alert("Could not update Saved Items. Please try again.");
+  } finally {
+    button.disabled = false;
+  }
+}
 
 function renderWirelessFilters() {
   const aside = byId("wirelessFilters");
   if (!aside) return;
   aside.replaceChildren();
-  aside.hidden = document.body.dataset.layout !== "wireless";
+  const isEditorial = document.body.dataset.layout === "editorial";
+  aside.hidden = !isEditorial && document.body.dataset.layout !== "wireless";
   if (aside.hidden) return;
   const heading = document.createElement("h3");
   heading.className = "wireless-filters-title";
-  heading.textContent = "Filter open positions";
+  heading.textContent = isEditorial ? "Refine by Keyword" : "Filter open positions";
   aside.append(heading);
+  if (isEditorial) {
+    const refine = document.createElement("div");
+    refine.className = "editorial-refine-keyword";
+    const input = document.createElement("input");
+    input.type = "search";
+    input.id = "editorialRefineInput";
+    input.placeholder = "Finance, risk, hybrid, etc.";
+    input.setAttribute("aria-label", "Refine results by keyword");
+    const add = document.createElement("button");
+    add.type = "button";
+    add.textContent = "Add";
+    const terms = document.createElement("div");
+    terms.className = "editorial-refine-terms";
+    const addTerm = () => {
+      const term = text(input.value);
+      if (!term || editorialRefineTerms.some(value => value.toLowerCase() === term.toLowerCase())) return;
+      editorialRefineTerms.push(term);
+      renderWirelessFilters();
+      renderJobs();
+    };
+    add.addEventListener("click", addTerm);
+    input.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addTerm(); } });
+    editorialRefineTerms.forEach(term => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "editorial-refine-chip";
+      chip.textContent = `${term} ×`;
+      chip.setAttribute("aria-label", `Remove keyword ${term}`);
+      chip.addEventListener("click", () => { editorialRefineTerms = editorialRefineTerms.filter(value => value !== term); renderWirelessFilters(); renderJobs(); });
+      terms.append(chip);
+    });
+    refine.append(input, add, terms);
+    aside.append(refine);
+  }
   const addGroup = (label, values, key) => {
     if (!values.length) return;
     const group = document.createElement("fieldset");
@@ -39,20 +166,57 @@ function renderWirelessFilters() {
   addGroup("Job category", categories, "category");
   addGroup("Locations", locations, "location");
   addGroup("Job type", types, "type");
+  if (isEditorial) {
+    const clear = document.createElement("button");
+    clear.type = "button";
+    clear.className = "editorial-clear-filters";
+    clear.textContent = "Clear";
+    clear.addEventListener("click", () => {
+      wirelessFilters = {category: "", location: "", type: ""};
+      editorialRefineTerms = [];
+      byId("editorialKeyword").value = "";
+      byId("editorialLocation").value = "";
+      renderWirelessFilters();
+      renderJobs();
+    });
+    aside.append(clear);
+  }
 }
 
 function renderJobs() {
-  const query = text(byId("jobSearch")?.value).toLowerCase();
-  const visible = jobs.filter(job => [job.title, job.location, job.type, job.category].join(" ").toLowerCase().includes(query)
+  const isEditorial = document.body.dataset.layout === "editorial";
+  const query = text(isEditorial ? byId("editorialKeyword")?.value : byId("jobSearch")?.value).toLowerCase();
+  const locationQuery = text(isEditorial ? byId("editorialLocation")?.value : "").toLowerCase();
+  const visible = jobs.filter(job => {
+    const searchable = [job.title, job.location, job.type, job.category, job.description, job.overview].join(" ").toLowerCase();
+    return searchable.includes(query)
+    && text(job.location).toLowerCase().includes(locationQuery)
+    && editorialRefineTerms.every(term => searchable.includes(term.toLowerCase()))
     && (!wirelessFilters.category || text(job.category) === wirelessFilters.category)
-    && (!wirelessFilters.location || text(job.location) === wirelessFilters.location));
+    && (!wirelessFilters.location || text(job.location) === wirelessFilters.location)
+    && (!wirelessFilters.type || text(job.type) === wirelessFilters.type);
+  });
+  if (isEditorial) {
+    const sort = byId("editorialSort")?.value || "date";
+    visible.sort((a, b) => {
+      if (sort === "title") return text(a.title).localeCompare(text(b.title));
+      if (sort === "location") return text(a.location).localeCompare(text(b.location));
+      const dateValue = value => {
+        const date = value ? new Date(value) : null;
+        return date && !Number.isNaN(date.getTime()) ? date.getTime() : 0;
+      };
+      return dateValue(b.postedAt) - dateValue(a.postedAt);
+    });
+    byId("editorialResultCount").textContent = `${visible.length} ${visible.length === 1 ? "Result" : "Results"}`;
+  }
   const list = byId("jobList");
   list.replaceChildren();
-  if (!visible.length) { const empty = document.createElement("p"); empty.className = "state"; empty.textContent = query ? "No open positions match your search." : "There are no open positions right now."; list.append(empty); return; }
+  if (!visible.length) { const empty = document.createElement("p"); empty.className = "state"; empty.textContent = query || locationQuery || editorialRefineTerms.length || wirelessFilters.category || wirelessFilters.location || wirelessFilters.type ? "No open positions match your search." : "There are no open positions right now."; list.append(empty); return; }
   visible.forEach(job => {
-    const card = document.createElement("a"); card.className = "job-card"; card.href = `/?job=${encodeURIComponent(job.slug || job.id)}`;
+    const card = document.createElement("a"); card.className = `job-card${isEditorial ? " editorial-job-card" : ""}`; card.href = `/?job=${encodeURIComponent(job.slug || job.id)}`;
+    if (isEditorial && job.type) { const mode = document.createElement("p"); mode.className = "editorial-job-mode"; mode.textContent = job.type; card.append(mode); }
     const title = document.createElement("h3"); title.textContent = job.title; card.append(title);
-    const meta = document.createElement("p"); meta.className = "job-meta"; meta.textContent = [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • "); card.append(meta);
+    const meta = document.createElement("p"); meta.className = "job-meta"; meta.textContent = isEditorial ? [job.location, job.deadline ? `Closes ${job.deadline}` : ""].filter(Boolean).join(" • ") : [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • "); card.append(meta);
     const tags = document.createElement("div"); tags.className = "tags"; [job.category, job.type].filter(Boolean).forEach(value => { const tag = document.createElement("span"); tag.textContent = value; tags.append(tag); }); card.append(tags); list.append(card);
   });
 }
@@ -91,8 +255,29 @@ function renderDetailFactIcons() {
 
 function renderDetail(job) {
   byId("jobDetail").hidden = false;
+  byId("companySocialLinksOpenings").hidden = true;
+  const isBoldLayout = document.body.dataset.layout === "bold";
+  const postedDateLabel = byId("detailPosted");
+  const closingDateLabel = byId("detailClosingDate");
+  const dateStack = document.querySelector(".detail-date-stack");
+  const postedBrand = document.querySelector(".detail-posted-brand");
+  (isBoldLayout ? dateStack : postedBrand).insertBefore(postedDateLabel, isBoldLayout ? closingDateLabel : null);
+  closingDateLabel.hidden = !isBoldLayout;
   renderDetailFactIcons();
+  renderSplitRelatedJobs(job);
   byId("detailTitle").textContent = job.title;
+  const detailSummary = text(job.summary || job.shortDescription || job.tagline);
+  byId("detailSummary").textContent = detailSummary.length > 240 ? `${detailSummary.slice(0, 237).trimEnd()}…` : detailSummary;
+  byId("detailSummary").hidden = !detailSummary;
+  byId("detailDescriptionHeading").textContent = "About the role";
+  if (document.body.dataset.layout === "clean") {
+    const requirementsHeading = byId("detailRequirements").querySelector("h3");
+    if (requirementsHeading) requirementsHeading.textContent = "What you need";
+  } else if (document.body.dataset.layout === "split") {
+    byId("detailDescriptionHeading").textContent = "About this role";
+    const requirementsHeading = byId("detailRequirements").querySelector("h3");
+    if (requirementsHeading) requirementsHeading.textContent = "Qualification";
+  }
   byId("detailMeta").textContent = document.body.dataset.layout === "bold"
     ? (job.deadline ? `Closes ${job.deadline}` : "Open until filled")
     : [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
@@ -107,6 +292,7 @@ function renderDetail(job) {
   byId("detailPosted").textContent = postedDate && !Number.isNaN(postedDate.getTime())
     ? `Posted ${postedDate.toLocaleDateString("en-ZA", {day: "numeric", month: "short", year: "numeric"})}`
     : "Open position";
+  byId("detailClosingDate").textContent = job.deadline ? `Closes ${job.deadline}` : "Open until filled";
   byId("detailSalary").textContent = text(job.salary) || "Negotiable";
   byId("detailFactLocation").textContent = job.location || "Not specified";
   byId("detailFactType").textContent = job.type || "Not specified";
@@ -150,15 +336,119 @@ function renderDetail(job) {
     applyLink.href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
   }
   const bottomApplyLink = byId("applyLinkBottom");
-  bottomApplyLink.hidden = document.body.dataset.layout !== "clean" || applyLink.hidden;
+  bottomApplyLink.hidden = true;
   bottomApplyLink.href = applyLink.href;
   bottomApplyLink.textContent = applyLink.textContent;
   bottomApplyLink.removeAttribute("target");
   bottomApplyLink.removeAttribute("rel");
   if (applyLink.target) bottomApplyLink.target = applyLink.target;
   if (applyLink.rel) bottomApplyLink.rel = applyLink.rel;
+  const wirelessApplyLink = byId("applyLinkWireless");
+  wirelessApplyLink.hidden = document.body.dataset.layout !== "wireless" || applyLink.hidden;
+  wirelessApplyLink.href = applyLink.href;
+  wirelessApplyLink.textContent = applyLink.textContent;
+  wirelessApplyLink.removeAttribute("target");
+  wirelessApplyLink.removeAttribute("rel");
+  if (applyLink.target) wirelessApplyLink.target = applyLink.target;
+  if (applyLink.rel) wirelessApplyLink.rel = applyLink.rel;
+  const saveButton = byId("splitSaveJob");
+  saveButton.dataset.savedJobId = job.id;
+  saveButton.setAttribute("aria-pressed", String(savedJobIds.has(job.id)));
+  saveButton.onclick = () => toggleCareerSiteJobBookmark(job, saveButton);
+  byId("splitShareJob").onclick = async () => {
+    const shareUrl = `${location.origin}/?job=${encodeURIComponent(job.slug || job.id)}`;
+    if (navigator.share) {
+      try { await navigator.share({title: job.title, url: shareUrl}); } catch (_) {}
+    } else if (navigator.clipboard?.writeText) {
+      try { await navigator.clipboard.writeText(shareUrl); } catch (_) {}
+    }
+  };
   history.replaceState({}, "", `/?job=${encodeURIComponent(job.slug || job.id)}`);
   document.body.classList.add("job-detail-open");
+}
+
+function renderSplitRelatedJobs(currentJob) {
+  const sidebar = byId("splitDetailSidebar");
+  const similarList = byId("splitSimilarJobs");
+  const companyList = byId("splitCompanyJobs");
+  if (!sidebar || !similarList || !companyList) return;
+  const available = jobs.filter(job => job.id !== currentJob.id && (job.slug || job.title));
+  const similar = available.filter(job =>
+    (currentJob.category && text(job.category).toLowerCase() === text(currentJob.category).toLowerCase()) ||
+    (currentJob.type && text(job.type).toLowerCase() === text(currentJob.type).toLowerCase())
+  ).slice(0, 3);
+  const similarIds = new Set(similar.map(job => job.id));
+  const otherCompanyJobs = available.filter(job => !similarIds.has(job.id)).slice(0, 3);
+  const postedAgeLabel = value => {
+    let postedValue = value;
+    if (postedValue && typeof postedValue === "object") {
+      const seconds = Number(postedValue.seconds ?? postedValue._seconds);
+      postedValue = typeof postedValue.toDate === "function" ? postedValue.toDate() : Number.isFinite(seconds) ? seconds * 1000 : null;
+    }
+    const postedAt = postedValue ? new Date(postedValue) : null;
+    if (!postedAt || Number.isNaN(postedAt.getTime())) return "Recently posted";
+    const days = Math.max(0, Math.floor((Date.now() - postedAt.getTime()) / 86400000));
+    if (days === 0) return "Today";
+    return `${days} day${days === 1 ? "" : "s"} ago`;
+  };
+  const bookmarkIcon = () => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M6 3.75A1.75 1.75 0 0 1 7.75 2h8.5A1.75 1.75 0 0 1 18 3.75V22l-6-4-6 4V3.75Z");
+    svg.append(path);
+    return svg;
+  };
+  const createCards = (container, entries) => {
+    container.replaceChildren();
+    entries.forEach(job => {
+      const card = document.createElement("article");
+      card.className = "split-related-card";
+      const openButton = document.createElement("button");
+      openButton.type = "button";
+      openButton.className = "split-related-open";
+      const title = document.createElement("strong");
+      title.textContent = job.title || "Open position";
+      const company = document.createElement("span");
+      company.className = "split-related-company";
+      company.textContent = [site.displayName, job.location].filter(Boolean).join(" • ");
+      const tags = document.createElement("span");
+      tags.className = "split-related-tags";
+      [job.type, job.category].filter(Boolean).forEach(value => {
+        const tag = document.createElement("small");
+        tag.textContent = value;
+        tags.append(tag);
+      });
+      const posted = document.createElement("span");
+      posted.className = "split-related-posted";
+      posted.textContent = `${postedAgeLabel(job.postedAt)}${job.applicantCount ? ` • ${job.applicantCount} Applicants` : ""}`;
+      openButton.append(title, company, tags, posted);
+      openButton.addEventListener("click", () => renderDetail(job));
+      const saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "split-related-save";
+      saveButton.setAttribute("aria-label", "Save job");
+      saveButton.title = "Save job";
+      saveButton.dataset.savedJobId = job.id;
+      saveButton.setAttribute("aria-pressed", String(savedJobIds.has(job.id)));
+      saveButton.append(bookmarkIcon());
+      saveButton.addEventListener("click", () => toggleCareerSiteJobBookmark(job, saveButton));
+      card.append(openButton, saveButton);
+      container.append(card);
+    });
+    if (!entries.length) {
+      const empty = document.createElement("p");
+      empty.className = "split-related-empty";
+      empty.textContent = "No other openings right now.";
+      container.append(empty);
+    }
+  };
+  createCards(similarList, similar);
+  createCards(companyList, otherCompanyJobs);
+  sidebar.hidden = document.body.dataset.layout !== "split";
+  const companyHeading = byId("splitCompanyJobsHeading");
+  if (companyHeading) companyHeading.textContent = `Other Jobs From ${site.displayName || "This Company"}`;
 }
 
 function safePublicMediaUrl(value) {
@@ -283,6 +573,7 @@ function renderCompanySocialLinks(containerId = "companySocialLinks", enabled = 
 
 function closeDetail() {
   byId("jobDetail").hidden = true;
+  renderCompanySocialLinks("companySocialLinksOpenings", site.media?.showOnOpenings !== false);
   document.body.classList.remove("job-detail-open");
   history.pushState({}, "", "/");
 }
@@ -334,7 +625,7 @@ async function loadCareerSite() {
   if (["bold", "wireless"].includes(document.body.dataset.layout)) {
     byId("jobDetail").querySelector(".editorial-detail-tabs span:nth-child(2)")?.remove();
   }
-  const bannerImage = text(site.media?.bannerImage);
+  const bannerImage = text(site.media?.bannerImage || site.media?.images?.[0]);
   let bannerImageUrl = "";
   if (bannerImage) {
     try {
@@ -350,6 +641,9 @@ async function loadCareerSite() {
     document.documentElement.style.removeProperty("--hero-image");
   }
   renderCareerSiteMedia();
+  const detailBanner = byId("detailBanner");
+  if (detailBanner && bannerImageUrl) detailBanner.style.setProperty("--detail-banner-image", `url("${bannerImageUrl}")`);
+  else if (detailBanner) detailBanner.style.removeProperty("--detail-banner-image");
   const openingSocialLinks = byId("companySocialLinksOpenings");
   renderCompanySocialLinks("companySocialLinksOpenings", site.media?.showOnOpenings !== false);
   if (document.body.dataset.layout === "wireless" && openingSocialLinks) {
@@ -359,10 +653,24 @@ async function loadCareerSite() {
   }
   byId("siteName").textContent = site.displayName; byId("siteHeading").textContent = site.displayName;
   byId("siteTagline").textContent = site.tagline; byId("siteAbout").textContent = site.about;
+  if (site.layout === "editorial") {
+    byId("siteHeading").textContent = "Search Jobs";
+    byId("introSearchButton").firstChild.nodeValue = "Search Jobs ";
+    byId("introSearchButton").href = "#editorialSearch";
+    byId("editorialSearch").hidden = false;
+    byId("editorialResultsBar").hidden = false;
+  }
+  const aboutUrl = text(site.aboutUrl);
+  try {
+    const parsedAboutUrl = new URL(aboutUrl);
+    byId("siteAboutLink").href = ["http:", "https:"].includes(parsedAboutUrl.protocol) ? parsedAboutUrl.href : "#about";
+  } catch (_) {
+    byId("siteAboutLink").href = "#about";
+  }
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;
   byId("detailCompanyLogo").src = site.logo || "/android-chrome-192x192.png";
   byId("detailCompanyLogo").alt = `${site.displayName} logo`;
-  byId("detailCompanyLogo").hidden = document.body.dataset.layout !== "clean";
+  byId("detailCompanyLogo").hidden = !["clean", "bold", "split"].includes(document.body.dataset.layout);
   const contactDetails = byId("contactDetails");
   const omitFooterEmail = ["bold", "clean", "wireless"].includes(document.body.dataset.layout);
   if (omitFooterEmail) contactDetails.remove();
@@ -375,10 +683,36 @@ async function loadCareerSite() {
   const requestedJob = new URLSearchParams(location.search).get("job") || "";
   const selected = jobs.find(job => job.slug === (requestedJob || pathJob) || job.id === (requestedJob || pathJob));
   if (selected) renderDetail(selected);
+  document.body.dataset.siteState = "ready";
+  document.body.setAttribute("aria-busy", "false");
 }
 
 byId("jobSearch")?.addEventListener("input", renderJobs);
+byId("editorialKeyword")?.addEventListener("input", renderJobs);
+byId("editorialLocation")?.addEventListener("input", renderJobs);
+byId("editorialSearchButton")?.addEventListener("click", () => {
+  renderJobs();
+  byId("jobs").scrollIntoView({behavior:"smooth", block:"start"});
+});
+byId("editorialSort")?.addEventListener("change", renderJobs);
 byId("backToJobs")?.addEventListener("click", closeDetail);
+byId("backToJobsBanner")?.addEventListener("click", closeDetail);
 byId("jobDetail")?.addEventListener("click", event => { if (event.target === event.currentTarget) closeDetail(); });
 document.addEventListener("keydown", event => { if (event.key === "Escape" && !byId("jobDetail")?.hidden) closeDetail(); });
-loadCareerSite().catch(error => { byId("siteError").hidden = false; byId("siteError").textContent = error.message; });
+if (typeof firebase !== "undefined" && firebase.auth) {
+  firebase.auth().onAuthStateChanged(user => { void loadCandidateSavedJobs(user); });
+}
+const careerSiteLoadError = byId("careerSiteLoadError");
+function showCareerSiteLoadError(error) {
+  console.error("Could not load the recruiter career site:", error);
+  careerSiteLoadError.hidden = false;
+  document.body.dataset.siteState = "error";
+  document.body.setAttribute("aria-busy", "false");
+}
+byId("retryCareerSiteLoad").addEventListener("click", () => {
+  careerSiteLoadError.hidden = true;
+  document.body.dataset.siteState = "loading";
+  document.body.setAttribute("aria-busy", "true");
+  loadCareerSite().catch(showCareerSiteLoadError);
+});
+loadCareerSite().catch(showCareerSiteLoadError);

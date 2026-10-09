@@ -5717,11 +5717,11 @@
 
           <div class="setting-layout">
             <div>
-              <h4>Company website</h4>
-              <p class="setting-copy">Enter your company's website address so candidates can look around.</p>
+              <h4>About us page URL</h4>
+              <p class="setting-copy">When candidates select About us, open this page on your company website.</p>
             </div>
             <div class="setting-control">
-              <input type="url" value="https://www.yourcompany.com" aria-label="Company website">
+              <input id="careerSiteAboutUrl" type="url" placeholder="https://company.com/about-us" aria-label="Company About us page URL">
             </div>
           </div>
 
@@ -6784,10 +6784,12 @@ async function loadCareerSiteSettings() {
     const domainField = document.getElementById('careerSiteDomain');
     const logoPreview = document.getElementById('careerSiteLogoPreview');
     const primaryColorField = document.getElementById('careerSiteCustomColor');
+    const aboutUrlField = document.getElementById('careerSiteAboutUrl');
     if (slugField) slugField.value = careerSiteConfig.slug || '';
     if (domainField) domainField.value = careerSiteConfig.baseDomain || 'careerunified.com';
     if (logoPreview) logoPreview.src = careerSiteConfig.logo || window.getRecruiterCareerSitePreviewState?.().companyProfile?.logo || '/android-chrome-192x192.png';
     if (primaryColorField && /^#[0-9a-f]{6}$/i.test(careerSiteConfig.brandColors?.primary || '')) primaryColorField.value = careerSiteConfig.brandColors.primary;
+    if (aboutUrlField) aboutUrlField.value = careerSiteConfig.aboutUrl || '';
     document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
       input.checked = input.value === (careerSiteConfig.layout || 'bold');
     });
@@ -7131,6 +7133,7 @@ async function saveCareerSiteGeneral() {
     await saveCareerSiteConfig({
       displayName: document.getElementById('cp_name')?.value || careerSiteConfig.displayName,
       about: document.getElementById('cp_about')?.value || careerSiteConfig.about,
+      aboutUrl: document.getElementById('careerSiteAboutUrl')?.value.trim() || '',
       logo: document.getElementById('cp_logo')?.value || careerSiteConfig.logo,
       layout: document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig.layout || 'bold',
       applicationOptions: {

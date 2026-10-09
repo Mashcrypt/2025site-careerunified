@@ -1431,8 +1431,14 @@ function extractLink(raw) {
 let currentUser = null;
 let accountSavedJobs = [];
 let accountSavedBursaries = [];
+let pendingCareerReturnUrl = "";
 
 const authNotice = document.getElementById("authNotice");
+
+authNotice.addEventListener("click", event => {
+  const link = event.target.closest('a[href="login.html"], a[href="/login.html"], a[href="signup.html"], a[href="/signup.html"]');
+  if (link) sessionStorage.setItem("careerUnifiedReturnUrl", `${location.pathname}${location.search}`);
+});
 
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, char => ({
@@ -1467,9 +1473,48 @@ function setSignedOutState() {
   accountSavedJobs = [];
   accountSavedBursaries = [];
   setCounts();
-  authNotice.innerHTML = 'Please <a href="login.html">log in</a> to view saved jobs and bursaries tied to your account.';
+  const pendingJob = new URLSearchParams(location.search).has("saveJob");
+  authNotice.innerHTML = pendingJob
+    ? 'Sign in or <a href="signup.html">create a Career Unified account</a> to save this job to Saved Items. <a href="login.html">Log in</a>.'
+    : 'Please <a href="login.html">log in</a> to view saved jobs and bursaries tied to your account.';
   document.getElementById("jobsGrid").innerHTML = renderEmptyState("job", true);
   document.getElementById("bursariesGrid").innerHTML = renderEmptyState("bursary", true);
+}
+
+async function savePendingCareerSiteJob() {
+  const params = new URLSearchParams(location.search);
+  const id = (params.get("saveJob") || "").trim();
+  if (!id) return false;
+  if (!/^[A-Za-z0-9_-]{1,180}$/.test(id)) throw new Error("This job link is not valid.");
+  const clean = (key, max = 220) => (params.get(key) || "").trim().slice(0, max);
+  const rawApplyLink = clean("applyLink", 2000);
+  let applyLink = "";
+  try {
+    const parsed = new URL(rawApplyLink, location.origin);
+    if (["https:", "http:"].includes(parsed.protocol)) applyLink = parsed.href;
+  } catch (_) {}
+  pendingCareerReturnUrl = clean("returnTo", 2000);
+  try {
+    const returnUrl = new URL(pendingCareerReturnUrl);
+    const allowedHost = returnUrl.hostname === "careerunified.com" || returnUrl.hostname.endsWith(".careerunified.com") || returnUrl.hostname === "localhost" || returnUrl.hostname.endsWith(".localhost");
+    if (!allowedHost || !["https:", "http:"].includes(returnUrl.protocol)) pendingCareerReturnUrl = "";
+  } catch (_) { pendingCareerReturnUrl = ""; }
+  await firebase.firestore().collection("users").doc(currentUser.uid).collection("saved").doc(`job_${id}`).set({
+    type: "job",
+    title: clean("title", 180) || "Open position",
+    company: clean("company", 180) || null,
+    location: clean("location", 180) || null,
+    salary: clean("salary", 160) || null,
+    deadline: clean("deadline", 100) || null,
+    deadlineDate: clean("deadline", 100) || null,
+    applyLink: applyLink || null,
+    slug: clean("slug", 220) || null,
+    savedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  ["saveJob", "title", "company", "location", "salary", "deadline", "applyLink", "slug"].forEach(key => params.delete(key));
+  const query = params.toString();
+  history.replaceState({}, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
+  return true;
 }
 
 function renderEmptyState(type, signedOut = false) {
@@ -1516,6 +1561,7 @@ async function loadSavedItems() {
   authNotice.textContent = "Loading saved items for your account...";
 
   try {
+    const savedPendingCareerJob = await savePendingCareerSiteJob();
     const snap = await firebase.firestore()
       .collection("users")
       .doc(currentUser.uid)
@@ -1535,6 +1581,15 @@ async function loadSavedItems() {
     accountSavedBursaries.sort((a, b) => timestampMs(b.savedAt) - timestampMs(a.savedAt));
 
     authNotice.textContent = `Signed in as ${currentUser.email || "your account"}. Saved items are private to this account.`;
+    if (savedPendingCareerJob) {
+      authNotice.textContent = "Job saved to your Saved Items. ";
+      if (pendingCareerReturnUrl) {
+        const returnLink = document.createElement("a");
+        returnLink.href = pendingCareerReturnUrl;
+        returnLink.textContent = "Return to the job";
+        authNotice.append(returnLink);
+      }
+    }
     setCounts();
     renderJobs(accountSavedJobs);
     renderBursaries(accountSavedBursaries);

@@ -12,6 +12,7 @@ export type CareerSiteConfig = {
   brandColors: {primary: string; secondary: string};
   tagline: string;
   about: string;
+  aboutUrl?: string;
   contact: {email: string; website: string; phone: string};
   socialLinks: Record<string, string>;
   status: "published" | "unpublished";
@@ -80,7 +81,7 @@ export function configFromRecruiter(companyId: string, recruiter: Record<string,
       linkedin: existing?.applicationOptions?.linkedin !== false,
       indeed: existing?.applicationOptions?.indeed !== false,
     },
-    tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000),
+    tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000), aboutUrl: safeUrl(existing?.aboutUrl),
     contact: {email: cleanSiteText(existing?.contact?.email || profile.email || recruiter.email, 254).toLowerCase(), website: safeUrl(existing?.contact?.website || profile.website), phone: cleanSiteText(existing?.contact?.phone || profile.phone, 40)},
     socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks),
     media: media(existing?.media),
@@ -188,7 +189,7 @@ export async function invalidateCachedPublicCareerSite(companySlug: string) {
 }
 
 export async function getCachedPublishedJobsForCompany(db: Firestore, companyId: string, companySlug: string) {
-  const key = `jobs:${companySlug}`;
+  const key = `jobs:${companyId}:${companySlug}`;
   const cached = await publicCareerStore().get(key, {type: "json"}) as {expiresAt: number; value: any[]} | null;
   if (cached && cached.expiresAt > Date.now()) return cached.value;
   const value = await getPublishedJobsForCompany(db, companyId);

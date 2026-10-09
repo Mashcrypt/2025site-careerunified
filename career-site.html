@@ -12,11 +12,29 @@
   <meta property="og:type" content="website">
   <link rel="stylesheet" href="/css/career-site.css">
 </head>
-<body>
-  <header class="site-header"><a class="brand" href="/" aria-label="Company careers home"><img id="siteLogo" alt=""><span id="siteName">Careers</span></a><nav class="site-nav" aria-label="Career site navigation"><a href="#jobs">Open roles</a><a href="#about">About us</a></nav></header>
+<body data-site-state="loading" aria-busy="true">
+  <div id="careerSiteLoader" class="career-site-loader" role="status" aria-live="polite">
+    <div class="career-site-loader-card">
+      <img src="/android-chrome-192x192.png" alt="Career Unified" class="career-site-loader-logo">
+      <span class="career-site-loader-spinner" aria-hidden="true"></span>
+      <p class="career-site-loader-message">Loading this careers page…</p>
+      <div id="careerSiteLoadError" class="career-site-load-error" role="alert" hidden>
+        <p>We couldn’t load this careers page. Check your connection and try again.</p>
+        <button id="retryCareerSiteLoad" class="button" type="button">Try again</button>
+      </div>
+    </div>
+  </div>
+  <header class="site-header"><a class="brand" href="/" aria-label="Company careers home"><img id="siteLogo" alt=""><span id="siteName">Careers</span></a><nav class="site-nav" aria-label="Career site navigation"><a href="#jobs">Open roles</a><a id="siteAboutLink" href="#about">About us</a></nav></header>
   <main>
-    <section class="intro" id="about" aria-labelledby="siteHeading"><p class="eyebrow">Join the team</p><h1 id="siteHeading">Find your next role</h1><p id="siteTagline"></p><p id="siteAbout"></p><a class="button intro-button" href="#jobs">Explore open roles <span aria-hidden="true">&#8595;</span></a></section>
-    <section class="jobs-section" id="jobs" aria-labelledby="jobsHeading"><div class="section-heading"><div><p class="eyebrow">Open positions</p><h2 id="jobsHeading">Work with us</h2><p class="section-lede">Find a role where your work can make a difference.</p></div><label class="search"><span>Search jobs</span><input id="jobSearch" type="search" autocomplete="off" placeholder="Search by title or location"></label></div><div class="wireless-job-layout"><aside id="wirelessFilters" class="wireless-filters" aria-label="Filter open positions"></aside><div id="jobList" class="job-list" aria-live="polite"></div></div><p id="siteError" class="state" hidden></p></section>
+    <section class="intro" id="about" aria-labelledby="siteHeading"><p class="eyebrow">Join the team</p><h1 id="siteHeading">Find your next role</h1><p id="siteTagline"></p><p id="siteAbout"></p><a id="introSearchButton" class="button intro-button" href="#jobs">Explore open roles <span aria-hidden="true">&#8595;</span></a></section>
+    <section id="editorialSearch" class="editorial-search-panel" aria-label="Search jobs" hidden>
+      <div class="editorial-search-fields">
+        <label><span>Keyword</span><input id="editorialKeyword" type="search" autocomplete="off" placeholder="Job title, category, skills, etc."></label>
+        <label><span>Location</span><input id="editorialLocation" type="search" autocomplete="off" placeholder="City, province, country, etc."></label>
+        <button id="editorialSearchButton" class="button" type="button">Search Jobs</button>
+      </div>
+    </section>
+    <section class="jobs-section" id="jobs" aria-labelledby="jobsHeading"><div class="section-heading"><div><p class="eyebrow">Open positions</p><h2 id="jobsHeading">Work with us</h2><p class="section-lede">Find a role where your work can make a difference.</p></div><label class="search"><span>Search jobs</span><input id="jobSearch" type="search" autocomplete="off" placeholder="Search by title or location"></label></div><div id="editorialResultsBar" class="editorial-results-bar" hidden><p id="editorialResultCount" aria-live="polite"></p><label>Sort by <select id="editorialSort"><option value="date">Date Posted</option><option value="title">Job Title</option><option value="location">Location</option></select></label></div><div class="wireless-job-layout"><aside id="wirelessFilters" class="wireless-filters" aria-label="Filter open positions"></aside><div id="jobList" class="job-list" aria-live="polite"></div></div><p id="siteError" class="state" hidden></p></section>
     <div id="companySocialLinksOpenings" class="company-social-links company-social-links-openings" aria-label="Follow this employer" hidden></div>
     <section id="careerSiteMediaShowcase" class="career-media-showcase" aria-label="Company photos" hidden>
       <div id="careerSiteImageGallery" class="career-image-gallery" hidden><h2 class="career-media-heading"></h2><div class="career-image-grid"></div></div>
@@ -26,26 +44,34 @@
       <div class="job-detail-panel">
         <button type="button" id="backToJobs" class="job-detail-close" aria-label="Close position details">&times;</button>
         <div class="job-detail-main">
-          <img id="detailCompanyLogo" class="detail-company-logo" alt="" hidden>
-          <div class="editorial-detail-actions"><span id="detailPosted">Open position</span><a id="applyLink" class="button" href="/apply.html">Apply Now</a></div>
+          <div id="detailBanner" class="detail-banner"><button type="button" id="backToJobsBanner" class="detail-banner-back">See all offers</button></div>
+          <div class="editorial-detail-actions"><div class="detail-posted-brand"><img id="detailCompanyLogo" class="detail-company-logo" alt="" hidden><span id="detailPosted">Open position</span></div><div class="split-job-actions"><a id="applyLink" class="button" href="/apply.html">Apply Now</a><button id="splitSaveJob" class="split-icon-action" type="button" aria-label="Save job" title="Save job"><svg class="split-bookmark-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75A1.75 1.75 0 0 1 7.75 2h8.5A1.75 1.75 0 0 1 18 3.75V22l-6-4-6 4V3.75Z"/></svg></button><button id="splitShareJob" class="split-icon-action" type="button" aria-label="Share job" title="Share job"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"/></svg></button></div></div>
           <p class="eyebrow">Position details</p>
           <h2 id="detailTitle"></h2>
-          <p id="detailMeta" class="job-meta"></p>
+          <p id="detailSummary" class="detail-summary"></p>
+          <div class="detail-date-stack"><span id="detailClosingDate"></span><span id="detailMeta" class="job-meta"></span></div>
           <div class="editorial-detail-facts" aria-label="Job summary"><div><span aria-hidden="true">¤</span><strong id="detailSalary">Salary</strong><small>Salary</small></div><div><span aria-hidden="true">●</span><strong id="detailFactLocation">-</strong><small>Location</small></div><div><span aria-hidden="true">◆</span><strong id="detailFactType">-</strong><small>Employment type</small></div></div>
           <div class="editorial-detail-tabs"><span class="active">Job Description</span><span>Job Detail</span></div>
+          <h3 id="detailDescriptionHeading" class="detail-description-heading">About the role</h3>
           <div id="detailDescription" class="job-description"></div>
           <section id="detailResponsibilities" class="job-detail-section" hidden><h3>Responsibilities</h3><div id="responsibilitiesContent" class="job-description"></div></section>
           <section id="detailRequirements" class="job-detail-section" hidden><h3>Requirements and Skills</h3><div id="requirementsContent" class="job-description"></div></section>
+          <a id="applyLinkWireless" class="button wireless-apply-button" href="/apply.html" hidden>Apply Now</a>
           <section id="detailMedia" class="career-video-gallery detail-video-gallery" aria-label="Company videos" hidden><h3 class="career-media-heading">Meet our team</h3><div class="career-video-grid"></div></section>
           <a id="applyLinkBottom" class="button clean-apply-button" href="/apply.html" hidden>Apply Now</a>
-          <div id="companySocialLinks" class="company-social-links" aria-label="Follow this employer"></div>
-          <a class="job-detail-powered" href="https://careerunified.com/for-recruiters">Powered by Career Unified</a>
         </div>
         <aside class="job-detail-sidebar" aria-label="Job information"><h3>Job Information</h3><dl><div><dt>Employment type</dt><dd id="detailType">-</dd></div><div><dt>Location</dt><dd id="detailLocation">-</dd></div><div><dt>Job category</dt><dd id="detailCategory">-</dd></div><div><dt>Closing date</dt><dd id="detailDeadline">-</dd></div></dl></aside>
+        <aside id="splitDetailSidebar" class="split-detail-sidebar" aria-label="Related job openings"><section><h3>Similar Jobs</h3><div id="splitSimilarJobs" class="split-related-list"></div></section><section><h3 id="splitCompanyJobsHeading">Other Jobs From This Company</h3><div id="splitCompanyJobs" class="split-related-list"></div></section></aside>
+        <footer class="job-detail-footer"><div id="companySocialLinks" class="company-social-links" aria-label="Follow this employer"></div><a class="job-detail-powered" href="https://careerunified.com/for-recruiters">Powered by Career Unified</a></footer>
       </div>
     </section>
   </main>
   <footer><span id="contactDetails"></span><a class="footer-powered" href="https://careerunified.com/for-recruiters">Powered by Career Unified</a></footer>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="/js/firebase.js"></script>
   <script src="/js/career-site.js" defer></script>
 </body>
 </html>

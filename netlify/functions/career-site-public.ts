@@ -59,7 +59,8 @@ export const handler: Handler = async (event) => {
       jobs = await getPublishedJobsForCompany(db, cachedTenant.companyId);
     }
     const requestedSlug = cleanText(event.queryStringParameters?.job, 220);
-    const publicJobs = requestedSlug ? jobs.filter((job: any) => job.slug === requestedSlug) : jobs;
+    const companyJobs = jobs.filter((job: any) => job.recruiterId === cachedTenant.companyId);
+    const publicJobs = requestedSlug ? companyJobs.filter((job: any) => job.slug === requestedSlug) : companyJobs;
     return json(200, event.headers.origin, {site: cachedTenant.config, jobs: publicJobs.map((job: any) => ({id: job.id, slug: cleanText(job.slug, 220), title: cleanText(job.title, 180), location: cleanText(job.location || [job.city, job.country].filter(Boolean).join(", "), 160), type: cleanText(job.type, 100), category: cleanText(job.category, 120), salary: cleanText(job.salary, 160) || "Negotiable", deadline: cleanText(job.deadline, 80), postedAt: publicDate(job.postedAt || job.createdAt), overview: cleanText(job.overview, 20000), description: cleanText(job.description, 30000), responsibilities: cleanText(job.responsibilities, 20000), requirements: cleanText(job.requirements, 20000), applicationMethod: cleanText(job.applicationMethod, 20), applyLink: publicApplyLink(job)}))}, {"Cache-Control": "public, max-age=60, stale-while-revalidate=300"});
   } catch (error) {
     console.error("CAREER_SITE_PUBLIC_ERROR", error instanceof Error ? error.name : "UnknownError");
