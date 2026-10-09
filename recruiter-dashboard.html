@@ -1433,6 +1433,47 @@
     font-size: 10px;
   }
 
+  .media-upload.is-dragging {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .career-site-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .career-site-images-grid:empty { display: none; }
+
+  .career-site-image-card {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+  }
+
+  .career-site-image-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .career-site-image-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid #ffffffb3;
+    border-radius: 50%;
+    color: #fff;
+    background: #111827b3;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
   .content-intro {
     padding-bottom: 16px;
     border-bottom: 1px solid #e5e7eb;
@@ -5819,13 +5860,13 @@
                 </div>
               </div>
               <div class="media-toggles">
-                <span style="color:#111827;font-size:14px;">Display</span>
+                <span style="color:#111827;font-size:14px;">Display videos and social links on</span>
                 <label class="media-toggle">
-                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  <span class="switch"><input id="careerSiteVideoShowOnOpenings" type="checkbox" checked><span class="slider"></span></span>
                   Include on Openings page
                 </label>
                 <label class="media-toggle">
-                  <span class="switch"><input type="checkbox"><span class="slider"></span></span>
+                  <span class="switch"><input id="careerSiteVideoShowOnDetails" type="checkbox" checked><span class="slider"></span></span>
                   Include on position detail pages
                 </label>
               </div>
@@ -5838,12 +5879,13 @@
               <p class="setting-copy">Give candidates a feel for your workplace. Add photos of your team, office, events, and everyday moments. Upload at least 3 images; 8 or more will create a richer picture of your company.</p>
             </div>
             <div>
-              <label class="media-upload" for="careerSiteImageUpload">
+              <label id="careerSiteImagesDropArea" class="media-upload" for="careerSiteImageUpload">
                 <i class='bx bx-plus-circle'></i>
                 <span>Drag &amp; Drop or Click to Upload</span>
-                <small>10 MB max</small>
+                <small>PNG, JPG or WebP · 4 MB max each · up to 20 photos</small>
               </label>
-              <input id="careerSiteImageUpload" type="file" accept="image/*" multiple hidden>
+              <input id="careerSiteImageUpload" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="addCareerSiteImages(this)">
+              <div id="careerSiteImagesContainer" class="career-site-images-grid" aria-live="polite"></div>
             </div>
           </div>
 
@@ -6718,6 +6760,7 @@ function viewCareerSite() {
 }
 
 let careerSiteConfig = null;
+let careerSiteImages = [];
 
 function careerSiteUrl(site) {
   const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -6764,7 +6807,17 @@ async function loadCareerSiteSettings() {
     const media = careerSiteConfig.media || {};
     const social = careerSiteConfig.socialLinks || {};
     const setCareerField = (id, value) => { const field = document.getElementById(id); if (field && value) field.value = value; };
-    setCareerField('careerSiteBannerImage', media.bannerImage); setCareerField('careerSiteYoutube', media.youtube); setCareerField('careerSiteVimeo', media.vimeo);
+    setCareerField('careerSiteBannerImage', media.bannerImage);
+    const youtubeField = document.getElementById('careerSiteYoutube');
+    const vimeoField = document.getElementById('careerSiteVimeo');
+    if (youtubeField) youtubeField.value = media.youtube || '';
+    if (vimeoField) vimeoField.value = media.vimeo || '';
+    const showOnOpenings = document.getElementById('careerSiteVideoShowOnOpenings');
+    const showOnDetails = document.getElementById('careerSiteVideoShowOnDetails');
+    if (showOnOpenings) showOnOpenings.checked = media.showOnOpenings !== false;
+    if (showOnDetails) showOnDetails.checked = media.showOnDetails !== false;
+    careerSiteImages = (Array.isArray(media.images) ? media.images : []).filter(url => typeof url === 'string' && /^https?:\/\//i.test(url)).slice(0, 20).map(url => ({url, previewUrl: url}));
+    renderCareerSiteImages();
     setCareerField('socialWebsite', social.website); setCareerField('socialFacebook', social.facebook); setCareerField('socialX', social.twitter); setCareerField('socialLinkedin', social.linkedin); setCareerField('socialInstagram', social.instagram); setCareerField('socialYoutube', social.youtube); setCareerField('socialTiktok', social.tiktok); setCareerField('socialAngelList', social.angelList); setCareerField('socialGlassdoor', social.glassdoor);
     const widgetGroup = careerSiteConfig.widget?.groupBy || 'none'; const widgetRadio = document.querySelector(`input[name="widgetGroup"][value="${widgetGroup}"]`); if (widgetRadio) widgetRadio.checked = true;
     updateWidgetSnippet();
@@ -6849,20 +6902,69 @@ function previewCareerSiteSocialImage(input) {
   }
 }
 
-// Image Gallery
-function addCareerSiteImages(input) {
+// Career site workplace photo gallery
+function renderCareerSiteImages() {
   const container = document.getElementById('careerSiteImagesContainer');
-  Array.from(input.files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const div = document.createElement('div');
-      div.style.cssText = 'position:relative;width:120px;height:120px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;';
-      div.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
-        '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;">×</button>';
-      container.insertBefore(div, container.lastElementChild);
-    };
-    reader.readAsDataURL(file);
+  if (!container) return;
+  container.replaceChildren();
+  careerSiteImages.forEach((image, index) => {
+    const card = document.createElement('div');
+    card.className = 'career-site-image-card';
+    const preview = document.createElement('img');
+    preview.src = image.previewUrl || image.url;
+    preview.alt = `Workplace photo ${index + 1}`;
+    preview.loading = 'lazy';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'career-site-image-remove';
+    remove.setAttribute('aria-label', `Remove workplace photo ${index + 1}`);
+    remove.textContent = '×';
+    remove.addEventListener('click', () => removeCareerSiteImage(index));
+    card.append(preview, remove);
+    container.append(card);
   });
+}
+
+function removeCareerSiteImage(index) {
+  const [image] = careerSiteImages.splice(index, 1);
+  if (image?.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(image.previewUrl);
+  renderCareerSiteImages();
+}
+
+function addCareerSiteImages(input) {
+  const files = Array.from(input?.files || input || []);
+  let rejected = 0;
+  files.forEach(file => {
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024 || careerSiteImages.length >= 20) {
+      rejected += 1;
+      return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    careerSiteImages.push({file, previewUrl, url: ''});
+  });
+  if (input && 'value' in input) input.value = '';
+  renderCareerSiteImages();
+  if (rejected) showToast('error', 'Some photos were skipped', 'Use PNG, JPG or WebP files up to 4 MB each, with no more than 20 photos.');
+}
+
+async function uploadCareerSiteImage(image) {
+  const recruiter = window.currentRecruiter;
+  if (!recruiter) throw new Error('Your recruiter session is still loading. Please try again.');
+  const token = await recruiter.getIdToken();
+  const form = new FormData();
+  form.append('image', image.file, image.file.name);
+  const response = await fetch('/.netlify/functions/upload-career-site-image', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`},
+    body: form
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.imageUrl) throw new Error(payload.error || 'A workplace photo could not be uploaded.');
+  image.url = payload.imageUrl;
+  image.file = null;
+  if (image.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(image.previewUrl);
+  image.previewUrl = image.url;
+  return image.url;
 }
 
 function getCareerSitePreviewData() {
@@ -7043,24 +7145,40 @@ async function saveCareerSiteGeneral() {
 }
 
 async function saveCareerSiteMedia() {
-  const data = {
-    bannerImage: document.getElementById('careerSiteBannerImage')?.value,
-    youtube: document.getElementById('careerSiteYoutube')?.value,
-    vimeo: document.getElementById('careerSiteVimeo')?.value,
-    social: {
-      website: document.getElementById('socialWebsite')?.value,
-      linkedin: document.getElementById('socialLinkedin')?.value,
-      facebook: document.getElementById('socialFacebook')?.value,
-      instagram: document.getElementById('socialInstagram')?.value,
-      x: document.getElementById('socialX')?.value,
-      youtube: document.getElementById('socialYoutube')?.value,
-      tiktok: document.getElementById('socialTiktok')?.value,
-      angelList: document.getElementById('socialAngelList')?.value,
-      glassdoor: document.getElementById('socialGlassdoor')?.value
+  const saveButton = document.querySelector('button[onclick="saveCareerSiteMedia()"]');
+  const saveButtonMarkup = saveButton?.innerHTML;
+  if (saveButton) { saveButton.disabled = true; saveButton.setAttribute('aria-busy', 'true'); saveButton.innerHTML = '<i class="bx bx-loader-alt"></i> Uploading…'; }
+  try {
+    const images = [];
+    for (const image of careerSiteImages) {
+      images.push(image.file ? await uploadCareerSiteImage(image) : image.url);
     }
-  };
-  try { await saveCareerSiteConfig({media: data, socialLinks: {website: data.social.website, facebook: data.social.facebook, instagram: data.social.instagram, twitter: data.social.x, linkedin: data.social.linkedin, youtube: data.social.youtube, tiktok: data.social.tiktok, angelList: data.social.angelList, glassdoor: data.social.glassdoor}}); showToast('success', 'Saved', 'Media & Links saved'); }
-  catch (error) { showToast('error', 'Save failed', error.message); }
+    renderCareerSiteImages();
+    const data = {
+      bannerImage: document.getElementById('careerSiteBannerImage')?.value,
+      youtube: document.getElementById('careerSiteYoutube')?.value,
+      vimeo: document.getElementById('careerSiteVimeo')?.value,
+      images,
+      showOnOpenings: document.getElementById('careerSiteVideoShowOnOpenings')?.checked !== false,
+      showOnDetails: document.getElementById('careerSiteVideoShowOnDetails')?.checked !== false,
+      social: {
+        website: document.getElementById('socialWebsite')?.value,
+        linkedin: document.getElementById('socialLinkedin')?.value,
+        facebook: document.getElementById('socialFacebook')?.value,
+        instagram: document.getElementById('socialInstagram')?.value,
+        x: document.getElementById('socialX')?.value,
+        youtube: document.getElementById('socialYoutube')?.value,
+        tiktok: document.getElementById('socialTiktok')?.value,
+        angelList: document.getElementById('socialAngelList')?.value,
+        glassdoor: document.getElementById('socialGlassdoor')?.value
+      }
+    };
+    await saveCareerSiteConfig({media: data, socialLinks: {website: data.social.website, facebook: data.social.facebook, instagram: data.social.instagram, twitter: data.social.x, linkedin: data.social.linkedin, youtube: data.social.youtube, tiktok: data.social.tiktok, angelList: data.social.angelList, glassdoor: data.social.glassdoor}});
+    showToast('success', 'Saved', 'Media & Links saved');
+  } catch (error) { showToast('error', 'Save failed', error.message); }
+  finally {
+    if (saveButton) { saveButton.disabled = false; saveButton.removeAttribute('aria-busy'); saveButton.innerHTML = saveButtonMarkup; }
+  }
 }
 
 async function saveCareerSiteContent() {
@@ -7291,6 +7409,16 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeCareerSiteColorControls();
   initCareerSiteSections();
   updateCareerSiteContentPreview();
+  const imageDropArea = document.getElementById('careerSiteImagesDropArea');
+  if (imageDropArea) {
+    imageDropArea.addEventListener('dragover', event => { event.preventDefault(); imageDropArea.classList.add('is-dragging'); });
+    imageDropArea.addEventListener('dragleave', () => imageDropArea.classList.remove('is-dragging'));
+    imageDropArea.addEventListener('drop', event => {
+      event.preventDefault();
+      imageDropArea.classList.remove('is-dragging');
+      addCareerSiteImages(event.dataTransfer?.files || []);
+    });
+  }
 });
 
 document.addEventListener('input', event => {

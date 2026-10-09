@@ -1,7 +1,7 @@
 import type {Handler} from "@netlify/functions";
 import {getAdmin} from "./_firebaseAdmin";
 import {bearerToken, cleanText, json} from "./_applicationUtils";
-import {configFromRecruiter, ensureCareerSite} from "./_careerSite";
+import {configFromRecruiter, ensureCareerSite, invalidateCachedPublicCareerSite} from "./_careerSite";
 
 export const handler: Handler = async (event) => {
   try {
@@ -23,6 +23,7 @@ export const handler: Handler = async (event) => {
     const layout = ["bold", "clean", "editorial", "split", "wireless"].includes(body.layout) ? body.layout : "bold";
     const next = configFromRecruiter(companyId, snapshot.data() || {}, {...current, displayName: body.displayName, logo: body.logo, tagline: body.tagline, about: body.about, brandColors: body.brandColors, applicationOptions: body.applicationOptions ?? current.applicationOptions, contact: body.contact, socialLinks: body.socialLinks, media: body.media, contentSections: body.contentSections, customCode: body.customCode, widget: body.widget, layout, status: body.status === "published" ? "published" : "unpublished", seo: body.seo});
     await ref.set({careerSite: {...next, createdAt: current.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString()}}, {merge: true});
+    await invalidateCachedPublicCareerSite(next.slug);
     return json(200, event.headers.origin, {site: next});
   } catch (error) {
     console.error("CAREER_SITE_ADMIN_ERROR", error instanceof Error ? error.name : "UnknownError");

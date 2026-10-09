@@ -90,7 +90,9 @@ export default {
           { title: 'Freelance', value: 'freelance' },
           { title: 'YES Programmes', value: 'yes-programmes' },
           { title: 'Youth Opportunities', value: 'youth-opportunities' },
-          { title: 'Vacation Work', value: 'vacation-work' }
+          { title: 'Vacation Work', value: 'vacation-work' },
+          { title: 'Full Time', value: 'full-time' },
+          { title: 'WIL (Work Integrated Learning)', value: 'work-integrated-learning' }
         ],
         layout: 'radio'
       },

@@ -10,6 +10,10 @@ function renderWirelessFilters() {
   aside.replaceChildren();
   aside.hidden = document.body.dataset.layout !== "wireless";
   if (aside.hidden) return;
+  const heading = document.createElement("h3");
+  heading.className = "wireless-filters-title";
+  heading.textContent = "Filter open positions";
+  aside.append(heading);
   const addGroup = (label, values, key) => {
     if (!values.length) return;
     const group = document.createElement("fieldset");
@@ -53,8 +57,41 @@ function renderJobs() {
   });
 }
 
+function renderDetailFactIcons() {
+  if (!["bold", "clean", "wireless"].includes(document.body.dataset.layout)) return;
+  const svgNamespace = "http://www.w3.org/2000/svg";
+  const icons = [
+    [
+      ["rect", {x: "3", y: "6", width: "18", height: "12", rx: "2"}],
+      ["circle", {cx: "12", cy: "12", r: "3"}],
+      ["path", {d: "M7 9h.01M17 15h.01"}]
+    ],
+    [
+      ["path", {d: "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"}],
+      ["circle", {cx: "12", cy: "10", r: "2.5"}]
+    ],
+    [
+      ["rect", {x: "3", y: "7", width: "18", height: "14", rx: "2"}],
+      ["path", {d: "M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"}]
+    ]
+  ];
+  document.querySelectorAll(".editorial-detail-facts > div > span").forEach((container, index) => {
+    const icon = document.createElementNS(svgNamespace, "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("aria-hidden", "true");
+    icon.setAttribute("focusable", "false");
+    icons[index]?.forEach(([tag, attributes]) => {
+      const shape = document.createElementNS(svgNamespace, tag);
+      Object.entries(attributes).forEach(([name, value]) => shape.setAttribute(name, value));
+      icon.append(shape);
+    });
+    container.replaceChildren(icon);
+  });
+}
+
 function renderDetail(job) {
   byId("jobDetail").hidden = false;
+  renderDetailFactIcons();
   byId("detailTitle").textContent = job.title;
   byId("detailMeta").textContent = document.body.dataset.layout === "bold"
     ? (job.deadline ? `Closes ${job.deadline}` : "Open until filled")
@@ -73,14 +110,20 @@ function renderDetail(job) {
   byId("detailSalary").textContent = text(job.salary) || "Negotiable";
   byId("detailFactLocation").textContent = job.location || "Not specified";
   byId("detailFactType").textContent = job.type || "Not specified";
-  byId("detailType").textContent = job.type || "Not specified";
-  byId("detailLocation").textContent = job.location || "Not specified";
-  byId("detailCategory").textContent = job.category || "Not specified";
-  byId("detailDeadline").textContent = job.deadline || "Open until filled";
+  [
+    ["detailType", job.type || "Not specified"],
+    ["detailLocation", job.location || "Not specified"],
+    ["detailCategory", job.category || "Not specified"],
+    ["detailDeadline", job.deadline || "Open until filled"]
+  ].forEach(([id, value]) => {
+    const element = byId(id);
+    if (element) element.textContent = value;
+  });
   renderFormattedText(byId("detailDescription"), job.overview || job.description);
   renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
   renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
-  renderCompanySocialLinks();
+  renderCareerVideoGallery(byId("detailMedia"), site.media?.showOnDetails === false ? [] : getCareerSiteVideoUrls());
+  renderCompanySocialLinks("companySocialLinks", site.media?.showOnDetails !== false);
   const applyLink = byId("applyLink");
   applyLink.hidden = false;
   applyLink.removeAttribute("target");
@@ -106,8 +149,95 @@ function renderDetail(job) {
   } else {
     applyLink.href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
   }
+  const bottomApplyLink = byId("applyLinkBottom");
+  bottomApplyLink.hidden = document.body.dataset.layout !== "clean" || applyLink.hidden;
+  bottomApplyLink.href = applyLink.href;
+  bottomApplyLink.textContent = applyLink.textContent;
+  bottomApplyLink.removeAttribute("target");
+  bottomApplyLink.removeAttribute("rel");
+  if (applyLink.target) bottomApplyLink.target = applyLink.target;
+  if (applyLink.rel) bottomApplyLink.rel = applyLink.rel;
   history.replaceState({}, "", `/?job=${encodeURIComponent(job.slug || job.id)}`);
   document.body.classList.add("job-detail-open");
+}
+
+function safePublicMediaUrl(value) {
+  try {
+    const parsed = new URL(text(value), location.href);
+    return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : "";
+  } catch (_) { return ""; }
+}
+
+function careerVideoEmbedUrl(platform, value) {
+  let parsed;
+  try { parsed = new URL(text(value)); } catch (_) { return ""; }
+  if (!["https:", "http:"].includes(parsed.protocol)) return "";
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+  if (platform === "youtube") {
+    if (!new Set(["youtube.com", "m.youtube.com", "youtu.be", "youtube-nocookie.com"]).has(host)) return "";
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const id = host === "youtu.be" ? parts[0] : parsed.searchParams.get("v") || (parts[0] === "embed" || parts[0] === "shorts" || parts[0] === "live" ? parts[1] : "");
+    return /^[A-Za-z0-9_-]{11}$/.test(id || "") ? `https://www.youtube-nocookie.com/embed/${id}` : "";
+  }
+  if (platform === "vimeo") {
+    if (!new Set(["vimeo.com", "player.vimeo.com"]).has(host)) return "";
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const videoIndex = parts[0] === "video" ? 1 : 0;
+    const id = parts[videoIndex] || "";
+    if (!/^\d{1,20}$/.test(id)) return "";
+    const privacyHash = parsed.searchParams.get("h") || (parts[videoIndex + 1] || "");
+    return `https://player.vimeo.com/video/${id}${/^[A-Za-z0-9]{6,40}$/.test(privacyHash) ? `?h=${encodeURIComponent(privacyHash)}` : ""}`;
+  }
+  return "";
+}
+
+function getCareerSiteVideoUrls() {
+  return [
+    ["youtube", "YouTube", site.media?.youtube],
+    ["vimeo", "Vimeo", site.media?.vimeo]
+  ].map(([platform, label, url]) => ({platform, label, url: careerVideoEmbedUrl(platform, url)})).filter(video => video.url);
+}
+
+function renderCareerVideoGallery(container, videos) {
+  if (!container) return false;
+  const grid = container.querySelector(".career-video-grid");
+  grid.replaceChildren();
+  videos.forEach(video => {
+    const frame = document.createElement("iframe");
+    frame.src = video.url;
+    frame.title = `${site.displayName} ${video.label} video`;
+    frame.loading = "lazy";
+    frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    frame.allowFullscreen = true;
+    frame.referrerPolicy = "strict-origin-when-cross-origin";
+    const wrapper = document.createElement("div");
+    wrapper.className = "career-video-frame";
+    wrapper.append(frame);
+    grid.append(wrapper);
+  });
+  container.hidden = videos.length === 0;
+  return videos.length > 0;
+}
+
+function renderCareerSiteMedia() {
+  const showcase = byId("careerSiteMediaShowcase");
+  const imageGallery = byId("careerSiteImageGallery");
+  if (!showcase || !imageGallery) return;
+  const grid = imageGallery.querySelector(".career-image-grid");
+  grid.replaceChildren();
+  const images = (Array.isArray(site.media?.images) ? site.media.images : []).map(safePublicMediaUrl).filter(Boolean).slice(0, 20);
+  images.forEach((url, index) => {
+    const image = document.createElement("img");
+    image.src = url;
+    image.alt = `${site.displayName} workplace photo ${index + 1}`;
+    image.loading = "lazy";
+    grid.append(image);
+  });
+  imageGallery.querySelector(".career-media-heading").textContent = `Life at ${site.displayName}`;
+  imageGallery.hidden = images.length === 0;
+  showcase.hidden = images.length === 0;
+  const showOpeningVideos = site.media?.showOnOpenings !== false;
+  renderCareerVideoGallery(byId("careerSiteOpeningVideos"), showOpeningVideos ? getCareerSiteVideoUrls() : []);
 }
 
 function applyContentSections() {
@@ -120,17 +250,35 @@ function applyContentSections() {
   });
 }
 
-function renderCompanySocialLinks() {
-  const container = byId("companySocialLinks");
+function renderCompanySocialLinks(containerId = "companySocialLinks", enabled = true) {
+  const container = byId(containerId);
+  if (!container) return;
   container.replaceChildren();
+  if (!enabled) { container.hidden = true; return; }
   const links = [
-    ["linkedin", "LinkedIn", "in"], ["twitter", "X", "X"],
-    ["instagram", "Instagram", "◎"], ["facebook", "Facebook", "f"]
+    ["linkedin", "LinkedIn"], ["twitter", "X"],
+    ["instagram", "Instagram"], ["facebook", "Facebook"]
   ].filter(([key]) => /^https:\/\//i.test(text(site.socialLinks?.[key])));
   if (!links.length) { container.hidden = true; return; }
   container.hidden = false;
   const label = document.createElement("span"); label.className = "company-social-label"; label.textContent = "Follow this employer"; container.append(label);
-  links.forEach(([key, name, icon]) => { const link = document.createElement("a"); link.href = site.socialLinks[key]; link.target = "_blank"; link.rel = "noopener noreferrer"; link.className = `company-social-link company-social-${key}`; link.title = `Follow on ${name}`; link.setAttribute("aria-label", `Follow on ${name}`); link.innerHTML = `<span aria-hidden="true">${icon}</span>`; container.append(link); });
+  const icons = {
+    linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01z"/></svg>',
+    twitter: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.63 7.58H.48l8.6-9.83L0 1.15h7.59l5.24 6.93zm-1.29 19.49h2.04L6.49 3.24H4.3z"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="social-icon-dot" cx="17.5" cy="6.5" r="1"/></svg>',
+    facebook: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11 10.13 11.87v-8.4H7.08v-3.47h3.05V9.42c0-3.03 1.79-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.95.93-1.95 1.88v2.27h3.32l-.53 3.47h-2.79v8.4C19.61 23.07 24 18.09 24 12.07z"/></svg>'
+  };
+  links.forEach(([key, name]) => {
+    const link = document.createElement("a");
+    link.href = site.socialLinks[key];
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.className = `company-social-link company-social-${key}`;
+    link.title = `Follow on ${name}`;
+    link.setAttribute("aria-label", `Follow on ${name}`);
+    link.innerHTML = icons[key];
+    container.append(link);
+  });
 }
 
 function closeDetail() {
@@ -180,6 +328,12 @@ async function loadCareerSite() {
   document.documentElement.style.setProperty("--primary", primaryColor);
   document.documentElement.style.setProperty("--wireless-orange", primaryColor);
   document.body.dataset.layout = site.layout || "bold";
+  if (document.body.dataset.layout === "clean") {
+    byId("jobDetail").querySelector(".job-detail-sidebar")?.remove();
+  }
+  if (["bold", "wireless"].includes(document.body.dataset.layout)) {
+    byId("jobDetail").querySelector(".editorial-detail-tabs span:nth-child(2)")?.remove();
+  }
   const bannerImage = text(site.media?.bannerImage);
   let bannerImageUrl = "";
   if (bannerImage) {
@@ -195,10 +349,24 @@ async function loadCareerSite() {
     delete document.body.dataset.hasHeroImage;
     document.documentElement.style.removeProperty("--hero-image");
   }
+  renderCareerSiteMedia();
+  const openingSocialLinks = byId("companySocialLinksOpenings");
+  renderCompanySocialLinks("companySocialLinksOpenings", site.media?.showOnOpenings !== false);
+  if (document.body.dataset.layout === "wireless" && openingSocialLinks) {
+    const footer = document.querySelector("footer");
+    const footerPowered = footer?.querySelector(".footer-powered");
+    if (footer) footer.insertBefore(openingSocialLinks, footerPowered || null);
+  }
   byId("siteName").textContent = site.displayName; byId("siteHeading").textContent = site.displayName;
   byId("siteTagline").textContent = site.tagline; byId("siteAbout").textContent = site.about;
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;
-  byId("contactDetails").textContent = site.contact?.email || "";
+  byId("detailCompanyLogo").src = site.logo || "/android-chrome-192x192.png";
+  byId("detailCompanyLogo").alt = `${site.displayName} logo`;
+  byId("detailCompanyLogo").hidden = document.body.dataset.layout !== "clean";
+  const contactDetails = byId("contactDetails");
+  const omitFooterEmail = ["bold", "clean", "wireless"].includes(document.body.dataset.layout);
+  if (omitFooterEmail) contactDetails.remove();
+  else contactDetails.textContent = site.contact?.email || "";
   const structuredData = {"@context":"https://schema.org", "@type":"Organization", name:site.displayName, url:location.origin, logo:site.logo || undefined, sameAs:Object.values(site.socialLinks || {}).filter(Boolean)};
   const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify(structuredData); document.head.append(schema);
   const jobPostingList = document.createElement("script"); jobPostingList.type = "application/ld+json"; jobPostingList.textContent = JSON.stringify({"@context":"https://schema.org", "@type":"ItemList", itemListElement:jobs.map((job, index) => ({"@type":"ListItem", position:index + 1, url:`${location.origin}/jobs/${encodeURIComponent(job.slug || job.id)}`, name:job.title}))}); document.head.append(jobPostingList);

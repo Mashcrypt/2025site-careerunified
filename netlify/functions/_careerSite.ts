@@ -56,7 +56,17 @@ function socialLinks(value: unknown) {
 
 function media(value: unknown) {
   const input = value && typeof value === "object" ? value as Record<string, unknown> : {};
-  return Object.fromEntries(["bannerImage", "youtube", "vimeo"].map((key) => [key, safeUrl(input[key])]));
+  const images = Array.isArray(input.images)
+    ? input.images.map(safeUrl).filter(Boolean).slice(0, 20)
+    : [];
+  return {
+    bannerImage: safeUrl(input.bannerImage),
+    youtube: safeUrl(input.youtube),
+    vimeo: safeUrl(input.vimeo),
+    images,
+    showOnOpenings: input.showOnOpenings !== false,
+    showOnDetails: input.showOnDetails !== false,
+  };
 }
 
 export function configFromRecruiter(companyId: string, recruiter: Record<string, any>, existing?: Partial<CareerSiteConfig>): CareerSiteConfig {
@@ -167,6 +177,14 @@ export async function getCachedPublicCareerSite(db: Firestore, companySlug: stri
   const value = await getPublicCareerSite(db, companySlug);
   if (value) await publicCareerStore().setJSON(key, {expiresAt: Date.now() + PUBLIC_CACHE_TTL_SECONDS * 1000, value});
   return value;
+}
+
+export async function invalidateCachedPublicCareerSite(companySlug: string) {
+  try {
+    await publicCareerStore().delete(`site:${companySlug}`);
+  } catch (error) {
+    console.error("CAREER_SITE_CACHE_INVALIDATION_ERROR", error instanceof Error ? error.message : error);
+  }
 }
 
 export async function getCachedPublishedJobsForCompany(db: Firestore, companyId: string, companySlug: string) {
