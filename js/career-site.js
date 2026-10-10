@@ -255,14 +255,17 @@ function renderDetailFactIcons() {
 
 function renderDetail(job) {
   byId("jobDetail").hidden = false;
+  byId("jobDetail").setAttribute("aria-modal", String(document.body.dataset.layout !== "editorial"));
   byId("companySocialLinksOpenings").hidden = true;
   const isBoldLayout = document.body.dataset.layout === "bold";
+  const isEditorialLayout = document.body.dataset.layout === "editorial";
   const postedDateLabel = byId("detailPosted");
   const closingDateLabel = byId("detailClosingDate");
   const dateStack = document.querySelector(".detail-date-stack");
   const postedBrand = document.querySelector(".detail-posted-brand");
-  (isBoldLayout ? dateStack : postedBrand).insertBefore(postedDateLabel, isBoldLayout ? closingDateLabel : null);
-  closingDateLabel.hidden = !isBoldLayout;
+  (isBoldLayout || isEditorialLayout ? dateStack : postedBrand).insertBefore(postedDateLabel, isBoldLayout || isEditorialLayout ? closingDateLabel : null);
+  closingDateLabel.hidden = !isBoldLayout && !isEditorialLayout;
+  if (isEditorialLayout) byId("jobDetailMain").insertBefore(dateStack, byId("detailSummary"));
   renderDetailFactIcons();
   renderSplitRelatedJobs(job);
   byId("detailTitle").textContent = job.title;
@@ -278,7 +281,9 @@ function renderDetail(job) {
     const requirementsHeading = byId("detailRequirements").querySelector("h3");
     if (requirementsHeading) requirementsHeading.textContent = "Qualification";
   }
-  byId("detailMeta").textContent = document.body.dataset.layout === "bold"
+  byId("detailMeta").textContent = isEditorialLayout
+    ? `Job Location: ${job.location || "South Africa"}`
+    : document.body.dataset.layout === "bold"
     ? (job.deadline ? `Closes ${job.deadline}` : "Open until filled")
     : [job.location, job.type, job.deadline ? `Closes ${job.deadline}` : "Open until filled"].filter(Boolean).join(" • ");
   let postedValue = job.postedAt;
@@ -290,8 +295,8 @@ function renderDetail(job) {
   }
   const postedDate = postedValue ? new Date(postedValue) : null;
   byId("detailPosted").textContent = postedDate && !Number.isNaN(postedDate.getTime())
-    ? `Posted ${postedDate.toLocaleDateString("en-ZA", {day: "numeric", month: "short", year: "numeric"})}`
-    : "Open position";
+    ? `${isEditorialLayout ? "Posting Start Date: " : "Posted "}${postedDate.toLocaleDateString("en-ZA", {day: "2-digit", month: "2-digit", year: "numeric"})}`
+    : isEditorialLayout ? "Posting Start Date: Not specified" : "Open position";
   byId("detailClosingDate").textContent = job.deadline ? `Closes ${job.deadline}` : "Open until filled";
   byId("detailSalary").textContent = text(job.salary) || "Negotiable";
   byId("detailFactLocation").textContent = job.location || "Not specified";
@@ -305,11 +310,13 @@ function renderDetail(job) {
     const element = byId(id);
     if (element) element.textContent = value;
   });
-  renderFormattedText(byId("detailDescription"), job.overview || job.description);
+  renderFormattedText(byId("detailDescription"), isEditorialLayout ? job.description || job.overview : job.overview || job.description);
   renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
   renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
   renderCareerVideoGallery(byId("detailMedia"), site.media?.showOnDetails === false ? [] : getCareerSiteVideoUrls());
-  renderCompanySocialLinks("companySocialLinks", site.media?.showOnDetails !== false);
+  renderCompanySocialLinks("companySocialLinks", isEditorialLayout
+    ? site.media?.showOnOpenings !== false
+    : site.media?.showOnDetails !== false);
   const applyLink = byId("applyLink");
   applyLink.hidden = false;
   applyLink.removeAttribute("target");
@@ -336,7 +343,7 @@ function renderDetail(job) {
     applyLink.href = `/apply.html?jobId=${encodeURIComponent(job.id)}&careerSite=1&companyId=${encodeURIComponent(site.companyId)}`;
   }
   const bottomApplyLink = byId("applyLinkBottom");
-  bottomApplyLink.hidden = true;
+  bottomApplyLink.hidden = !isEditorialLayout || applyLink.hidden;
   bottomApplyLink.href = applyLink.href;
   bottomApplyLink.textContent = applyLink.textContent;
   bottomApplyLink.removeAttribute("target");
@@ -592,6 +599,16 @@ function renderFormattedText(container, value) {
       return;
     }
     list = null;
+    const editorialHeading = document.body.dataset.layout === "editorial"
+      && line.length <= 110
+      && (!/[.!]$/.test(line) || /\?$/.test(line))
+      && (line.split(/\s+/).length <= 13 || /:$/.test(line));
+    if (editorialHeading) {
+      const heading = document.createElement("h3");
+      heading.textContent = line.replace(/:$/, "");
+      container.append(heading);
+      return;
+    }
     const paragraph = document.createElement("p"); paragraph.textContent = line; container.append(paragraph);
   });
 }
@@ -616,7 +633,9 @@ async function loadCareerSite() {
   byId("ogTitle").content = document.title;
   byId("ogDescription").content = site.seo?.description || "Explore open roles and careers.";
   const primaryColor = site.brandColors?.primary || "#0d47ff";
+  const secondaryColor = site.brandColors?.secondary || primaryColor;
   document.documentElement.style.setProperty("--primary", primaryColor);
+  document.documentElement.style.setProperty("--secondary", secondaryColor);
   document.documentElement.style.setProperty("--wireless-orange", primaryColor);
   document.body.dataset.layout = site.layout || "bold";
   if (document.body.dataset.layout === "clean") {
@@ -646,7 +665,7 @@ async function loadCareerSite() {
   else if (detailBanner) detailBanner.style.removeProperty("--detail-banner-image");
   const openingSocialLinks = byId("companySocialLinksOpenings");
   renderCompanySocialLinks("companySocialLinksOpenings", site.media?.showOnOpenings !== false);
-  if (document.body.dataset.layout === "wireless" && openingSocialLinks) {
+  if (["wireless", "editorial"].includes(document.body.dataset.layout) && openingSocialLinks) {
     const footer = document.querySelector("footer");
     const footerPowered = footer?.querySelector(".footer-powered");
     if (footer) footer.insertBefore(openingSocialLinks, footerPowered || null);
@@ -668,11 +687,12 @@ async function loadCareerSite() {
     byId("siteAboutLink").href = "#about";
   }
   byId("siteLogo").src = site.logo || "/android-chrome-192x192.png"; byId("siteLogo").alt = `${site.displayName} logo`;
+  document.body.dataset.hasCompanyLogo = site.logo ? "true" : "false";
   byId("detailCompanyLogo").src = site.logo || "/android-chrome-192x192.png";
   byId("detailCompanyLogo").alt = `${site.displayName} logo`;
   byId("detailCompanyLogo").hidden = !["clean", "bold", "split"].includes(document.body.dataset.layout);
   const contactDetails = byId("contactDetails");
-  const omitFooterEmail = ["bold", "clean", "wireless"].includes(document.body.dataset.layout);
+  const omitFooterEmail = ["bold", "clean", "wireless", "editorial"].includes(document.body.dataset.layout);
   if (omitFooterEmail) contactDetails.remove();
   else contactDetails.textContent = site.contact?.email || "";
   const structuredData = {"@context":"https://schema.org", "@type":"Organization", name:site.displayName, url:location.origin, logo:site.logo || undefined, sameAs:Object.values(site.socialLinks || {}).filter(Boolean)};
@@ -695,6 +715,12 @@ byId("editorialSearchButton")?.addEventListener("click", () => {
   byId("jobs").scrollIntoView({behavior:"smooth", block:"start"});
 });
 byId("editorialSort")?.addEventListener("change", renderJobs);
+document.querySelector('.site-nav a[href="#jobs"]')?.addEventListener("click", event => {
+  if (document.body.dataset.layout === "editorial" && document.body.classList.contains("job-detail-open")) {
+    event.preventDefault();
+    closeDetail();
+  }
+});
 byId("backToJobs")?.addEventListener("click", closeDetail);
 byId("backToJobsBanner")?.addEventListener("click", closeDetail);
 byId("jobDetail")?.addEventListener("click", event => { if (event.target === event.currentTarget) closeDetail(); });
