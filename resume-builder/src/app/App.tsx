@@ -615,6 +615,65 @@ function TemplatePreviewFrame({ children }: { children: ReactNode }) {
   );
 }
 
+function printResumeHtml(html: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const frame = document.createElement('iframe');
+    frame.title = 'Save CV as PDF';
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:816px;height:1120px;border:0;background:#fff;';
+
+    let started = false;
+    let cleanupTimer: number | undefined;
+    const cleanup = () => {
+      if (cleanupTimer !== undefined) window.clearTimeout(cleanupTimer);
+      frame.remove();
+    };
+
+    frame.onload = () => {
+      if (started) return;
+      started = true;
+
+      void (async () => {
+        try {
+          const printWindow = frame.contentWindow;
+          const printDocument = frame.contentDocument;
+          if (!printWindow || !printDocument) throw new Error('Could not prepare the CV for printing.');
+
+          const imagesReady = Promise.all(
+            Array.from(printDocument.images).map((image) => {
+              if (image.complete) return Promise.resolve();
+              return new Promise<void>((imageResolve) => {
+                image.addEventListener('load', () => imageResolve(), { once: true });
+                image.addEventListener('error', () => imageResolve(), { once: true });
+              });
+            }),
+          );
+          await Promise.race([
+            Promise.all([printDocument.fonts?.ready || Promise.resolve(), imagesReady]),
+            new Promise((ready) => window.setTimeout(ready, 3000)),
+          ]);
+
+          printWindow.addEventListener('afterprint', cleanup, { once: true });
+          cleanupTimer = window.setTimeout(cleanup, 120_000);
+          printWindow.focus();
+          printWindow.print();
+          resolve();
+        } catch (error) {
+          cleanup();
+          reject(error);
+        }
+      })();
+    };
+
+    frame.onerror = () => {
+      cleanup();
+      reject(new Error('Could not load the CV print view.'));
+    };
+    frame.srcdoc = html;
+    document.body.appendChild(frame);
+  });
+}
+
 function formatPlanName(plan?: string | null) {
   if (plan === 'starter') return 'Starter';
   if (plan === 'job_seeker') return 'Job Seeker';
@@ -1276,8 +1335,7 @@ export default function App() {
     }
   }, [handleTabChange, resumeData]);
 
-  // Instant PDF download via Netlify Function (no print dialog)
-  // Requires Netlify function at: /.netlify/functions/export-pdf
+  // Download a searchable PDF from the Netlify function, with a browser print fallback.
   const handleExport = useCallback(async () => {
     const el = previewRef.current;
     if (!el) {
@@ -1297,6 +1355,7 @@ export default function App() {
     }
 
     setIsPrinting(true);
+    let printableHtml = '';
 
     try {
       const styles = Array.from(document.styleSheets)
@@ -1341,6 +1400,7 @@ export default function App() {
   ${el.outerHTML}
 </body>
 </html>`;
+      printableHtml = html;
 
       const token = await getFirebaseAuth().currentUser?.getIdToken();
       const res = await fetch('/.netlify/functions/export-pdf', {
@@ -1354,7 +1414,13 @@ export default function App() {
 
       if (!res.ok) {
         const msg = await res.json().catch(() => null);
-        throw new Error(msg?.error || 'Could not export PDF.');
+        const exportError = new Error(msg?.error || 'Could not export PDF.') as Error & {
+          stage?: string;
+          status?: number;
+        };
+        exportError.stage = typeof msg?.stage === 'string' ? msg.stage : undefined;
+        exportError.status = res.status;
+        throw exportError;
       }
 
       const blob = await res.blob();
@@ -1369,9 +1435,25 @@ export default function App() {
 
       trackAnalyticsEvent('resume_pdf_download', downloadAnalytics);
 
-      URL.revokeObjectURL(url);
-    } catch (e: any) {
-      alert(e?.message || 'PDF export failed.');
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (error: any) {
+      const failure = error as Error & { stage?: string; status?: number };
+      trackAnalyticsEvent('resume_pdf_export_fallback', {
+        ...downloadAnalytics,
+        failure_stage: failure?.stage || 'network_or_http_error',
+        response_status: failure?.status,
+      });
+
+      if (printableHtml) {
+        alert('The automatic PDF download failed. The print dialog will open next. Choose “Save as PDF” to download your CV.');
+        try {
+          await printResumeHtml(printableHtml);
+        } catch {
+          alert('The CV could not be opened for printing. Please refresh the page and try again.');
+        }
+      } else {
+        alert(failure?.message || 'PDF export failed.');
+      }
     } finally {
       setIsPrinting(false);
     }

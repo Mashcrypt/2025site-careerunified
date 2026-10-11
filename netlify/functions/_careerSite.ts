@@ -20,6 +20,8 @@ export type CareerSiteConfig = {
   baseDomain?: string;
   layout?: "bold" | "clean" | "editorial" | "split" | "wireless";
   applicationOptions?: {linkedin: boolean; indeed: boolean};
+  jobBoardContactEmail?: string;
+  linkedinCompanyId?: string;
   media?: Record<string, unknown>;
   contentSections?: Array<Record<string, unknown>>;
   customCode?: Record<string, string>;
@@ -81,6 +83,8 @@ export function configFromRecruiter(companyId: string, recruiter: Record<string,
       linkedin: existing?.applicationOptions?.linkedin !== false,
       indeed: existing?.applicationOptions?.indeed !== false,
     },
+    jobBoardContactEmail: cleanSiteText(existing?.jobBoardContactEmail, 254).toLowerCase(),
+    linkedinCompanyId: cleanSiteText(existing?.linkedinCompanyId, 40).replace(/\D/g, ""),
     tagline: cleanSiteText(existing?.tagline || profile.tagline, 240), about: cleanSiteText(existing?.about || profile.about, 4000), aboutUrl: safeUrl(existing?.aboutUrl),
     contact: {email: cleanSiteText(existing?.contact?.email || profile.email || recruiter.email, 254).toLowerCase(), website: safeUrl(existing?.contact?.website || profile.website), phone: cleanSiteText(existing?.contact?.phone || profile.phone, 40)},
     socialLinks: socialLinks(existing?.socialLinks || profile.socialLinks),

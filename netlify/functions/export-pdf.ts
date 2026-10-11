@@ -219,6 +219,6 @@ export const handler: Handler = async event => {
     }
   } catch (error) {
     console.error("EXPORT_PDF_ERROR", {stage: exportStage, error: error instanceof Error ? error.stack || error.message : error});
-    return json(500, {error: "PDF generation failed. Please try again."}, origin);
+    return json(500, {error: "PDF generation failed. Please try again.", stage: exportStage}, origin);
   }
 };

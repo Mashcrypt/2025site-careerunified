@@ -5727,6 +5727,26 @@
 
           <div class="setting-layout">
             <div>
+              <h4>Job board feed contact email</h4>
+              <p class="setting-copy">Career Unified will include active jobs from published career sites in its job board feeds. This contact email is shared publicly with job board partners. Feeds begin distributing after each board activates our source.</p>
+            </div>
+            <div class="setting-control">
+              <input id="careerSiteJobBoardEmail" type="email" maxlength="254" placeholder="careers@company.com" aria-label="Public job board contact email">
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
+              <h4>LinkedIn Company ID</h4>
+              <p class="setting-copy">Add the numeric ID from your LinkedIn Company Page URL. LinkedIn requires it before the company’s jobs can be included in its feed.</p>
+            </div>
+            <div class="setting-control">
+              <input id="careerSiteLinkedInCompanyId" type="text" inputmode="numeric" maxlength="40" placeholder="123456" aria-label="LinkedIn Company ID">
+            </div>
+          </div>
+
+          <div class="setting-layout">
+            <div>
               <h4>Apply with LinkedIn</h4>
               <p class="setting-copy">Allow candidates to apply with LinkedIn.</p>
             </div>
@@ -6790,6 +6810,10 @@ async function loadCareerSiteSettings() {
     if (logoPreview) logoPreview.src = careerSiteConfig.logo || window.getRecruiterCareerSitePreviewState?.().companyProfile?.logo || '/android-chrome-192x192.png';
     if (primaryColorField && /^#[0-9a-f]{6}$/i.test(careerSiteConfig.brandColors?.primary || '')) primaryColorField.value = careerSiteConfig.brandColors.primary;
     if (aboutUrlField) aboutUrlField.value = careerSiteConfig.aboutUrl || '';
+    const jobBoardEmailField = document.getElementById('careerSiteJobBoardEmail');
+    if (jobBoardEmailField) jobBoardEmailField.value = careerSiteConfig.jobBoardContactEmail || '';
+    const linkedinCompanyIdField = document.getElementById('careerSiteLinkedInCompanyId');
+    if (linkedinCompanyIdField) linkedinCompanyIdField.value = careerSiteConfig.linkedinCompanyId || '';
     document.querySelectorAll('input[name="careerSiteLayout"]').forEach(input => {
       input.checked = input.value === (careerSiteConfig.layout || 'bold');
     });
@@ -7134,6 +7158,8 @@ async function saveCareerSiteGeneral() {
       displayName: document.getElementById('cp_name')?.value || careerSiteConfig.displayName,
       about: document.getElementById('cp_about')?.value || careerSiteConfig.about,
       aboutUrl: document.getElementById('careerSiteAboutUrl')?.value.trim() || '',
+      jobBoardContactEmail: document.getElementById('careerSiteJobBoardEmail')?.value.trim() || '',
+      linkedinCompanyId: document.getElementById('careerSiteLinkedInCompanyId')?.value.trim() || '',
       logo: document.getElementById('cp_logo')?.value || careerSiteConfig.logo,
       layout: document.querySelector('input[name="careerSiteLayout"]:checked')?.value || careerSiteConfig.layout || 'bold',
       applicationOptions: {

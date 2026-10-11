@@ -1,4 +1,5 @@
 import type {Handler} from "@netlify/functions";
+import {getRecruiterJobs, isActiveRecruiterJob} from "../lib/firestore";
 
 const SITE_URL = "https://careerunified.com";
 const PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || "qjg5raj1";
@@ -163,13 +164,19 @@ export const handler: Handler = async () => {
   const entries = staticEntries();
 
   try {
-    const [jobs, bursaries, universities] = await Promise.all([
+    const [jobs, recruiterJobs, bursaries, universities] = await Promise.all([
       fetchSanityItems("job"),
+      getRecruiterJobs()
+        .then(items => items.filter(isActiveRecruiterJob))
+        .catch(error => {
+          console.error("Dynamic sitemap recruiter jobs fetch failed:", error);
+          return [];
+        }),
       fetchSanityItems("bursary"),
       fetchSanityItems("university"),
     ]);
 
-    entries.push(...opportunityEntries(jobs, "jobs", "0.85"));
+    entries.push(...opportunityEntries([...jobs, ...recruiterJobs], "jobs", "0.85"));
     entries.push(...opportunityEntries(bursaries, "bursary", "0.85"));
     entries.push(...opportunityEntries(universities, "varsity", "0.8"));
   } catch (error) {

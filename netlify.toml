@@ -72,6 +72,18 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/feeds/indeed.xml"
+  to = "/.netlify/functions/job-board-feed?board=indeed"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/feeds/linkedin.xml"
+  to = "/.netlify/functions/job-board-feed?board=linkedin"
+  status = 200
+  force = true
+
 # Versioned partner API. The route is forwarded as a query parameter so
 # function routing remains stable across direct and proxied Netlify requests.
 [[redirects]]
