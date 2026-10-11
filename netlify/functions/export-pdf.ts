@@ -162,7 +162,7 @@ export const handler: Handler = async event => {
     // Passing a guessed directory can make Netlify resolve the bundled binary
     // to an unavailable path such as /var/bin.
     chromium.setGraphicsMode = false;
-    const executablePath = process.env.CHROMIUM_PATH || await chromium.executablePath();
+    const executablePath = await chromium.executablePath();
     if (!executablePath) throw new Error("Chromium executable path is unavailable.");
     exportStage = "chromium-launch";
     const browser = await puppeteer.launch({
@@ -215,7 +215,11 @@ export const handler: Handler = async event => {
         body: pdfBuffer.toString("base64"),
       };
     } finally {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.warn("EXPORT_PDF_BROWSER_CLOSE_ERROR", closeError instanceof Error ? closeError.message : closeError);
+      }
     }
   } catch (error) {
     console.error("EXPORT_PDF_ERROR", {stage: exportStage, error: error instanceof Error ? error.stack || error.message : error});
