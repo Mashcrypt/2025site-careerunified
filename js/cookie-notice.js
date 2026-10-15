@@ -109,11 +109,11 @@
 
       .cu-cookie-notice__button--accept {
         color: #fff;
-        background: #111;
-        border-color: #111;
+        background: #4b8df8;
+        border-color: #4b8df8;
       }
 
-      .cu-cookie-notice__button--accept:hover { background: #303030; }
+      .cu-cookie-notice__button--accept:hover { background: #3277e8; border-color: #3277e8; }
 
       .cu-cookie-notice__settings:focus-visible,
       .cu-cookie-notice__button:focus-visible,
