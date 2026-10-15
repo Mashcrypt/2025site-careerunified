@@ -162,7 +162,7 @@
 
       @media (max-width: 600px) {
         .cu-cookie-notice {
-          bottom: 14px;
+          bottom: calc(14px + env(safe-area-inset-bottom));
           width: calc(100% - 24px);
           max-width: 440px;
           min-height: 0;
@@ -176,12 +176,29 @@
         .cu-cookie-notice__text { flex: 1; min-width: 0; font-size: 13px; }
         .cu-cookie-notice__settings { width: 34px; min-height: 38px; }
         .cu-cookie-notice__button { flex: 1 1 calc(50% - 5px); min-height: 42px; padding: 0 12px; font-size: 14px; }
-        .cu-cookie-notice__preferences { right: 70px; bottom: calc(100% + 12px); }
+        .cu-cookie-notice__preferences {
+          position: fixed;
+          left: 50%;
+          right: auto;
+          bottom: calc(148px + env(safe-area-inset-bottom));
+          width: min(330px, calc(100vw - 24px));
+          max-height: calc(100vh - 172px - env(safe-area-inset-bottom));
+          max-height: calc(100dvh - 172px - env(safe-area-inset-bottom));
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          transform: translateX(-50%);
+        }
+        .cu-cookie-notice__preferences h2 { margin-bottom: 12px; }
+        .cu-cookie-notice__intro { margin-bottom: 10px; }
+        .cu-cookie-notice__preference { gap: 8px; }
+        .cu-cookie-notice__preference-description { font-size: 12px; }
+        .cu-cookie-notice__save { min-height: 42px; font-size: 12px; }
+        .cu-cookie-notice__details-toggle { min-height: 36px; }
       }
 
       @media (prefers-reduced-motion: no-preference) {
         .cu-cookie-notice__preferences { animation: cu-cookie-pop 140ms ease-out; }
-        @keyframes cu-cookie-pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cu-cookie-pop { from { opacity: 0; } to { opacity: 1; } }
       }
     `;
     document.head.appendChild(style);
