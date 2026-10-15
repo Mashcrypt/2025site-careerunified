@@ -176,7 +176,7 @@
           border-radius: 22px;
         }
         .cu-cookie-notice__cookie { width: 36px; height: 36px; flex-basis: 36px; }
-        .cu-cookie-notice__text { flex: 1; min-width: 0; font-size: 13px; }
+        .cu-cookie-notice__text { flex: 1 1 180px; min-width: 0; font-size: 13px; }
         .cu-cookie-notice__settings { width: 34px; min-height: 38px; }
         .cu-cookie-notice__button { flex: 1 1 calc(50% - 5px); min-height: 42px; padding: 0 12px; font-size: 14px; }
         .cu-cookie-notice__preferences {
@@ -202,6 +202,10 @@
       @media (prefers-reduced-motion: no-preference) {
         .cu-cookie-notice__preferences { animation: cu-cookie-pop 140ms ease-out; }
         @keyframes cu-cookie-pop { from { opacity: 0; } to { opacity: 1; } }
+      }
+
+      @media (max-width: 360px) {
+        .cu-cookie-notice__text { flex-basis: calc(100% - 86px); }
       }
     `;
     document.head.appendChild(style);
