@@ -127,22 +127,36 @@
         position: absolute;
         right: 118px;
         bottom: calc(100% + 12px);
-        width: min(350px, calc(100vw - 36px));
-        padding: 18px;
-        color: #202020;
+        width: min(270px, calc(100vw - 36px));
+        padding: 18px 20px 14px;
+        color: #181818;
         background: #fff;
-        border: 1px solid #dedede;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        border: 1px solid #eeeaf2;
+        border-radius: 6px;
+        box-shadow: 0 12px 34px rgba(36, 20, 48, 0.2);
       }
 
       .cu-cookie-notice__preferences[hidden] { display: none; }
-      .cu-cookie-notice__preferences h2 { margin: 0 0 8px; font-size: 17px; }
-      .cu-cookie-notice__preferences p { margin: 0 0 14px; color: #555; font-size: 13px; line-height: 1.45; }
-      .cu-cookie-notice__preferences a { color: #333; font-size: 13px; text-underline-offset: 3px; }
-      .cu-cookie-notice__preference { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #eee; font-size: 14px; }
-      .cu-cookie-notice__preference input { width: 18px; height: 18px; accent-color: #111; }
-      .cu-cookie-notice__preferences button { min-height: 40px; width: 100%; margin-top: 12px; color: white; background: #111; border: 0; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; }
+      .cu-cookie-notice__preferences h2 { margin: 0 0 18px; font-size: 16px; line-height: 1.45; text-align: center; }
+      .cu-cookie-notice__intro { margin: 0 0 14px; color: #666; font-size: 12px; line-height: 1.5; }
+      .cu-cookie-notice__preference { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 7px 0; font-size: 12px; font-weight: 700; }
+      .cu-cookie-notice__switch { position: relative; display: inline-flex; flex: 0 0 48px; width: 48px; height: 26px; margin: 0; }
+      .cu-cookie-notice__switch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .cu-cookie-notice__switch-track { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; padding: 0 6px; color: #fff; background: #4d4d4d; border-radius: 999px; font-size: 10px; transition: background 140ms ease; }
+      .cu-cookie-notice__switch-track::after { position: absolute; left: 2px; width: 22px; height: 22px; content: ""; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0, 0, 0, .2); transition: transform 140ms ease; }
+      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track { justify-content: flex-start; background: #9473a8; }
+      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track::after { transform: translateX(22px); }
+      .cu-cookie-notice__switch input:disabled + .cu-cookie-notice__switch-track { background: #ac98bb; cursor: not-allowed; }
+      .cu-cookie-notice__switch input:focus-visible + .cu-cookie-notice__switch-track { outline: 3px solid #5488ff; outline-offset: 2px; }
+      .cu-cookie-notice__preference-description { display: none; margin: 1px 0 6px; color: #777; font-size: 12px; line-height: 1.5; }
+      .cu-cookie-notice__preferences.is-expanded .cu-cookie-notice__preference-description { display: block; }
+      .cu-cookie-notice__save { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; margin: 14px auto 0; padding: 0 18px; color: white; background: #583178; border: 0; border-radius: 999px; font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+      .cu-cookie-notice__save:hover { background: #472563; }
+      .cu-cookie-notice__details-toggle { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px auto 0; padding: 4px 8px; color: #583178; background: transparent; border: 0; font: inherit; font-size: 11px; cursor: pointer; }
+      .cu-cookie-notice__details-toggle svg { width: 12px; height: 12px; transition: transform 140ms ease; }
+      .cu-cookie-notice__preferences.is-expanded .cu-cookie-notice__details-toggle svg { transform: rotate(180deg); }
+      .cu-cookie-notice__privacy { display: block; margin: 9px 0 0; text-align: center; }
+      .cu-cookie-notice__privacy a { color: #583178; font-size: 11px; text-underline-offset: 3px; }
 
       @media (max-width: 600px) {
         .cu-cookie-notice {
@@ -160,7 +174,7 @@
         .cu-cookie-notice__text { flex: 1; min-width: 0; font-size: 13px; }
         .cu-cookie-notice__settings { width: 34px; min-height: 38px; }
         .cu-cookie-notice__button { flex: 1 1 calc(50% - 5px); min-height: 42px; padding: 0 12px; font-size: 14px; }
-        .cu-cookie-notice__preferences { right: 0; bottom: calc(100% + 12px); }
+        .cu-cookie-notice__preferences { right: 70px; bottom: calc(100% + 12px); }
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -190,18 +204,25 @@
       <button class="cu-cookie-notice__button cu-cookie-notice__button--reject" type="button">Reject</button>
       <button class="cu-cookie-notice__button cu-cookie-notice__button--accept" type="button">Accept</button>
       <div class="cu-cookie-notice__preferences" role="dialog" aria-label="Cookie preferences" hidden>
-        <h2>Cookie preferences</h2>
-        <p>Choose which optional cookies Career Unified may store. Necessary cookies are always on.</p>
-        <label class="cu-cookie-notice__preference"><span>Necessary</span><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"></label>
-        <label class="cu-cookie-notice__preference"><span>Analytics</span><input class="cu-cookie-notice__analytics" type="checkbox"></label>
-        <label class="cu-cookie-notice__preference"><span>Advertising</span><input class="cu-cookie-notice__advertising" type="checkbox"></label>
-        <button class="cu-cookie-notice__save" type="button">Save preferences</button>
-        <p style="margin:12px 0 0"><a href="/privacy" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a></p>
+        <h2>Customise your preferences</h2>
+        <p class="cu-cookie-notice__intro">Choose which cookies Career Unified may store on your device.</p>
+        <div class="cu-cookie-notice__preference"><span>Necessary</span><label class="cu-cookie-notice__switch"><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"><span class="cu-cookie-notice__switch-track" aria-hidden="true">✓</span></label></div>
+        <p class="cu-cookie-notice__preference-description">These cookies are required for core site features, security, and remembering your consent choice.</p>
+        <div class="cu-cookie-notice__preference"><span>Analytics &amp; performance</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__analytics" type="checkbox" aria-label="Allow analytics and performance cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true">×</span></label></div>
+        <p class="cu-cookie-notice__preference-description">These cookies help us understand site usage and improve the Career Unified experience.</p>
+        <div class="cu-cookie-notice__preference"><span>Marketing</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__advertising" type="checkbox" aria-label="Allow marketing cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true">×</span></label></div>
+        <p class="cu-cookie-notice__preference-description">These cookies may be used to measure campaigns and provide relevant advertising.</p>
+        <button class="cu-cookie-notice__save" type="button">Save preferences <span aria-hidden="true">✓</span></button>
+        <button class="cu-cookie-notice__details-toggle" type="button" aria-expanded="false">
+          <span>Expand details</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 6 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="cu-cookie-notice__privacy"><a href="/privacy" target="_blank" rel="noopener noreferrer">Read our Privacy Policy</a></p>
       </div>
     `;
 
     const settingsButton = notice.querySelector(".cu-cookie-notice__settings");
     const preferences = notice.querySelector(".cu-cookie-notice__preferences");
+    const detailsToggle = notice.querySelector(".cu-cookie-notice__details-toggle");
     const togglePreferences = () => {
       const isOpen = preferences.hidden;
       preferences.hidden = !isOpen;
@@ -210,6 +231,11 @@
     };
 
     settingsButton.addEventListener("click", togglePreferences);
+    detailsToggle.addEventListener("click", () => {
+      const expanded = preferences.classList.toggle("is-expanded");
+      detailsToggle.setAttribute("aria-expanded", String(expanded));
+      detailsToggle.querySelector("span").textContent = expanded ? "Hide details" : "Expand details";
+    });
     notice.querySelector(".cu-cookie-notice__button--reject")?.addEventListener("click", () => {
       saveConsent({necessary: true, analytics: false, advertising: false});
     });
