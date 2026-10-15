@@ -148,6 +148,9 @@
       .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track::after { transform: translateX(22px); }
       .cu-cookie-notice__switch input:disabled + .cu-cookie-notice__switch-track { background: #80aefb; cursor: not-allowed; }
       .cu-cookie-notice__switch-track svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .cu-cookie-notice__switch-track .cu-cookie-notice__check { display: none; }
+      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track .cu-cookie-notice__check { display: block; }
+      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track .cu-cookie-notice__cross { display: none; }
       .cu-cookie-notice__switch input:focus-visible + .cu-cookie-notice__switch-track { outline: 3px solid #5488ff; outline-offset: 2px; }
       .cu-cookie-notice__preference-description { display: none; margin: 1px 0 6px; color: #777; font-size: 12px; line-height: 1.5; }
       .cu-cookie-notice__preferences.is-expanded .cu-cookie-notice__preference-description { display: block; }
@@ -225,11 +228,11 @@
       <div class="cu-cookie-notice__preferences" role="dialog" aria-label="Cookie preferences" hidden>
         <h2>Customise your preferences</h2>
         <p class="cu-cookie-notice__intro">Choose which cookies Career Unified may store on your device.</p>
-        <div class="cu-cookie-notice__preference"><span>Necessary</span><label class="cu-cookie-notice__switch"><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg></span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Necessary</span><label class="cu-cookie-notice__switch"><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg class="cu-cookie-notice__check" viewBox="0 0 12 12"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg><svg class="cu-cookie-notice__cross" viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies are required for core site features, security, and remembering your consent choice.</p>
-        <div class="cu-cookie-notice__preference"><span>Analytics &amp; performance</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__analytics" type="checkbox" aria-label="Allow analytics and performance cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Analytics &amp; performance</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__analytics" type="checkbox" aria-label="Allow analytics and performance cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg class="cu-cookie-notice__check" viewBox="0 0 12 12"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg><svg class="cu-cookie-notice__cross" viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies help us understand site usage and improve the Career Unified experience.</p>
-        <div class="cu-cookie-notice__preference"><span>Marketing</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__advertising" type="checkbox" aria-label="Allow marketing cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Marketing</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__advertising" type="checkbox" aria-label="Allow marketing cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg class="cu-cookie-notice__check" viewBox="0 0 12 12"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg><svg class="cu-cookie-notice__cross" viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies may be used to measure campaigns and provide relevant advertising.</p>
         <button class="cu-cookie-notice__save" type="button">Save preferences <svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg></button>
         <button class="cu-cookie-notice__details-toggle" type="button" aria-expanded="false">
