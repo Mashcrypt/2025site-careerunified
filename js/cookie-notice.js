@@ -144,19 +144,21 @@
       .cu-cookie-notice__switch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
       .cu-cookie-notice__switch-track { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; padding: 0 6px; color: #fff; background: #4d4d4d; border-radius: 999px; font-size: 10px; transition: background 140ms ease; }
       .cu-cookie-notice__switch-track::after { position: absolute; left: 2px; width: 22px; height: 22px; content: ""; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0, 0, 0, .2); transition: transform 140ms ease; }
-      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track { justify-content: flex-start; background: #9473a8; }
+      .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track { justify-content: flex-start; background: #4b8df8; }
       .cu-cookie-notice__switch input:checked + .cu-cookie-notice__switch-track::after { transform: translateX(22px); }
-      .cu-cookie-notice__switch input:disabled + .cu-cookie-notice__switch-track { background: #ac98bb; cursor: not-allowed; }
+      .cu-cookie-notice__switch input:disabled + .cu-cookie-notice__switch-track { background: #80aefb; cursor: not-allowed; }
+      .cu-cookie-notice__switch-track svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
       .cu-cookie-notice__switch input:focus-visible + .cu-cookie-notice__switch-track { outline: 3px solid #5488ff; outline-offset: 2px; }
       .cu-cookie-notice__preference-description { display: none; margin: 1px 0 6px; color: #777; font-size: 12px; line-height: 1.5; }
       .cu-cookie-notice__preferences.is-expanded .cu-cookie-notice__preference-description { display: block; }
-      .cu-cookie-notice__save { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; margin: 14px auto 0; padding: 0 18px; color: white; background: #583178; border: 0; border-radius: 999px; font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
-      .cu-cookie-notice__save:hover { background: #472563; }
-      .cu-cookie-notice__details-toggle { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px auto 0; padding: 4px 8px; color: #583178; background: transparent; border: 0; font: inherit; font-size: 11px; cursor: pointer; }
+      .cu-cookie-notice__save { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; margin: 14px auto 0; padding: 0 18px; color: white; background: #4b8df8; border: 0; border-radius: 999px; font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+      .cu-cookie-notice__save:hover { background: #3277e8; }
+      .cu-cookie-notice__save svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .cu-cookie-notice__details-toggle { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px auto 0; padding: 4px 8px; color: #3277e8; background: transparent; border: 0; font: inherit; font-size: 11px; cursor: pointer; }
       .cu-cookie-notice__details-toggle svg { width: 12px; height: 12px; transition: transform 140ms ease; }
       .cu-cookie-notice__preferences.is-expanded .cu-cookie-notice__details-toggle svg { transform: rotate(180deg); }
       .cu-cookie-notice__privacy { display: block; margin: 9px 0 0; text-align: center; }
-      .cu-cookie-notice__privacy a { color: #583178; font-size: 11px; text-underline-offset: 3px; }
+      .cu-cookie-notice__privacy a { color: #3277e8; font-size: 11px; text-underline-offset: 3px; }
 
       @media (max-width: 600px) {
         .cu-cookie-notice {
@@ -206,13 +208,13 @@
       <div class="cu-cookie-notice__preferences" role="dialog" aria-label="Cookie preferences" hidden>
         <h2>Customise your preferences</h2>
         <p class="cu-cookie-notice__intro">Choose which cookies Career Unified may store on your device.</p>
-        <div class="cu-cookie-notice__preference"><span>Necessary</span><label class="cu-cookie-notice__switch"><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"><span class="cu-cookie-notice__switch-track" aria-hidden="true">✓</span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Necessary</span><label class="cu-cookie-notice__switch"><input type="checkbox" checked disabled aria-label="Necessary cookies always enabled"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies are required for core site features, security, and remembering your consent choice.</p>
-        <div class="cu-cookie-notice__preference"><span>Analytics &amp; performance</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__analytics" type="checkbox" aria-label="Allow analytics and performance cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true">×</span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Analytics &amp; performance</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__analytics" type="checkbox" aria-label="Allow analytics and performance cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies help us understand site usage and improve the Career Unified experience.</p>
-        <div class="cu-cookie-notice__preference"><span>Marketing</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__advertising" type="checkbox" aria-label="Allow marketing cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true">×</span></label></div>
+        <div class="cu-cookie-notice__preference"><span>Marketing</span><label class="cu-cookie-notice__switch"><input class="cu-cookie-notice__advertising" type="checkbox" aria-label="Allow marketing cookies"><span class="cu-cookie-notice__switch-track" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="m3 3 6 6M9 3 3 9"/></svg></span></label></div>
         <p class="cu-cookie-notice__preference-description">These cookies may be used to measure campaigns and provide relevant advertising.</p>
-        <button class="cu-cookie-notice__save" type="button">Save preferences <span aria-hidden="true">✓</span></button>
+        <button class="cu-cookie-notice__save" type="button">Save preferences <svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 6.2 2.2 2.1 4.8-5"/></svg></button>
         <button class="cu-cookie-notice__details-toggle" type="button" aria-expanded="false">
           <span>Expand details</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 6 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
