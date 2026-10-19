@@ -326,13 +326,44 @@ export function createApiCredential(clientId: string, environment: 'live' | 'tes
   }
 }
 
+export function apiKeyFromBasicAuthorization(authorization: string) {
+  // SAP SuccessFactors Integration Center REST destinations support HTTP Basic
+  // authentication. Use the API key prefix and client id as the username, and
+  // the API key secret as the password. This keeps SAP's stored credential scoped
+  // to one Career Unified API client rather than a recruiter login.
+  if (!/^Basic\s+/i.test(authorization)) return ''
+  try {
+    const encoded = authorization.replace(/^Basic\s+/i, '').trim()
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) return ''
+    const decoded = Buffer.from(encoded, 'base64').toString('utf8')
+    if (
+      Buffer.from(decoded, 'utf8').toString('base64').replace(/=+$/, '') !==
+      encoded.replace(/=+$/, '')
+    ) {
+      return ''
+    }
+    const separator = decoded.indexOf(':')
+    if (separator <= 0 || decoded.indexOf(':', separator + 1) !== -1) return ''
+    const username = decoded.slice(0, separator)
+    const secret = decoded.slice(separator + 1)
+    if (!/^cu_(live|test)_[A-Za-z0-9_-]{8,160}$/.test(username)) return ''
+    if (!/^[A-Za-z0-9_-]{32,160}$/.test(secret)) return ''
+    return `${username}.${secret}`
+  } catch {
+    return ''
+  }
+}
+
 function readApiKey(event: HandlerEvent) {
   const direct = event.headers['x-api-key'] || event.headers['X-Api-Key']
   if (direct) return direct.trim()
   const authorization = event.headers.authorization || event.headers.Authorization || ''
-  return authorization.startsWith('Bearer cu_live_') || authorization.startsWith('Bearer cu_test_')
-    ? authorization.slice(7).trim()
-    : ''
+  if (authorization.startsWith('Bearer cu_live_') || authorization.startsWith('Bearer cu_test_')) {
+    return authorization.slice(7).trim()
+  }
+  const basicKey = apiKeyFromBasicAuthorization(authorization)
+  if (basicKey) return basicKey
+  return ''
 }
 
 function parseApiKey(value: string) {

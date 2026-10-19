@@ -71,6 +71,7 @@
       requiredScopes: [
         'Create calendar events',
         'Read availability',
+        'See calendars you can schedule on',
         'Update or cancel interview events',
       ],
     },
@@ -184,16 +185,16 @@
     },
     {
       id: 'sap',
-      name: 'SAP',
+      name: 'SAP SuccessFactors',
       category: 'hris',
-      capability: 'configuration_required',
+      capability: 'api_access_required',
       description:
-        'Connect your HR or ERP system to synchronize employee, hiring, and onboarding information.',
+        'Sync approved SuccessFactors vacancies into your Career Unified careers page. Applicants continue through the employer’s selected application link.',
       logo: 'https://cdn.simpleicons.org/sap',
       icon: 'bx-buildings',
       iconClass: 'is-hris',
-      learnMoreUrl: '#',
-      requiredScopes: ['Read employee records', 'Create onboarding records'],
+      learnMoreUrl: '/api/#sap-sync',
+      requiredScopes: ['Read approved job requisitions', 'Publish, update, and close vacancies'],
     },
   ].map((provider) => ({
     ...provider,

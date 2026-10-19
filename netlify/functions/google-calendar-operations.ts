@@ -15,6 +15,11 @@ import {
   safeProviderError,
   assertIntegrationPermission,
 } from './_recruiterIntegrations'
+import {
+  buildGoogleCalendarCreateRequest,
+  normalizeGoogleCalendarAttendees,
+  validCalendarEventWindow,
+} from './_googleCalendar'
 
 async function providerFetch(
   admin: any,
@@ -180,44 +185,55 @@ export const handler: Handler = async (event) => {
       const start = cleanText(body.start, 80)
       const end = cleanText(body.end, 80)
       const timeZone = cleanText(body.timeZone || 'Africa/Johannesburg', 80)
-      const attendees = Array.isArray(body.attendees) ? body.attendees.slice(0, 50) : []
+      let attendees: Array<{email: string; displayName: string}>
+      try {
+        attendees = normalizeGoogleCalendarAttendees(body.attendees)
+      } catch (error: any) {
+        throw new ApplicationError(400, cleanText(error?.message, 240) || 'Invalid attendee list.')
+      }
       const conferenceData = body.conferenceData === true
       const applicationId = cleanText(body.applicationId || '', 180)
       const interviewId = cleanText(body.interviewId || '', 180)
-      const idempotencyKey = body.idempotencyKey || (applicationId ? generateIdempotencyKey(companyId, applicationId, interviewId || '', 'google-calendar', 'create-event') : '')
+      const crypto = require('crypto')
+      const idempotencyKey = generateIdempotencyKey(
+        companyId,
+        applicationId || 'calendar-event',
+        interviewId || cleanText(body.idempotencyKey, 180) || crypto.randomUUID(),
+        'google-calendar',
+        'create-event',
+      )
 
       if (!summary || !start || !end) {
         throw new ApplicationError(400, 'Summary, start, and end are required for event creation.')
       }
-
-      const eventBody: any = {
+      if (!validCalendarEventWindow(start, end)) {
+        throw new ApplicationError(400, 'The event end time must be after its start time.')
+      }
+      const request = buildGoogleCalendarCreateRequest({
+        calendarId,
+        idempotencyKey,
         summary,
         description: description || '',
         location: location || '',
-        start: {dateTime: start, timeZone},
-        end: {dateTime: end, timeZone},
-        attendees: attendees.map((a: any) => ({
-          email: cleanText(a.email, 254),
-          displayName: cleanText(a.displayName || '', 160),
-          responseStatus: 'needsAction',
-        })),
-        reminders: {useDefault: true},
-      }
-
-      if (conferenceData) {
-        eventBody.conferenceData = {createRequest: {requestId: idempotencyKey || generateIdempotencyKey(companyId, 'conf', '', 'google-calendar', 'conf'), conferenceSolutionKey: {type: 'hangoutsMeet'}}}
-      }
-
-      let url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
-      if (conferenceData) url += '?conferenceDataVersion=1'
-      if (idempotencyKey) url += `${conferenceData ? '&' : '?'}idempotencyKey=${encodeURIComponent(idempotencyKey)}`
-
-      const response = await providerFetch(admin, record, {
-        url,
-        method: 'POST',
-        body: eventBody,
+        start,
+        end,
+        timeZone,
+        attendees,
+        conferenceData,
       })
-      const payload: any = await response.json().catch(() => ({}))
+
+      let response = await providerFetch(admin, record, {
+        url: request.url,
+        method: 'POST',
+        body: request.body,
+      })
+      let payload: any = await response.json().catch(() => ({}))
+      if (response.status === 409) {
+        response = await providerFetch(admin, record, {
+          url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(idempotencyKey)}`,
+        })
+        payload = await response.json().catch(() => ({}))
+      }
       if (!response.ok)
         throw new Error(`calendar_create_${response.status}_${safeProviderError(payload.error)}`)
 
@@ -239,10 +255,21 @@ export const handler: Handler = async (event) => {
       const start = cleanText(body.start, 80)
       const end = cleanText(body.end, 80)
       const timeZone = cleanText(body.timeZone || 'Africa/Johannesburg', 80)
-      const attendees = Array.isArray(body.attendees) ? body.attendees.slice(0, 50) : undefined
+      let attendees: Array<{email: string; displayName: string}> | undefined
+      try {
+        attendees = body.attendees === undefined ? undefined : normalizeGoogleCalendarAttendees(body.attendees)
+      } catch (error: any) {
+        throw new ApplicationError(400, cleanText(error?.message, 240) || 'Invalid attendee list.')
+      }
       const sendUpdates = cleanText(body.sendUpdates || 'all', 20)
 
       if (!eventId) throw new ApplicationError(400, 'Event ID is required.')
+      if (Boolean(start) !== Boolean(end)) {
+        throw new ApplicationError(400, 'Provide both event start and end times when changing the schedule.')
+      }
+      if (start && end && !validCalendarEventWindow(start, end)) {
+        throw new ApplicationError(400, 'The event end time must be after its start time.')
+      }
 
       const eventBody: any = {}
       if (summary) eventBody.summary = summary
@@ -260,7 +287,7 @@ export const handler: Handler = async (event) => {
 
       const response = await providerFetch(admin, record, {
         url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}?sendUpdates=${encodeURIComponent(sendUpdates)}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: eventBody,
       })
       const payload: any = await response.json().catch(() => ({}))
@@ -286,7 +313,7 @@ export const handler: Handler = async (event) => {
         url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}?sendUpdates=${encodeURIComponent(sendUpdates)}`,
         method: 'DELETE',
       })
-      if (response.status !== 204 && response.status !== 200) {
+      if (response.status !== 204 && response.status !== 200 && response.status !== 404) {
         const payload: any = await response.json().catch(() => ({}))
         throw new Error(`calendar_delete_${response.status}_${safeProviderError(payload.error)}`)
       }

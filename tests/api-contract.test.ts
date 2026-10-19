@@ -4,6 +4,7 @@ import {
   ApiError,
   apiCredentialMatches,
   apiDataCollections,
+  apiKeyFromBasicAuthorization,
   apiKeyHash,
   createApiCredential,
   decodeCursor,
@@ -28,6 +29,113 @@ import {
   assertProviderOperation,
   providerOperationCapability,
 } from '../netlify/functions/_recruiterProviderAdapters'
+import {normalizeSapJobBatch, sapJobDocumentId} from '../netlify/functions/_sapSuccessFactors'
+import {
+  buildGoogleCalendarCreateRequest,
+  normalizeGoogleCalendarAttendees,
+  validCalendarEventWindow,
+} from '../netlify/functions/_googleCalendar'
+
+test('SAP SuccessFactors Basic credentials translate to the normal scoped API key format', () => {
+  const apiKey = createApiCredential('client_12345678', 'test').apiKey
+  const [username, secret] = apiKey.split('.')
+  const authorization = `Basic ${Buffer.from(`${username}:${secret}`).toString('base64')}`
+
+  assert.equal(apiKeyFromBasicAuthorization(authorization), apiKey)
+  assert.equal(apiKeyFromBasicAuthorization(authorization.replace(/^Basic/, 'basic')), apiKey)
+  assert.equal(apiKeyFromBasicAuthorization('Basic not-base64!'), '')
+  assert.equal(
+    apiKeyFromBasicAuthorization(`Basic ${Buffer.from('admin:password').toString('base64')}`),
+    '',
+  )
+})
+
+test('SAP SuccessFactors batches normalize requisition IDs and reject unsafe ambiguity', () => {
+  const batch = normalizeSapJobBatch({
+    jobs: [
+      {jobReqId: 'REQ-101', status: 'ACTIVE', job: {title: 'Analyst'}},
+      {externalJobId: 'REQ-102', status: 'closed'},
+    ],
+  })
+
+  assert.deepEqual(batch, [
+    {externalJobId: 'REQ-101', state: 'active', source: {title: 'Analyst'}},
+    {
+      externalJobId: 'REQ-102',
+      state: 'closed',
+      source: {externalJobId: 'REQ-102', status: 'closed'},
+    },
+  ])
+  assert.equal(
+    sapJobDocumentId('client_12345678', 'REQ-101'),
+    sapJobDocumentId('client_12345678', 'REQ-101'),
+  )
+  assert.notEqual(
+    sapJobDocumentId('client_12345678', 'REQ-101'),
+    sapJobDocumentId('client_12345678', 'REQ-102'),
+  )
+  assert.throws(
+    () => normalizeSapJobBatch({jobs: []}),
+    (error) => error instanceof ApiError && error.statusCode === 400,
+  )
+  assert.throws(
+    () =>
+      normalizeSapJobBatch({
+        jobs: [
+          {externalJobId: 'REQ-1', status: 'active'},
+          {externalJobId: 'REQ-1', status: 'closed'},
+        ],
+      }),
+    (error) => error instanceof ApiError && error.code === 'duplicate_sap_job_id',
+  )
+})
+
+test('Google Calendar create requests use valid URLs and deterministic event IDs', () => {
+  const request = buildGoogleCalendarCreateRequest({
+    calendarId: 'primary',
+    idempotencyKey: 'a'.repeat(32),
+    summary: 'Interview',
+    description: 'Candidate interview',
+    location: '',
+    start: '2026-10-15T09:00:00+02:00',
+    end: '2026-10-15T09:30:00+02:00',
+    timeZone: 'Africa/Johannesburg',
+    attendees: [{email: 'candidate@example.com', displayName: 'Candidate'}],
+    conferenceData: false,
+  })
+  const url = new URL(request.url)
+
+  assert.equal(url.searchParams.get('sendUpdates'), 'all')
+  assert.equal(url.searchParams.has('idempotencyKey'), false)
+  assert.equal(url.searchParams.has('conferenceDataVersion'), false)
+  assert.equal(request.body.id, 'a'.repeat(32))
+  assert.equal(request.body.attendees[0].email, 'candidate@example.com')
+
+  const meetRequest = buildGoogleCalendarCreateRequest({
+    calendarId: 'primary',
+    idempotencyKey: 'b'.repeat(32),
+    summary: 'Interview',
+    description: '',
+    location: '',
+    start: '2026-10-15T09:00:00+02:00',
+    end: '2026-10-15T09:30:00+02:00',
+    timeZone: 'Africa/Johannesburg',
+    attendees: [],
+    conferenceData: true,
+  })
+  assert.equal(new URL(meetRequest.url).searchParams.get('conferenceDataVersion'), '1')
+  assert.equal(meetRequest.body.conferenceData.createRequest.requestId, 'b'.repeat(32))
+})
+
+test('Google Calendar inputs reject invalid times and attendee addresses', () => {
+  assert.equal(validCalendarEventWindow('2026-10-15T09:00:00+02:00', '2026-10-15T09:30:00+02:00'), true)
+  assert.equal(validCalendarEventWindow('2026-10-15T09:30:00+02:00', '2026-10-15T09:00:00+02:00'), false)
+  assert.deepEqual(normalizeGoogleCalendarAttendees([{email: 'a@example.com'}]), [
+    {email: 'a@example.com', displayName: ''},
+  ])
+  assert.throws(() => normalizeGoogleCalendarAttendees([{email: 'bad'}]), /valid email address/)
+  assert.throws(() => normalizeGoogleCalendarAttendees(new Array(51).fill({email: 'a@example.com'})), /up to 50/)
+})
 
 test('live and test credentials use separate prefixes and collections', () => {
   const live = createApiCredential('client_12345678', 'live')
@@ -226,7 +334,11 @@ test('disconnect patch removes all provider identity, token, scope, sync, error,
 
 test('provider operation boundary refuses unavailable or unimplemented operations', () => {
   assert.equal(providerOperationCapability('gmail', 'send_email'), 'adapter_pending')
+  assert.equal(providerOperationCapability('google-calendar', 'create_calendar_event'), 'available')
+  assert.equal(providerOperationCapability('google-calendar', 'update_calendar_event'), 'available')
+  assert.equal(providerOperationCapability('google-calendar', 'cancel_calendar_event'), 'available')
   assert.equal(providerOperationCapability('testgorilla', 'send_assessment'), 'api_access_required')
+  assert.doesNotThrow(() => assertProviderOperation('google-calendar', 'create_calendar_event'))
   assert.throws(
     () => assertProviderOperation('testgorilla', 'send_assessment'),
     /API access is required/,
@@ -291,14 +403,42 @@ test('iconForStatus returns correct icons for all states', () => {
 
 test('generateIdempotencyKey produces stable keys for calendar operations', () => {
   const crypto = require('crypto')
-  function generateIdempotencyKey(companyId: string, applicationId: string, interviewId: string, providerId: string, operation: string) {
-    return crypto.createHash('sha256').update(`${companyId}:${applicationId}:${interviewId}:${providerId}:${operation}`).digest('hex').slice(0, 32)
+  function generateIdempotencyKey(
+    companyId: string,
+    applicationId: string,
+    interviewId: string,
+    providerId: string,
+    operation: string,
+  ) {
+    return crypto
+      .createHash('sha256')
+      .update(`${companyId}:${applicationId}:${interviewId}:${providerId}:${operation}`)
+      .digest('hex')
+      .slice(0, 32)
   }
-  
-  const key1 = generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'create-event')
-  const key2 = generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'create-event')
-  const key3 = generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'update-event')
-  
+
+  const key1 = generateIdempotencyKey(
+    'company-1',
+    'app-1',
+    'interview-1',
+    'google-calendar',
+    'create-event',
+  )
+  const key2 = generateIdempotencyKey(
+    'company-1',
+    'app-1',
+    'interview-1',
+    'google-calendar',
+    'create-event',
+  )
+  const key3 = generateIdempotencyKey(
+    'company-1',
+    'app-1',
+    'interview-1',
+    'google-calendar',
+    'update-event',
+  )
+
   assert.equal(key1, key2)
   assert.notEqual(key1, key3)
   assert.equal(key1.length, 32)
@@ -312,7 +452,7 @@ test('sanitizeHtml removes dangerous content', () => {
       .replace(/on\w+="[^"]*"/gi, '')
       .replace(/on\w+='[^']*'/gi, '')
   }
-  
+
   assert.equal(sanitizeHtml('<script>alert(1)</script>'), '')
   assert.equal(sanitizeHtml('<iframe src="evil.com"></iframe>'), '')
   // The regex removes the onclick attribute but leaves a space
@@ -326,7 +466,7 @@ test('extractEmailAddress extracts email from various formats', () => {
     const match = header.match(/<([^>]+)>/) || header.match(/([^\s]+@[^\s]+)/)
     return match ? match[1].toLowerCase() : header.toLowerCase()
   }
-  
+
   assert.equal(extractEmailAddress('John Doe <john@example.com>'), 'john@example.com')
   assert.equal(extractEmailAddress('jane@example.com'), 'jane@example.com')
   assert.equal(extractEmailAddress('"Bob Smith" <bob@test.org>'), 'bob@test.org')
@@ -334,14 +474,42 @@ test('extractEmailAddress extracts email from various formats', () => {
 
 test('generateIdempotencyKey for calendar uses stable values without Date.now', () => {
   const crypto = require('crypto')
-  function generateIdempotencyKey(companyId: string, applicationId: string, interviewId: string, providerId: string, operation: string) {
-    return crypto.createHash('sha256').update(`${companyId}:${applicationId}:${interviewId}:${providerId}:${operation}`).digest('hex').slice(0, 32)
+  function generateIdempotencyKey(
+    companyId: string,
+    applicationId: string,
+    interviewId: string,
+    providerId: string,
+    operation: string,
+  ) {
+    return crypto
+      .createHash('sha256')
+      .update(`${companyId}:${applicationId}:${interviewId}:${providerId}:${operation}`)
+      .digest('hex')
+      .slice(0, 32)
   }
-  
-  const key1 = generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'create-event')
-  const key2 = generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'create-event')
-  
+
+  const key1 = generateIdempotencyKey(
+    'company-1',
+    'app-1',
+    'interview-1',
+    'google-calendar',
+    'create-event',
+  )
+  const key2 = generateIdempotencyKey(
+    'company-1',
+    'app-1',
+    'interview-1',
+    'google-calendar',
+    'create-event',
+  )
+
   assert.equal(key1, key2)
-  assert.notEqual(key1, generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'update-event'))
-  assert.notEqual(key1, generateIdempotencyKey('company-2', 'app-1', 'interview-1', 'google-calendar', 'create-event'))
+  assert.notEqual(
+    key1,
+    generateIdempotencyKey('company-1', 'app-1', 'interview-1', 'google-calendar', 'update-event'),
+  )
+  assert.notEqual(
+    key1,
+    generateIdempotencyKey('company-2', 'app-1', 'interview-1', 'google-calendar', 'create-event'),
+  )
 })

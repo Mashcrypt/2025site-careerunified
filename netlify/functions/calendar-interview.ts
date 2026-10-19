@@ -16,6 +16,11 @@ import {
   assertIntegrationPermission,
 } from './_recruiterIntegrations'
 import {refreshAccessToken} from './_connectedEmail'
+import {
+  buildGoogleCalendarCreateRequest,
+  normalizeGoogleCalendarAttendees,
+  validCalendarEventWindow,
+} from './_googleCalendar'
 
 async function providerFetch(
   admin: any,
@@ -63,12 +68,27 @@ async function getCalendarRecord(admin: any, companyId: string, providerId: stri
   return record
 }
 
+function normalizeGoogleAttendees(value: unknown) {
+  try {
+    return normalizeGoogleCalendarAttendees(value)
+  } catch (error: any) {
+    throw new ApplicationError(400, cleanText(error?.message, 240) || 'Invalid attendee list.')
+  }
+}
+
 function generateIdempotencyKey(companyId: string, applicationId: string, interviewId: string, providerId: string, operation: string) {
   const crypto = require('crypto')
   return crypto.createHash('sha256').update(`${companyId}:${applicationId}:${interviewId}:${providerId}:${operation}`).digest('hex').slice(0, 32)
 }
 
-async function checkAndCreateIdempotencyRecord(admin: any, idempotencyKey: string, providerEventId: string, calendarId: string, providerId: string) {
+async function checkAndCreateIdempotencyRecord(
+  admin: any,
+  idempotencyKey: string,
+  providerEventId: string,
+  calendarId: string,
+  providerId: string,
+  allowInProgressRetry = false,
+) {
   const idempotencyRef = admin.firestore().collection('calendarIdempotencyKeys').doc(idempotencyKey)
   
   return await admin.firestore().runTransaction(async (transaction: any) => {
@@ -81,7 +101,9 @@ async function checkAndCreateIdempotencyRecord(admin: any, idempotencyKey: strin
         return {existing: true, providerEventId: data.providerEventId, calendarId: data.calendarId}
       }
       if (data.status === 'in_progress') {
-        // Another request is in progress
+        // Google Calendar receives a deterministic event ID, so retrying the
+        // insert is safe and can recover an event created before a timeout.
+        if (allowInProgressRetry) return {existing: false}
         throw new Error('idempotency_in_progress')
       }
     }
@@ -127,39 +149,22 @@ async function createGoogleCalendarEvent(admin: any, record: any, input: {
   interviewId: string
   idempotencyKey: string
 }) {
-  const eventBody: any = {
-    summary: input.summary,
-    description: input.description,
-    location: input.location,
-    start: {dateTime: input.start, timeZone: input.timeZone},
-    end: {dateTime: input.end, timeZone: input.timeZone},
-    attendees: input.attendees.map(a => ({
-      email: a.email,
-      displayName: a.displayName,
-      responseStatus: 'needsAction',
-    })),
-    reminders: {useDefault: true},
+  if (!validCalendarEventWindow(input.start, input.end)) {
+    throw new ApplicationError(400, 'The interview end time must be after its start time.')
   }
-
-  if (input.conferenceData) {
-    eventBody.conferenceData = {
-      createRequest: {
-        requestId: input.idempotencyKey,
-        conferenceSolutionKey: {type: 'hangoutsMeet'},
-      },
-    }
-  }
-
-  let url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(input.calendarId)}/events`
-  if (input.conferenceData) url += '?conferenceDataVersion=1'
-  url += `&idempotencyKey=${encodeURIComponent(input.idempotencyKey)}`
-
-  const response = await providerFetch(admin, record, {
-    url,
+  const request = buildGoogleCalendarCreateRequest(input)
+  let response = await providerFetch(admin, record, {
+    url: request.url,
     method: 'POST',
-    body: eventBody,
+    body: request.body,
   })
-  const payload: any = await response.json().catch(() => ({}))
+  let payload: any = await response.json().catch(() => ({}))
+  if (response.status === 409) {
+    response = await providerFetch(admin, record, {
+      url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.idempotencyKey)}`,
+    })
+    payload = await response.json().catch(() => ({}))
+  }
   if (!response.ok) throw new Error(`calendar_create_${response.status}`)
 
   return {
@@ -193,13 +198,18 @@ async function updateGoogleCalendarEvent(admin: any, record: any, input: {
     eventBody.attendees = input.attendees.map(a => ({
       email: a.email,
       displayName: a.displayName,
-      responseStatus: 'needsAction',
     }))
+  }
+  if (Boolean(input.start) !== Boolean(input.end)) {
+    throw new ApplicationError(400, 'Provide both interview start and end times when changing the schedule.')
+  }
+  if (input.start && input.end && !validCalendarEventWindow(input.start, input.end)) {
+    throw new ApplicationError(400, 'The interview end time must be after its start time.')
   }
 
   const response = await providerFetch(admin, record, {
     url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}?sendUpdates=${encodeURIComponent(input.sendUpdates)}`,
-    method: 'PUT',
+    method: 'PATCH',
     body: eventBody,
   })
   const payload: any = await response.json().catch(() => ({}))
@@ -208,6 +218,7 @@ async function updateGoogleCalendarEvent(admin: any, record: any, input: {
   return {
     eventId: payload.id,
     htmlLink: payload.htmlLink,
+    hangoutLink: payload.hangoutLink || payload.conferenceData?.entryPoints?.find((e: any) => e.entryPointType === 'video')?.uri || '',
     start: payload.start,
     end: payload.end,
   }
@@ -222,7 +233,7 @@ async function deleteGoogleCalendarEvent(admin: any, record: any, input: {
     url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}?sendUpdates=${encodeURIComponent(input.sendUpdates)}`,
     method: 'DELETE',
   })
-  if (response.status !== 204 && response.status !== 200) {
+  if (response.status !== 204 && response.status !== 200 && response.status !== 404) {
     const payload: any = await response.json().catch(() => ({}))
     throw new Error(`calendar_delete_${response.status}`)
   }
@@ -328,7 +339,7 @@ async function deleteO365CalendarEvent(admin: any, record: any, input: {
     url: `https://graph.microsoft.com/v1.0/me/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`,
     method: 'DELETE',
   })
-  if (response.status !== 204 && response.status !== 200) {
+  if (response.status !== 204 && response.status !== 200 && response.status !== 404) {
     const payload: any = await response.json().catch(() => ({}))
     throw new Error(`graph_delete_event_${response.status}`)
   }
@@ -384,6 +395,11 @@ export const handler: Handler = async (event) => {
     if (!applicationId || !interviewId) {
       throw new ApplicationError(400, 'Application ID and Interview ID are required.')
     }
+    const applicationRef = admin.firestore().doc(`applications/${applicationId}`)
+    const applicationSnapshot = await applicationRef.get()
+    if (!applicationSnapshot.exists || applicationSnapshot.data()?.recruiterId !== companyId) {
+      throw new ApplicationError(404, 'The application could not be found for this recruiter.')
+    }
 
     const idempotencyKey = generateIdempotencyKey(companyId, applicationId, interviewId, providerId, action)
 
@@ -392,9 +408,51 @@ export const handler: Handler = async (event) => {
 
       if (action === 'create-event') {
         // Check idempotency first
-        const idempotencyCheck = await checkAndCreateIdempotencyRecord(admin, idempotencyKey, '', body.calendarId || 'primary', 'google-calendar')
+        const idempotencyCheck = await checkAndCreateIdempotencyRecord(
+          admin,
+          idempotencyKey,
+          '',
+          body.calendarId || 'primary',
+          'google-calendar',
+          true,
+        )
         if (idempotencyCheck.existing) {
-          return json(200, origin, {eventId: idempotencyCheck.providerEventId, htmlLink: '', hangoutLink: '', start: '', end: '', idempotent: true})
+          const existingResponse = await providerFetch(admin, record, {
+            url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(idempotencyCheck.calendarId || 'primary')}/events/${encodeURIComponent(idempotencyCheck.providerEventId)}`,
+          })
+          const existingEvent: any = await existingResponse.json().catch(() => ({}))
+          if (existingResponse.ok) {
+            await applicationRef.set({
+              interviewSchedule: {
+                interviewId,
+                providerEventId: existingEvent.id,
+                providerCalendarId: idempotencyCheck.calendarId || 'primary',
+                providerId: 'google-calendar',
+                hangoutLink: existingEvent.hangoutLink || existingEvent.conferenceData?.entryPoints?.find((e: any) => e.entryPointType === 'video')?.uri || '',
+                htmlLink: existingEvent.htmlLink || '',
+              },
+            }, {merge: true})
+            return json(200, origin, {
+              eventId: existingEvent.id,
+              htmlLink: existingEvent.htmlLink || '',
+              hangoutLink: existingEvent.hangoutLink || existingEvent.conferenceData?.entryPoints?.find((e: any) => e.entryPointType === 'video')?.uri || '',
+              start: existingEvent.start || '',
+              end: existingEvent.end || '',
+              idempotent: true,
+            })
+          }
+          if (existingResponse.status !== 404 && existingResponse.status !== 410) {
+            throw new Error(`calendar_get_existing_${existingResponse.status}_${safeProviderError(existingEvent.error)}`)
+          }
+          await admin.firestore().collection('calendarIdempotencyKeys').doc(idempotencyKey).delete()
+          await checkAndCreateIdempotencyRecord(
+            admin,
+            idempotencyKey,
+            '',
+            body.calendarId || 'primary',
+            'google-calendar',
+            true,
+          )
         }
 
         const result = await createGoogleCalendarEvent(admin, record, {
@@ -405,7 +463,7 @@ export const handler: Handler = async (event) => {
           start: cleanText(body.start, 80),
           end: cleanText(body.end, 80),
           timeZone: cleanText(body.timeZone || 'Africa/Johannesburg', 80),
-          attendees: Array.isArray(body.attendees) ? body.attendees.slice(0, 50) : [],
+          attendees: normalizeGoogleAttendees(body.attendees),
           conferenceData: body.conferenceData === true,
           applicationId,
           interviewId,
@@ -417,6 +475,7 @@ export const handler: Handler = async (event) => {
 
         await admin.firestore().doc(`applications/${applicationId}`).set({
           interviewSchedule: {
+            interviewId,
             providerEventId: result.eventId,
             providerCalendarId: body.calendarId || 'primary',
             providerId: 'google-calendar',
@@ -441,9 +500,20 @@ export const handler: Handler = async (event) => {
           start: body.start ? cleanText(body.start, 80) : undefined,
           end: body.end ? cleanText(body.end, 80) : undefined,
           timeZone: cleanText(body.timeZone || 'Africa/Johannesburg', 80),
-          attendees: Array.isArray(body.attendees) ? body.attendees.slice(0, 50) : undefined,
+          attendees: body.attendees === undefined ? undefined : normalizeGoogleAttendees(body.attendees),
           sendUpdates: cleanText(body.sendUpdates || 'all', 20),
         })
+
+        await applicationRef.set({
+          interviewSchedule: {
+            interviewId,
+            providerEventId: result.eventId,
+            providerCalendarId: cleanText(body.calendarId || 'primary', 180),
+            providerId: 'google-calendar',
+            hangoutLink: result.hangoutLink || '',
+            htmlLink: result.htmlLink || '',
+          },
+        }, {merge: true})
 
         return json(200, origin, result)
       }
@@ -458,15 +528,25 @@ export const handler: Handler = async (event) => {
           sendUpdates: cleanText(body.sendUpdates || 'all', 20),
         })
 
-        await admin.firestore().doc(`applications/${applicationId}`).set({
-          interviewSchedule: {
-            providerEventId: null,
-            providerCalendarId: null,
-            providerId: null,
-            hangoutLink: null,
-            htmlLink: null,
-          },
-        }, {merge: true})
+        await admin.firestore().runTransaction(async (transaction: any) => {
+          const snapshot = await transaction.get(applicationRef)
+          const current = snapshot.data()?.interviewSchedule || {}
+          if (current.providerEventId === eventId && current.providerId === 'google-calendar') {
+            transaction.set(applicationRef, {
+              interviewSchedule: {
+                interviewId: null,
+                providerEventId: null,
+                providerCalendarId: null,
+                providerId: null,
+                hangoutLink: null,
+                htmlLink: null,
+              },
+            }, {merge: true})
+          }
+        })
+        await admin.firestore().collection('calendarIdempotencyKeys').doc(
+          generateIdempotencyKey(companyId, applicationId, interviewId, 'google-calendar', 'create-event'),
+        ).delete()
 
         return json(200, origin, result)
       }
@@ -502,6 +582,7 @@ export const handler: Handler = async (event) => {
 
         await admin.firestore().doc(`applications/${applicationId}`).set({
           interviewSchedule: {
+            interviewId,
             providerEventId: result.eventId,
             providerCalendarId: body.calendarId || 'primary',
             providerId: 'office-365-calendar',
@@ -530,6 +611,16 @@ export const handler: Handler = async (event) => {
           sendUpdates: cleanText(body.sendUpdates || 'all', 20),
         })
 
+        await applicationRef.set({
+          interviewSchedule: {
+            interviewId,
+            providerEventId: result.eventId,
+            providerCalendarId: cleanText(body.calendarId || 'primary', 180),
+            providerId: 'office-365-calendar',
+            webLink: result.webLink || '',
+          },
+        }, {merge: true})
+
         return json(200, origin, result)
       }
 
@@ -542,15 +633,25 @@ export const handler: Handler = async (event) => {
           eventId,
         })
 
-        await admin.firestore().doc(`applications/${applicationId}`).set({
-          interviewSchedule: {
-            providerEventId: null,
-            providerCalendarId: null,
-            providerId: null,
-            onlineMeetingJoinUrl: null,
-            webLink: null,
-          },
-        }, {merge: true})
+        await admin.firestore().runTransaction(async (transaction: any) => {
+          const snapshot = await transaction.get(applicationRef)
+          const current = snapshot.data()?.interviewSchedule || {}
+          if (current.providerEventId === eventId && current.providerId === 'office-365-calendar') {
+            transaction.set(applicationRef, {
+              interviewSchedule: {
+                interviewId: null,
+                providerEventId: null,
+                providerCalendarId: null,
+                providerId: null,
+                onlineMeetingJoinUrl: null,
+                webLink: null,
+              },
+            }, {merge: true})
+          }
+        })
+        await admin.firestore().collection('calendarIdempotencyKeys').doc(
+          generateIdempotencyKey(companyId, applicationId, interviewId, 'office-365-calendar', 'create-event'),
+        ).delete()
 
         return json(200, origin, result)
       }

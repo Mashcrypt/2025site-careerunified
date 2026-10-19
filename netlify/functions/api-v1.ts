@@ -2,6 +2,7 @@ import type {Handler, HandlerEvent} from '@netlify/functions'
 import crypto from 'crypto'
 import {invoiceCsv, listApiInvoices} from './_apiBilling'
 import {getAdmin} from './_firebaseAdmin'
+import {normalizeSapJobBatch, sapJobDocumentId} from './_sapSuccessFactors'
 import {getActiveBursaries, getActiveJobs, getBursaryBySlug, getJobBySlug} from '../lib/sanity'
 import {
   ApiClient,
@@ -174,7 +175,9 @@ async function listJobs(event: HandlerEvent, id: string) {
 
   const [sanityJobs, partnerJobs] = await Promise.all([getActiveJobs(300), recruiterJobs()])
   let jobs = [
-    ...sanityJobs.map((job: Record<string, any>) => canonicalJobFromSanity(job, SITE_URL)),
+    ...sanityJobs
+      .filter((job): job is NonNullable<typeof job> => Boolean(job))
+      .map((job: Record<string, any>) => canonicalJobFromSanity(job, SITE_URL)),
     ...partnerJobs,
   ]
   if (query) jobs = jobs.filter((job) => searchableJob(job).includes(query))
@@ -238,7 +241,9 @@ async function listBursaries(event: HandlerEvent, id: string) {
   const limit = parseLimit(event.queryStringParameters?.limit)
   const offset = decodeCursor(event.queryStringParameters?.cursor)
   const source = await getActiveBursaries(300)
-  let bursaries = source.map((item: Record<string, any>) => canonicalBursary(item, SITE_URL))
+  let bursaries: ReturnType<typeof canonicalBursary>[] = source.map((item: Record<string, any>) =>
+    canonicalBursary(item, SITE_URL),
+  )
   if (query) {
     bursaries = bursaries.filter((item) =>
       [item.name, item.provider, ...item.faculties]
@@ -428,7 +433,7 @@ async function createPartnerJob(event: HandlerEvent, id: string, client: ApiClie
   if (client.environment === 'test') {
     responseJob.source = 'career_unified_sandbox'
     responseJob.application = {...responseJob.application, url: null}
-    responseJob.links = {...responseJob.links, web: null}
+    responseJob.links = {...responseJob.links, web: null as any}
   }
   return success(201, id, responseJob, {
     meta: {
@@ -437,6 +442,190 @@ async function createPartnerJob(event: HandlerEvent, id: string, client: ApiClie
       environment: client.environment,
     },
   })
+}
+
+async function syncSapSuccessFactorsJobs(event: HandlerEvent, id: string, client: ApiClient) {
+  requireScope(client, 'jobs:write')
+  const body = parseJsonBody(event, 500_000)
+  const normalized = normalizeSapJobBatch(body)
+
+  const admin = getAdmin()
+  const db = admin.firestore()
+  const collections = apiDataCollections(client.environment)
+  const {snapshot: recruiterSnapshot, companyProfile} = await recruiterContext(client)
+  const ready = normalized.map((entry: any) => ({
+    ...entry,
+    job: entry.state === 'active' ? validatePartnerJob(entry.source, companyProfile) : null,
+    docId: sapJobDocumentId(client.id, entry.externalJobId),
+  }))
+  const jobRefs = ready.map((entry: any) => db.collection(collections.jobs).doc(entry.docId))
+  const now = new Date()
+  const outcomes: any[] = await db.runTransaction(async (transaction: any) => {
+    // Read all requisitions and the recruiter before making any writes. This makes
+    // each SAP batch atomic and prevents a later invalid/conflicting row from
+    // leaving only part of the feed applied.
+    const snapshots: any[] = []
+    for (const ref of jobRefs) snapshots.push(await transaction.get(ref))
+    const recruiterLive = await transaction.get(recruiterSnapshot.ref)
+    if (!recruiterLive.exists) {
+      throw new ApiError(403, 'recruiter_not_found', 'The recruiter account was not found.')
+    }
+    const recruiter = recruiterLive.data() || {}
+    const hasPlanAccess = client.environment === 'test' || hasActiveRecruiterAccess(recruiter, now)
+    const currentCredits = Math.max(0, Number(recruiter.singleJobCredits || 0))
+    const prepared = ready.map((entry: any, index: number) => {
+      const snapshot = snapshots[index]
+      const existing = snapshot.exists ? snapshot.data() || {} : null
+      const ref = jobRefs[index]
+      if (existing && existing.createdByApiClientId !== client.id) {
+        throw new ApiError(
+          409,
+          'sap_job_reference_conflict',
+          'A SAP job reference is already in use.',
+        )
+      }
+      if (entry.state === 'closed') {
+        return {
+          entry,
+          ref,
+          existing,
+          state: !existing ? 'not_imported' : existing.status === 'closed' ? 'unchanged' : 'closed',
+        }
+      }
+      const slug =
+        existing?.slug ||
+        `${slugify(`${entry.job.title}-${entry.job.company}-${entry.job.city}`)}--${ref.id.slice(-6)}`
+      const jobData: Record<string, unknown> = {
+        ...entry.job,
+        slug,
+        recruiterId: client.recruiterId,
+        organizationId: client.organizationId,
+        source: client.environment === 'test' ? 'partner_api_sandbox' : 'sap_successfactors',
+        apiEnvironment: client.environment,
+        createdByApiClientId: client.id,
+        externalJobId: entry.externalJobId,
+        externalJobSystem: 'sap_successfactors',
+        applicationsCount: Number(existing?.applicationsCount || 0),
+      }
+      const changed =
+        !existing ||
+        existing.status === 'closed' ||
+        Object.entries(entry.job).some(
+          ([key, value]: [string, unknown]) => stableJson(existing[key]) !== stableJson(value),
+        )
+      return {
+        entry,
+        ref,
+        existing,
+        slug,
+        jobData,
+        state: !existing ? 'created' : changed ? 'updated' : 'unchanged',
+      }
+    })
+    const creditsNeeded =
+      client.environment === 'live' && !hasPlanAccess
+        ? prepared.filter((item: any) => item.entry.state === 'active' && !item.existing).length
+        : 0
+    if (creditsNeeded > currentCredits) {
+      throw new ApiError(
+        402,
+        'publishing_access_required',
+        'An active recruiter package, API publishing agreement, or sufficient single-job credits are required.',
+      )
+    }
+
+    for (const item of prepared) {
+      if (item.state === 'not_imported' || item.state === 'unchanged') continue
+      if (item.entry.state === 'closed') {
+        transaction.set(
+          item.ref,
+          {
+            status: 'closed',
+            closedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          {merge: true},
+        )
+        continue
+      }
+      const data: Record<string, unknown> = {
+        ...item.jobData,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        ...(item.existing?.status === 'closed'
+          ? {closedAt: admin.firestore.FieldValue.delete()}
+          : {}),
+        ...(!item.existing ? {createdAt: admin.firestore.FieldValue.serverTimestamp()} : {}),
+      }
+      if (creditsNeeded && !item.existing) {
+        const sponsoredUntil = new Date(now)
+        sponsoredUntil.setDate(sponsoredUntil.getDate() + 30)
+        Object.assign(data, {
+          listingTier: 'sponsored',
+          badge: 'Sponsored',
+          sponsoredUntil: admin.firestore.Timestamp.fromDate(sponsoredUntil),
+          singleJobOffer: true,
+        })
+      }
+      transaction.set(item.ref, data, {merge: true})
+    }
+    if (creditsNeeded) {
+      transaction.update(recruiterSnapshot.ref, {
+        singleJobCredits: admin.firestore.FieldValue.increment(-creditsNeeded),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
+    }
+    return prepared
+  })
+
+  const results = await Promise.all(
+    outcomes.map(async (item: any) => {
+      const {entry, ref, state, slug, existing} = item
+      if (state === 'not_imported' || state === 'unchanged') {
+        return {
+          externalJobId: entry.externalJobId,
+          ...(existing ? {jobId: ref.id} : {}),
+          status: state,
+        }
+      }
+      const closed = entry.state === 'closed'
+      const eventName = closed
+        ? 'job.closed'
+        : state === 'created'
+          ? 'job.published'
+          : 'job.updated'
+      await Promise.all([
+        writeAuditLog({
+          requestId: id,
+          client,
+          action: closed ? 'job.close' : state === 'created' ? 'job.create' : 'job.update',
+          resourceType: 'job',
+          resourceId: ref.id,
+        }),
+        enqueuePartnerWebhook({
+          recruiterId: client.recruiterId,
+          environment: client.environment,
+          clientId: client.id,
+          event: eventName,
+          data: {
+            jobId: ref.id,
+            slug: closed ? existing?.slug || null : slug,
+            status: closed ? 'closed' : 'active',
+          },
+        }),
+      ])
+      if (closed) return {externalJobId: entry.externalJobId, jobId: ref.id, status: 'closed'}
+      const updated = await ref.get()
+      const responseJob = canonicalJobFromFirestore(ref.id, updated.data() || {}, SITE_URL)
+      if (client.environment === 'test') {
+        responseJob.source = 'career_unified_sandbox'
+        responseJob.application = {...responseJob.application, url: null}
+        responseJob.links = {...responseJob.links, web: null as any}
+      }
+      return {externalJobId: entry.externalJobId, jobId: ref.id, status: state, job: responseJob}
+    }),
+  )
+
+  return success(200, id, results, {meta: {count: results.length, environment: client.environment}})
 }
 
 async function ownedJob(client: ApiClient, jobId: string) {
@@ -1486,6 +1675,15 @@ async function dispatch(event: HandlerEvent, id: string, parts: string[]) {
   }
   if (parts[0] === 'jobs' && parts.length === 1 && event.httpMethod === 'GET')
     return listJobs(event, id)
+  if (
+    parts[0] === 'sap' &&
+    parts[1] === 'jobs' &&
+    parts.length === 2 &&
+    event.httpMethod === 'POST'
+  ) {
+    const client = await authenticateApiClient(event, id)
+    return syncSapSuccessFactorsJobs(event, id, client)
+  }
   if (parts[0] === 'jobs' && parts.length === 2 && event.httpMethod === 'GET')
     return getJob(event, id, parts[1])
   if (parts[0] === 'bursaries' && parts.length === 1 && event.httpMethod === 'GET')

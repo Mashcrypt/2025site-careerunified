@@ -53,6 +53,12 @@ X-API-Key: cu_live_...
 Authorization: Bearer cu_live_...
 ```
 
+SAP SuccessFactors Integration Center REST destinations can also use Basic authentication. Split
+the API key at its final period: set the username to `cu_live_<client-id>` (or `cu_test_<client-id>`)
+and the password to `<secret>`. Career Unified combines those two fields server-side and applies
+the same client, scope, rate limit, and quota checks as the API key headers. Use HTTPS and a
+dedicated API client with only the `jobs:write` scope.
+
 Every client is restricted to its linked recruiter organisation and explicit scopes:
 
 | Scope                | Access                                                          |
@@ -194,6 +200,51 @@ Idempotency-Key: ats-job-48392-create
 
 Supported application methods are `direct`, `external`, and `email`. External applications require
 an HTTPS `applyLink`.
+
+## SAP SuccessFactors job sync
+
+Use `POST /api/v1/sap/jobs` as the REST destination for a SuccessFactors Integration Center
+outbound integration. The endpoint upserts each record using its stable SuccessFactors requisition
+ID, so scheduled runs update the existing Career Unified vacancy instead of making duplicates.
+Map the SuccessFactors posting state to exactly `active` or `closed`; only approved and published
+roles should be mapped to `active`. A `closed` record closes a previously imported role. A close
+for a requisition never imported is safely ignored.
+
+Send either one record or a `jobs` array, with fields mapped to the Partner API job names:
+
+```json
+{
+  "jobs": [
+    {
+      "externalJobId": "SAP-REQ-1042",
+      "status": "active",
+      "title": "Graduate Data Analyst",
+      "category": "Graduate Programme",
+      "employmentType": "Full-time",
+      "experienceLevel": "Graduate",
+      "description": "Role description and responsibilities.",
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "closingDate": "2026-12-31",
+      "applicationMethod": "external",
+      "applyLink": "https://employer.example/jobs/SAP-REQ-1042"
+    }
+  ]
+}
+```
+
+`externalJobId` must be the stable SAP requisition identifier. Required job fields are `title`,
+`category`, `employmentType`, `description`, and `city`. The linked Career Unified recruiter profile
+supplies the company name, logo, website, and social links. External application links must use
+HTTPS. The API client must have `jobs:write`; normal recruiter publishing access, single-job credits,
+rate limits, and API quotas still apply. Test API clients write only to the isolated sandbox and do
+not publish vacancies.
+
+This first connection publishes and maintains vacancies only. It does not export Career Unified
+applicant records into SuccessFactors. Configure Integration Center to send the selected job fields
+to the endpoint over HTTPS, and ensure its scheduled output includes closed requisitions so roles
+are removed from the public listings when they close. A live tenant is required to confirm the exact
+SuccessFactors field mapping and schedule.
 
 ## Applications
 

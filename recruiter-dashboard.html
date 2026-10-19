@@ -6524,6 +6524,7 @@
         <p class="recruiter-plan-summary">For agencies and high-volume hiring teams.</p>
         <ul class="recruiter-plan-features">
           <li><i class='bx bx-check-circle'></i><span>Everything in Growth</span></li>
+          <li><i class='bx bx-check-circle'></i><span>Unlimited integrations across supported providers</span></li>
           <li><i class='bx bx-check-circle'></i><span>Unlimited talent database CV unlocks</span></li>
           <li><i class='bx bx-check-circle'></i><span>Multi-vacancy applicant workspace</span></li>
           <li><i class='bx bx-check-circle'></i><span>Screening, notes, pipeline, and analytics</span></li>
@@ -11174,8 +11175,14 @@ async function saveApplicationInterview(form) {
     showToast('warn', 'Choose a date and time', 'Enter the confirmed interview time before saving.', 3200);
     return;
   }
+  const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+  const previousInterviewSchedule = {...(application?.interviewSchedule || {})};
+  const interviewId = dashboardText(previousInterviewSchedule.interviewId)
+    || globalThis.crypto?.randomUUID?.()
+    || `${applicationId}-${Date.now()}`;
   const interview = {
     status: 'scheduled',
+    interviewId,
     startsAt: startsAt.toISOString(),
     durationMinutes: Number(data.get('durationMinutes') || 30),
     mode: data.get('mode'),
@@ -11184,15 +11191,47 @@ async function saveApplicationInterview(form) {
     notes: data.get('notes'),
   };
   const calendarProvider = data.get('calendarProvider') || '';
+  const previousProviderId = dashboardText(previousInterviewSchedule.providerId);
+  const previousProviderEventId = dashboardText(previousInterviewSchedule.providerEventId);
+  const interviewWithPreviousCalendarEvent = previousProviderId && previousProviderEventId
+    ? {
+        ...interview,
+        interviewId: dashboardText(previousInterviewSchedule.interviewId, applicationId),
+        providerEventId: previousProviderEventId,
+        providerCalendarId: dashboardText(previousInterviewSchedule.providerCalendarId, 'primary'),
+        providerId: previousProviderId,
+        hangoutLink: dashboardText(previousInterviewSchedule.hangoutLink),
+        webLink: dashboardText(previousInterviewSchedule.webLink || previousInterviewSchedule.htmlLink),
+        onlineMeetingJoinUrl: dashboardText(previousInterviewSchedule.onlineMeetingJoinUrl),
+      }
+    : interview;
   try {
-    await postApplicationUpdate(applicationId, {status: 'interview', interview});
-    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
-    if (application) Object.assign(application, {status: 'interview', interviewSchedule: interview});
+    await postApplicationUpdate(applicationId, {status: 'interview', interview: interviewWithPreviousCalendarEvent});
+    if (application) Object.assign(application, {status: 'interview', interviewSchedule: interviewWithPreviousCalendarEvent});
     
-    // Create external calendar event if a calendar provider is selected
+    // Keep the provider event in sync when an interview is edited or its calendar changes.
     let calendarEventCreated = false;
     let calendarResult = {};
-    if (calendarProvider && (calendarProvider === 'google-calendar' || calendarProvider === 'office-365-calendar')) {
+    const supportedCalendarProviders = ['google-calendar', 'office-365-calendar'];
+    const previousProvider = supportedCalendarProviders.includes(previousInterviewSchedule.providerId)
+      ? previousInterviewSchedule.providerId
+      : '';
+    const previousEventId = dashboardText(previousInterviewSchedule.providerEventId);
+    const shouldUpdateCalendarEvent = Boolean(
+      calendarProvider && previousEventId && previousProvider === calendarProvider
+    );
+    const shouldCreateCalendarEvent = Boolean(
+      calendarProvider && supportedCalendarProviders.includes(calendarProvider) && !shouldUpdateCalendarEvent
+    );
+    const calendarRequestInterviewId = shouldUpdateCalendarEvent
+      ? dashboardText(previousInterviewSchedule.interviewId, applicationId)
+      : interviewId;
+    const targetCalendarId = shouldUpdateCalendarEvent
+      ? dashboardText(previousInterviewSchedule.providerCalendarId, 'primary')
+      : 'primary';
+    let calendarCleanupFailed = false;
+    let calendarCleanupMessage = '';
+    if (shouldUpdateCalendarEvent || shouldCreateCalendarEvent) {
       try {
         const token = await currentRecruiter.getIdToken();
         const candidate = application?.candidateSnapshot || {};
@@ -11211,10 +11250,12 @@ async function saveApplicationInterview(form) {
             'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
-            action: 'create-event',
+            action: shouldUpdateCalendarEvent ? 'update-event' : 'create-event',
             providerId: calendarProvider,
             applicationId,
-            interviewId: applicationId,
+            interviewId: calendarRequestInterviewId,
+            calendarId: targetCalendarId,
+            ...(shouldUpdateCalendarEvent ? {eventId: previousEventId} : {}),
             summary: `Interview: ${role} with ${candidateName}`,
             description: `Interview for ${role} at ${company}.\n\n${interview.notes || ''}`,
             location: interview.locationOrLink || '',
@@ -11222,30 +11263,48 @@ async function saveApplicationInterview(form) {
             end: new Date(new Date(interview.startsAt).getTime() + interview.durationMinutes * 60000).toISOString(),
             timeZone: interview.timezone,
             attendees,
-            conferenceData: ['teams', 'zoom', 'google_meet'].includes(interview.mode),
-            isOnlineMeeting: ['teams', 'zoom', 'google_meet'].includes(interview.mode),
+            conferenceData: calendarProvider === 'google-calendar' && interview.mode === 'google_meet',
+            isOnlineMeeting: calendarProvider === 'office-365-calendar' && interview.mode === 'teams',
           }),
         });
         calendarResult = await calendarResponse.json().catch(() => ({}));
         if (calendarResponse.ok && calendarResult.eventId) {
           calendarEventCreated = true;
+          // If the recruiter switched calendars, remove the old event after the new one exists.
+          if (shouldCreateCalendarEvent && previousEventId && previousProvider) {
+            try {
+              const deleteResponse = await fetch('/.netlify/functions/calendar-interview', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  action: 'delete-event',
+                  providerId: previousProvider,
+                  applicationId,
+                  interviewId: dashboardText(previousInterviewSchedule.interviewId, applicationId),
+                  eventId: previousEventId,
+                  calendarId: dashboardText(previousInterviewSchedule.providerCalendarId, 'primary'),
+                }),
+              });
+              if (!deleteResponse.ok) {
+                calendarCleanupFailed = true;
+                calendarCleanupMessage = 'The new calendar event was saved, but the previous event could not be removed. Please delete the old event from its calendar.';
+                console.warn('Previous calendar event could not be removed after switching providers.');
+              }
+            } catch (deleteError) {
+              calendarCleanupFailed = true;
+              calendarCleanupMessage = 'The new calendar event was saved, but the previous event could not be removed. Please delete the old event from its calendar.';
+              console.warn('Previous calendar event could not be removed after switching providers:', deleteError);
+            }
+          }
           // Save calendar event metadata on the application
-          await postApplicationUpdate(applicationId, {
-            interviewSchedule: {
-              ...interview,
-              providerEventId: calendarResult.eventId,
-              providerCalendarId: calendarProvider === 'google-calendar' ? 'primary' : 'primary',
-              providerId: calendarProvider,
-              hangoutLink: calendarResult.hangoutLink || '',
-              webLink: calendarResult.webLink || calendarResult.htmlLink || '',
-              onlineMeetingJoinUrl: calendarResult.onlineMeeting?.joinUrl || '',
-            },
-          });
           if (application) {
             application.interviewSchedule = {
               ...interview,
               providerEventId: calendarResult.eventId,
-              providerCalendarId: calendarProvider === 'google-calendar' ? 'primary' : 'primary',
+              providerCalendarId: targetCalendarId,
               providerId: calendarProvider,
               hangoutLink: calendarResult.hangoutLink || '',
               webLink: calendarResult.webLink || calendarResult.htmlLink || '',
@@ -11256,6 +11315,37 @@ async function saveApplicationInterview(form) {
       } catch (calendarError) {
         console.error('Calendar event creation error:', calendarError);
         showToast('warn', 'Calendar event not created', 'The interview was saved but the external calendar event could not be created.', 4200);
+      }
+    } else if (!calendarProvider && previousEventId && previousProvider) {
+      try {
+        const token = await currentRecruiter.getIdToken();
+        const deleteResponse = await fetch('/.netlify/functions/calendar-interview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            action: 'delete-event',
+            providerId: previousProvider,
+            applicationId,
+            interviewId: dashboardText(previousInterviewSchedule.interviewId, applicationId),
+            eventId: previousEventId,
+            calendarId: dashboardText(previousInterviewSchedule.providerCalendarId, 'primary'),
+          }),
+        });
+        if (!deleteResponse.ok) {
+          calendarCleanupFailed = true;
+          calendarCleanupMessage = 'The interview details were saved, but the old calendar event could not be removed.';
+          showToast('warn', 'Calendar event still exists', 'The interview details were saved, but the old calendar event could not be removed.', 4200);
+        } else if (application) {
+          application.interviewSchedule = {...interview, interviewId: ''};
+        }
+      } catch (calendarError) {
+        calendarCleanupFailed = true;
+        calendarCleanupMessage = 'The interview details were saved, but the old calendar event could not be removed.';
+        console.warn('Calendar event removal error:', calendarError);
+        showToast('warn', 'Calendar event still exists', 'The interview details were saved, but the old calendar event could not be removed.', 4200);
       }
     }
     
@@ -11291,11 +11381,13 @@ async function saveApplicationInterview(form) {
       }
     }
     showToast(
-      candidateNotified ? 'success' : 'warn',
+      calendarCleanupFailed ? 'warn' : candidateNotified ? 'success' : 'warn',
       'Interview saved',
-      candidateNotified
-        ? 'The candidate was emailed and can also see the details in their application profile.'
-        : 'The details are visible in the candidate profile, but the email could not be sent.',
+      calendarCleanupFailed
+        ? calendarCleanupMessage
+        : candidateNotified
+          ? 'The candidate was emailed and can also see the details in their application profile.'
+          : 'The details are visible in the candidate profile, but the email could not be sent.',
       4200
     );
     await openRecruiterApplication(applicationId);
@@ -11354,7 +11446,7 @@ async function cancelApplicationInterview(applicationId) {
     if (providerEventId && providerId && (providerId === 'google-calendar' || providerId === 'office-365-calendar')) {
       try {
         const token = await currentRecruiter.getIdToken();
-        await fetch('/.netlify/functions/calendar-interview', {
+        const response = await fetch('/.netlify/functions/calendar-interview', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -11364,15 +11456,20 @@ async function cancelApplicationInterview(applicationId) {
             action: 'delete-event',
             providerId,
             applicationId,
-            interviewId: applicationId,
+            interviewId: dashboardText(interview.interviewId, applicationId),
             eventId: providerEventId,
             calendarId: providerCalendarId || 'primary',
             sendUpdates: 'all',
           }),
         });
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({}));
+          throw new Error(result.error || 'The calendar event could not be removed.');
+        }
       } catch (calendarError) {
         console.error('Calendar event cancellation error:', calendarError);
-        showToast('warn', 'Calendar event not cancelled', 'The interview was cancelled but the external calendar event could not be removed.', 4200);
+        showToast('error', 'Interview not cancelled', 'The calendar event could not be removed, so the interview remains scheduled. Please try again.', 4200);
+        return;
       }
     }
     

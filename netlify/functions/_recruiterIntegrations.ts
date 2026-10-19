@@ -59,6 +59,7 @@ export const PROVIDER_CONFIG: Record<
     scopes: [
       'https://www.googleapis.com/auth/calendar.events',
       'https://www.googleapis.com/auth/calendar.freebusy',
+      'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
     ],
     capability: 'oauth',
   },
@@ -76,7 +77,7 @@ export const PROVIDER_CONFIG: Record<
   payspace: {category: 'hris', capability: 'configuration_required'},
   sage: {category: 'hris', capability: 'configuration_required'},
   oracle: {category: 'hris', capability: 'configuration_required'},
-  sap: {category: 'hris', capability: 'configuration_required'},
+  sap: {category: 'hris', capability: 'api_access_required'},
 }
 
 function encryptionKey() {

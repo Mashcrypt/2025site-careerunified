@@ -88,6 +88,7 @@ function cleanInterview(value: any) {
 
   return {
     status: "scheduled",
+    interviewId: cleanText(value.interviewId, 180),
     startsAt: startsAt.toISOString(),
     durationMinutes,
     mode: INTERVIEW_MODES.has(requestedMode) ? requestedMode : "other",
@@ -197,8 +198,27 @@ export const handler: Handler = async (event) => {
       };
     }
     if (interview && (isRecruiterOwner || isAdmin)) {
+      const priorInterview = application.interviewSchedule || {};
+      const retainedCalendarFields = Object.fromEntries(
+        [
+          "providerEventId",
+          "providerCalendarId",
+          "providerId",
+          "hangoutLink",
+          "htmlLink",
+          "onlineMeetingJoinUrl",
+        ]
+          .filter((field) => priorInterview[field])
+          .map((field) => [field, priorInterview[field]]),
+      );
       applicationUpdates.interviewSchedule = {
         ...interview,
+        ...((interview as any).interviewId
+          ? {}
+          : priorInterview.interviewId
+            ? {interviewId: priorInterview.interviewId}
+            : {}),
+        ...retainedCalendarFields,
         updatedAt: now,
         updatedBy: decoded.uid,
       };

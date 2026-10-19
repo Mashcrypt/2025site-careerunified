@@ -105,6 +105,10 @@
               <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
               Pagination
             </a>
+            <a href="#sap-sync" data-doc-link="sap-sync">
+              <i class="fa-solid fa-building" aria-hidden="true"></i>
+              SAP SuccessFactors job sync
+            </a>
             <a href="#webhooks" data-doc-link="webhooks">
               <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
               Webhooks
@@ -463,6 +467,82 @@ jobs = response.json()[<span class="token-string">"data"</span>]</code></pre>
   }
 }</code></pre>
               </div>
+            </aside>
+          </div>
+        </article>
+
+        <article
+          class="doc-page"
+          data-doc-page="sap-sync"
+          data-title="SAP SuccessFactors job sync"
+          data-description="Publish and update approved SuccessFactors vacancies in Career Unified."
+        >
+          <div class="doc-grid">
+            <div class="doc-copy">
+              <p class="eyebrow">ATS CONNECTIONS</p>
+              <h1>SAP SuccessFactors job sync</h1>
+              <p class="lead">
+                Send approved SuccessFactors requisitions to Career Unified from Integration Center.
+                Scheduled runs update existing listings by requisition ID and close listings when
+                the requisition is no longer open.
+              </p>
+              <section class="content-section" id="sap-sync-overview">
+                <h2>What this connection does</h2>
+                <p>
+                  This first version publishes, updates, and closes vacancies. It does not transfer
+                  applicant records into SuccessFactors. Applicants use the application method and
+                  link mapped from each requisition. Career Unified fills employer identity from
+                  the linked recruiter profile.
+                </p>
+                <p>
+                  A recruiter needs an approved Career Unified Partner API client with the
+                  <code>jobs:write</code> scope. Use a dedicated client for SAP, store its key only
+                  in SAP Integration Center, and use the sandbox key for initial validation.
+                </p>
+              </section>
+              <section class="content-section" id="sap-sync-setup">
+                <h2>Configure the SAP destination</h2>
+                <ol>
+                  <li>In SAP SuccessFactors, open Admin Center and then Integration Center.</li>
+                  <li>Create a scheduled outbound integration with a REST destination and JSON format. Select the job requisition or external posting entity and include approved, published, and closed roles.</li>
+                  <li>Set the REST URL to <code>https://careerunified.com/api/v1/sap/jobs</code> and the method to <code>POST</code>.</li>
+                  <li>Choose Basic authentication. Use <code>cu_test_&lt;client-id&gt;</code> as the username and the API secret as the password for sandbox runs. Use <code>cu_live_&lt;client-id&gt;</code> and its secret only after validating the feed.</li>
+                  <li>Map the source fields into the Career Unified names shown below. Map the SAP requisition ID to <code>externalJobId</code>, and map the approved/open posting state to <code>active</code> and closed states to <code>closed</code>.</li>
+                  <li>Set a schedule that fits your hiring workflow, then run the feed and review each response before enabling the production schedule.</li>
+                </ol>
+                <div class="callout callout-warning">
+                  <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                  <div><strong>Only map approved postings as active</strong><p>Do not send draft or unapproved requisitions with <code>status: active</code>. Configure the output to include closed roles so Career Unified can remove them from public listings.</p></div>
+                </div>
+              </section>
+              <section class="content-section" id="sap-sync-payload">
+                <h2>Field mapping</h2>
+                <p>Send one record or a batch under <code>jobs</code>. Required fields for active roles are title, category, employment type, description, and city.</p>
+                <div class="code-window compact"><div class="code-window-header"><span>Example JSON</span></div><pre><code>{
+  "jobs": [{
+    "externalJobId": "SAP-REQ-1042",
+    "status": "active",
+    "title": "Graduate Data Analyst",
+    "category": "Graduate Programme",
+    "employmentType": "Full-time",
+    "experienceLevel": "Graduate",
+    "description": "Role description and responsibilities.",
+    "city": "Johannesburg",
+    "country": "South Africa",
+    "closingDate": "2026-12-31",
+    "applicationMethod": "external",
+    "applyLink": "https://employer.example/jobs/SAP-REQ-1042"
+  }]
+}</code></pre></div>
+                <p>Send dates as <code>YYYY-MM-DD</code>. External application links must use HTTPS. A closed record needs its same <code>externalJobId</code> and <code>status: closed</code>; other job fields are not required for a close.</p>
+              </section>
+              <section class="content-section" id="sap-sync-readiness">
+                <h2>Before going live</h2>
+                <p>SuccessFactors field names and permissions vary by tenant. A SuccessFactors administrator and a test tenant are needed to confirm the source entity, publication status mapping, API permissions, and scheduled delivery. SAP test tenant validation has not been completed yet.</p>
+              </section>
+            </div>
+            <aside class="page-toc" aria-label="On this page">
+              <strong>On this page</strong><a href="#sap-sync-overview">What it does</a><a href="#sap-sync-setup">Setup</a><a href="#sap-sync-payload">Field mapping</a><a href="#sap-sync-readiness">Before going live</a>
             </aside>
           </div>
         </article>

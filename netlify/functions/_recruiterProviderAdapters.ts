@@ -24,6 +24,14 @@ const OPERATION_CATEGORIES: Record<ProviderOperation, string[]> = {
   sync_hris: ['hris'],
 }
 
+const IMPLEMENTED_OPERATIONS: Record<string, Set<ProviderOperation>> = {
+  'google-calendar': new Set([
+    'create_calendar_event',
+    'update_calendar_event',
+    'cancel_calendar_event',
+  ]),
+}
+
 export function assertProviderOperation(providerId: string, operation: ProviderOperation) {
   const normalizedProviderId = cleanText(providerId, 80).toLowerCase()
   const config = providerConfig(normalizedProviderId)
@@ -31,6 +39,7 @@ export function assertProviderOperation(providerId: string, operation: ProviderO
   if (!OPERATION_CATEGORIES[operation]?.includes(config.category)) {
     throw new ApplicationError(400, 'That operation is not supported by this provider.')
   }
+  if (IMPLEMENTED_OPERATIONS[normalizedProviderId]?.has(operation)) return
   if (config.capability !== 'oauth') {
     throw new ApplicationError(
       409,
@@ -43,7 +52,9 @@ export function assertProviderOperation(providerId: string, operation: ProviderO
 }
 
 export function providerOperationCapability(providerId: string, operation: ProviderOperation) {
-  const config = PROVIDER_CONFIG[cleanText(providerId, 80).toLowerCase()]
+  const normalizedProviderId = cleanText(providerId, 80).toLowerCase()
+  const config = PROVIDER_CONFIG[normalizedProviderId]
   if (!config || !OPERATION_CATEGORIES[operation]?.includes(config.category)) return 'unsupported'
+  if (IMPLEMENTED_OPERATIONS[normalizedProviderId]?.has(operation)) return 'available'
   return config.capability === 'oauth' ? 'adapter_pending' : config.capability
 }
