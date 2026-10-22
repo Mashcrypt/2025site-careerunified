@@ -1,6 +1,8 @@
 import type {Handler} from "@netlify/functions";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
+import {existsSync} from "node:fs";
+import path from "node:path";
 import {getAdmin} from "./_firebaseAdmin";
 import {checkRateLimit, clientIpFromHeaders} from "./_rateLimit";
 
@@ -158,11 +160,16 @@ export const handler: Handler = async event => {
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
     exportStage = "chromium-path";
-    // Let @sparticuz/chromium choose its writable temporary extraction path.
-    // Passing a guessed directory can make Netlify resolve the bundled binary
-    // to an unavailable path such as /var/bin.
+    // Resolve the compressed binaries from the installed package itself.
+    // In Netlify's function bundle, __dirname can resolve differently from the
+    // package's original layout, so chromium.executablePath() may guess /var/bin.
+    const chromiumModulePath = require.resolve("@sparticuz/chromium");
+    const chromiumBinPath = path.resolve(path.dirname(chromiumModulePath), "..", "bin");
+    if (!existsSync(path.join(chromiumBinPath, "chromium.br"))) {
+      throw new Error(`Chromium package assets are missing from ${chromiumBinPath}.`);
+    }
     chromium.setGraphicsMode = false;
-    const executablePath = await chromium.executablePath();
+    const executablePath = await chromium.executablePath(chromiumBinPath);
     if (!executablePath) throw new Error("Chromium executable path is unavailable.");
     exportStage = "chromium-launch";
     const browser = await puppeteer.launch({
