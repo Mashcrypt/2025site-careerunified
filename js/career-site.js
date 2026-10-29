@@ -310,7 +310,7 @@ function renderDetail(job) {
     const element = byId(id);
     if (element) element.textContent = value;
   });
-  renderFormattedText(byId("detailDescription"), isEditorialLayout ? job.description || job.overview : job.overview || job.description);
+  renderFormattedText(byId("detailDescription"), job.overview || job.description);
   renderDetailSection("detailResponsibilities", "responsibilitiesContent", job.responsibilities);
   renderDetailSection("detailRequirements", "requirementsContent", job.requirements);
   renderCareerVideoGallery(byId("detailMedia"), site.media?.showOnDetails === false ? [] : getCareerSiteVideoUrls());
@@ -617,7 +617,24 @@ function renderDetailSection(sectionId, contentId, value) {
   const section = byId(sectionId); const content = byId(contentId);
   const present = Boolean(text(value));
   section.hidden = !present;
-  if (present) renderFormattedText(content, value);
+  if (!present) return;
+
+  content.replaceChildren();
+  const lines = text(value).split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const items = lines.flatMap(line => {
+    const unmarked = line.replace(/^(?:[-*•]\s+|\d+[.)]\s+)/, "").trim();
+    if (lines.length !== 1 || /^[-*•]\s+|^\d+[.)]\s+/.test(line)) return [unmarked];
+    return (unmarked.match(/[^.!?]+(?:[.!?]+|$)/g) || [unmarked]).map(item => item.trim()).filter(Boolean);
+  });
+  if (!items.length) return;
+
+  const list = document.createElement("ul");
+  items.forEach(value => {
+    const item = document.createElement("li");
+    item.textContent = value;
+    list.append(item);
+  });
+  content.append(list);
 }
 
 async function loadCareerSite() {
@@ -665,8 +682,8 @@ async function loadCareerSite() {
   else if (detailBanner) detailBanner.style.removeProperty("--detail-banner-image");
   const openingSocialLinks = byId("companySocialLinksOpenings");
   renderCompanySocialLinks("companySocialLinksOpenings", site.media?.showOnOpenings !== false);
-  if (["wireless", "editorial"].includes(document.body.dataset.layout) && openingSocialLinks) {
-    const footer = document.querySelector("footer");
+  if (["bold", "wireless", "editorial"].includes(document.body.dataset.layout) && openingSocialLinks) {
+    const footer = document.querySelector("body > footer");
     const footerPowered = footer?.querySelector(".footer-powered");
     if (footer) footer.insertBefore(openingSocialLinks, footerPowered || null);
   }

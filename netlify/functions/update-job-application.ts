@@ -10,6 +10,7 @@ import {
   parseJsonBody,
 } from "./_applicationUtils";
 import {enqueuePartnerWebhook} from "./_partnerWebhooks";
+import {enqueueAutomatedApplicationEmail} from "./_automatedApplicationEmails";
 
 const RECRUITER_STATUSES = new Set([
   "viewed",
@@ -136,6 +137,7 @@ export const handler: Handler = async (event) => {
     const applicationSnap = await applicationRef.get();
     if (!applicationSnap.exists) throw new ApplicationError(404, "Application not found.");
     const application = applicationSnap.data() || {};
+    const statusChanged = !!requestedStatus && requestedStatus !== cleanText(application.status, 40).toLowerCase();
 
     const isAdmin = decoded.admin === true;
     const isRecruiterOwner = decoded.recruiter === true && application.recruiterId === (decoded.companyId || decoded.uid);
@@ -161,7 +163,7 @@ export const handler: Handler = async (event) => {
 
     const now = admin.firestore.Timestamp.now();
     const applicationUpdates: Record<string, any> = {};
-    if (requestedStatus) {
+    if (statusChanged) {
       Object.assign(applicationUpdates, {
         status: requestedStatus,
         statusHistory: admin.firestore.FieldValue.arrayUnion({
@@ -242,7 +244,7 @@ export const handler: Handler = async (event) => {
       );
     }
 
-    if (requestedStatus && (isRecruiterOwner || isAdmin)) {
+    if (statusChanged && (isRecruiterOwner || isAdmin)) {
       await enqueuePartnerWebhook({
         recruiterId: application.recruiterId,
         event: "application.stage_changed",
@@ -254,6 +256,18 @@ export const handler: Handler = async (event) => {
         },
       }).catch((error) => {
         console.error("APPLICATION_WEBHOOK_ENQUEUE_ERROR", error);
+      });
+      await enqueueAutomatedApplicationEmail(
+        admin,
+        application,
+        requestedStatus,
+        String(now.toMillis()),
+        applicationId,
+      ).catch((error) => {
+        console.error("AUTOMATED_APPLICATION_EMAIL_ENQUEUE_ERROR", {
+          applicationId,
+          errorName: error instanceof Error ? error.name : "UnknownError",
+        });
       });
     }
 

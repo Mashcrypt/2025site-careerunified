@@ -83,6 +83,7 @@ export default {
         list: [
           { title: 'Internship / Graduate', value: 'internship' },
           { title: 'Temporary Contract', value: 'temporary' },
+          { title: 'Fixed Term Contract', value: 'fixed-term-contract' },
           { title: 'Permanent', value: 'permanent' },
           { title: 'Learnership', value: 'learnership' },
           { title: 'Part-time', value: 'part-time' },

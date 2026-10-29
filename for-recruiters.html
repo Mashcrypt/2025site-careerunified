@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/for-recruiters.css?v=20260923-1">
+  <link rel="stylesheet" href="/css/for-recruiters.css?v=20261028-3">
 
   <script type="application/ld+json">
   {
@@ -74,11 +74,11 @@
             Product <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
           </button>
           <div class="hf-nav__dropdown">
-            <a href="#product">AI matching</a>
-            <a href="#product">Direct applications</a>
-            <a href="#product">Candidate review</a>
-            <a href="#product">Hiring pipeline</a>
-            <a href="#product">Recruiter analytics</a>
+            <a href="#ai-matching">AI matching</a>
+            <a href="#how-it-works">Direct applications</a>
+            <a href="#how-it-works">Candidate review</a>
+            <a href="#how-it-works">Hiring pipeline</a>
+            <a href="#analytics">Recruiter analytics</a>
           </div>
         </div>
         <div class="hf-nav__item">
@@ -86,13 +86,13 @@
             Solutions <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
           </button>
           <div class="hf-nav__dropdown">
-            <a href="#applications">Job advertising</a>
-            <a href="#applications">Screening questions</a>
-            <a href="#applications">Employer profiles</a>
-            <a href="#applications">Application options</a>
+            <a href="#how-it-works">Job advertising</a>
+            <a href="#how-it-works">Screening questions</a>
+            <a href="#how-it-works">Employer profiles</a>
+            <a href="#how-it-works">Application options</a>
           </div>
         </div>
-        <a href="#product">How it works</a>
+        <a href="#how-it-works">How it works</a>
         <div class="hf-nav__item">
           <button class="hf-nav__trigger" type="button" aria-expanded="false">
             Resources <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -104,7 +104,7 @@
             <a href="/articles/cv-tips-ats-interview-prep.html">Career guides</a>
           </div>
         </div>
-        <a href="#pricing">Pricing</a>
+        <a href="/recruiter-pricing">Pricing</a>
       </nav>
 
       <div class="hf-nav__actions">
@@ -119,10 +119,10 @@
     </div>
 
     <div class="hf-mobile-nav" id="recruiterMobileNav" hidden>
-      <a href="#product">Product</a>
-      <a href="#applications">Solutions</a>
-      <a href="#product">How it works</a>
-      <a href="#pricing">Pricing</a>
+      <a href="#ai-matching">Product</a>
+      <a href="#how-it-works">Solutions</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="/recruiter-pricing">Pricing</a>
       <a href="/recruiter-dashboard.html">Recruiter sign in</a>
       <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_mobile_apply">Get recruiter access</a>
       <a class="hf-button hf-button--outline" href="/contact-us" data-cro-event="recruiter_mobile_contact">Contact us</a>
@@ -133,11 +133,11 @@
     <section class="hf-hero" aria-labelledby="recruiterHeroTitle">
       <div class="hf-container hf-hero__grid">
         <div class="hf-hero__copy">
-          <h1 id="recruiterHeroTitle">Find the <em>right candidates,</em><br>without the <em>admin sprawl.</em></h1>
-          <p class="hf-hero__lead">Career Unified gives employers branded job advertising, structured applications, screening answers, CV review, and a clear hiring pipeline in one focused workspace.</p>
+          <h1 id="recruiterHeroTitle">Hire Top Talent <em>Faster</em><br>with Smart Matching</h1>
+          <p class="hf-hero__lead">An all-in-one hiring platform to post jobs, attract and screen candidates, and hire the right talent faster with a clearer workflow.</p>
           <div class="hf-hero__actions">
             <a class="hf-button hf-button--primary hf-button--large" href="/recruiter-apply.html" data-cro-event="recruiter_hero_apply">Get recruiter access</a>
-            <a class="hf-button hf-button--outline hf-button--large" href="#product" data-cro-event="recruiter_hero_product">
+            <a class="hf-button hf-button--outline hf-button--large" href="#how-it-works" data-cro-event="recruiter_hero_product">
               <i class="fa-regular fa-circle-play" aria-hidden="true"></i> See how it works
             </a>
           </div>
@@ -154,54 +154,41 @@
         </div>
 
         <div class="hf-hero__product" aria-label="Career Unified recruiter workspace preview">
-          <div class="hf-browser">
-            <div class="hf-browser__bar">
-              <span></span><span></span><span></span>
-              <div></div>
-            </div>
-            <div class="hf-dashboard">
-              <div class="hf-dashboard__stats">
-                <article><strong>3</strong><span>Open roles</span><small>All active</small></article>
-                <article><strong>24</strong><span>Applications</span><small>8 need review</small></article>
-                <article><strong>4</strong><span>Interviews</span><small>This week</small></article>
+          <a class="hf-hero__trial" href="/recruiter-dashboard.html#billing" data-cro-event="recruiter_hero_trial">Start Free Trial</a>
+          <div class="hf-hero__gallery" id="recruiterHeroGallery" data-recruiter-gallery role="region" aria-roledescription="carousel" aria-label="Career Unified recruiter workspace gallery" tabindex="0">
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="1 of 6">
+              <img src="/assets/images/recruiter-shared-workspace-collaboration.webp" alt="Recruiters sharing a candidate workspace" loading="lazy">
+              <figcaption><strong>One hiring workspace</strong><span>Stay aligned as a team</span></figcaption>
+            </figure>
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="2 of 6">
+              <img src="/assets/images/recruiter-find-talent-pexels.jpg" alt="A team collaborating in a colorful office" fetchpriority="high">
+              <div class="hf-find-talent-card" aria-label="Recruiter search preview">
+                <h2>Find Talent</h2>
+                <div class="hf-find-talent-search"><span>Search candidates by skills or role</span><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></div>
+                <p>Review together</p>
+                <div><span>Candidate profiles</span><span>CV review</span><span>Screening answers</span><span>Hiring pipeline</span></div>
               </div>
-
-              <div class="hf-candidate-panel">
-                <div class="hf-candidate-panel__head">
-                  <strong>Applications - Finance Graduate</strong>
-                  <span>Screening answers</span>
-                </div>
-                <div class="hf-candidate-row">
-                  <span class="hf-candidate-avatar hf-candidate-avatar--blue">TM</span>
-                  <div><strong>Thandi Mokoena</strong><small>Shortlisted</small></div>
-                  <div class="hf-answer-bar"><span style="width:100%"></span></div>
-                  <b>3/3</b>
-                </div>
-                <div class="hf-candidate-row">
-                  <span class="hf-candidate-avatar hf-candidate-avatar--teal">KM</span>
-                  <div><strong>Karabo Molefe</strong><small>Review</small></div>
-                  <div class="hf-answer-bar"><span style="width:67%"></span></div>
-                  <b>2/3</b>
-                </div>
-                <div class="hf-candidate-row">
-                  <span class="hf-candidate-avatar hf-candidate-avatar--gold">LN</span>
-                  <div><strong>Lerato Nkosi</strong><small>Interview</small></div>
-                  <div class="hf-answer-bar"><span style="width:100%"></span></div>
-                  <b>3/3</b>
-                </div>
-                <div class="hf-candidate-row">
-                  <span class="hf-candidate-avatar hf-candidate-avatar--navy">SN</span>
-                  <div><strong>Sipho Naidoo</strong><small>Submitted</small></div>
-                  <div class="hf-answer-bar"><span style="width:67%"></span></div>
-                  <b>2/3</b>
-                </div>
-              </div>
-            </div>
+            </figure>
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="3 of 6">
+              <img src="/assets/images/recruiter-application-human-context-white-candidate.webp" alt="Candidate application information" loading="lazy">
+              <figcaption><strong>Candidate insights</strong><span>Profile · CV · answers</span></figcaption>
+            </figure>
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="4 of 6">
+              <img src="/assets/images/recruiter-structured-application-review.webp" alt="Recruiter reviewing a structured candidate application" loading="lazy">
+              <figcaption><strong>Structured applications</strong><span>Review relevant candidate details</span></figcaption>
+            </figure>
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="5 of 6">
+              <img src="/assets/images/recruiter-candidate-communication.webp" alt="Recruiter communicating with a candidate" loading="lazy">
+              <figcaption><strong>Candidate communication</strong><span>Keep every next step moving</span></figcaption>
+            </figure>
+            <figure class="hf-hero__gallery-slide" role="group" aria-roledescription="slide" aria-label="6 of 6">
+              <video src="/assets/videos/recruiter-career-site-demo.mp4" poster="/assets/images/recruiter-career-site-demo-poster.jpg" muted loop playsinline controls preload="metadata" aria-label="Silent product demo of branded career-site setup, AI job-description autofill, and embedding a careers page into a company website"></video>
+              <figcaption><strong>Build your branded careers site</strong><span>AI job drafts · embedded on your website</span></figcaption>
+            </figure>
           </div>
-
-          <div class="hf-compliance-card">
-            <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
-            <div><strong>POPIA-aware workflow</strong><small><i class="fa-solid fa-check" aria-hidden="true"></i> Consent and access controls</small></div>
+          <div class="hf-hero__gallery-controls" aria-label="Recruiter gallery controls">
+            <button type="button" data-gallery-direction="-1" aria-label="Previous slide" aria-controls="recruiterHeroGallery"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+            <button type="button" data-gallery-direction="1" aria-label="Next slide" aria-controls="recruiterHeroGallery"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
           </div>
         </div>
       </div>
@@ -223,24 +210,60 @@
       </div>
     </section>
 
+    <section class="hf-process" id="how-it-works" aria-labelledby="processTitle">
+      <div class="hf-container">
+        <div class="hf-process__heading">
+          <p class="hf-process__eyebrow">The hiring journey</p>
+          <h2 id="processTitle">How Hiring<br><em>Becomes Effortless</em></h2>
+          <p>From posting a job to making the final hire, keep every step clear and connected.</p>
+        </div>
+
+        <div class="hf-process__grid">
+          <figure class="hf-process__media">
+            <img src="/assets/images/recruiter-hiring-journey-pexels.jpg" alt="A recruiter discussing information with a candidate using a tablet beside a laptop" loading="lazy">
+          </figure>
+          <ol class="hf-process__steps">
+            <li class="is-current">
+              <span class="hf-process__timeline-start" aria-hidden="true"><svg viewBox="0 0 100 78" width="88" height="68" focusable="false">
+                <g fill="#dcff00">
+                  <ellipse cx="33" cy="23" rx="10.5" ry="13" transform="rotate(-20 33 23)"/>
+                  <ellipse cx="62" cy="27" rx="11" ry="19" transform="rotate(-48 62 27)"/>
+                  <ellipse cx="24" cy="43" rx="10" ry="15" transform="rotate(-12 24 43)"/>
+                  <ellipse cx="47" cy="52" rx="12.5" ry="11" transform="rotate(-25 47 52)"/>
+                  <ellipse cx="46" cy="36" rx="17" ry="14"/>
+                </g>
+                <text x="47" y="37" transform="rotate(-19 47 37)" text-anchor="middle" dominant-baseline="central" fill="#0f2a25" font-family="Roboto Slab, Georgia, serif" font-size="7.8" font-weight="600">Step 01</text>
+              </svg></span>
+              <div><h3>Post your job in minutes</h3><p>Publish the role, required skills, experience level, and location. Create a branded career site without waiting for a developer, then add your company story, logo, social links, and open roles on your Career Unified subdomain.</p></div>
+            </li>
+            <li>
+              <div><span>Step 02</span><h3>AI matches relevant candidates</h3><p>Compare applications with role requirements and surface relevant skills, experience, and qualifications for recruiter review.</p></div>
+            </li>
+            <li>
+              <div><span>Step 03</span><h3>Review and interview</h3><p>Candidates reuse their Career Unified profile and CV, then answer job-specific questions. Review all three together and move applicants through shortlist and interview stages.</p></div>
+            </li>
+            <li>
+              <div><span>Step 04</span><h3>Hire with confidence</h3><p>Keep private notes and stage updates with the application, coordinate the team, and send candidate outcome emails while your recruiters make every decision.</p></div>
+            </li>
+          </ol>
+        </div>
+
+      </div>
+    </section>
+
     <section class="hf-section hf-product" id="product" aria-labelledby="productTitle">
       <div class="hf-container">
         <div class="hf-section-heading hf-section-heading--center">
-          <p class="hf-section-tag">Product</p>
           <h2 id="productTitle">Everything your team needs to hire <em>with clarity</em></h2>
           <p>Purpose-built around the work recruiters repeat for every open role.</p>
         </div>
 
         <div class="hf-tabs" role="tablist" aria-label="Recruiter platform features">
-          <button type="button" role="tab" aria-selected="true" data-feature-tab="ai-matching">AI Matching</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="applications">Applications</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="pipeline">Pipeline</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="analytics">Analytics</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="screening">Screening</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="collaboration">Collaboration</button>
-          <button type="button" role="tab" aria-selected="false" data-feature-tab="integrations">Integrations</button>
+          <button id="ai-matching" type="button" role="tab" aria-selected="true" aria-controls="recruiterFeaturePanel" data-feature-tab="ai-matching" data-feature-page="3">AI Matching</button>
+          <button id="analytics" type="button" role="tab" aria-selected="false" aria-controls="recruiterFeaturePanel" data-feature-tab="analytics" data-feature-page="4">Analytics</button>
+          <button id="collaboration" type="button" role="tab" aria-selected="false" aria-controls="recruiterFeaturePanel" data-feature-tab="collaboration" data-feature-page="5">Collaboration</button>
+          <button id="integrations" type="button" role="tab" aria-selected="false" aria-controls="recruiterFeaturePanel" data-feature-tab="integrations" data-feature-page="6">Integrations</button>
         </div>
-
         <div class="hf-product__panel" id="recruiterFeaturePanel" role="tabpanel">
           <div class="hf-product__copy">
             <h3 data-feature-headline>Surface your best-matched candidates in seconds, not days</h3>
@@ -253,7 +276,7 @@
             <a href="/recruiter-apply.html" data-cro-event="recruiter_product_apply">Request recruiter access <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           </div>
           <figure class="hf-product__visual" data-feature-visual>
-            <img src="/assets/images/recruiter-illustration-option-1.webp" alt="Recruiters comparing shortlisted candidate profiles" data-feature-image>
+            <img src="/assets/images/recruiter-ai-matching-pexels.jpg" alt="A recruiter interviewing a candidate while reviewing their CV" data-feature-image>
             <div class="hf-integration-logos" data-feature-logo-grid hidden aria-label="Career Unified integrations">
               <div class="hf-integration-logo hf-integration-logo--gmail"><img src="/assets/integrations/gmail-svgrepo-com.svg" alt="Gmail logo"><strong>Gmail</strong></div>
               <div class="hf-integration-logo hf-integration-logo--outlook"><img src="/assets/integrations/Outlook.com-Logo.wine.svg" alt="Outlook logo"><strong>Outlook</strong></div>
@@ -272,151 +295,35 @@
       </div>
     </section>
 
-    <section class="hf-stories" id="applications">
-      <article class="hf-story">
-        <div class="hf-container hf-story__grid">
-          <div class="hf-story__copy">
-            <p class="hf-section-tag">Candidate experience</p>
-            <h2>Make every application easier to review.<br><em>Keep the human context.</em></h2>
-            <p>Candidates reuse their Career Unified profile and CV, then answer the focused questions attached to your vacancy. Your team receives a structured application without asking job seekers to repeat everything from scratch.</p>
-            <div class="hf-story__stat"><strong>3 views</strong><span>Profile, CV, and screening answers</span></div>
-            <a href="/recruiter-apply.html" data-cro-event="recruiter_candidate_apply">Explore Direct Apply <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-          </div>
-          <figure class="hf-story__media">
-            <img src="/assets/images/recruiter-application-human-context-white-candidate.webp" alt="Structured candidate profile, CV, and screening answers reviewed with human context">
-          </figure>
-        </div>
-      </article>
-
-      <article class="hf-story hf-story--reverse">
-        <div class="hf-container hf-story__grid">
-          <div class="hf-story__copy">
-            <p class="hf-section-tag">Your career site</p>
-            <h2>Turn your open roles into a destination.<br><em>Ready for candidates in minutes.</em></h2>
-            <p>Create a polished, branded career site without waiting for a developer. Add your logo, company story, social links, and open roles in one simple setup so candidates know who you are before they apply. Publish it on your own Career Unified subdomain and keep every opportunity easy to find.</p>
-            <div class="hf-story__stat"><strong>Minutes to launch</strong><span>Your brand, company information, and open roles in one place</span></div>
-            <a href="#pricing">View plans and pricing <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-          </div>
-          <figure class="hf-story__media">
-            <img src="/assets/images/recruiter-platform.webp" alt="Career Unified job advertising and candidate pipeline illustration">
-          </figure>
-        </div>
-      </article>
-    </section>
-
-    <section class="hf-section hf-proof" aria-labelledby="proofTitle">
-      <div class="hf-container">
-        <div class="hf-section-heading hf-section-heading--center">
-          <p class="hf-section-tag">Recruiter workflow</p>
-          <h2 id="proofTitle">Built around better hiring decisions</h2>
+    <section class="hf-why" aria-labelledby="whyRecruitersTitle">
+      <div class="hf-container hf-why__inner">
+        <div class="hf-why__heading">
+          <h2 id="whyRecruitersTitle">Why Companies Choose Career Unified</h2>
+          <p>Smarter hiring, clearer decisions, and connected workflows in one platform.</p>
+          <a class="hf-why__button" href="/recruiter-apply.html">Start Hiring Today</a>
         </div>
 
-        <div class="hf-proof__grid">
-          <article>
-            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
-            <p>Every application keeps the candidate profile, submitted CV, and screening answers together, so reviewers can compare the same evidence.</p>
-            <div class="hf-proof__identity"><span>CV</span><div><strong>Structured review</strong><small>Candidate evidence in one place</small></div></div>
+        <div class="hf-why__cards">
+          <article class="hf-why__card">
+            <span class="hf-why__badge hf-why__badge--lime" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
+            <h3>Faster Hiring Process</h3>
+            <p>Publish roles, collect structured applications, and move candidates through a clear hiring pipeline.</p>
           </article>
-          <article>
-            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
-            <p>Candidates can see application progress while recruiters manage the next step from shortlist to interview, offer, and hired.</p>
-            <div class="hf-proof__identity"><span>PL</span><div><strong>Clear progress</strong><small>A visible hiring pipeline</small></div></div>
+          <article class="hf-why__card">
+            <span class="hf-why__badge hf-why__badge--pink" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <h3>AI-Powered Candidate Matching</h3>
+            <p>Surface relevant skills and experience while recruiters stay in control of every hiring decision.</p>
           </article>
-          <article>
-            <span class="hf-quote-mark" aria-hidden="true">&ldquo;</span>
-            <p>Private notes and stage updates support the decision without replacing recruiter judgement or silently rejecting candidates.</p>
-            <div class="hf-proof__identity"><span>HR</span><div><strong>Human decisions</strong><small>Your hiring team stays in control</small></div></div>
+          <article class="hf-why__card">
+            <span class="hf-why__badge hf-why__badge--blue" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span>
+            <h3>Data-Informed Hiring Decisions</h3>
+            <p>Track applications and vacancy progress with practical insights for your recruiting team.</p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="hf-section hf-plans" id="pricing" aria-labelledby="plansTitle">
-      <div class="hf-container">
-        <div class="hf-section-heading hf-section-heading--center">
-          <p class="hf-section-tag">Pricing</p>
-          <h2 id="plansTitle">Choose the access that matches your hiring volume</h2>
-          <p>Publish vacancies, manage direct applications, and communicate with candidates from one hiring workspace. Choose a once-off vacancy or a monthly package, with no annual contract.</p>
-        </div>
-
-        <article class="hf-single-offer">
-          <div class="hf-single-offer__icon" aria-hidden="true"><i class="fa-solid fa-briefcase"></i></div>
-          <div class="hf-single-offer__content">
-            <div class="hf-single-offer__title">
-              <span>Once-off hiring</span>
-              <h3>Advertise one job without a subscription</h3>
-            </div>
-            <p>One promoted vacancy for 30 days, with Direct Apply, screening questions, applicant CVs, pipeline tracking, and candidate outcome emails.</p>
-            <div class="hf-single-offer__benefits" aria-label="Single job offer benefits">
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> No recurring charge</span>
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> Applicant CVs included</span>
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> 30-day promotion</span>
-            </div>
-          </div>
-          <div class="hf-single-offer__action">
-            <p><strong>R199</strong><span> once off</span></p>
-            <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_single_job">Choose single job</a>
-          </div>
-        </article>
-
-        <div class="hf-plans__grid">
-          <article class="hf-plan-card">
-            <div>
-              <p class="hf-plan-card__name">Starter</p>
-              <h3 class="hf-plan-card__price">R299 <span>/ month</span></h3>
-              <p>For smaller teams making focused hires and building a dependable shortlist.</p>
-            </div>
-            <ul>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Vacancy publishing with Direct Apply</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Applicant CVs and screening answers</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Hiring pipeline and private notes</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Candidate outcome email templates</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> 50 talent database CV unlocks</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Email support</li>
-            </ul>
-            <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_starter">Get Starter access</a>
+          <article class="hf-why__card">
+            <span class="hf-why__badge hf-why__badge--lime" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></span>
+            <h3>Privacy-Aware Workflows</h3>
+            <p>Support responsible candidate data handling with consent and recruiter access controls.</p>
           </article>
-
-          <article class="hf-plan-card hf-plan-card--featured">
-            <span class="hf-plan-card__badge">Most popular</span>
-            <div>
-              <p class="hf-plan-card__name">Growth</p>
-              <h3 class="hf-plan-card__price">R699 <span>/ month</span></h3>
-              <p>For growing teams reviewing more applicants across several active vacancies.</p>
-            </div>
-            <ul>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Everything in Starter</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> 200 talent database CV unlocks</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Advanced candidate filters and comparison</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Vacancy and application analytics</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Email and WhatsApp candidate follow-up</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Priority support</li>
-            </ul>
-            <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_pro">Get Growth access</a>
-          </article>
-
-          <article class="hf-plan-card">
-            <div>
-              <p class="hf-plan-card__name">Agency</p>
-              <h3 class="hf-plan-card__price">R1,499 <span>/ month</span></h3>
-              <p>For agencies and high-volume teams that need unrestricted talent database access.</p>
-            </div>
-            <ul>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Everything in Growth</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Unlimited integrations across supported providers</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Unlimited talent database CV unlocks</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Multi-vacancy applicant workspace</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Screening, notes, pipeline, and analytics</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Interview, offer, and outcome email tools</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Priority email support</li>
-            </ul>
-            <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_enterprise">Get Agency access</a>
-          </article>
-        </div>
-
-        <div class="hf-plans__clarity" role="note">
-          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          <p><strong>Applicant CVs are always included.</strong> CV unlocks are only used when you search the wider Career Unified talent database. Plans renew monthly through PayFast and can be cancelled before the next billing date.</p>
         </div>
       </div>
     </section>
@@ -443,8 +350,8 @@
           </a>
           <p>South African opportunity, career tools, and practical recruiting workflows in one platform.</p>
         </div>
-        <div><h2>Product</h2><ul><li><a href="#product">Applications</a></li><li><a href="#product">Pipeline</a></li><li><a href="#product">Analytics</a></li><li><a href="#product">Screening</a></li><li><a href="#product">Collaboration</a></li></ul></div>
-        <div><h2>Recruiters</h2><ul><li><a href="/recruiter-apply.html">Request access</a></li><li><a href="/recruiter-dashboard.html">Recruiter login</a></li><li><a href="#pricing">Pricing</a></li><li><a href="/contact-us">Contact us</a></li></ul></div>
+        <div><h2>Product</h2><ul><li><a href="#how-it-works">Applications</a></li><li><a href="#how-it-works">Pipeline</a></li><li><a href="#analytics">Analytics</a></li><li><a href="#how-it-works">Screening</a></li><li><a href="#collaboration">Collaboration</a></li><li><a href="#integrations">Integrations</a></li></ul></div>
+        <div><h2>Recruiters</h2><ul><li><a href="/recruiter-apply.html">Request access</a></li><li><a href="/recruiter-dashboard.html">Recruiter login</a></li><li><a href="/recruiter-pricing">Pricing</a></li><li><a href="/contact-us">Contact us</a></li></ul></div>
         <div><h2>Job seekers</h2><ul><li><a href="/jobs">Jobs</a></li><li><a href="/bursaries">Bursaries</a></li><li><a href="/varsity">Varsities</a></li><li><a href="/cv-generator/">CV Generator</a></li><li><a href="/z83-filler.html">Z83 Filler</a></li></ul></div>
         <div id="resources"><h2>Resources</h2><ul><li><a href="/blog">Blog</a></li><li><a href="/guides">Guides</a></li><li><a href="/webinars">Webinars</a></li><li><a href="/case-studies">Case Studies</a></li><li><a href="/api/">API Documentation</a></li></ul></div>
         <div><h2>Company</h2><ul><li><a href="/about-us">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact-us">Contact</a></li></ul></div>
@@ -456,7 +363,7 @@
     </div>
   </footer>
 
-  <script src="/js/for-recruiters.js?v=20260922"></script>
+  <script src="/js/for-recruiters.js?v=20261028-3"></script>
   <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

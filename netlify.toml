@@ -158,6 +158,11 @@
   status = 301
 
 [[redirects]]
+  from = "/recruiter-pricing/"
+  to = "/recruiter-pricing"
+  status = 301
+
+[[redirects]]
   from = "/jobs.html"
   to = "/jobs"
   status = 301
@@ -208,6 +213,12 @@
 [[redirects]]
   from = "/for-recruiters.html"
   to = "/for-recruiters"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/recruiter-pricing.html"
+  to = "/recruiter-pricing"
   status = 301
   force = true
 
@@ -311,6 +322,11 @@
 [[redirects]]
   from = "/for-recruiters"
   to = "/for-recruiters.html"
+  status = 200
+
+[[redirects]]
+  from = "/recruiter-pricing"
+  to = "/recruiter-pricing.html"
   status = 200
 
 [[redirects]]

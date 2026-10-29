@@ -20,6 +20,7 @@ import {sendTransactionalEmail} from "./_notify";
 import {enqueuePartnerWebhook} from "./_partnerWebhooks";
 import {buildProfileCvPdf} from "./_profileCvPdf";
 import {countryNameForCode, normalizeCountryCode} from "./_countryOptions";
+import {normalizeApplicationDocuments} from "./_applicationDocuments";
 
 type ScreeningQuestion = {
   id: string;
@@ -293,6 +294,7 @@ export const handler: Handler = async (event) => {
 
   let copiedCvPath = "";
   let copiedCvBlobKey = "";
+  const copiedApplicationDocumentBlobKeys: string[] = [];
   let applicationCreated = false;
   let failureStage = "initialization";
 
@@ -353,6 +355,51 @@ export const handler: Handler = async (event) => {
       throw new ApplicationError(400, "This employer is not accepting direct applications on Career Unified.");
     }
     if (!isActiveJob(job)) throw new ApplicationError(410, "Applications for this job are closed.");
+
+    const requestedDocuments = normalizeApplicationDocuments(job.applicationDocuments);
+    const suppliedDocumentUploads = Array.isArray(body.documentUploads) ? body.documentUploads : [];
+    if (suppliedDocumentUploads.length > 5) {
+      throw new ApplicationError(400, "Upload no more than 5 additional documents.");
+    }
+    const documentRequestById = new Map(requestedDocuments.map((request) => [request.id, request]));
+    const suppliedDocumentIds = new Set<string>();
+    const uploadRefs = suppliedDocumentUploads.map((entry: any) => {
+      const documentId = cleanText(entry?.documentId, 80);
+      const uploadId = cleanText(entry?.uploadId, 80);
+      if (!documentRequestById.has(documentId) || !/^[a-f0-9-]{36}$/i.test(uploadId)) {
+        throw new ApplicationError(400, "A requested application document is missing or invalid.");
+      }
+      if (suppliedDocumentIds.has(documentId)) {
+        throw new ApplicationError(400, "Upload one file for each requested document.");
+      }
+      suppliedDocumentIds.add(documentId);
+      return {documentId, uploadId, ref: db.doc(`applicationDocumentUploads/${uploadId}`)};
+    });
+    const missingRequiredDocument = requestedDocuments.find((request) => request.required && !suppliedDocumentIds.has(request.id));
+    if (missingRequiredDocument) {
+      throw new ApplicationError(400, `Upload the requested document: ${missingRequiredDocument.label}.`);
+    }
+
+    const stagedDocumentSnapshots = await Promise.all(uploadRefs.map((item) => item.ref.get()));
+    const stagedDocumentUploads = uploadRefs.map((item, index) => {
+      const snapshot = stagedDocumentSnapshots[index];
+      if (!snapshot.exists) throw new ApplicationError(400, "A requested document upload expired. Please upload it again.");
+      const upload = snapshot.data() || {};
+      const request = documentRequestById.get(item.documentId)!;
+      const expiresAt = upload.expiresAt?.toMillis?.() || 0;
+      if (
+        upload.status !== "staged" ||
+        upload.candidateId !== decoded.uid ||
+        upload.jobId !== jobId ||
+        upload.recruiterId !== cleanText(job.recruiterId, 160) ||
+        upload.documentId !== item.documentId ||
+        !cleanText(upload.blobKey, 800).startsWith(`application-staging/${cleanText(job.recruiterId, 160)}/${jobId}/${decoded.uid}/`) ||
+        !expiresAt || expiresAt <= Date.now()
+      ) {
+        throw new ApplicationError(403, "A requested document upload is no longer valid. Please upload it again.");
+      }
+      return {ref: item.ref, request, upload};
+    });
 
     const recruiterId = cleanText(job.recruiterId, 160);
     if (!recruiterId) throw new ApplicationError(400, "This job is missing recruiter information.");
@@ -645,6 +692,34 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    failureStage = "application_document_snapshot";
+    const applicationDocumentSnapshots = [];
+    for (const staged of stagedDocumentUploads) {
+      const finalBlobKey = `applications/${recruiterId}/${jobId}/${decoded.uid}/${applicationId}_document_${crypto.randomUUID()}`;
+      copiedApplicationDocumentBlobKeys.push(finalBlobKey);
+      const copied = await copyPrivateCv(staged.upload.blobKey, finalBlobKey, {
+        candidateId: decoded.uid,
+        recruiterId,
+        jobId,
+        applicationId,
+        documentId: staged.request.id,
+        label: staged.request.label,
+        contentType: staged.upload.contentType,
+        fileName: staged.upload.fileName,
+      });
+      if (!copied) {
+        throw new ApplicationError(503, `We could not securely attach ${staged.request.label}. Please upload it again.`);
+      }
+      applicationDocumentSnapshots.push({
+        documentId: staged.request.id,
+        label: staged.request.label,
+        fileName: cleanText(staged.upload.fileName, 160),
+        blobKey: finalBlobKey,
+        contentType: cleanText(staged.upload.contentType, 120),
+        size: Number(staged.upload.size || 0),
+      });
+    }
+
     failureStage = "application_write";
     const now = admin.firestore.Timestamp.now();
     const application = {
@@ -694,6 +769,7 @@ export const handler: Handler = async (event) => {
         size: cvSize,
         generatedFromProfile,
       },
+      documents: applicationDocumentSnapshots,
       answers,
       coverLetter: cleanMultiline(body.coverLetter, 4000),
       statusHistory: [{status: "submitted", at: now, actor: "candidate"}],
@@ -713,13 +789,29 @@ export const handler: Handler = async (event) => {
     };
 
     await db.runTransaction(async (transaction: any) => {
-      const freshApplication = await transaction.get(applicationRef);
-      const freshJob = await transaction.get(jobSnap.ref);
+      const [freshApplication, freshJob, ...freshDocumentUploads] = await Promise.all([
+        transaction.get(applicationRef),
+        transaction.get(jobSnap.ref),
+        ...stagedDocumentUploads.map((item) => transaction.get(item.ref)),
+      ]);
       if (freshApplication.exists) {
         throw new DuplicateApplicationError(applicationId, freshApplication.data()?.status);
       }
       if (!freshJob.exists || !isActiveJob(freshJob.data() || {})) {
         throw new ApplicationError(410, "Applications for this job are closed.");
+      }
+      for (const [index, snapshot] of freshDocumentUploads.entries()) {
+        const staged = stagedDocumentUploads[index];
+        const fresh = snapshot.data() || {};
+        const freshExpiresAt = fresh.expiresAt?.toMillis?.() || 0;
+        if (
+          !snapshot.exists || fresh.status !== "staged" || fresh.candidateId !== decoded.uid ||
+          fresh.recruiterId !== recruiterId || fresh.jobId !== jobId ||
+          fresh.documentId !== staged.request.id || fresh.blobKey !== staged.upload.blobKey ||
+          !freshExpiresAt || freshExpiresAt <= Date.now()
+        ) {
+          throw new ApplicationError(409, "A requested document has already been used. Please upload it again.");
+        }
       }
       transaction.create(applicationRef, application);
       transaction.create(db.doc(`applicationNotes/${applicationId}`), {
@@ -733,6 +825,14 @@ export const handler: Handler = async (event) => {
         applicationsCount: admin.firestore.FieldValue.increment(1),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
+      for (const [index] of freshDocumentUploads.entries()) {
+        transaction.update(stagedDocumentUploads[index].ref, {
+          status: "attached",
+          applicationId,
+          attachedAt: now,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
     });
     applicationCreated = true;
 
@@ -836,6 +936,9 @@ export const handler: Handler = async (event) => {
     }
     if (copiedCvBlobKey && !applicationCreated) {
       await deletePrivateCv(copiedCvBlobKey).catch(() => undefined);
+    }
+    if (!applicationCreated) {
+      await Promise.all(copiedApplicationDocumentBlobKeys.map((key) => deletePrivateCv(key).catch(() => undefined)));
     }
 
     if (error instanceof DuplicateApplicationError) {

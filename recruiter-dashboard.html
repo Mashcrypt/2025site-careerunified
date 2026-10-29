@@ -175,6 +175,7 @@
   }
 
   .dashboard-inbox-badge[hidden] { display: none; }
+  .dashboard-overview-hidden { display:none !important; }
 
   /* ======================================================
      TOP STATS
@@ -670,6 +671,9 @@
   }
 
   .jobs-header h3 { font-size: 16px; font-weight: 600; }
+  #jobs .jobs-header-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  #jobs .jobs-header-actions > .filter,
+  #jobs .jobs-header-actions > .primary-btn { box-sizing:border-box; height:40px; min-height:40px; margin:0; }
 
   /* Career Site Tabs */
   .career-site-tab {
@@ -2557,6 +2561,138 @@
     font-weight: 700;
   }
   .screening-check input { width: 18px; height: 18px; }
+  .application-document-builder {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #dbeafe;
+  }
+  .application-document-builder-head { margin-bottom: 14px; }
+  .application-document-builder-head h4 { margin: 0 0 5px; color: #1e3a8a; font-size: 16px; }
+  .application-document-builder-head p { margin: 0; color: #64748b; font-size: 13px; }
+  .application-document-add-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 12px;
+  }
+  .application-document-add-row button { min-height: 46px; }
+  .application-document-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px 24px;
+    padding: 16px;
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .application-document-option {
+    display: flex;
+    min-width: 0;
+    min-height: 28px;
+    align-items: center;
+    gap: 9px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .application-document-choice { display: flex; min-width: 0; flex: 1 1 auto; align-items: center; gap: 9px; cursor: pointer; }
+  .application-document-option-name {
+    overflow: hidden;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #post-job .application-document-option-select {
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 18px;
+    margin: 0 !important;
+    padding: 0;
+    transform: none !important;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+  #post-job .application-document-option-select:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+  #post-job .application-document-choice { cursor: pointer; }
+  .application-document-static-check {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    place-items: center;
+    border: 1px solid #2563eb;
+    border-radius: 4px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .application-document-required {
+    position: relative;
+    display: inline-flex;
+    width: 40px;
+    height: 20px;
+    flex: 0 0 40px;
+    align-items: center;
+    border-radius: 999px;
+    background: #c9c7c5;
+    cursor: pointer;
+    transition: background-color .18s ease;
+  }
+  .application-document-required::after {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    content: "";
+    transition: transform .18s ease;
+  }
+  .application-document-required::before {
+    position: absolute;
+    right: 6px;
+    color: #fff;
+    content: "";
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .application-document-required:has(input:checked) { background: #2563eb; }
+  .application-document-required:has(input:checked)::after { transform: translateX(20px); }
+  .application-document-required:has(input:checked)::before { right: auto; left: 7px; content: "*"; }
+  #post-job .application-document-required input {
+    position: absolute;
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 1px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0;
+  }
+  .application-document-required:has(input:focus-visible) { outline: 3px solid #93c5fd; outline-offset: 2px; }
+  .application-document-required:has(input:disabled) { cursor: default; }
+  .application-document-option--resume { color: #1f2937; }
+  .application-document-required--locked { cursor: default; }
+  .application-document-hint {
+    grid-column: 1 / -1;
+    margin: 2px 0 0;
+    color: #64748b;
+    font-size: 12px;
+  }
+  .application-document-empty { grid-column: 1 / -1; padding: 2px 0; color: #64748b; font-size: 13px; }
+  @media (max-width: 760px) {
+    .application-document-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+  }
+  @media (max-width: 520px) {
+    .application-document-list { grid-template-columns: 1fr; padding: 14px; }
+  }
 
   /* ======================================================
      FIVE-STEP JOB POSTING WORKFLOW
@@ -2912,6 +3048,7 @@
     background: var(--job-wizard-accent);
     color: #ffffff;
   }
+  #post-job .application-document-list { border-color: var(--job-wizard-border); background: #f8fafc; }
   #post-job .screening-options-field { margin: 12px 0 0; }
   #post-job .screening-criteria-config { align-items: end; margin-top: 12px; }
   #post-job .screening-criteria-config .screening-check {
@@ -3182,6 +3319,24 @@
   }
   .job-hiring-pipeline strong { display: block; margin-top: 9px; color: #1f2937; font-size: 12px; }
   .job-hiring-pipeline small { display: block; margin-top: 4px; color: #64748b; font-size: 10px; line-height: 1.45; }
+
+  .job-automated-emails { margin-top: 24px; padding: 18px; border: 1px solid var(--job-wizard-border); border-radius: 8px; background: #fff; }
+  .job-automated-emails__head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
+  .job-automated-emails__head h4 { margin:0; color:#1f2937; font-size:16px; }
+  .job-automated-emails__head p { margin:5px 0 0; color:#64748b; font-size:12px; line-height:1.5; }
+  .job-automated-emails__add { display:flex; align-items:flex-end; gap:10px; margin-bottom:14px; }
+  .job-automated-emails__add .form-group { flex:1; margin:0; }
+  .job-automated-email-list { display:grid; gap:12px; }
+  .job-automated-email-empty { padding:20px 14px; border:1px dashed #cbd5e1; border-radius:7px; color:#64748b; font-size:13px; text-align:center; }
+  .job-automated-email-card { padding:15px; border:1px solid #dbe3ef; border-radius:8px; background:#fbfdff; }
+  .job-automated-email-card__head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:11px; border-bottom:1px solid #e5eaf2; }
+  .job-automated-email-card__head h5 { margin:0; color:#166534; font-size:14px; }
+  .job-automated-email-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 14px; margin-top:12px; }
+  .job-automated-email-fields .form-group { margin-bottom:11px; }
+  .job-automated-email-fields .full-width { grid-column:1 / -1; }
+  .job-automated-email-card textarea { min-height:116px; resize:vertical; }
+  .job-automated-email-note { margin:5px 0 0; color:#64748b; font-size:11px; line-height:1.45; }
+  .job-automated-email-card [data-remove-automated-email] { flex:0 0 auto; }
 
   .job-confirmation-preview { color: #1f2937; }
   .job-preview-header {
@@ -3582,16 +3737,19 @@
   .job-template-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto 42px;
     gap: 9px;
-    align-items: end;
+    align-items: center;
     margin-bottom: 18px;
     padding: 13px;
     border: 1px solid #dbeafe;
     border-radius: 8px;
     background: #f8fbff;
   }
-  .job-template-bar .form-group { margin: 0; }
-  .job-template-bar button { min-height: 42px; }
+  .job-template-bar .form-group { display: contents; }
+  .job-template-bar .form-group > label { grid-column:1; grid-row:1; align-self:end; margin:0 0 3px; }
+  .job-template-bar .form-group > select { grid-column:1; grid-row:2; box-sizing:border-box; height:42px; }
+  .job-template-bar button { grid-row:2; min-height:42px; align-self:center; }
   .application-review-head {
     display: flex;
     align-items: flex-start;
@@ -4235,6 +4393,140 @@
   .recruiter-task-copy span { display: block; margin-top: 2px; color: #64748b; font-size: 12px; }
   .dashboard-shortcuts-title { margin: 0 0 12px; color: #475569; font-size: 13px; text-transform: uppercase; }
 
+  #dashboard { max-width:1400px; margin:0 auto; }
+  #dashboard .recruiter-dashboard-hero {
+    overflow:hidden;
+    margin:0 0 18px;
+    padding:18px 24px 16px;
+    border-radius:16px;
+    background:linear-gradient(112deg,#2469e9 0%,#1557d8 54%,#1745b5 100%);
+    color:#fff;
+    box-shadow:0 14px 30px rgba(21,87,216,.18);
+  }
+  #dashboard .dashboard-hero-topline { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  #dashboard .dashboard-hero-avatar { position:relative; isolation:isolate; display:grid; width:38px; height:38px; flex:0 0 38px; place-items:center; overflow:hidden; border:1px solid rgba(255,255,255,.78); border-radius:50%; background:transparent; color:#fff; text-decoration:none; box-shadow:inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(8,28,120,.14); transition:box-shadow .18s ease,transform .18s ease; }
+  #dashboard .dashboard-hero-avatar:hover,
+  #dashboard .dashboard-hero-avatar:focus-visible { outline:0; transform:translateY(-1px); box-shadow:0 0 0 3px rgba(255,255,255,.18),inset 0 1px 2px rgba(255,255,255,.32),0 4px 8px rgba(8,28,120,.2); }
+  #dashboard .dashboard-hero-avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  #dashboard .dashboard-hero-avatar span { color:#fff; font-size:12px; font-weight:600; line-height:1; }
+  #dashboard .dashboard-hero-search { position:relative; isolation:isolate; display:flex; align-items:center; gap:10px; flex:1 1 420px; max-width:760px; min-width:180px; height:38px; margin:0 auto; padding:0 13px; border:1px solid transparent; border-radius:999px; background:transparent; box-shadow:inset 0 1px 2px rgba(255,255,255,.2),inset 0 -1px 2px rgba(255,255,255,.1),0 2px 5px rgba(8,28,120,.1); backdrop-filter:blur(1px); -webkit-backdrop-filter:blur(1px); color:#fff; }
+  #dashboard .dashboard-hero-search::before,
+  #dashboard .dashboard-hero-date::before,
+  #dashboard .dashboard-hero-refresh::before { position:absolute; inset:0; padding:1px; border-radius:inherit; background:linear-gradient(145deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.14) 38%,rgba(255,255,255,.10) 62%,rgba(255,255,255,.55) 100%); content:""; pointer-events:none; -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; }
+  #dashboard .dashboard-hero-search > i,
+  #dashboard .dashboard-hero-search > input,
+  #dashboard .dashboard-hero-search > button,
+  #dashboard .dashboard-hero-date > *,
+  #dashboard .dashboard-hero-refresh > * { position:relative; z-index:1; }
+  #dashboard .dashboard-hero-search > i { flex:0 0 auto; color:#e7efff; font-size:17px; }
+  #dashboard .dashboard-hero-search input { width:100%; min-width:0; height:100%; padding:0; border:0; outline:0; background:transparent; color:#fff; font:inherit; font-size:12px; }
+  #dashboard .dashboard-hero-search input::placeholder { color:rgba(255,255,255,.6); opacity:1; }
+  #dashboard .dashboard-hero-search:focus-within { border-color:transparent; background:transparent; box-shadow:0 0 0 3px rgba(255,255,255,.12),inset 0 1px 2px rgba(255,255,255,.28),inset 0 -1px 2px rgba(255,255,255,.12); }
+  #dashboard .dashboard-search-clear { display:none; flex:0 0 auto; width:24px; height:24px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.16); color:#fff; font-size:17px; line-height:1; cursor:pointer; }
+  #dashboard .dashboard-hero-search.has-query .dashboard-search-clear { display:grid; place-items:center; }
+  #dashboard .dashboard-search-results { position:absolute; z-index:30; top:calc(100% + 9px); left:0; right:0; max-height:min(380px,60vh); overflow:auto; padding:6px; border:1px solid #e2e8f0; border-radius:13px; background:#fff; box-shadow:0 16px 36px rgba(15,23,42,.2); color:#17243d; }
+  #dashboard .dashboard-search-results[hidden] { display:none; }
+  #dashboard .dashboard-search-result { display:flex; align-items:center; gap:10px; width:100%; padding:10px; border:0; border-radius:9px; background:#fff; color:#17243d; text-align:left; cursor:pointer; }
+  #dashboard .dashboard-search-result:hover,
+  #dashboard .dashboard-search-result:focus-visible { outline:0; background:#eff5ff; }
+  #dashboard .dashboard-search-result-icon { display:grid; width:32px; height:32px; flex:0 0 32px; place-items:center; border-radius:50%; background:#eaf1ff; color:#2463d8; font-size:16px; }
+  #dashboard .dashboard-search-result-copy { min-width:0; flex:1; }
+  #dashboard .dashboard-search-result-copy strong,
+  #dashboard .dashboard-search-result-copy span { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #dashboard .dashboard-search-result-copy strong { color:#17243d; font-size:12px; }
+  #dashboard .dashboard-search-result-copy span { margin-top:3px; color:#718096; font-size:11px; }
+  #dashboard .dashboard-search-result-type { flex:0 0 auto; color:#64748b; font-size:10px; font-weight:700; }
+  #dashboard .dashboard-search-empty { padding:14px 12px; color:#64748b; font-size:12px; }
+  #dashboard .dashboard-hero-date,
+  #dashboard .dashboard-hero-refresh { position:relative; isolation:isolate; display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:34px; padding:6px 12px; border:1px solid transparent; border-radius:999px; background:transparent; box-shadow:inset 0 1px 2px rgba(255,255,255,.2),inset 0 -1px 2px rgba(255,255,255,.1),0 2px 5px rgba(8,28,120,.1); backdrop-filter:blur(1px); -webkit-backdrop-filter:blur(1px); color:#fff; font-size:12px; font-weight:500; }
+  #dashboard .dashboard-hero-date i,
+  #dashboard .dashboard-hero-refresh i { font-size:15px; }
+  #dashboard .dashboard-hero-refresh { cursor:pointer; }
+  #dashboard .dashboard-hero-refresh:hover,
+  #dashboard .dashboard-hero-refresh:focus-visible { background:transparent; box-shadow:inset 0 1px 2px rgba(255,255,255,.32),inset 0 -1px 2px rgba(255,255,255,.14),0 4px 8px rgba(8,28,120,.16); }
+  #dashboard .dashboard-hero-copy { margin-top:14px; }
+  #dashboard .dashboard-hero-kicker { margin:0 0 5px; color:#dce8ff; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  #dashboard .dashboard-hero-copy h2 { margin:0; color:#fff; font-size:clamp(22px,2.3vw,30px); line-height:1.2; }
+  #dashboard .dashboard-hero-copy > p:last-child { margin:5px 0 0; color:#e5edff; font-size:13px; }
+  #dashboard .dashboard-quick-actions { display:flex; align-items:flex-start; justify-content:flex-end; gap:clamp(10px,1.6vw,20px); width:100%; margin:22px 0 0 auto; }
+  #dashboard .dashboard-quick-actions button { display:flex; flex:0 1 88px; flex-direction:column; align-items:center; justify-content:flex-start; gap:8px; min-width:72px; max-width:92px; min-height:72px; padding:0 4px; border:0; border-radius:0; background:transparent; color:rgba(255,255,255,.92); font:inherit; font-size:11px; font-weight:500; cursor:pointer; }
+  #dashboard .dashboard-quick-actions button:hover,
+  #dashboard .dashboard-quick-actions button:focus-visible { outline:0; background:transparent; }
+  #dashboard .dashboard-quick-actions button > span:first-child { position:relative; isolation:isolate; display:grid; width:42px; height:42px; flex:0 0 42px; place-items:center; overflow:visible; border:0; border-radius:50%; background:transparent; box-shadow:inset 0 1.5px 2px rgba(255,255,255,.38),inset 0 -2px 3px rgba(255,255,255,.14),inset 2px 0 3px -1px rgba(255,255,255,.14),inset -2px 0 3px -1px rgba(255,255,255,.14),0 3px 7px rgba(8,28,120,.16); backdrop-filter:blur(1px); -webkit-backdrop-filter:blur(1px); transition:.22s cubic-bezier(.3,1.4,.5,1); }
+  #dashboard .dashboard-quick-actions button > span:first-child::before { position:absolute; inset:0; padding:1px; border-radius:50%; background:linear-gradient(145deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.14) 38%,rgba(255,255,255,.10) 62%,rgba(255,255,255,.55) 100%); content:""; pointer-events:none; -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; }
+  #dashboard .dashboard-quick-actions button > span:first-child::after { position:absolute; inset:1px; z-index:0; border-radius:50%; background:radial-gradient(60% 38% at 32% 16%,rgba(255,255,255,.34),transparent),radial-gradient(50% 32% at 70% 90%,rgba(255,255,255,.16),transparent); content:""; pointer-events:none; }
+  #dashboard .dashboard-quick-actions button > span:first-child > svg { position:relative; z-index:1; display:block; width:18px; height:18px; overflow:visible; color:#fff; fill:currentColor; shape-rendering:geometricPrecision; }
+  #dashboard .dashboard-quick-actions button > span:first-child > svg.bx::before { content:none !important; }
+  #dashboard .dashboard-quick-actions button > span:last-child { max-width:100%; color:rgba(255,255,255,.92); font-size:11px; font-weight:500; line-height:1.2; text-align:center; text-wrap:balance; }
+  #dashboard .dashboard-quick-actions button:hover > span:first-child,
+  #dashboard .dashboard-quick-actions button:focus-visible > span:first-child { transform:translateY(-2px) scale(1.06); box-shadow:inset 0 1.5px 2px rgba(255,255,255,.52),inset 0 -2px 3px rgba(255,255,255,.2),inset 2px 0 3px -1px rgba(255,255,255,.2),inset -2px 0 3px -1px rgba(255,255,255,.2),0 5px 10px rgba(8,28,120,.22); }
+  #dashboard .dashboard-quick-actions button:active > span:first-child { transform:scale(.96); }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+    #dashboard .dashboard-quick-actions button > span:first-child { backdrop-filter:none; -webkit-backdrop-filter:none; }
+    #dashboard .dashboard-quick-actions button > span:first-child::before { opacity:1; }
+    #dashboard .dashboard-hero-search,
+    #dashboard .dashboard-hero-date,
+    #dashboard .dashboard-hero-refresh { backdrop-filter:none; -webkit-backdrop-filter:none; }
+  }
+  #dashboard .dashboard-profile-status { display:flex; align-items:center; gap:8px; margin-top:8px; color:#e5edff; font-size:11px; }
+  #dashboard .dashboard-profile-status > i { font-size:14px; }
+  #dashboard .dashboard-profile-status .pill { padding:3px 8px; border:1px solid rgba(255,255,255,.25); border-radius:999px; font-size:10px; font-weight:700; }
+  #dashboard .recruiter-dashboard-hero { margin-bottom:10px; }
+  #dashboard .dashboard-inbox-kpis { grid-template-columns:repeat(5,minmax(0,1fr)); gap:5px; margin:0 0 20px; padding:0; border:0; }
+  #dashboard .dashboard-inbox-kpis .inbox-kpi { display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:minmax(30px,auto) 1fr; align-items:center; gap:0 10px; min-width:0; min-height:84px; padding:12px 14px; border:1px solid #e9edf3; border-radius:15px; background:#fff; box-shadow:0 3px 12px rgba(20,36,61,.06); color:#172033; }
+  #dashboard .dashboard-inbox-kpis .inbox-kpi:hover,
+  #dashboard .dashboard-inbox-kpis .inbox-kpi:focus-visible { border-color:#bfd4ff; background:#fff; box-shadow:0 8px 20px rgba(37,99,235,.09); }
+  #dashboard .dashboard-kpi-label { grid-column:1; grid-row:1; min-width:0; color:#475569; font-size:12px; font-weight:600; line-height:1.15; overflow-wrap:anywhere; }
+  #dashboard .dashboard-metric-chevron { grid-column:2; grid-row:1; color:#64748b; font-size:18px; }
+  #dashboard .dashboard-kpi-main { display:flex; grid-column:1; grid-row:2; align-items:center; gap:10px; min-width:0; margin-top:7px; }
+  #dashboard .dashboard-kpi-icon { display:inline-flex; width:22px; height:22px; flex:0 0 22px; align-items:center; justify-content:center; color:#111827; font-size:22px; }
+  #dashboard .dashboard-kpi-main strong { color:#0e1530; font-size:26px; font-weight:500; line-height:1; }
+  #dashboard .dashboard-kpi-trend { align-self:end; justify-self:end; grid-column:2; grid-row:2; margin:0; color:#159447; font-size:10px; font-weight:600; line-height:1.15; text-align:right; white-space:nowrap; }
+  #dashboard .dashboard-kpi-trend.is-neutral { color:#718096; }
+  #dashboard .dashboard-kpi-trend.is-attention { color:#c77919; }
+  #dashboard .recruiter-inbox { margin:0 0 24px; border-color:#e7ebf2; border-radius:14px; box-shadow:0 7px 22px rgba(15,23,42,.04); }
+  #dashboard .recruiter-inbox-head { align-items:center; padding:17px 20px; border-bottom:1px solid #eef2f7; }
+  #dashboard .recruiter-inbox-head h3 { color:#18253d; font-size:17px; }
+  #dashboard .recruiter-inbox-head p { margin-top:4px; color:#718096; }
+  #dashboard .recruiter-task-row { min-height:68px; padding:12px 20px; }
+  #dashboard .recruiter-task-icon { border-radius:50%; }
+
+  @media (max-width:900px) {
+    #dashboard .dashboard-inbox-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    #dashboard .dashboard-quick-actions { justify-content:flex-end; gap:clamp(8px,1.2vw,14px); width:100%; margin:22px 0 0 auto; }
+    #dashboard .dashboard-hero-search { max-width:none; }
+  }
+  @media (max-width:560px) {
+    #dashboard .recruiter-dashboard-hero { padding:16px; border-radius:13px; }
+    #dashboard .dashboard-hero-topline { flex-wrap:wrap; justify-content:space-between; }
+    #dashboard .dashboard-hero-search { order:3; flex:1 0 100%; height:40px; margin:0; }
+    #dashboard .dashboard-hero-date,
+    #dashboard .dashboard-hero-refresh { min-height:32px; padding:5px 10px; }
+    #dashboard .dashboard-hero-copy h2 { max-width:17em; font-size:23px; }
+    #dashboard .dashboard-quick-actions { display:flex; justify-content:flex-start; gap:8px; width:100%; margin:17px 0 0; padding:4px 0 8px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scrollbar-width:none; scroll-snap-type:x proximity; }
+    #dashboard .dashboard-quick-actions::-webkit-scrollbar { display:none; }
+    #dashboard .dashboard-quick-actions button { flex:0 0 64px; min-width:64px; max-width:64px; min-height:76px; padding:0; gap:7px; scroll-snap-align:start; }
+    #dashboard .dashboard-quick-actions button > span:last-child { font-size:11px; }
+    #dashboard .dashboard-profile-status { align-items:flex-start; }
+    #dashboard .dashboard-inbox-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+    #dashboard .dashboard-inbox-kpis .inbox-kpi { grid-template-rows:minmax(28px,auto) auto auto; min-height:82px; padding:10px 11px; }
+    #dashboard .dashboard-kpi-label { font-size:11px; }
+    #dashboard .dashboard-metric-chevron { font-size:16px; }
+    #dashboard .dashboard-kpi-main { gap:8px; margin-top:6px; }
+    #dashboard .dashboard-kpi-main strong { font-size:22px; }
+    #dashboard .dashboard-kpi-icon { font-size:19px; }
+    #dashboard .dashboard-kpi-trend { grid-column:1 / -1; grid-row:3; align-self:end; justify-self:end; width:100%; margin-top:5px; font-size:9px; }
+    #dashboard .recruiter-task-row { grid-template-columns:34px minmax(0,1fr) auto; gap:9px; padding:11px 12px; }
+    #dashboard .recruiter-task-row .primary-btn { grid-column:auto; width:auto; min-height:36px; padding:7px 9px; font-size:11px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #dashboard .dashboard-quick-actions button > span:first-child { transition:none !important; }
+    #dashboard .dashboard-quick-actions button:hover > span:first-child,
+    #dashboard .dashboard-quick-actions button:focus-visible > span:first-child,
+    #dashboard .dashboard-quick-actions button:active > span:first-child { transform:none !important; }
+  }
+
   .workspace-back {
     display: inline-flex;
     align-items: center;
@@ -4466,7 +4758,10 @@
     .application-row > :not(.application-row-selection) { grid-column: 2; }
     .structured-hiring-actions > * { flex: 1 1 160px; }
     .structured-hiring-actions input { min-width: 0; }
-    .screening-toolbar,.screening-config { grid-template-columns: 1fr; }
+    .screening-toolbar,.screening-config,.application-document-add-row { grid-template-columns: 1fr; }
+    .job-automated-emails__head,.job-automated-emails__add { align-items:stretch; flex-direction:column; }
+    .job-automated-email-fields { grid-template-columns:1fr; }
+    .job-automated-email-fields .full-width { grid-column:auto; }
     .application-detail-grid { grid-template-columns: 1fr; }
     .match-summary { grid-template-columns: 1fr; }
     .match-score { width: 88px; height: 88px; }
@@ -4474,7 +4769,10 @@
     .match-criterion { grid-template-columns: 1fr; }
     .scorecard-row { grid-template-columns: 1fr 1fr; }
     .scorecard-row > label:last-child { grid-column: 1 / -1; }
-    .job-template-bar { grid-template-columns: 1fr; }
+    .job-template-bar { grid-template-columns: 1fr; grid-template-rows:auto; }
+    .job-template-bar .form-group > label,
+    .job-template-bar .form-group > select,
+    .job-template-bar button { grid-column:1; grid-row:auto; }
     .application-review-panel { padding: 18px; }
     .application-cv-preview-body,
     .application-cv-preview-frame,
@@ -4608,7 +4906,7 @@
 <!-- ================= MAIN ================= -->
 <div class="main">
 
-  <header id="recruiterDashboardToolbar" class="dashboard-toolbar" aria-label="Recruiter dashboard tools">
+  <header id="recruiterDashboardToolbar" class="dashboard-toolbar dashboard-overview-hidden" aria-label="Recruiter dashboard tools">
     <div class="dashboard-toolbar-copy">
       <span>Recruiter workspace</span>
       <strong id="desktopPageTitle">Dashboard</strong>
@@ -4630,7 +4928,7 @@
   </header>
 
   <!-- TOP STATS -->
-  <div id="recruiterDashboardStats" class="stats">
+  <div id="recruiterDashboardStats" class="stats dashboard-overview-hidden">
     <div class="stat"><div><h3 id="totalCVs">0</h3><span>Total CVs Available</span></div><i class='bx bx-file'></i></div>
     <div class="stat"><div><h3 id="unlockedCVs">0</h3><span>Unlocked CVs</span></div><i class='bx bx-lock-open'></i></div>
     <div class="stat"><div><h3 id="remainingUnlocks">0</h3><span>Remaining Unlocks</span></div><i class='bx bx-user-check'></i></div>
@@ -4639,32 +4937,72 @@
 
   <!-- DASHBOARD -->
   <div id="dashboard" class="section active">
-    <h2>Welcome to Your Recruiter Dashboard</h2>
-    <p style="color:#6b7280; margin-bottom:20px;">Manage your job postings and access candidate CVs</p>
+    <section class="recruiter-dashboard-hero" aria-labelledby="recruiterDashboardWelcome">
+      <div class="dashboard-hero-topline">
+        <a class="dashboard-hero-avatar" href="account-page.html" aria-label="Manage profile photo" title="Manage profile photo">
+          <img id="recruiterDashboardAvatarImage" alt="" referrerpolicy="no-referrer" hidden>
+          <span id="recruiterDashboardAvatarInitials" aria-hidden="true">CU</span>
+        </a>
+        <div class="dashboard-hero-date"><i class='bx bx-calendar'></i><time id="recruiterDashboardDate">Today</time></div>
+        <div class="dashboard-hero-search" id="recruiterDashboardSearchWrap">
+          <i class='bx bx-search' aria-hidden="true"></i>
+          <input id="recruiterDashboardSearch" type="search" autocomplete="off" aria-label="Search candidates, contacts, companies or jobs" aria-controls="recruiterDashboardSearchResults" aria-expanded="false" placeholder="Search for Candidates, Contacts, Companies or Jobs">
+          <button class="dashboard-search-clear" type="button" id="clearRecruiterDashboardSearch" aria-label="Clear search">×</button>
+          <div class="dashboard-search-results" id="recruiterDashboardSearchResults" role="listbox" aria-label="Search results" hidden></div>
+        </div>
+        <button class="dashboard-hero-refresh" type="button" id="refreshRecruiterInboxBtn" title="Refresh hiring activity">
+          <i class='bx bx-refresh'></i><span>Refresh</span>
+        </button>
+      </div>
+      <div class="dashboard-hero-copy">
+        <p class="dashboard-hero-kicker">Recruiter workspace</p>
+        <h2 id="recruiterDashboardWelcome">Welcome back. Today’s a hiring day.</h2>
+        <p id="recruiterDashboardIntro">Your candidates and open roles are ready to review.</p>
+      </div>
+      <nav class="dashboard-quick-actions" aria-label="Quick hiring actions">
+        <button type="button" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))"><span aria-hidden="true"><svg class="bx bx-briefcase" viewBox="0 0 24 24" focusable="false" shape-rendering="geometricPrecision"><path d="M8.5 6V4.75c0-1.1.9-2 2-2h3c1.1 0 2 .9 2 2V6h-2V4.75h-3V6z"/><path d="M5 7.5h14A2 2 0 0 1 21 9.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Zm5 2v2h4v-2z"/></svg></span><span>Post a Job</span></button>
+        <button type="button" onclick="showSection('applications', document.getElementById('applicationsNav'))"><span aria-hidden="true"><svg class="bx bx-user-check" viewBox="0 0 24 24" focusable="false" shape-rendering="geometricPrecision"><circle cx="9" cy="7.5" r="3.5"/><path d="M2.4 20c.3-3.35 2.7-5.4 6.6-5.4 2.1 0 3.75.62 4.8 1.8l-1.5 1.5c-.75-.8-1.85-1.2-3.3-1.2-2.55 0-4.05 1.15-4.45 3.3z"/><path d="m15.2 15.4 1.55-1.55 1.9 1.9 3.35-3.35 1.55 1.55-4.9 4.9z"/></svg></span><span>Applications</span></button>
+        <button type="button" onclick="showSection('cvs', document.querySelector('.nav a:nth-child(5)'))"><span aria-hidden="true"><svg class="bx bx-file" viewBox="0 0 24 24" focusable="false" shape-rendering="geometricPrecision"><path fill-rule="evenodd" d="M6 2.5h7l6 6v13H6a1.5 1.5 0 0 1-1.5-1.5V4A1.5 1.5 0 0 1 6 2.5Zm7 0v6h6zm-5 8.5h8v1.6H8zm0 3.5h8v1.6H8z"/></svg></span><span>CV Library</span></button>
+        <button type="button" onclick="showSection('jobs', document.querySelector('.nav a:nth-child(4)'))"><span aria-hidden="true"><svg class="bx bx-list-ul" viewBox="0 0 24 24" focusable="false" shape-rendering="geometricPrecision"><path d="M4 4h3v3H4zm5 0h11v3H9zM4 10.5h3v3H4zm5 0h11v3H9zM4 17h3v3H4zm5 0h11v3H9z"/></svg></span><span>Manage Jobs</span></button>
+        <button type="button" onclick="showSection('public-listings', document.querySelector('[data-nav-public-listings]'))"><span aria-hidden="true"><svg class="bx bx-globe" viewBox="0 0 24 24" focusable="false" shape-rendering="geometricPrecision"><path fill-rule="evenodd" d="M12 2.8a9.2 9.2 0 1 0 0 18.4 9.2 9.2 0 0 0 0-18.4Zm0 2a7.2 7.2 0 1 1 0 14.4 7.2 7.2 0 0 1 0-14.4Z"/><path d="M11 4.7c-2.3 1.7-3.5 4.2-3.5 7.3s1.2 5.6 3.5 7.3c-1-2.2-1.5-4.6-1.5-7.3s.5-5.1 1.5-7.3Zm2 0c1 2.2 1.5 4.6 1.5 7.3s-.5 5.1-1.5 7.3c2.3-1.7 3.5-4.2 3.5-7.3S15.3 6.4 13 4.7Zm-9.8 6.4h17.6v1.8H3.2z"/></svg></span><span>Public Listings</span></button>
+      </nav>
+      <div class="dashboard-profile-status"><i class='bx bx-buildings' aria-hidden="true"></i><span id="companyProfileStatusPill" class="pill"><i class='bx bx-info-circle'></i> Company profile not loaded yet</span></div>
+    </section>
+
+    <div class="inbox-kpis dashboard-inbox-kpis" aria-label="Recruiter dashboard metrics">
+      <button class="inbox-kpi" type="button" data-inbox-view="active-jobs">
+        <span class="dashboard-kpi-label">Open jobs</span><i class='bx bx-chevron-right dashboard-metric-chevron' aria-hidden="true"></i>
+        <span class="dashboard-kpi-main"><i class='bx bx-briefcase dashboard-kpi-icon' aria-hidden="true"></i><strong id="dashboardOpenJobsCount">0</strong></span>
+        <span class="dashboard-kpi-trend" id="dashboardOpenJobsTrend">0 new</span>
+      </button>
+      <button class="inbox-kpi" type="button" data-inbox-view="new-applications">
+        <span class="dashboard-kpi-label">New applications</span><i class='bx bx-chevron-right dashboard-metric-chevron' aria-hidden="true"></i>
+        <span class="dashboard-kpi-main"><i class='bx bx-id-card dashboard-kpi-icon' aria-hidden="true"></i><strong id="dashboardNewApplicationsCount">0</strong></span>
+        <span class="dashboard-kpi-trend" id="dashboardNewApplicationsTrend">0 last 24h</span>
+      </button>
+      <button class="inbox-kpi" type="button" data-inbox-view="live-adverts">
+        <span class="dashboard-kpi-label">Live adverts</span><i class='bx bx-chevron-right dashboard-metric-chevron' aria-hidden="true"></i>
+        <span class="dashboard-kpi-main"><span class="dashboard-kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" focusable="false" shape-rendering="geometricPrecision"><path fill="currentColor" d="M3 10v4h3l10 5V5L6 10H3Zm3 2h2.53L14 9.27v5.46L8.53 12H6Zm2.18 3.17L10.5 21h3l-2.4-4.8-1.92-1.03ZM18 9.4a3.2 3.2 0 0 1 0 5.2v-5.2Z"/></svg></span><strong id="dashboardLiveAdvertsCount">0</strong></span>
+        <span class="dashboard-kpi-trend" id="dashboardLiveAdvertsTrend">0 new</span>
+      </button>
+      <button class="inbox-kpi" type="button" data-inbox-view="ageing-applications">
+        <span class="dashboard-kpi-label">Ageing applications</span><i class='bx bx-chevron-right dashboard-metric-chevron' aria-hidden="true"></i>
+        <span class="dashboard-kpi-main"><i class='bx bx-time-five dashboard-kpi-icon' aria-hidden="true"></i><strong id="dashboardAgeingApplicationsCount">0</strong></span>
+        <span class="dashboard-kpi-trend is-attention">Over 7 days</span>
+      </button>
+      <button class="inbox-kpi" type="button" data-inbox-view="all-applications">
+        <span class="dashboard-kpi-label">Avg. application age</span><i class='bx bx-chevron-right dashboard-metric-chevron' aria-hidden="true"></i>
+        <span class="dashboard-kpi-main"><i class='bx bx-calendar dashboard-kpi-icon' aria-hidden="true"></i><strong id="dashboardAverageApplicationAge">0</strong></span>
+        <span class="dashboard-kpi-trend is-neutral">Open pipeline · days</span>
+      </button>
+    </div>
 
     <section class="recruiter-inbox" aria-labelledby="recruiterInboxTitle">
       <div class="recruiter-inbox-head">
         <div>
-          <h3 id="recruiterInboxTitle" tabindex="-1">Recruiter inbox</h3>
+          <h3 id="recruiterInboxTitle" tabindex="-1">Recent activity</h3>
           <p id="recruiterInboxSummary">Loading the work that needs your attention...</p>
         </div>
-        <button class="primary-btn btn-ghost" type="button" id="refreshRecruiterInboxBtn">
-          <i class='bx bx-refresh'></i> Refresh
-        </button>
-      </div>
-      <div class="inbox-kpis">
-        <button class="inbox-kpi" type="button" data-inbox-view="new-applications">
-          <strong id="inboxNewCount">0</strong><span>New applications</span>
-        </button>
-        <button class="inbox-kpi" type="button" data-inbox-view="interviews">
-          <strong id="inboxInterviewCount">0</strong><span>Interviews</span>
-        </button>
-        <button class="inbox-kpi" type="button" data-inbox-view="closing-jobs">
-          <strong id="inboxClosingCount">0</strong><span>Closing in 7 days</span>
-        </button>
-        <button class="inbox-kpi" type="button" data-inbox-view="active-jobs">
-          <strong id="inboxActiveJobsCount">0</strong><span>Active jobs</span>
-        </button>
       </div>
       <div class="recruiter-task-list" id="recruiterTaskList">
         <div class="recruiter-task-row">
@@ -4673,57 +5011,6 @@
         </div>
       </div>
     </section>
-
-    <h3 class="dashboard-shortcuts-title">Quick actions</h3>
-
-    <div class="cv-grid">
-      <div class="cv-card">
-        <h3><i class='bx bx-file'></i> CV Library</h3>
-        <p>Access uploaded CVs from job seekers</p>
-        <button class="primary-btn" onclick="showSection('cvs', document.querySelector('.nav a:nth-child(5)'))">
-          Browse CVs
-        </button>
-      </div>
-
-      <div class="cv-card">
-        <h3><i class='bx bx-user-check'></i> Direct Applications</h3>
-        <p>Review candidates, screening answers and submitted CVs in one place</p>
-        <button class="primary-btn" onclick="showSection('applications', document.getElementById('applicationsNav'))">
-          Review Applications
-        </button>
-      </div>
-
-      <div class="cv-card">
-        <h3><i class='bx bx-plus-circle'></i> Post a Job</h3>
-        <p>Create new job listings</p>
-        <button class="primary-btn" onclick="showSection('post-job', document.querySelector('.nav a:nth-child(3)'))">
-          Post Job
-        </button>
-      </div>
-
-      <div class="cv-card">
-        <h3><i class='bx bx-briefcase'></i> Manage Jobs</h3>
-        <p>View and edit your job postings</p>
-        <button class="primary-btn" onclick="showSection('jobs', document.querySelector('.nav a:nth-child(4)'))">
-          View Jobs
-        </button>
-      </div>
-
-      <div class="cv-card">
-        <h3><i class='bx bx-world'></i> View as Member</h3>
-        <p>Open your live public listings the same way job seekers see them.</p>
-        <button class="primary-btn" onclick="showSection('public-listings', document.querySelector('[data-nav-public-listings]'))">
-          View Public Listings
-        </button>
-      </div>
-    </div>
-
-    <div style="margin-top:18px;">
-      <div class="pill" id="companyProfileStatusPill">
-        <i class='bx bx-info-circle'></i>
-        Company profile not loaded yet
-      </div>
-    </div>
   </div>
 
   <!-- COMPANY PROFILE -->
@@ -4913,7 +5200,7 @@
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div class="jobs-header-actions">
           <select class="filter" id="manageJobsRange" title="Date range">
             <option value="6">Last 6 Months</option>
             <option value="12">Last 12 Months</option>
@@ -5062,6 +5349,10 @@
         <form id="jobForm" novalidate>
           <input type="hidden" name="jobId" id="jobId" value="">
           <input type="hidden" name="companyProfileVersion" id="companyProfileVersion" value="">
+          <input type="hidden" name="company" id="job_company" value="">
+          <input type="hidden" name="email" id="job_email" value="">
+          <input type="hidden" name="website" id="job_website" value="">
+          <input type="hidden" name="logo" id="job_logo" value="">
           <input type="hidden" name="salary" id="jobSalaryDisplay" value="">
 
           <section class="job-wizard-panel-card" data-job-step="1">
@@ -5317,8 +5608,8 @@
             <div class="job-wizard-panel-head">
               <div>
                 <p class="job-wizard-kicker">Step 3</p>
-                <h3>Screening Questions</h3>
-                <p>Collect consistent answers that help your team review applicants fairly.</p>
+                <h3>Application Questions</h3>
+                <p>Collect consistent answers and request the documents applicants need to provide.</p>
               </div>
               <span class="pill"><span id="screeningQuestionCount">0</span>/8 questions</span>
             </div>
@@ -5371,6 +5662,14 @@
               </details>
 
               <div class="screening-question-list" id="screeningQuestionList"></div>
+
+              <section class="application-document-builder" aria-labelledby="applicationDocumentHeading">
+                <div class="application-document-builder-head">
+                  <h4 id="applicationDocumentHeading">Application documents</h4>
+                  <p>Select the supporting files candidates should submit. Candidates can upload one PDF, DOCX, JPG, or PNG per request, up to 5 MB each.</p>
+                </div>
+                <div class="application-document-list" id="applicationDocumentList"></div>
+              </section>
             </div>
           </section>
 
@@ -5421,37 +5720,31 @@
               <li><span>6</span><div><strong>Hired</strong><small>Close the role with a successful candidate.</small></div></li>
             </ol>
 
-            <div class="job-section-divider">
-              <div>
-                <h4>Company Profile</h4>
-                <p id="companyAutofillHint">These details are kept consistent with your saved recruiter profile.</p>
+            <section class="job-automated-emails" aria-labelledby="jobAutomatedEmailsHeading">
+              <div class="job-automated-emails__head">
+                <div>
+                  <h4 id="jobAutomatedEmailsHeading">Automated Emails</h4>
+                  <p>Send candidates a prepared email when their application moves to a selected stage. Scheduled messages are cancelled if their stage changes before delivery.</p>
+                </div>
               </div>
-            </div>
+              <div class="job-automated-emails__add">
+                <div class="form-group">
+                  <label for="automatedEmailStatusSelect">Email candidates when they move to</label>
+                  <select id="automatedEmailStatusSelect">
+                    <option value="viewed">Reviewed</option>
+                    <option value="shortlisted">Shortlisted</option>
+                    <option value="interview">Interview</option>
+                    <option value="offer">Offer</option>
+                    <option value="hired">Hired</option>
+                    <option value="unsuccessful">Unsuccessful</option>
+                  </select>
+                </div>
+                <button type="button" class="job-inline-add-button" id="addAutomatedEmailBtn"><i class='bx bx-plus-circle'></i> Add Automated Email</button>
+              </div>
+              <div class="job-automated-email-list" id="jobAutomatedEmailList"></div>
+              <p class="job-automated-email-note">Messages are sent through Career Unified, with replies directed to your recruiter email. Immediate emails are processed within about 5 minutes. These rules apply to Direct Apply candidates.</p>
+            </section>
 
-            <div class="job-company-summary">
-              <div class="form-group">
-                <label for="job_company">Company Name <span class="required-mark">*</span></label>
-                <input type="text" name="company" required id="job_company">
-              </div>
-              <div class="form-group">
-                <label for="job_email">Recruiter Email <span class="required-mark">*</span></label>
-                <input type="email" name="email" required id="job_email">
-              </div>
-              <div class="form-group">
-                <label for="job_website">Website</label>
-                <input type="url" name="website" id="job_website">
-              </div>
-              <div class="form-group">
-                <label for="job_logo">Logo URL</label>
-                <input type="url" name="logo" id="job_logo">
-              </div>
-            </div>
-
-            <div class="helper" id="companyAutofillHelper" hidden>
-              <span><i class='bx bx-lock-alt'></i> Auto-filled from Company Profile</span>
-              <span aria-hidden="true">|</span>
-              <a href="#" onclick="showSection('company', document.querySelector('.nav a:nth-child(2)')); return false;">Edit Company Profile</a>
-            </div>
           </section>
 
           <section class="job-wizard-panel-card job-confirmation-panel" data-job-step="5" hidden>
@@ -6705,8 +6998,12 @@ function showSection(id, el) {
   document.querySelector('.main')?.classList.toggle('post-job-open', id === 'post-job');
 
   const isStandaloneSettingsPage = id === 'career-site' || id === 'people' || id === 'integrations';
-  document.getElementById('recruiterDashboardToolbar')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
-  document.getElementById('recruiterDashboardStats')?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
+  const dashboardToolbar = document.getElementById('recruiterDashboardToolbar');
+  const dashboardStats = document.getElementById('recruiterDashboardStats');
+  dashboardToolbar?.classList.toggle('dashboard-overview-hidden', id === 'dashboard');
+  dashboardStats?.classList.toggle('dashboard-overview-hidden', id === 'dashboard');
+  dashboardToolbar?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
+  dashboardStats?.classList.toggle('career-site-hidden-global', isStandaloneSettingsPage);
 
   document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -7531,6 +7828,8 @@ let workspaceCompanyId = null;
 let recruiterData = null;
 let allCVsCount = 0;
 let screeningQuestionsDraft = [];
+let applicationDocumentsDraft = [];
+let automatedEmailsDraft = [];
 let jobFaqsDraft = [];
 let currentJobWizardStep = 1;
 let recruiterApplicationsCache = [];
@@ -7548,6 +7847,15 @@ const JOB_HIRING_PROCESS = [
   'Offer',
   'Hired'
 ];
+
+const AUTOMATED_EMAIL_STATUS_LABELS = {
+  viewed: 'Reviewed',
+  shortlisted: 'Shortlisted',
+  interview: 'Interview',
+  offer: 'Offer',
+  hired: 'Hired',
+  unsuccessful: 'Unsuccessful',
+};
 
 const BUILTIN_JOB_TEMPLATES = {
   builtin_graduate: {
@@ -7751,6 +8059,37 @@ function safeCandidatePhotoURL(value) {
   }
 }
 
+function renderRecruiterDashboardAvatar(user, profile = {}) {
+  const image = document.getElementById('recruiterDashboardAvatarImage');
+  const initials = document.getElementById('recruiterDashboardAvatarInitials');
+  if (!image || !initials || !user) return;
+
+  const name = dashboardText(profile.name || user.displayName || user.email, 'Recruiter');
+  const photoURL = safeCandidatePhotoURL(profile.profilePhotoURL) || safeCandidatePhotoURL(user.photoURL);
+  initials.textContent = candidateInitials(name);
+  initials.hidden = Boolean(photoURL);
+  image.hidden = !photoURL;
+  image.alt = photoURL ? `${name} profile photo` : '';
+  image.onerror = () => {
+    image.hidden = true;
+    image.removeAttribute('src');
+    initials.hidden = false;
+  };
+  if (photoURL) image.src = photoURL;
+  else image.removeAttribute('src');
+}
+
+async function loadRecruiterDashboardAvatar(user) {
+  renderRecruiterDashboardAvatar(user);
+  try {
+    const profileSnapshot = await getDoc(doc(db, 'users', user.uid));
+    if (currentRecruiter?.uid !== user.uid) return;
+    renderRecruiterDashboardAvatar(user, profileSnapshot.exists() ? profileSnapshot.data() : {});
+  } catch (error) {
+    console.warn('Could not load recruiter profile photo for the dashboard.', error);
+  }
+}
+
 function candidateInitials(name) {
   return dashboardText(name, 'Candidate')
     .split(/\s+/)
@@ -7940,7 +8279,271 @@ function collectScreeningQuestions() {
     .slice(0, 8);
 }
 
+function normalizeApplicationDocumentRequest(documentRequest, index = 0) {
+  return {
+    id: dashboardText(documentRequest?.id, `application_document_${index + 1}`).slice(0, 80),
+    label: dashboardText(documentRequest?.label).slice(0, 120),
+    required: documentRequest?.required !== false,
+  };
+}
+
+function automatedEmailTemplateDefaults(templateKey, status = 'viewed') {
+  const role = '{{job_title}}';
+  const company = '{{company_name}}';
+  const templates = {
+    application_update: {
+      subject: `Application update: ${role}`,
+      message: `Hi {{candidate_name}},\n\nThank you for applying for ${role} at ${company}. Your application is being reviewed and we will contact you when there is a next step.\n\nKind regards,\n${company}`,
+    },
+    reviewed: {
+      subject: `Your application is under review: ${role}`,
+      message: `Hi {{candidate_name}},\n\nThank you for applying for ${role} at ${company}. We have reviewed your application and will contact you if there is a next step.\n\nKind regards,\n${company}`,
+    },
+    shortlisted: {
+      subject: `You have been shortlisted: ${role}`,
+      message: `Hi {{candidate_name}},\n\nThank you for applying for ${role}. We are pleased to let you know that your application has been shortlisted. We will be in touch with the next step shortly.\n\nKind regards,\n${company}`,
+    },
+    interview: {
+      subject: `Interview invitation: ${role}`,
+      message: `Hi {{candidate_name}},\n\nThank you for your interest in ${role}. We would like to invite you to an interview. We will contact you with the date, time, and format.\n\nKind regards,\n${company}`,
+    },
+    offer: {
+      subject: `Next step for your application: ${role}`,
+      message: `Hi {{candidate_name}},\n\nWe are pleased to let you know that we would like to progress your application for ${role} to the offer stage. We will share the formal details and next steps with you shortly.\n\nKind regards,\n${company}`,
+    },
+    hired: {
+      subject: `Congratulations on your new role: ${role}`,
+      message: `Hi {{candidate_name}},\n\nWe are delighted to let you know that you have been selected for ${role} at ${company}. Our team will be in touch with the next steps.\n\nKind regards,\n${company}`,
+    },
+    outcome: {
+      subject: `Application update: ${role}`,
+      message: `Hi {{candidate_name}},\n\nThank you for applying for ${role} at ${company} and for the time you invested in your application. After careful consideration, we have decided not to move forward with your application for this role.\n\nThis decision is specific to this opportunity, and we encourage you to apply for future roles that match your experience and interests. We wish you every success.\n\nKind regards,\n${company}`,
+    },
+    custom: {
+      subject: `Update about your application for ${role}`,
+      message: `Hi {{candidate_name}},\n\n\n\nKind regards,\n${company}`,
+    },
+  };
+  const key = templateKey || (status === 'viewed' ? 'reviewed' : status === 'unsuccessful' ? 'outcome' : status);
+  return templates[key] || templates.application_update;
+}
+
+function normalizeAutomatedEmailRule(rule, index = 0) {
+  const status = AUTOMATED_EMAIL_STATUS_LABELS[dashboardText(rule?.status).toLowerCase()]
+    ? dashboardText(rule.status).toLowerCase()
+    : 'viewed';
+  const templateKeys = new Set(['application_update', 'reviewed', 'shortlisted', 'interview', 'offer', 'hired', 'outcome', 'custom']);
+  const requestedTemplate = dashboardText(rule?.templateKey).toLowerCase();
+  const templateKey = templateKeys.has(requestedTemplate)
+    ? requestedTemplate
+    : status === 'viewed' ? 'reviewed' : status === 'unsuccessful' ? 'outcome' : status;
+  const defaults = automatedEmailTemplateDefaults(templateKey, status);
+  const allowedDelays = new Set([0, 12, 24, 48]);
+  const delayHours = Number(rule?.delayHours);
+  return {
+    id: dashboardText(rule?.id, `automated_email_${index + 1}`).slice(0, 80),
+    status,
+    templateKey,
+    delayHours: allowedDelays.has(delayHours) ? delayHours : 0,
+    fromName: dashboardText(rule?.fromName, companyProfile?.name || 'Recruitment Team').slice(0, 120),
+    subject: String(rule?.subject ?? defaults.subject).trim().slice(0, 180),
+    message: String(rule?.message ?? defaults.message).replace(/\r\n?/g, '\n').slice(0, 4000),
+  };
+}
+
+function collectAutomatedEmails() {
+  const usedStatuses = new Set();
+  return automatedEmailsDraft
+    .map(normalizeAutomatedEmailRule)
+    .filter(rule => {
+      if (!AUTOMATED_EMAIL_STATUS_LABELS[rule.status] || usedStatuses.has(rule.status)) return false;
+      usedStatuses.add(rule.status);
+      return true;
+    })
+    .slice(0, 6);
+}
+
+function renderAutomatedEmails() {
+  const list = document.getElementById('jobAutomatedEmailList');
+  if (!list) return;
+  if (!automatedEmailsDraft.length) {
+    list.innerHTML = '<div class="job-automated-email-empty">Nothing to see here yet. Add an email to notify candidates when their application stage changes.</div>';
+    return;
+  }
+  const templateOptions = [
+    ['application_update', 'Application update'],
+    ['reviewed', 'Application reviewed'],
+    ['shortlisted', 'Shortlisted'],
+    ['interview', 'Interview invitation'],
+    ['offer', 'Offer update'],
+    ['hired', 'Successful outcome'],
+    ['outcome', 'Regret to inform'],
+    ['custom', 'Custom message'],
+  ];
+  list.innerHTML = automatedEmailsDraft.map((rawRule, index) => {
+    const rule = normalizeAutomatedEmailRule(rawRule, index);
+    return `
+      <article class="job-automated-email-card" data-automated-email-id="${escapeDashboard(rule.id)}">
+        <div class="job-automated-email-card__head">
+          <h5>${escapeDashboard(AUTOMATED_EMAIL_STATUS_LABELS[rule.status])}</h5>
+          <button class="screening-remove" type="button" data-remove-automated-email="${escapeDashboard(rule.id)}" title="Remove automated email" aria-label="Remove automated email"><i class='bx bx-trash'></i></button>
+        </div>
+        <div class="job-automated-email-fields">
+          <div class="form-group">
+            <label>Email Template</label>
+            <select data-automated-email-field="templateKey">
+              ${templateOptions.map(([key, label]) => `<option value="${key}"${rule.templateKey === key ? ' selected' : ''}>${label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Scheduled To Send</label>
+            <select data-automated-email-field="delayHours">
+              <option value="0"${rule.delayHours === 0 ? ' selected' : ''}>Immediately</option>
+              <option value="12"${rule.delayHours === 12 ? ' selected' : ''}>After 12 Hours</option>
+              <option value="24"${rule.delayHours === 24 ? ' selected' : ''}>After 24 Hours</option>
+              <option value="48"${rule.delayHours === 48 ? ' selected' : ''}>After 48 Hours</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>From</label>
+            <input data-automated-email-field="fromName" type="text" maxlength="120" value="${escapeDashboard(rule.fromName)}" placeholder="${escapeDashboard(companyProfile?.name || 'Recruitment Team')}">
+            <p class="job-automated-email-note">Sent from Career Unified on behalf of this team. Candidate replies go to the recruiter email in your company profile.</p>
+          </div>
+          <div class="form-group full-width">
+            <label>Email Subject</label>
+            <input data-automated-email-field="subject" type="text" maxlength="180" value="${escapeDashboard(rule.subject)}">
+          </div>
+          <div class="form-group full-width">
+            <label>Email Message</label>
+            <textarea data-automated-email-field="message" maxlength="4000">${escapeDashboard(rule.message)}</textarea>
+            <p class="job-automated-email-note">Personalize with {{candidate_name}}, {{job_title}}, and {{company_name}}.</p>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+function setupAutomatedEmails() {
+  renderAutomatedEmails();
+  const list = document.getElementById('jobAutomatedEmailList');
+  if (!list || list.dataset.automationReady === 'true') return;
+  list.dataset.automationReady = 'true';
+  document.getElementById('addAutomatedEmailBtn')?.addEventListener('click', () => {
+    if (automatedEmailsDraft.length >= 6) {
+      showToast('warn', 'Email rule limit reached', 'You can set one automated email for each of the six candidate stages.', 3600);
+      return;
+    }
+    const status = document.getElementById('automatedEmailStatusSelect')?.value || 'viewed';
+    if (automatedEmailsDraft.some(rule => rule.status === status)) {
+      showToast('warn', 'Email already set', `An automated email is already set for ${AUTOMATED_EMAIL_STATUS_LABELS[status]}.`, 3200);
+      return;
+    }
+    const templateKey = status === 'viewed' ? 'reviewed' : status === 'unsuccessful' ? 'outcome' : status;
+    automatedEmailsDraft.push(normalizeAutomatedEmailRule({
+      id: questionId('automated_email'),
+      status,
+      templateKey,
+      delayHours: 0,
+      fromName: companyProfile?.name || 'Recruitment Team',
+    }, automatedEmailsDraft.length));
+    renderAutomatedEmails();
+    scheduleJobDraftSave();
+  });
+  list.addEventListener('click', event => {
+    const removeButton = event.target.closest('[data-remove-automated-email]');
+    if (!removeButton) return;
+    automatedEmailsDraft = automatedEmailsDraft.filter(rule => rule.id !== removeButton.dataset.removeAutomatedEmail);
+    renderAutomatedEmails();
+    scheduleJobDraftSave();
+  });
+  list.addEventListener('input', event => {
+    const card = event.target.closest('[data-automated-email-id]');
+    const field = event.target.dataset.automatedEmailField;
+    if (!card || !field || field === 'templateKey' || field === 'delayHours') return;
+    const rule = automatedEmailsDraft.find(item => item.id === card.dataset.automatedEmailId);
+    if (!rule) return;
+    rule[field] = event.target.value;
+    scheduleJobDraftSave();
+  });
+  list.addEventListener('change', event => {
+    const card = event.target.closest('[data-automated-email-id]');
+    const field = event.target.dataset.automatedEmailField;
+    if (!card || !field) return;
+    const rule = automatedEmailsDraft.find(item => item.id === card.dataset.automatedEmailId);
+    if (!rule) return;
+    if (field === 'templateKey') {
+      const defaults = automatedEmailTemplateDefaults(event.target.value, rule.status);
+      rule.templateKey = event.target.value;
+      rule.subject = defaults.subject;
+      rule.message = defaults.message;
+      renderAutomatedEmails();
+    } else if (field === 'delayHours') {
+      rule.delayHours = Number(event.target.value);
+    }
+    scheduleJobDraftSave();
+  });
+}
+
+function renderApplicationDocuments() {
+  const list = document.getElementById('applicationDocumentList');
+  if (!list) return;
+  const presets = [
+    'Cover letter',
+    'Academic transcript',
+    'Identity document',
+    'Qualification certificate',
+    'Portfolio',
+    'Completion letter',
+    'Reference letter',
+    'Other supporting document',
+  ];
+  const requestByLabel = new Map(
+    applicationDocumentsDraft.map(request => [dashboardText(request.label).toLowerCase(), request])
+  );
+  const labels = [...presets, ...applicationDocumentsDraft
+    .map(request => dashboardText(request.label))
+    .filter(label => label && !presets.some(preset => preset.toLowerCase() === label.toLowerCase()))];
+
+  const renderOption = label => {
+    const request = requestByLabel.get(label.toLowerCase());
+    const id = request ? escapeDashboard(request.id) : '';
+    return `
+      <div class="application-document-option"${request ? ` data-application-document-id="${id}"` : ''}>
+        <label class="application-document-choice">
+          <input class="application-document-option-select" type="checkbox" data-application-document-select="" value="${escapeDashboard(label)}" aria-label="Request ${escapeDashboard(label)}"${request ? ' checked' : ''}>
+          <span class="application-document-option-name" title="${escapeDashboard(label)}">${escapeDashboard(label)}</span>
+        </label>
+        ${request ? `<label class="application-document-required" title="${request.required ? 'Required' : 'Optional'}: ${escapeDashboard(label)}">
+          <input type="checkbox" role="switch" data-application-document-field="required" aria-label="Make ${escapeDashboard(label)} required"${request.required ? ' checked' : ''}>
+        </label>` : ''}
+      </div>
+    `;
+  };
+
+  list.innerHTML = `
+    <div class="application-document-option application-document-option--resume">
+      <div class="application-document-choice">
+        <span class="application-document-static-check" aria-hidden="true"><i class='bx bx-check'></i></span>
+        <span class="application-document-option-name">Resume / CV</span>
+      </div>
+      <label class="application-document-required application-document-required--locked" title="Resume / CV is compulsory">
+        <input type="checkbox" role="switch" checked disabled aria-label="Resume / CV is compulsory">
+      </label>
+    </div>
+    ${labels.map(renderOption).join('')}
+    <p class="application-document-hint">Select a document to include it in the application. The blue asterisk switch means compulsory; the gray switch means optional. Resume / CV is always compulsory.</p>
+  `;
+}
+
+function collectApplicationDocuments() {
+  return applicationDocumentsDraft
+    .map(normalizeApplicationDocumentRequest)
+    .filter(request => request.label)
+    .slice(0, 5);
+}
+
 function setupApplicationBuilder() {
+  renderApplicationDocuments();
   document.getElementById("applicationMethod")?.addEventListener("change", updateApplicationMethodUI);
   document.getElementById("addScreeningTemplateBtn")?.addEventListener("click", () => {
     const key = document.getElementById("screeningTemplate")?.value;
@@ -8029,6 +8632,39 @@ function setupApplicationBuilder() {
         ? {operator: question.type === "number" ? "gte" : "equals", value}
         : null;
     }
+    scheduleJobDraftSave();
+  });
+  document.getElementById('applicationDocumentList')?.addEventListener('change', (event) => {
+    const target = event.target;
+    if (target.matches('[data-application-document-select]')) {
+      const label = dashboardText(target.value);
+      const matchingRequest = applicationDocumentsDraft.find(request => dashboardText(request.label).toLowerCase() === label.toLowerCase());
+      if (target.checked && !matchingRequest) {
+        if (applicationDocumentsDraft.length >= 5) {
+          target.checked = false;
+          showToast('warn', 'Document request limit reached', 'You can request up to 5 additional documents.', 3600);
+          return;
+        }
+        applicationDocumentsDraft.push(normalizeApplicationDocumentRequest({
+          id: questionId('document'),
+          label,
+          required: true,
+        }));
+      } else if (!target.checked && matchingRequest) {
+        applicationDocumentsDraft = applicationDocumentsDraft.filter(request => request.id !== matchingRequest.id);
+      }
+      renderApplicationDocuments();
+      scheduleJobDraftSave();
+      return;
+    }
+
+    if (target.dataset.applicationDocumentField !== 'required') return;
+    const option = target.closest('[data-application-document-id]');
+    const request = applicationDocumentsDraft.find(item => item.id === option?.dataset.applicationDocumentId);
+    if (!request) return;
+    request.required = target.checked;
+    const switchLabel = target.closest('.application-document-required');
+    if (switchLabel) switchLabel.title = `${request.required ? 'Required' : 'Optional'}: ${request.label}`;
     scheduleJobDraftSave();
   });
   const countrySelect = document.querySelector('#jobForm [name="country"]');
@@ -8309,6 +8945,19 @@ function validateJobWizardStep(step) {
           ? card?.querySelector('[data-question-field="options"]')
           : card?.querySelector('[data-question-field="label"]');
       field?.focus();
+      return false;
+    }
+  }
+
+  if (step === 4) {
+    const incompleteEmail = automatedEmailsDraft.find(rule =>
+      !dashboardText(rule.fromName) || !dashboardText(rule.subject) || !dashboardText(rule.message)
+    );
+    if (incompleteEmail) {
+      if (currentJobWizardStep !== step) showJobWizardStep(step, {focus: false});
+      showToast('warn', 'Complete the automated email', 'Add a sender name, subject, and message, or remove the unfinished email rule.', 4200);
+      const card = document.querySelector(`[data-automated-email-id="${CSS.escape(incompleteEmail.id)}"]`);
+      card?.querySelector('[data-automated-email-field="subject"]')?.focus();
       return false;
     }
   }
@@ -8799,6 +9448,7 @@ onAuthStateChanged(auth, async (user) => {
 
     currentRecruiter = user;
     window.currentRecruiter = user;
+    loadRecruiterDashboardAvatar(user);
     workspaceCompanyId = token.claims.companyId || user.uid;
     workspaceCompanyId = await resolveRecruiterWorkspace(user.uid, workspaceCompanyId);
     window.initRecruiterIntegrations?.({
@@ -8854,6 +9504,7 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('cancelEditBtn')?.addEventListener('click', () => cancelEditJob());
   setupApplicationBuilder();
   setupJobWizard();
+  setupAutomatedEmails();
   setupJobTemplates();
   setupJobDraftRecovery();
   document.getElementById('refreshApplicationsBtn')?.addEventListener('click', loadRecruiterApplications);
@@ -9490,6 +10141,8 @@ function collectLocalJobDraft() {
     savedAt: new Date().toISOString(),
     values,
     screeningQuestions: collectScreeningQuestions(),
+    applicationDocuments: collectApplicationDocuments(),
+    automatedEmails: collectAutomatedEmails(),
     jobFaqs: collectJobFaqs(),
     facilities: collectJobFacilities()
   };
@@ -9539,12 +10192,20 @@ function applyHiringTemplate(template) {
     }
     return normalizeScreeningQuestion({...question, id: questionId('template')}, index);
   }).slice(0, 8);
+  applicationDocumentsDraft = Array.isArray(template.applicationDocuments)
+    ? template.applicationDocuments.map((request, index) => normalizeApplicationDocumentRequest({...request, id: questionId('template_document')}, index)).slice(0, 5)
+    : [];
+  automatedEmailsDraft = Array.isArray(template.automatedEmails)
+    ? template.automatedEmails.map(normalizeAutomatedEmailRule).slice(0, 6)
+    : [];
   jobFaqsDraft = Array.isArray(template.jobFaqs)
     ? template.jobFaqs.map(normalizeJobFaq).slice(0, 5)
     : [];
   setJobFacilities(template.facilities || []);
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderApplicationDocuments();
+  renderAutomatedEmails();
   renderJobFaqs();
   updateSalaryFieldsUI();
   renderJobConfirmationPreview();
@@ -9570,6 +10231,8 @@ async function saveCurrentHiringTemplate() {
     name,
     values,
     screeningQuestions: draft.screeningQuestions,
+    applicationDocuments: draft.applicationDocuments,
+    automatedEmails: draft.automatedEmails,
     jobFaqs: draft.jobFaqs,
     facilities: draft.facilities,
   };
@@ -9660,6 +10323,12 @@ function restoreLocalJobDraft() {
   screeningQuestionsDraft = Array.isArray(draft.screeningQuestions)
     ? draft.screeningQuestions.map(normalizeScreeningQuestion)
     : [];
+  applicationDocumentsDraft = Array.isArray(draft.applicationDocuments)
+    ? draft.applicationDocuments.map(normalizeApplicationDocumentRequest).slice(0, 5)
+    : [];
+  automatedEmailsDraft = Array.isArray(draft.automatedEmails)
+    ? draft.automatedEmails.map(normalizeAutomatedEmailRule).slice(0, 6)
+    : [];
   jobFaqsDraft = Array.isArray(draft.jobFaqs)
     ? draft.jobFaqs.map(normalizeJobFaq).slice(0, 5)
     : [];
@@ -9672,6 +10341,8 @@ function restoreLocalJobDraft() {
   if (publishBtn) publishBtn.innerHTML = "<i class='bx bx-paper-plane'></i> Publish Job";
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderApplicationDocuments();
+  renderAutomatedEmails();
   renderJobFaqs();
   updateSalaryFieldsUI();
   if (restoredSalary && !dashboardText(form.elements.namedItem('salaryMin')?.value)) {
@@ -9782,6 +10453,10 @@ async function saveJob(status) {
     screeningQuestions: (data.applicationMethod || 'direct') === 'direct'
       ? collectScreeningQuestions()
       : [],
+    applicationDocuments: (data.applicationMethod || 'direct') === 'direct'
+      ? collectApplicationDocuments()
+      : [],
+    automatedEmails: collectAutomatedEmails(),
     hiringProcess: [...JOB_HIRING_PROCESS],
     status: status === 'draft' ? 'draft' : 'active',
     recruiterId: workspaceCompanyId || currentRecruiter.uid,
@@ -9942,8 +10617,16 @@ function setFormEditMode(job) {
   screeningQuestionsDraft = Array.isArray(job.screeningQuestions)
     ? job.screeningQuestions.map(normalizeScreeningQuestion)
     : [];
+  applicationDocumentsDraft = Array.isArray(job.applicationDocuments)
+    ? job.applicationDocuments.map(normalizeApplicationDocumentRequest).slice(0, 5)
+    : [];
+  automatedEmailsDraft = Array.isArray(job.automatedEmails)
+    ? job.automatedEmails.map(normalizeAutomatedEmailRule).slice(0, 6)
+    : [];
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderApplicationDocuments();
+  renderAutomatedEmails();
 
   applyCompanyProfileToJobForm({ lock: true });
 
@@ -10025,9 +10708,13 @@ function cancelEditJob(silent=false) {
   const applyLink = document.getElementById('job_apply_link');
   if (applyLink) applyLink.value = '';
   screeningQuestionsDraft = [];
+  applicationDocumentsDraft = [];
+  automatedEmailsDraft = [];
   jobFaqsDraft = [];
   updateApplicationMethodUI();
   renderScreeningQuestions();
+  renderApplicationDocuments();
+  renderAutomatedEmails();
   renderJobFaqs();
   const autosaveStatus = document.getElementById('jobAutosaveStatus');
   if (autosaveStatus) autosaveStatus.textContent = '';
@@ -10400,17 +11087,71 @@ function renderRecruiterInbox() {
   const list = document.getElementById('recruiterTaskList');
   if (!list) return;
 
+  const welcome = document.getElementById('recruiterDashboardWelcome');
+  const recruiterLabel = dashboardText(companyProfile?.contactName || currentRecruiter?.displayName).trim();
+  const firstName = recruiterLabel.split(/\s+/)[0];
+  if (welcome) welcome.textContent = firstName
+    ? `Welcome, ${firstName}. Today’s a hiring day.`
+    : 'Welcome back. Today’s a hiring day.';
+  const dateLabel = document.getElementById('recruiterDashboardDate');
+  if (dateLabel) {
+    const today = new Date();
+    dateLabel.dateTime = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    dateLabel.textContent = new Intl.DateTimeFormat('en-ZA', {day:'numeric', month:'short'}).format(today);
+  }
+
   const submitted = recruiterApplicationsCache
     .filter(application => application.status === 'submitted')
     .sort((left, right) => (toDateValue(right.submittedAt)?.getTime() || 0) - (toDateValue(left.submittedAt)?.getTime() || 0));
   const interviews = recruiterApplicationsCache.filter(application => application.status === 'interview');
   const closingJobs = jobsClosingWithin(7);
-  const activeJobs = recruiterJobsCache.filter(job => dashboardText(job.status, 'active').toLowerCase() === 'active');
+  const activeJobs = recruiterJobsCache.filter(job =>
+    dashboardText(job.status, 'active').toLowerCase() === 'active' && !job.archived && !job.deleted
+  );
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const openJobs = activeJobs.filter(job => {
+    const deadline = jobDeadlineDate(job);
+    return !deadline || deadline >= todayStart;
+  });
+  const now = Date.now();
+  const dayAgo = now - 24 * 60 * 60 * 1000;
+  const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const jobsCreatedThisWeek = activeJobs.filter(job => {
+    const createdAt = toDateValue(job.createdAt)?.getTime();
+    return Number.isFinite(createdAt) && createdAt >= weekAgo;
+  }).length;
+  const applicationsCreatedIn24Hours = submitted.filter(application => {
+    const submittedAt = toDateValue(application.submittedAt)?.getTime();
+    return Number.isFinite(submittedAt) && submittedAt >= dayAgo;
+  }).length;
+  const openApplicationStatuses = new Set(['submitted', 'viewed', 'shortlisted', 'interview', 'offer']);
+  const openApplicationsWithAge = recruiterApplicationsCache
+    .filter(application => openApplicationStatuses.has(application.status))
+    .map(application => {
+      const submittedAt = toDateValue(application.submittedAt)?.getTime();
+      return Number.isFinite(submittedAt) ? {application, ageDays: Math.max(0, (now - submittedAt) / 86400000)} : null;
+    })
+    .filter(Boolean);
+  const ageingApplications = openApplicationsWithAge.filter(({application, ageDays}) =>
+    ['submitted', 'viewed'].includes(application.status) && ageDays >= 7
+  ).length;
+  const averageApplicationAge = openApplicationsWithAge.length
+    ? Math.round(openApplicationsWithAge.reduce((sum, item) => sum + item.ageDays, 0) / openApplicationsWithAge.length)
+    : 0;
 
-  document.getElementById('inboxNewCount').textContent = String(submitted.length);
-  document.getElementById('inboxInterviewCount').textContent = String(interviews.length);
-  document.getElementById('inboxClosingCount').textContent = String(closingJobs.length);
-  document.getElementById('inboxActiveJobsCount').textContent = String(activeJobs.length);
+  const setDashboardMetric = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = String(value);
+  };
+  setDashboardMetric('dashboardOpenJobsCount', openJobs.length);
+  setDashboardMetric('dashboardNewApplicationsCount', submitted.length);
+  setDashboardMetric('dashboardLiveAdvertsCount', activeJobs.length);
+  setDashboardMetric('dashboardAgeingApplicationsCount', ageingApplications);
+  setDashboardMetric('dashboardAverageApplicationAge', averageApplicationAge);
+  setDashboardMetric('dashboardOpenJobsTrend', `+${jobsCreatedThisWeek} new`);
+  setDashboardMetric('dashboardNewApplicationsTrend', `+${applicationsCreatedIn24Hours} last 24h`);
+  setDashboardMetric('dashboardLiveAdvertsTrend', `+${jobsCreatedThisWeek} new`);
   setRecruiterInboxShortcutCount(submitted.length);
 
   const attentionCount = submitted.length + interviews.length + closingJobs.length;
@@ -10487,6 +11228,143 @@ async function refreshRecruiterInbox() {
     if (button) button.disabled = false;
   }
 }
+
+function recruiterDashboardSearchMatches(value, query) {
+  return String(value ?? '').toLocaleLowerCase().includes(query);
+}
+
+function recruiterDashboardSearchItems(query) {
+  const items = [];
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  if (!normalizedQuery) return items;
+
+  recruiterApplicationsCache.forEach(application => {
+    const candidate = application.candidateSnapshot || {};
+    const jobSnapshot = application.jobSnapshot || {};
+    const job = recruiterJobsCache.find(item => item.id === application.jobId) || jobSnapshot;
+    const candidateName = dashboardText(candidate.fullName || candidate.name || candidate.email, 'Candidate');
+    const candidateEmail = dashboardText(candidate.email);
+    const jobTitle = dashboardText(job.title || jobSnapshot.title, 'Job application');
+    const searchable = [candidateName, candidateEmail, candidate.phone, jobTitle, application.status]
+      .filter(Boolean).join(' ');
+    if (!recruiterDashboardSearchMatches(searchable, normalizedQuery)) return;
+    items.push({
+      kind: 'application',
+      id: application.id,
+      icon: 'bx-user',
+      title: candidateName,
+      detail: `${jobTitle}${candidateEmail ? ` · ${candidateEmail}` : ''}`,
+      type: 'Candidate'
+    });
+  });
+
+  recruiterJobsCache.forEach(job => {
+    const title = dashboardText(job.title || job.jobTitle, 'Untitled job');
+    const company = dashboardText(job.companyName || job.company || companyProfile?.companyName || companyProfile?.name);
+    const location = dashboardText(job.location || job.city || job.country);
+    const searchable = [title, company, location, job.department, job.category, job.type, job.status]
+      .filter(Boolean).join(' ');
+    if (!recruiterDashboardSearchMatches(searchable, normalizedQuery)) return;
+    items.push({
+      kind: 'job',
+      id: job.id,
+      icon: 'bx-briefcase',
+      title,
+      detail: [company, location].filter(Boolean).join(' · ') || dashboardText(job.status, 'Job posting'),
+      type: 'Job'
+    });
+  });
+
+  const companyName = dashboardText(companyProfile?.companyName || companyProfile?.name || document.getElementById('sidebarCompanyName')?.textContent);
+  const contactName = dashboardText(companyProfile?.contactName || currentRecruiter?.displayName);
+  const contactEmail = dashboardText(companyProfile?.contactEmail || companyProfile?.email || currentRecruiter?.email);
+  if ([companyName, contactName, contactEmail].some(value => recruiterDashboardSearchMatches(value, normalizedQuery))) {
+    items.push({
+      kind: 'company',
+      id: 'company',
+      icon: 'bx-buildings',
+      title: companyName || 'Company profile',
+      detail: [contactName, contactEmail].filter(Boolean).join(' · ') || 'Open company profile',
+      type: 'Company'
+    });
+  }
+
+  return items.slice(0, 8);
+}
+
+function renderRecruiterDashboardSearch() {
+  const input = document.getElementById('recruiterDashboardSearch');
+  const wrap = document.getElementById('recruiterDashboardSearchWrap');
+  const results = document.getElementById('recruiterDashboardSearchResults');
+  if (!input || !wrap || !results) return;
+
+  const query = input.value.trim();
+  wrap.classList.toggle('has-query', Boolean(query));
+  if (query.length < 2) {
+    results.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    results.replaceChildren();
+    return;
+  }
+
+  const items = recruiterDashboardSearchItems(query);
+  results.innerHTML = items.length
+    ? items.map(item => `
+      <button class="dashboard-search-result" type="button" role="option" aria-selected="false"
+        data-dashboard-search-kind="${escapeDashboard(item.kind)}" data-dashboard-search-id="${escapeDashboard(item.id)}">
+        <span class="dashboard-search-result-icon"><i class='bx ${escapeDashboard(item.icon)}' aria-hidden="true"></i></span>
+        <span class="dashboard-search-result-copy"><strong>${escapeDashboard(item.title)}</strong><span>${escapeDashboard(item.detail)}</span></span>
+        <span class="dashboard-search-result-type">${escapeDashboard(item.type)}</span>
+      </button>`).join('')
+    : '<div class="dashboard-search-empty">No matching candidates, contacts, companies, or jobs.</div>';
+  results.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+}
+
+document.getElementById('recruiterDashboardSearch')?.addEventListener('input', renderRecruiterDashboardSearch);
+document.getElementById('recruiterDashboardSearch')?.addEventListener('keydown', event => {
+  const results = document.getElementById('recruiterDashboardSearchResults');
+  if (event.key === 'Escape') {
+    if (results) results.hidden = true;
+    event.currentTarget.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  if (event.key === 'Enter' && results && !results.hidden) {
+    const firstResult = results.querySelector('[data-dashboard-search-kind]');
+    if (firstResult) {
+      event.preventDefault();
+      firstResult.click();
+    }
+  }
+});
+document.getElementById('clearRecruiterDashboardSearch')?.addEventListener('click', () => {
+  const input = document.getElementById('recruiterDashboardSearch');
+  if (!input) return;
+  input.value = '';
+  renderRecruiterDashboardSearch();
+  input.focus();
+});
+document.getElementById('recruiterDashboardSearchResults')?.addEventListener('click', event => {
+  const result = event.target.closest('[data-dashboard-search-kind]');
+  if (!result) return;
+  const {dashboardSearchKind: kind, dashboardSearchId: id} = result.dataset;
+  const input = document.getElementById('recruiterDashboardSearch');
+  const results = document.getElementById('recruiterDashboardSearchResults');
+  if (results) results.hidden = true;
+  if (input) input.setAttribute('aria-expanded', 'false');
+
+  if (kind === 'job') openJobWorkspace(id);
+  if (kind === 'application') openRecruiterApplication(id);
+  if (kind === 'company') showSection('company', document.querySelector('.nav a:nth-child(2)'));
+});
+document.addEventListener('click', event => {
+  const wrap = document.getElementById('recruiterDashboardSearchWrap');
+  const input = document.getElementById('recruiterDashboardSearch');
+  const results = document.getElementById('recruiterDashboardSearchResults');
+  if (!wrap || wrap.contains(event.target) || !results || results.hidden) return;
+  results.hidden = true;
+  input?.setAttribute('aria-expanded', 'false');
+});
 
 function openApplicationsForJob(jobId, status = '') {
   const jobFilter = document.getElementById('applicationJobFilter');
@@ -10607,6 +11485,12 @@ document.addEventListener('click', event => {
   if (inboxView === 'interviews') openApplicationsForJob('', 'interview');
   if (inboxView === 'closing-jobs' || inboxView === 'active-jobs') {
     showSection('jobs', document.querySelector('.nav a:nth-child(4)'));
+  }
+  if (inboxView === 'live-adverts') {
+    showSection('public-listings', document.querySelector('[data-nav-public-listings]'));
+  }
+  if (inboxView === 'ageing-applications' || inboxView === 'all-applications') {
+    openApplicationsForJob('', '');
   }
   if (event.target.closest('[data-empty-inbox-action]')) {
     const activeJobs = recruiterJobsCache.some(job => dashboardText(job.status, 'active').toLowerCase() === 'active');
@@ -11672,6 +12556,7 @@ async function openRecruiterApplication(applicationId) {
   const cvSizeLabel = cvSize > 0
     ? `${cvSize >= 1024 * 1024 ? (cvSize / (1024 * 1024)).toFixed(1) : Math.ceil(cvSize / 1024)} ${cvSize >= 1024 * 1024 ? "MB" : "KB"}`
     : "Candidate document";
+  const applicationDocuments = Array.isArray(application.documents) ? application.documents.slice(0, 5) : [];
 
   content.innerHTML = `
     <div class="candidate-review-shell">
@@ -11745,6 +12630,23 @@ async function openRecruiterApplication(applicationId) {
             <button type="button" data-download-application-cv="${escapeDashboard(applicationId)}"><i class='bx bx-download'></i> Download</button>
           </div>
         </div>
+
+        ${applicationDocuments.map(documentItem => {
+          const documentSize = Number(documentItem.size || 0);
+          const sizeLabel = documentSize > 0
+            ? `${documentSize >= 1024 * 1024 ? (documentSize / (1024 * 1024)).toFixed(1) : Math.ceil(documentSize / 1024)} ${documentSize >= 1024 * 1024 ? "MB" : "KB"}`
+            : "Candidate document";
+          return `
+            <div class="candidate-document-row">
+              <div class="candidate-document-copy">
+                <span class="candidate-document-icon"><i class='bx bxs-file'></i></span>
+                <span><strong>${escapeDashboard(documentItem.label, "Additional document")}</strong><span>${escapeDashboard(documentItem.fileName, "Uploaded file")} · ${escapeDashboard(sizeLabel)}</span></span>
+              </div>
+              <div class="candidate-document-actions">
+                <button type="button" data-download-application-document="${escapeDashboard(applicationId)}" data-document-id="${escapeDashboard(documentItem.documentId)}"><i class='bx bx-download'></i> Download</button>
+              </div>
+            </div>`;
+        }).join("")}
 
         <section class="application-cv-preview" id="applicationCvPreview" aria-labelledby="applicationCvPreviewTitle" hidden>
           <div class="application-cv-preview-head">
@@ -12012,6 +12914,42 @@ async function openApplicationCv(applicationId, download = false, triggerButton 
   }
 }
 
+async function downloadApplicationDocument(applicationId, documentId, triggerButton = null) {
+  const originalButtonHtml = triggerButton?.innerHTML || '';
+  if (triggerButton) {
+    triggerButton.disabled = true;
+    triggerButton.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> Preparing`;
+  }
+  try {
+    const token = await currentRecruiter.getIdToken();
+    const params = new URLSearchParams({id: applicationId, documentId});
+    const response = await fetch(`/.netlify/functions/download-application-document?${params}`, {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || 'Could not download this document.');
+    }
+    const blobUrl = URL.createObjectURL(await response.blob());
+    const application = recruiterApplicationsCache.find(item => item.id === applicationId);
+    const documentItem = application?.documents?.find(item => item.documentId === documentId);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = dashboardText(documentItem?.fileName, 'application-document');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+  } catch (error) {
+    showToast('error', 'Document unavailable', error.message || 'Could not download this document.', 4200);
+  } finally {
+    if (triggerButton) {
+      triggerButton.disabled = false;
+      triggerButton.innerHTML = originalButtonHtml;
+    }
+  }
+}
+
 async function sendRecruiterApplicationMessage(form) {
   const applicationId = dashboardText(form.dataset.applicationId);
   const type = dashboardText(form.querySelector('[name="type"]')?.value, 'application_update');
@@ -12148,6 +13086,15 @@ document.addEventListener("click", async event => {
   const downloadCvButton = event.target.closest("[data-download-application-cv]");
   if (downloadCvButton) {
     await openApplicationCv(downloadCvButton.dataset.downloadApplicationCv, true, downloadCvButton);
+    return;
+  }
+  const downloadDocumentButton = event.target.closest('[data-download-application-document]');
+  if (downloadDocumentButton) {
+    await downloadApplicationDocument(
+      downloadDocumentButton.dataset.downloadApplicationDocument,
+      downloadDocumentButton.dataset.documentId,
+      downloadDocumentButton,
+    );
   }
 });
 
@@ -13377,5 +14324,13 @@ document.getElementById('jobAiGenerate')?.addEventListener('click', async () => 
       <div class="job-ai-dialog-actions"><span id="jobAiStatus" aria-live="polite"></span><button type="button" class="primary-btn" id="jobAiGenerate"><i class='bx bx-sparkles'></i> Generate draft</button></div>
     </div>
   </div>
+  <script>
+    if (window.location.hash === '#billing' && typeof window.showSection === 'function') {
+      window.showSection('billing', document.querySelector('.nav a:nth-child(7)'));
+      window.requestAnimationFrame(() => {
+        document.querySelector('.recruiter-trial-offer')?.scrollIntoView({ block: 'start' });
+      });
+    }
+  </script>
 </body>
 </html>

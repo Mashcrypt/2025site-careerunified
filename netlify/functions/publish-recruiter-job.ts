@@ -1,6 +1,8 @@
 import type { Handler } from "@netlify/functions";
 import { getAdmin } from "./_firebaseAdmin";
 import { checkRateLimit } from "./_rateLimit";
+import {normalizeApplicationDocuments} from "./_applicationDocuments";
+import {normalizeAutomatedEmails} from "./_automatedApplicationEmails";
 
 class PublishError extends Error {
   constructor(public statusCode: number, message: string) {
@@ -184,6 +186,10 @@ function cleanJob(value: any) {
     applicationMethod,
     applyLink,
     screeningQuestions: applicationMethod === "direct" ? screeningQuestions(value?.screeningQuestions) : [],
+    applicationDocuments: applicationMethod === "direct"
+      ? normalizeApplicationDocuments(value?.applicationDocuments)
+      : [],
+    automatedEmails: normalizeAutomatedEmails(value?.automatedEmails),
     hiringProcess: stringList(value?.hiringProcess, 80, 10),
     status: "active",
     slug: slugify(text(value?.slug, 180) || `${title}-${company}-${city}`),

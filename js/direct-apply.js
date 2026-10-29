@@ -676,6 +676,17 @@ function applicationQuestions() {
     .slice(0, 8);
 }
 
+function applicationDocumentRequests() {
+  return (Array.isArray(currentJob.applicationDocuments) ? currentJob.applicationDocuments : [])
+    .filter(request => /^[A-Za-z0-9_-]{1,80}$/.test(text(request?.id)) && text(request?.label))
+    .slice(0, 5)
+    .map(request => ({
+      id: text(request.id),
+      label: text(request.label).slice(0, 120),
+      required: request.required !== false,
+    }));
+}
+
 function renderForm() {
   const qualification = text(profile.degreeType || profile.highestQualification);
   const profileLocation = splitProfileLocation(profile.location, profile.city, profile.province);
@@ -688,6 +699,7 @@ function renderForm() {
     `<option value="${escapeHtml(cv.id)}">${escapeHtml(text(cv.cvFileName, "Saved CV"))}</option>`
   )).join("");
   const questions = applicationQuestions();
+  const documentRequests = applicationDocumentRequests();
 
   panel.innerHTML = `
     <p class="eyebrow">Career Unified Direct Apply</p>
@@ -770,6 +782,17 @@ function renderForm() {
           <label for="coverLetter">Short cover note <span class="help">(optional)</span></label>
           <textarea id="coverLetter" name="coverLetter" maxlength="4000" placeholder="Explain briefly why this opportunity fits your experience and goals."></textarea>
         </div>
+        ${documentRequests.length ? `
+          <div class="field full" style="margin-top:22px">
+            <h3 style="margin:0;color:#1e3a8a">Additional documents</h3>
+            <p class="help">This employer has requested the documents below. Each file is private to this application and can be up to 5 MB.</p>
+          </div>
+          <div class="question-list" style="margin-top:14px">${documentRequests.map(request => `
+            <div class="field cv-upload">
+              <label for="applicationDocument_${escapeHtml(request.id)}">${escapeHtml(request.label)}${request.required ? ' <span class="required">*</span>' : ' <span class="help">(optional)</span>'}</label>
+              <input id="applicationDocument_${escapeHtml(request.id)}" name="applicationDocument_${escapeHtml(request.id)}" type="file" accept=".pdf,.docx,.jpg,.jpeg,.png"${request.required ? ' required' : ''}>
+              <p class="help">PDF, DOCX, JPG, or PNG. Maximum 5 MB.</p>
+            </div>`).join('')}</div>` : ''}
       </section>
 
       ${questions.length ? `
@@ -881,6 +904,20 @@ async function uploadCv(file, token) {
   return payload.id;
 }
 
+async function uploadApplicationDocument(file, documentId, token) {
+  const formData = new FormData();
+  formData.append('document', file);
+  const params = new URLSearchParams({jobId, documentId});
+  const response = await fetch(`/.netlify/functions/upload-application-document?${params}`, {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`},
+    body: formData,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || `Could not upload ${file.name}.`);
+  return payload.uploadId;
+}
+
 async function submitApplication(event) {
   event.preventDefault();
   const form = event.currentTarget;
@@ -905,6 +942,22 @@ async function submitApplication(event) {
       cvId = await uploadCv(file, token);
     }
     if (!cvId) throw new Error("Select or upload a CV.");
+
+    const documentUploads = [];
+    for (const request of applicationDocumentRequests()) {
+      const input = document.getElementById(`applicationDocument_${request.id}`);
+      const file = input?.files?.[0];
+      if (!file) {
+        if (request.required) throw new Error(`Upload the requested document: ${request.label}.`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(`${request.label} must be smaller than 5 MB.`);
+      }
+      setFormStatus(`Securely uploading ${request.label}...`, 'info');
+      const uploadId = await uploadApplicationDocument(file, request.id, token);
+      documentUploads.push({documentId: request.id, uploadId});
+    }
 
     const answers = {};
     applicationQuestions().forEach((question) => {
@@ -940,6 +993,7 @@ async function submitApplication(event) {
           ? {source: "career_site", companyId: new URLSearchParams(window.location.search).get("companyId") || "", sourceHostname: window.location.hostname}
           : {}),
         cvId,
+        documentUploads,
         contact: {
           fullName: form.fullName.value,
           phone: form.phone.value,

@@ -10,8 +10,8 @@
         "Clear signals explaining why each candidate is relevant",
         "Recruiter-controlled shortlists with no automatic rejection"
       ],
-      image: "/assets/images/recruiter-illustration-option-1.webp",
-      alt: "Recruiters comparing shortlisted candidate profiles"
+      image: "/assets/images/recruiter-ai-matching-pexels.jpg",
+      alt: "A recruiter interviewing a candidate while reviewing their CV"
     },
     applications: {
       headline: "Review the whole application, not just a filename",
@@ -43,8 +43,8 @@
         "Vacancy-level totals and progress signals",
         "A focused view of work that needs recruiter action"
       ],
-      image: "/assets/images/recruiter-platform.webp",
-      alt: "Career Unified recruiter analytics and vacancy activity illustration"
+      image: "/assets/images/recruiter-analytics-laptop.jpg",
+      alt: "Person viewing an analytics dashboard on a laptop"
     },
     screening: {
       headline: "Ask the questions that matter for this specific role",
@@ -65,8 +65,8 @@
         "Private notes and shared vacancy stages keep everyone aligned",
         "Give collaborators a clear role in the process while you stay in control"
       ],
-      image: "/assets/images/recruiter-team.webp",
-      alt: "South African hiring team collaborating on candidate decisions"
+      image: "/assets/images/recruiter-collaboration-pexels.jpg",
+      alt: "Team members collaborating during a meeting around a table"
     },
     integrations: {
       headline: "Connect the tools your team already uses",
@@ -80,6 +80,9 @@
       alt: "Connected recruitment tools supporting a hiring team"
     }
   };
+
+  const collaborationImageCache = new Image();
+  collaborationImageCache.src = featureContent.collaboration.image;
 
   const nav = document.querySelector("[data-recruiter-nav]");
   const mobileToggle = document.querySelector(".hf-nav__toggle");
@@ -190,20 +193,18 @@
     featureVisual?.classList.toggle("is-integrations", isIntegrations);
     featureImage.hidden = isIntegrations;
     if (featureLogoGrid) featureLogoGrid.hidden = !isIntegrations;
-    featureImage.classList.add("is-changing");
-    window.setTimeout(() => {
-      featureImage.src = content.image;
-      featureImage.alt = content.alt;
-      featureImage.classList.remove("is-changing");
-    }, 90);
+    featureImage.classList.remove("is-changing");
+    featureImage.src = content.image;
+    featureImage.alt = content.alt;
 
     if (track && typeof window.gtag === "function") {
       window.gtag("event", "recruiter_feature_tab", { feature_name: key });
     }
+    if (track) window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${key}`);
   }
 
   tabButtons.forEach((button, index) => {
-    button.id = `recruiterFeatureTab-${button.dataset.featureTab}`;
+    button.id = button.id || `recruiterFeatureTab-${button.dataset.featureTab}`;
     button.tabIndex = index === 0 ? 0 : -1;
     button.addEventListener("click", () => selectFeature(button.dataset.featureTab, true));
     button.addEventListener("keydown", (event) => {
@@ -217,6 +218,89 @@
   });
 
   if (tabButtons[0]) panel?.setAttribute("aria-labelledby", tabButtons[0].id);
+
+  function selectFeatureFromHash() {
+    const key = window.location.hash.slice(1);
+    if (tabButtons.some((button) => button.dataset.featureTab === key)) selectFeature(key, false);
+  }
+
+  selectFeatureFromHash();
+  window.addEventListener("hashchange", selectFeatureFromHash);
+
+  const recruiterGallery = document.querySelector("[data-recruiter-gallery]");
+  if (recruiterGallery) {
+    const gallerySlides = Array.from(recruiterGallery.querySelectorAll(".hf-hero__gallery-slide"));
+    const galleryControls = Array.from(document.querySelectorAll("[data-gallery-direction]"));
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const galleryVideos = gallerySlides.flatMap((slide) => Array.from(slide.querySelectorAll("video")));
+
+    const centeredScrollPosition = (slide) => {
+      const galleryRect = recruiterGallery.getBoundingClientRect();
+      const slideRect = slide.getBoundingClientRect();
+      return recruiterGallery.scrollLeft
+        + (slideRect.left - galleryRect.left)
+        - ((recruiterGallery.clientWidth - slide.clientWidth) / 2);
+    };
+
+    const currentGalleryIndex = () => {
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+      gallerySlides.forEach((slide, index) => {
+        const distance = Math.abs(centeredScrollPosition(slide) - recruiterGallery.scrollLeft);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      return closestIndex;
+    };
+
+    const showGallerySlide = (index, behavior) => {
+      const slide = gallerySlides[index];
+      if (!slide) return;
+      recruiterGallery.scrollTo({ left: centeredScrollPosition(slide), behavior });
+    };
+
+    const syncGalleryVideo = () => {
+      const activeIndex = currentGalleryIndex();
+      galleryVideos.forEach((video) => {
+        const isActive = gallerySlides[activeIndex]?.contains(video);
+        if (document.hidden || prefersReducedMotion.matches || !isActive) {
+          video.pause();
+          return;
+        }
+        if (video.paused) video.play().catch(() => {});
+      });
+    };
+
+    recruiterGallery.addEventListener("scroll", () => window.requestAnimationFrame(syncGalleryVideo), { passive: true });
+    document.addEventListener("visibilitychange", syncGalleryVideo);
+    prefersReducedMotion.addEventListener?.("change", syncGalleryVideo);
+
+    if (gallerySlides.length > 1) {
+      window.requestAnimationFrame(() => {
+        recruiterGallery.scrollLeft = centeredScrollPosition(gallerySlides[1]);
+        syncGalleryVideo();
+      });
+
+      galleryControls.forEach((control) => {
+        control.addEventListener("click", () => {
+          const direction = Number(control.dataset.galleryDirection) || 1;
+          const nextIndex = (currentGalleryIndex() + direction + gallerySlides.length) % gallerySlides.length;
+          showGallerySlide(nextIndex, prefersReducedMotion.matches ? "auto" : "smooth");
+        });
+      });
+
+      recruiterGallery.addEventListener("keydown", (event) => {
+        if (event.target instanceof HTMLVideoElement) return;
+        if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        const nextIndex = (currentGalleryIndex() + direction + gallerySlides.length) % gallerySlides.length;
+        showGallerySlide(nextIndex, prefersReducedMotion.matches ? "auto" : "smooth");
+      });
+    }
+  }
 
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-cro-event]");

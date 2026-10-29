@@ -9,6 +9,7 @@ import {
   parseJsonBody,
 } from "./_applicationUtils";
 import {checkRateLimit} from "./_rateLimit";
+import {enqueueAutomatedApplicationEmail} from "./_automatedApplicationEmails";
 
 const RECRUITER_STATUSES = new Set([
   "viewed",
@@ -132,6 +133,25 @@ export const handler: Handler = async (event) => {
       batch.update(snapshot.ref, updates);
     });
     await batch.commit();
+
+    if (status) {
+      await Promise.all(snapshots.map(async (snapshot: any) => {
+        const application = snapshot.data() || {};
+        if (cleanText(application.status, 40).toLowerCase() === status) return;
+        await enqueueAutomatedApplicationEmail(
+          admin,
+          application,
+          status,
+          String(now.toMillis()),
+          snapshot.id,
+        ).catch((error) => {
+          console.error("AUTOMATED_APPLICATION_EMAIL_ENQUEUE_ERROR", {
+            applicationId: snapshot.id,
+            errorName: error instanceof Error ? error.name : "UnknownError",
+          });
+        });
+      }));
+    }
 
     return json(200, origin, {
       updated: applicationIds.length,
