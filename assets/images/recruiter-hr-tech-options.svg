@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title description">
+  <title id="title">Career Unified HR technology features</title>
+  <desc id="description">A layered stack of cards showing branded career sites, AI job descriptions, recruitment analytics, AI candidate matching, applications and CVs, team collaboration, and requests for missing integrations.</desc>
+  <defs>
+    <filter id="card-shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="9" stdDeviation="15" flood-color="#65706a" flood-opacity=".12"/>
+    </filter>
+    <filter id="active-shadow" x="-20%" y="-30%" width="140%" height="180%">
+      <feDropShadow dx="0" dy="15" stdDeviation="20" flood-color="#67716c" flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" rx="40" fill="#efeeea"/>
+
+  <!-- The outer rows sit behind the focused feature and fade toward the edges. -->
+  <g opacity=".3" filter="url(#card-shadow)">
+    <rect x="445" y="110" width="710" height="132" rx="34" fill="#fff"/>
+    <rect x="490" y="139" width="72" height="72" rx="18" fill="#d7c4ce"/>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="508" y="157" width="37" height="29" rx="4"/>
+      <path d="M508 166h37M517 157v9m10-9v9m10-9v9m-19 20v-8m10 8v-8m10 8v-8"/>
+    </g>
+    <text x="596" y="193" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">Branded career sites</text>
+  </g>
+
+  <g opacity=".48" filter="url(#card-shadow)">
+    <rect x="375" y="210" width="850" height="132" rx="34" fill="#fff"/>
+    <rect x="423" y="239" width="72" height="72" rx="18" fill="#9ccbe1"/>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m459 252 4 10 10 4-10 4-4 10-4-10-10-4 10-4zM440 278l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>
+      <path d="m476 254 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>
+    </g>
+    <text x="529" y="293" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">AI job descriptions</text>
+  </g>
+
+  <g opacity=".68" filter="url(#card-shadow)">
+    <rect x="320" y="310" width="960" height="132" rx="34" fill="#fff"/>
+    <rect x="370" y="339" width="72" height="72" rx="18" fill="#d9b38f"/>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M388 390v-16h10v16m5 0v-28h10v28m5 0v-21h10v21"/>
+      <path d="M387 397h37"/>
+    </g>
+    <text x="477" y="393" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">Recruitment analytics</text>
+  </g>
+
+  <g opacity=".67" filter="url(#card-shadow)">
+    <rect x="320" y="565" width="960" height="132" rx="34" fill="#fff"/>
+    <rect x="370" y="595" width="72" height="72" rx="18" fill="#89bdd6"/>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M391 608h21l10 10v31h-31z"/>
+      <path d="M412 608v11h10m-24 8h16m-16 9h16m-16 9h10"/>
+    </g>
+    <text x="477" y="648" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">Applications &amp; CVs</text>
+  </g>
+
+  <g opacity=".47" filter="url(#card-shadow)">
+    <rect x="375" y="665" width="850" height="132" rx="34" fill="#fff"/>
+    <rect x="423" y="695" width="72" height="72" rx="18" fill="#a6ce9c"/>
+    <g fill="#fff">
+      <circle cx="450" cy="719" r="9"/>
+      <circle cx="470" cy="722" r="8"/>
+      <path d="M434 750c1-12 7-18 16-18s15 6 16 18zM461 737c11-1 17 4 18 13h-11c-1-6-3-10-7-13z"/>
+    </g>
+    <text x="529" y="748" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">Team collaboration</text>
+  </g>
+
+  <g opacity=".28" filter="url(#card-shadow)">
+    <rect x="445" y="765" width="710" height="132" rx="34" fill="#fff"/>
+    <rect x="490" y="794" width="72" height="72" rx="18" fill="#d8c8d5"/>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
+      <circle cx="513" cy="830" r="5" fill="#fff" stroke="none"/>
+      <circle cx="540" cy="813" r="5" fill="#fff" stroke="none"/>
+      <circle cx="540" cy="847" r="5" fill="#fff" stroke="none"/>
+      <path d="m518 827 17-11m-17 17 17 11"/>
+    </g>
+    <text x="596" y="849" fill="#303331" font-family="Manrope, Arial, sans-serif" font-size="43" font-weight="500">Request missing tools</text>
+  </g>
+
+  <!-- The central card is the focal point, like the selected item in the reference. -->
+  <g filter="url(#active-shadow)">
+    <rect x="240" y="410" width="1120" height="175" rx="40" fill="#fff"/>
+    <rect x="294" y="455" width="84" height="84" rx="22" fill="#9856dc"/>
+    <g fill="#fff" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="328" cy="481" r="9" stroke="none"/>
+      <path d="M310 521c2-14 8-21 18-21 8 0 14 5 17 15m-25-3 7 7 13-15" fill="none"/>
+      <path d="m352 468 3 7 7 3-7 3-3 7-3-7-7-3 7-3z" stroke="none"/>
+    </g>
+    <text x="416" y="518" fill="#222421" font-family="Manrope, Arial, sans-serif" font-size="52" font-weight="600">AI candidate matching</text>
+  </g>
+</svg>

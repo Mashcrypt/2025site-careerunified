@@ -14,10 +14,11 @@ const AI_CREDIT_PACK_ID = "ai_tailor_10";
 const AI_CREDIT_PACK_AMOUNT = 19.00;
 const AI_CREDIT_PACK_QUANTITY = 10;
 type RecruiterPlanId = "starter" | "pro" | "enterprise";
-const RECRUITER_PLAN: Record<RecruiterPlanId, { amount: string; unlocks: number }> = {
-  starter: { amount: "299.00", unlocks: 50 },
-  pro: { amount: "699.00", unlocks: 200 },
-  enterprise: { amount: "1499.00", unlocks: -1 },
+type RecruiterBillingPeriod = "monthly" | "yearly";
+const RECRUITER_PLAN: Record<RecruiterPlanId, { monthlyAmount: string; yearlyAmount: string; unlocks: number }> = {
+  starter: { monthlyAmount: "299.00", yearlyAmount: "3229.20", unlocks: 50 },
+  pro: { monthlyAmount: "699.00", yearlyAmount: "7549.20", unlocks: 200 },
+  enterprise: { monthlyAmount: "1499.00", yearlyAmount: "16189.20", unlocks: -1 },
 };
 const RECRUITER_SINGLE_JOB_PRODUCT = "careerunified-recruiter-single-job";
 const RECRUITER_SINGLE_JOB_PACK_ID = "single_job_30";
@@ -52,6 +53,9 @@ function isValidPlan(plan: any): plan is PlanId {
 }
 function isRecruiterPlan(plan: any): plan is RecruiterPlanId {
   return plan === "starter" || plan === "pro" || plan === "enterprise";
+}
+function isRecruiterBillingPeriod(period: any): period is RecruiterBillingPeriod {
+  return period === "monthly" || period === "yearly";
 }
 function isRecruiterSingleJobPack(value: any): value is typeof RECRUITER_SINGLE_JOB_PACK_ID {
   return value === RECRUITER_SINGLE_JOB_PACK_ID;
@@ -195,9 +199,10 @@ async function validateWithPayfast(data: Record<string, string>) {
   }
 }
 
-function addBillingPeriod(from = new Date()) {
+function addBillingPeriod(from = new Date(), billingPeriod: RecruiterBillingPeriod = "monthly") {
   const next = new Date(from);
-  next.setMonth(next.getMonth() + 1);
+  if (billingPeriod === "yearly") next.setFullYear(next.getFullYear() + 1);
+  else next.setMonth(next.getMonth() + 1);
   return next;
 }
 
@@ -298,6 +303,7 @@ export const handler: Handler = async (event) => {
   const uid = data.custom_str1 || String(checkout?.uid || "");
   const plan = data.custom_str2 || String(checkout?.plan || "");
   const product = data.custom_str3 || String(checkout?.product || "careerunified-ai");
+  const billingPeriod = data.custom_str4 || String(checkout?.billingPeriod || "monthly");
   const amount_gross = Number(data.amount_gross || data.amount || "0");
   const payment_status = (data.payment_status || "").toUpperCase();
 
@@ -326,6 +332,10 @@ export const handler: Handler = async (event) => {
   const isAiCreditPayment = product === AI_CREDIT_PRODUCT;
   if (isAiCreditPayment && !isAiCreditPack(plan)) return bad(400, "Invalid AI credit pack");
   if (isRecruiterPayment && !isRecruiterPlan(plan)) return bad(400, "Invalid recruiter plan");
+  if (isRecruiterPayment && !isRecruiterBillingPeriod(billingPeriod)) return bad(400, "Invalid recruiter billing period");
+  if (isRecruiterPayment && checkout && String(checkout.billingPeriod || "monthly") !== billingPeriod) {
+    return bad(400, "Payment billing period does not match checkout");
+  }
   if (isRecruiterSingleJobPayment && !isRecruiterSingleJobPack(plan)) {
     return bad(400, "Invalid recruiter job pack");
   }
@@ -337,7 +347,11 @@ export const handler: Handler = async (event) => {
     ? AI_CREDIT_PACK_AMOUNT
     : isRecruiterSingleJobPayment
       ? RECRUITER_SINGLE_JOB_AMOUNT
-      : Number(isRecruiterPayment ? RECRUITER_PLAN[plan as RecruiterPlanId].amount : PLAN_AMOUNT[plan as PlanId]);
+      : Number(isRecruiterPayment
+        ? billingPeriod === "yearly"
+          ? RECRUITER_PLAN[plan as RecruiterPlanId].yearlyAmount
+          : RECRUITER_PLAN[plan as RecruiterPlanId].monthlyAmount
+        : PLAN_AMOUNT[plan as PlanId]);
   const checkoutExpectedAmount = Number(checkout?.expectedAmount);
   const expectedAmount = Number.isFinite(checkoutExpectedAmount) && checkoutExpectedAmount > 0
     ? checkoutExpectedAmount
@@ -391,6 +405,7 @@ export const handler: Handler = async (event) => {
       targetUpdate.subscriptionStatus = payment_status === "CANCELLED" ? "cancelled" : "past_due";
       targetUpdate.payfastLastFailedStatus = payment_status;
       targetUpdate.payfastLastFailedAt = admin.firestore.FieldValue.serverTimestamp();
+      if (isRecruiterPayment) targetUpdate.pendingBillingPeriod = admin.firestore.FieldValue.delete();
     }
 
     const batch = db.batch();
@@ -401,6 +416,7 @@ export const handler: Handler = async (event) => {
         product,
         uid,
         plan,
+        ...(isRecruiterPayment ? { billingPeriod } : {}),
         amount_gross,
         payment_status: payment_status || "UNKNOWN",
         pf_payment_id: data.pf_payment_id || null,
@@ -507,18 +523,20 @@ export const handler: Handler = async (event) => {
       const recruiterData = recruiterSnap.data() || {};
       const existingEnd = timestampToDate(recruiterData.subscriptionCurrentPeriodEnd);
       const periodBase = existingEnd && existingEnd > now ? existingEnd : now;
-      const periodEnd = addBillingPeriod(periodBase);
+      const periodEnd = addBillingPeriod(periodBase, billingPeriod);
 
       tx.set(
         recruiterRef,
         {
           plan: recruiterPlan,
+          billingPeriod,
           subscriptionStatus: "active",
           subscriptionCurrentPeriodStart: admin.firestore.Timestamp.fromDate(now),
           subscriptionCurrentPeriodEnd: admin.firestore.Timestamp.fromDate(periodEnd),
           unlocksRemaining: cfg.unlocks,
           totalUnlocks: cfg.unlocks,
           pendingPlan: admin.firestore.FieldValue.delete(),
+          pendingBillingPeriod: admin.firestore.FieldValue.delete(),
           pendingPayfastPaymentId: admin.firestore.FieldValue.delete(),
           pendingCreatedAt: admin.firestore.FieldValue.delete(),
           lastPaymentRef: data.pf_payment_id || data.m_payment_id || null,
@@ -533,6 +551,7 @@ export const handler: Handler = async (event) => {
             custom_str1: uid,
             custom_str2: recruiterPlan,
             custom_str3: product,
+            custom_str4: billingPeriod,
             receivedAt: new Date().toISOString(),
           },
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -546,6 +565,7 @@ export const handler: Handler = async (event) => {
           product,
           uid,
           plan: recruiterPlan,
+          billingPeriod,
           amount_gross,
           payment_status,
           pf_payment_id: data.pf_payment_id || null,
@@ -562,6 +582,7 @@ export const handler: Handler = async (event) => {
           checkoutRef,
           {
             status: "complete",
+            billingPeriod,
             lastPaymentStatus: payment_status,
             lastPfPaymentId: data.pf_payment_id || null,
             lastAmountGross: amount_gross,

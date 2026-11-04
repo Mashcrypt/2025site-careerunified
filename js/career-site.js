@@ -6,6 +6,7 @@ let candidateUser = null;
 let savedJobIds = new Set();
 let savedJobsUnsubscribe = null;
 let wirelessFilters = {category: "", location: "", type: ""};
+let wirelessFilterExpansion = {category: false, location: false, type: false};
 let editorialRefineTerms = [];
 
 function updateSplitBookmarkButtons() {
@@ -106,6 +107,7 @@ function renderWirelessFilters() {
   const heading = document.createElement("h3");
   heading.className = "wireless-filters-title";
   heading.textContent = isEditorial ? "Refine by Keyword" : "Filter open positions";
+  if (!isEditorial) heading.prepend(createWirelessFilterIcon("wireless-filter-heading-icon", "M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"));
   aside.append(heading);
   if (isEditorial) {
     const refine = document.createElement("div");
@@ -145,12 +147,16 @@ function renderWirelessFilters() {
     if (!values.length) return;
     const group = document.createElement("fieldset");
     const legend = document.createElement("legend");
-    const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "wireless-filter-toggle"; toggle.setAttribute("aria-expanded", "true");
+    const expanded = isEditorial || wirelessFilterExpansion[key];
+    const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "wireless-filter-toggle"; toggle.setAttribute("aria-expanded", String(expanded));
     const title = document.createElement("span"); title.textContent = label;
-    const arrow = document.createElement("span"); arrow.className = "wireless-filter-arrow"; arrow.textContent = "⌃"; arrow.setAttribute("aria-hidden", "true");
+    const arrow = document.createElement("span"); arrow.className = "wireless-filter-arrow"; arrow.setAttribute("aria-hidden", "true");
+    if (isEditorial) arrow.textContent = expanded ? "⌃" : "⌄";
+    else arrow.append(createWirelessFilterIcon("wireless-filter-chevron", "m6 9 6 6 6-6"));
     toggle.append(title, arrow); legend.append(toggle); group.append(legend);
     const options = document.createElement("div"); options.className = "wireless-filter-options";
-    toggle.addEventListener("click", () => { const expanded = toggle.getAttribute("aria-expanded") === "true"; toggle.setAttribute("aria-expanded", String(!expanded)); options.hidden = expanded; arrow.textContent = expanded ? "⌄" : "⌃"; });
+    options.hidden = !expanded;
+    toggle.addEventListener("click", () => { const wasExpanded = toggle.getAttribute("aria-expanded") === "true"; const nextExpanded = !wasExpanded; if (!isEditorial) wirelessFilterExpansion[key] = nextExpanded; toggle.setAttribute("aria-expanded", String(nextExpanded)); options.hidden = wasExpanded; if (isEditorial) arrow.textContent = nextExpanded ? "⌃" : "⌄"; });
     const counts = new Map(values.map(value => [value, jobs.filter(job => text(job[key]) === value).length]));
     values.forEach(value => {
       const item = document.createElement("label"); item.className = "wireless-filter-option";
@@ -181,6 +187,23 @@ function renderWirelessFilters() {
     });
     aside.append(clear);
   }
+}
+
+function createWirelessFilterIcon(className, pathData) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.classList.add(className);
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "2");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", pathData);
+  svg.append(path);
+  return svg;
 }
 
 function renderJobs() {

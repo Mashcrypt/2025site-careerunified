@@ -227,12 +227,158 @@
   selectFeatureFromHash();
   window.addEventListener("hashchange", selectFeatureFromHash);
 
+  const pricingBilling = document.querySelector("[data-pricing-billing]");
+  if (pricingBilling) {
+    const billingOptions = Array.from(pricingBilling.querySelectorAll("[data-billing-option]"));
+    const planPrices = Array.from(document.querySelectorAll("[data-plan-price]"));
+    const countryStorageKey = "cu-pricing-country";
+    const rateStorageKey = "cu-pricing-zar-usd-rate";
+    const cacheLifetime = 24 * 60 * 60 * 1000;
+    const fallbackUsdRate = 1 / 18;
+
+    const readCache = (key) => {
+      try {
+        const value = JSON.parse(window.localStorage.getItem(key) || "null");
+        return value && Date.now() - value.savedAt < cacheLifetime ? value : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const saveCache = (key, value) => {
+      try {
+        window.localStorage.setItem(key, JSON.stringify({ ...value, savedAt: Date.now() }));
+      } catch {
+        // Continue using the current page's location and rate if storage is unavailable.
+      }
+    };
+
+    const getLocalCountryHint = () => {
+      const languageHints = [navigator.language, ...(navigator.languages || [])]
+        .filter(Boolean)
+        .map((language) => language.toLowerCase());
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return languageHints.some((language) => language.endsWith("-za")) || timezone === "Africa/Johannesburg"
+        ? "ZA"
+        : "US";
+    };
+
+    const cachedCountry = readCache(countryStorageKey);
+    const cachedRate = readCache(rateStorageKey);
+    let countryCode = cachedCountry?.country || getLocalCountryHint();
+    let usdRate = Number(cachedRate?.rate) > 0 ? Number(cachedRate.rate) : fallbackUsdRate;
+
+    const formatPrice = (zarAmount, currency, rate) => {
+      const amount = currency === "USD" ? zarAmount * rate : zarAmount;
+      const decimals = currency === "USD" || !Number.isInteger(amount) ? 2 : 0;
+      const formattedAmount = new Intl.NumberFormat(currency === "USD" ? "en-US" : "en-ZA", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: 2
+      }).format(amount);
+      return `${currency === "USD" ? "$" : "R"}${formattedAmount}`;
+    };
+
+    const updatePlanBilling = (period) => {
+      const isYearly = period === "yearly";
+      const currency = countryCode === "ZA" ? "ZAR" : "USD";
+      pricingBilling.dataset.billingPeriod = isYearly ? "yearly" : "monthly";
+
+      billingOptions.forEach((option) => {
+        option.dataset.active = String(option.dataset.billingOption === pricingBilling.dataset.billingPeriod);
+      });
+
+      planPrices.forEach((price) => {
+        const amount = price.querySelector("[data-price-amount]");
+        const pricePeriod = price.querySelector("[data-price-period]");
+        const billingNote = price.parentElement.querySelector("[data-yearly-billing-note]");
+        const zarAmount = Number(isYearly ? price.dataset.yearlyAmount : price.dataset.monthlyAmount);
+        if (amount) amount.textContent = formatPrice(zarAmount, currency, usdRate);
+        if (pricePeriod) pricePeriod.textContent = isYearly ? price.dataset.yearlyPeriod : price.dataset.monthlyPeriod;
+        if (billingNote) {
+          billingNote.hidden = !isYearly;
+          if (isYearly) {
+            const yearlyMonthly = Number(price.dataset.yearlyMonthly);
+            billingNote.textContent = `Equivalent to ${formatPrice(yearlyMonthly, currency, usdRate)} per month · save 10%`;
+          }
+        }
+      });
+    };
+
+    const requestJson = async (url) => {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 2500);
+      try {
+        const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
+        if (!response.ok) throw new Error("Pricing location or currency request failed.");
+        return await response.json();
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
+    };
+
+    const refreshPricingCurrency = async () => {
+      if (!cachedCountry) {
+        try {
+          const location = await requestJson("https://get.geojs.io/v1/ip/country.json");
+          if (typeof location.country === "string" && /^[A-Z]{2}$/.test(location.country)) {
+            countryCode = location.country;
+            saveCache(countryStorageKey, { country: countryCode });
+          }
+        } catch {
+          // Keep the browser locale hint when country lookup is unavailable.
+        }
+      }
+
+      if (countryCode !== "ZA") {
+        try {
+          const cached = readCache(rateStorageKey);
+          if (cached && Number(cached.rate) > 0) {
+            usdRate = Number(cached.rate);
+          } else {
+            const exchangeRate = await requestJson("https://api.frankfurter.dev/v2/rate/zar/usd");
+            if (Number(exchangeRate.rate) > 0) {
+              usdRate = Number(exchangeRate.rate);
+              saveCache(rateStorageKey, { rate: usdRate, date: exchangeRate.date });
+            }
+          }
+        } catch {
+          // Keep the cached or fallback rate so overseas visitors still see dollar prices.
+        }
+      }
+
+      updatePlanBilling(pricingBilling.dataset.billingPeriod);
+    };
+
+    pricingBilling.addEventListener("change", (event) => {
+      if (event.target.matches('input[name="recruiterBillingPeriod"]')) {
+        updatePlanBilling(event.target.value);
+      }
+    });
+
+    updatePlanBilling(pricingBilling.querySelector('input[name="recruiterBillingPeriod"]:checked')?.value || "monthly");
+    refreshPricingCurrency();
+  }
+
   const recruiterGallery = document.querySelector("[data-recruiter-gallery]");
   if (recruiterGallery) {
     const gallerySlides = Array.from(recruiterGallery.querySelectorAll(".hf-hero__gallery-slide"));
     const galleryControls = Array.from(document.querySelectorAll("[data-gallery-direction]"));
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const galleryVideos = gallerySlides.flatMap((slide) => Array.from(slide.querySelectorAll("video")));
+
+    if (gallerySlides.length > 1) {
+      const markLoopClone = (slide) => {
+        slide.setAttribute("aria-hidden", "true");
+        slide.setAttribute("inert", "");
+      };
+      const leadingClone = gallerySlides[gallerySlides.length - 1].cloneNode(true);
+      const trailingClone = gallerySlides[0].cloneNode(true);
+      markLoopClone(leadingClone);
+      markLoopClone(trailingClone);
+      recruiterGallery.prepend(leadingClone);
+      recruiterGallery.append(trailingClone);
+    }
+
+    const loopSlides = Array.from(recruiterGallery.querySelectorAll(".hf-hero__gallery-slide"));
 
     const centeredScrollPosition = (slide) => {
       const galleryRect = recruiterGallery.getBoundingClientRect();
@@ -245,7 +391,7 @@
     const currentGalleryIndex = () => {
       let closestIndex = 0;
       let closestDistance = Infinity;
-      gallerySlides.forEach((slide, index) => {
+      loopSlides.forEach((slide, index) => {
         const distance = Math.abs(centeredScrollPosition(slide) - recruiterGallery.scrollLeft);
         if (distance < closestDistance) {
           closestDistance = distance;
@@ -256,47 +402,58 @@
     };
 
     const showGallerySlide = (index, behavior) => {
-      const slide = gallerySlides[index];
+      const slide = loopSlides[index];
       if (!slide) return;
       recruiterGallery.scrollTo({ left: centeredScrollPosition(slide), behavior });
     };
 
-    const syncGalleryVideo = () => {
-      const activeIndex = currentGalleryIndex();
-      galleryVideos.forEach((video) => {
-        const isActive = gallerySlides[activeIndex]?.contains(video);
-        if (document.hidden || prefersReducedMotion.matches || !isActive) {
-          video.pause();
-          return;
-        }
-        if (video.paused) video.play().catch(() => {});
-      });
-    };
-
-    recruiterGallery.addEventListener("scroll", () => window.requestAnimationFrame(syncGalleryVideo), { passive: true });
-    document.addEventListener("visibilitychange", syncGalleryVideo);
-    prefersReducedMotion.addEventListener?.("change", syncGalleryVideo);
-
     if (gallerySlides.length > 1) {
+      let settleTimer;
+      let isLoopJump = false;
+
+      const jumpToSlide = (index) => {
+        const slide = loopSlides[index];
+        if (!slide) return;
+        isLoopJump = true;
+        recruiterGallery.style.scrollBehavior = "auto";
+        recruiterGallery.scrollLeft = centeredScrollPosition(slide);
+        window.requestAnimationFrame(() => {
+          recruiterGallery.style.removeProperty("scroll-behavior");
+          isLoopJump = false;
+        });
+      };
+
+      const wrapAtClone = () => {
+        const index = currentGalleryIndex();
+        if (index === 0) jumpToSlide(loopSlides.length - 2);
+        else if (index === loopSlides.length - 1) jumpToSlide(1);
+      };
+
       window.requestAnimationFrame(() => {
-        recruiterGallery.scrollLeft = centeredScrollPosition(gallerySlides[1]);
-        syncGalleryVideo();
+        const enterpriseSlide = gallerySlides.find((slide) => slide.classList.contains("hf-hero__gallery-slide--enterprise-video"));
+        const initialSlide = enterpriseSlide || gallerySlides[0];
+        jumpToSlide(loopSlides.indexOf(initialSlide));
       });
+
+      recruiterGallery.addEventListener("scroll", () => {
+        if (isLoopJump) return;
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(wrapAtClone, 160);
+      }, { passive: true });
 
       galleryControls.forEach((control) => {
         control.addEventListener("click", () => {
           const direction = Number(control.dataset.galleryDirection) || 1;
-          const nextIndex = (currentGalleryIndex() + direction + gallerySlides.length) % gallerySlides.length;
+          const nextIndex = currentGalleryIndex() + direction;
           showGallerySlide(nextIndex, prefersReducedMotion.matches ? "auto" : "smooth");
         });
       });
 
       recruiterGallery.addEventListener("keydown", (event) => {
-        if (event.target instanceof HTMLVideoElement) return;
         if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
         event.preventDefault();
         const direction = event.key === "ArrowRight" ? 1 : -1;
-        const nextIndex = (currentGalleryIndex() + direction + gallerySlides.length) % gallerySlides.length;
+        const nextIndex = currentGalleryIndex() + direction;
         showGallerySlide(nextIndex, prefersReducedMotion.matches ? "auto" : "smooth");
       });
     }

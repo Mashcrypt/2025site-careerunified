@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/for-recruiters.css?v=20261028-3">
+  <link rel="stylesheet" href="/css/for-recruiters.css?v=20261102-13">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z934XRVXT"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -92,37 +92,31 @@
     <section class="hf-section hf-plans" id="pricing" aria-labelledby="plansTitle">
       <div class="hf-container">
         <div class="hf-section-heading hf-section-heading--center">
-          <p class="hf-section-tag">Pricing</p>
           <h1 id="plansTitle">Choose the access that matches your hiring volume</h1>
           <p>Publish vacancies, manage direct applications, and communicate with candidates from one hiring workspace. Choose a once-off vacancy or a monthly package, with no annual contract.</p>
         </div>
 
-        <article class="hf-single-offer">
-          <div class="hf-single-offer__icon" aria-hidden="true"><i class="fa-solid fa-briefcase"></i></div>
-          <div class="hf-single-offer__content">
-            <div class="hf-single-offer__title">
-              <span>Once-off hiring</span>
-              <h3>Advertise one job without a subscription</h3>
-            </div>
-            <p>One promoted vacancy for 30 days, with Direct Apply, screening questions, applicant CVs, pipeline tracking, and candidate outcome emails.</p>
-            <div class="hf-single-offer__benefits" aria-label="Single job offer benefits">
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> No recurring charge</span>
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> Applicant CVs included</span>
-              <span><i class="fa-solid fa-check" aria-hidden="true"></i> 30-day promotion</span>
-            </div>
-          </div>
-          <div class="hf-single-offer__action">
-            <p><strong>R199</strong><span> once off</span></p>
-            <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_single_job">Choose single job</a>
-          </div>
-        </article>
+        <fieldset class="hf-plans__billing" data-pricing-billing>
+          <legend>Billing frequency</legend>
+          <label data-billing-option="monthly" data-active="true">
+            <input type="radio" name="recruiterBillingPeriod" value="monthly" checked>
+            <span>Monthly</span>
+          </label>
+          <label data-billing-option="yearly" data-active="false">
+            <input type="radio" name="recruiterBillingPeriod" value="yearly">
+            <span>Yearly (save 10%)</span>
+          </label>
+        </fieldset>
 
         <div class="hf-plans__grid">
           <article class="hf-plan-card">
             <div>
               <p class="hf-plan-card__name">Starter</p>
-              <h3 class="hf-plan-card__price">R299 <span>/ month</span></h3>
-              <p>For smaller teams making focused hires and building a dependable shortlist.</p>
+              <p class="hf-plan-card__description">For smaller teams making focused hires and building a dependable shortlist.</p>
+              <h3 class="hf-plan-card__price" data-plan-price data-monthly-amount="299" data-monthly-period="/ month" data-yearly-amount="3229.2" data-yearly-period="/ year" data-yearly-monthly="269.1">
+                <span data-price-amount>R299</span> <span data-price-period>/ month</span>
+              </h3>
+              <p class="hf-plan-card__billing-note" data-yearly-billing-note hidden>Equivalent to R269.10 per month · save 10%</p>
             </div>
             <ul>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Vacancy publishing with Direct Apply</li>
@@ -132,15 +126,19 @@
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> 50 talent database CV unlocks</li>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Email support</li>
             </ul>
-            <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_starter">Get Starter access</a>
+            <div class="hf-plan-card__action">
+              <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_starter">Get Starter access</a>
+            </div>
           </article>
 
           <article class="hf-plan-card hf-plan-card--featured">
-            <span class="hf-plan-card__badge">Most popular</span>
             <div>
               <p class="hf-plan-card__name">Growth</p>
-              <h3 class="hf-plan-card__price">R699 <span>/ month</span></h3>
-              <p>For growing teams reviewing more applicants across several active vacancies.</p>
+              <p class="hf-plan-card__description">For growing teams reviewing more applicants across several active vacancies.</p>
+              <h3 class="hf-plan-card__price" data-plan-price data-monthly-amount="699" data-monthly-period="/ month" data-yearly-amount="7549.2" data-yearly-period="/ year" data-yearly-monthly="629.1">
+                <span data-price-amount>R699</span> <span data-price-period>/ month</span>
+              </h3>
+              <p class="hf-plan-card__billing-note" data-yearly-billing-note hidden>Equivalent to R629.10 per month · save 10%</p>
             </div>
             <ul>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Everything in Starter</li>
@@ -150,14 +148,19 @@
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Email and WhatsApp candidate follow-up</li>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Priority support</li>
             </ul>
-            <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_pro">Get Growth access</a>
+            <div class="hf-plan-card__action">
+              <a class="hf-button hf-button--primary" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_pro">Get Growth access</a>
+            </div>
           </article>
 
-          <article class="hf-plan-card">
+          <article class="hf-plan-card hf-plan-card--agency">
             <div>
               <p class="hf-plan-card__name">Agency</p>
-              <h3 class="hf-plan-card__price">R1,499 <span>/ month</span></h3>
-              <p>For agencies and high-volume teams that need unrestricted talent database access.</p>
+              <p class="hf-plan-card__description">For agencies and high-volume teams that need unrestricted talent database access.</p>
+              <h3 class="hf-plan-card__price" data-plan-price data-monthly-amount="1499" data-monthly-period="/ month" data-yearly-amount="16189.2" data-yearly-period="/ year" data-yearly-monthly="1349.1">
+                <span data-price-amount>R1,499</span> <span data-price-period>/ month</span>
+              </h3>
+              <p class="hf-plan-card__billing-note" data-yearly-billing-note hidden>Equivalent to R1,349.10 per month · save 10%</p>
             </div>
             <ul>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Everything in Growth</li>
@@ -168,14 +171,12 @@
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Interview, offer, and outcome email tools</li>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i> Priority email support</li>
             </ul>
-            <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_enterprise">Get Agency access</a>
+            <div class="hf-plan-card__action">
+              <a class="hf-button hf-button--outline" href="/recruiter-apply.html" data-cro-event="recruiter_pricing_enterprise">Get Agency access</a>
+            </div>
           </article>
         </div>
 
-        <div class="hf-plans__clarity" role="note">
-          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          <p><strong>Applicant CVs are always included.</strong> CV unlocks are only used when you search the wider Career Unified talent database. Plans renew monthly through PayFast and can be cancelled before the next billing date.</p>
-        </div>
       </div>
     </section>
 
@@ -208,7 +209,7 @@
     </div>
   </footer>
 
-  <script src="/js/for-recruiters.js?v=20261028-3"></script>
+  <script src="/js/for-recruiters.js?v=20261104-1"></script>
   <script src="/js/cookie-notice.js"></script>
 </body>
 </html>

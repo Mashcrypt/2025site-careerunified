@@ -4,11 +4,12 @@ import { getAdmin } from "./_firebaseAdmin";
 import { checkRateLimit } from "./_rateLimit";
 
 type RecruiterPlanId = "starter" | "pro" | "enterprise";
+type RecruiterBillingPeriod = "monthly" | "yearly";
 
-const PLAN_CONFIG: Record<RecruiterPlanId, { amount: string; label: string; unlocks: number }> = {
-  starter: { amount: "299.00", label: "Starter", unlocks: 50 },
-  pro: { amount: "699.00", label: "Growth", unlocks: 200 },
-  enterprise: { amount: "1499.00", label: "Agency", unlocks: -1 },
+const PLAN_CONFIG: Record<RecruiterPlanId, { monthlyAmount: string; yearlyAmount: string; label: string; unlocks: number }> = {
+  starter: { monthlyAmount: "299.00", yearlyAmount: "3229.20", label: "Starter", unlocks: 50 },
+  pro: { monthlyAmount: "699.00", yearlyAmount: "7549.20", label: "Growth", unlocks: 200 },
+  enterprise: { monthlyAmount: "1499.00", yearlyAmount: "16189.20", label: "Agency", unlocks: -1 },
 };
 
 const REQUIRED_ENV = [
@@ -35,6 +36,7 @@ const PAYFAST_FIELD_ORDER = [
   "custom_str1",
   "custom_str2",
   "custom_str3",
+  "custom_str4",
   "subscription_type",
   "billing_date",
   "recurring_amount",
@@ -71,6 +73,10 @@ function decodeBody(eventBody: string | null | undefined, isBase64Encoded?: bool
 
 function isRecruiterPlan(plan: unknown): plan is RecruiterPlanId {
   return plan === "starter" || plan === "pro" || plan === "enterprise";
+}
+
+function isRecruiterBillingPeriod(period: unknown): period is RecruiterBillingPeriod {
+  return period === "monthly" || period === "yearly";
 }
 
 function encodePayfastValue(value: string) {
@@ -131,6 +137,11 @@ export const handler: Handler = async (event) => {
       return json(400, { error: "Invalid plan. Use starter | pro | enterprise." }, baseHeaders);
     }
 
+    const billingPeriod = body?.billingPeriod ?? "monthly";
+    if (!isRecruiterBillingPeriod(billingPeriod)) {
+      return json(400, { error: "Invalid billing period. Use monthly or yearly." }, baseHeaders);
+    }
+
     const authHeader = event.headers.authorization || event.headers.Authorization;
     const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
     if (!idToken) return json(401, { error: "Missing Authorization Bearer token" }, baseHeaders);
@@ -174,6 +185,8 @@ export const handler: Handler = async (event) => {
 
     const siteUrl = process.env.SITE_URL!.replace(/\/+$/, "");
     const cfg = PLAN_CONFIG[plan];
+    const amount = billingPeriod === "yearly" ? cfg.yearlyAmount : cfg.monthlyAmount;
+    const frequency = billingPeriod === "yearly" ? "6" : "3";
     const m_payment_id = `rec_${recruiterId}_${Date.now()}`;
 
     const fields: Record<string, string> = {
@@ -185,15 +198,16 @@ export const handler: Handler = async (event) => {
       name_first: nameFirst,
       email_address: email,
       m_payment_id,
-      amount: cfg.amount,
-      item_name: `Career Unified Recruiter ${cfg.label} subscription`,
+      amount,
+      item_name: `Career Unified Recruiter ${cfg.label} ${billingPeriod} subscription`,
       custom_str1: recruiterId,
       custom_str2: plan,
       custom_str3: "careerunified-recruiter",
+      custom_str4: billingPeriod,
       subscription_type: "1",
       billing_date: new Date().toISOString().slice(0, 10),
-      recurring_amount: cfg.amount,
-      frequency: "3",
+      recurring_amount: amount,
+      frequency,
       cycles: "0",
     };
 
@@ -206,6 +220,7 @@ export const handler: Handler = async (event) => {
       recruiterRef,
       {
         pendingPlan: plan,
+        pendingBillingPeriod: billingPeriod,
         pendingPayfastPaymentId: m_payment_id,
         pendingCreatedAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -217,8 +232,10 @@ export const handler: Handler = async (event) => {
       paymentId: m_payment_id,
       uid: recruiterId,
       plan,
+      billingPeriod,
+      frequency: Number(frequency),
       product: "careerunified-recruiter",
-      expectedAmount: Number(cfg.amount),
+      expectedAmount: Number(amount),
       currency: "ZAR",
       status: "pending",
       mode: process.env.PAYFAST_MODE === "live" ? "live" : "sandbox",

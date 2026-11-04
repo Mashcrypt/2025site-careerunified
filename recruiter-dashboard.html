@@ -335,95 +335,241 @@
     text-transform: uppercase;
   }
 
+  .recruiter-billing-toggle {
+    width: min(100%, 420px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin: 30px auto 24px;
+    padding: 5px;
+    border: 1px solid #dce4f0;
+    border-radius: 999px;
+    background: #ffffff;
+  }
+
+  .recruiter-billing-toggle legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .recruiter-billing-toggle label {
+    position: relative;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 12px;
+    border-radius: 999px;
+    color: #4b5a78;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .recruiter-billing-toggle label[data-active="true"] {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .recruiter-billing-toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .recruiter-billing-toggle label:focus-within {
+    outline: 3px solid rgba(37, 99, 235, .28);
+    outline-offset: 2px;
+  }
+
   .recruiter-pricing-grid {
-    max-width: 1030px;
+    max-width: 1056px;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
-    gap: 22px;
+    gap: 24px;
     margin: 0 auto;
   }
 
   .recruiter-plan-card {
     position: relative;
     min-width: 0;
+    min-height: 666px;
     display: flex;
     flex-direction: column;
-    gap: 22px;
-    padding: 28px;
-    border: 1px solid #e1e7f0;
-    border-radius: 12px;
+    gap: 20px;
+    padding: 26px;
+    border: 1px solid #e7e7ef;
+    border-radius: 18px;
     background: #ffffff;
+    box-shadow: 0 10px 30px rgba(35, 43, 75, .045);
   }
 
   .recruiter-plan-card.featured {
-    border: 2px solid #2563eb;
-    box-shadow: 0 9px 38px rgba(37, 99, 235, 0.13);
+    border: 1px solid #e7e7ef;
+    box-shadow: 0 10px 30px rgba(35, 43, 75, .045);
   }
 
-  .recruiter-plan-badge {
-    position: absolute;
-    top: -13px;
-    left: 50%;
-    padding: 5px 11px;
-    border-radius: 999px;
+  .recruiter-plan-card.agency {
+    border-color: #2563eb;
     background: #2563eb;
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    transform: translateX(-50%);
-    white-space: nowrap;
+    box-shadow: 0 12px 32px rgba(37, 99, 235, .18);
   }
+
+  .recruiter-plan-badge { display: none; }
 
   .recruiter-plan-name {
-    margin: 0 0 10px;
-    color: #64748b;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
+    order: 1;
+    width: fit-content;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-name {
+    background: #ffffff;
+    color: #2563eb;
   }
 
   .recruiter-plan-price {
+    order: 3;
     display: flex;
     align-items: baseline;
     gap: 5px;
-    margin: 0 0 8px;
-    color: #0f172a;
+    margin: 18px 0 0;
+    color: #0e1530;
   }
 
-  .recruiter-plan-price strong { font-size: 30px; line-height: 1; }
-  .recruiter-plan-price span { color: #64748b; font-size: 12px; }
-  .recruiter-plan-summary { min-height: 58px; color: #4b5a78; font-size: 12px; line-height: 1.65; }
+  .recruiter-plan-price strong { color: #0e1530; font-size: 40px; font-weight: 600; line-height: 1.12; }
+  .recruiter-plan-price span { color: #64748b; font-size: 12px; font-weight: 500; }
+  .recruiter-plan-card.agency .recruiter-plan-price,
+  .recruiter-plan-card.agency .recruiter-plan-price strong { color: #ffffff; }
+  .recruiter-plan-card.agency .recruiter-plan-price span { color: rgba(255, 255, 255, .82); }
+
+  .recruiter-plan-summary {
+    order: 2;
+    min-height: 72px;
+    margin: 15px 0 0;
+    color: #4b5a78;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-summary { color: rgba(255, 255, 255, .88); }
+
+  .recruiter-plan-billing-note {
+    order: 4;
+    margin: -14px 0 0;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-billing-note { color: rgba(255, 255, 255, .9); }
+  .recruiter-plan-billing-note[hidden] { display: none; }
 
   .recruiter-plan-features {
+    order: 5;
     flex: 1;
     display: grid;
     align-content: start;
-    gap: 11px;
+    gap: 12px;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 18px 0 0 !important;
+    border-top: 1px solid #ececf2;
     list-style: none;
   }
+
+  .recruiter-plan-card.agency .recruiter-plan-features { border-color: rgba(255, 255, 255, .28); }
 
   .recruiter-plan-features li {
     display: flex;
     align-items: flex-start;
-    gap: 9px;
-    color: #334155;
-    line-height: 1.45;
+    gap: 10px;
+    color: #292733;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
   }
 
   .recruiter-plan-features i {
     flex: 0 0 auto;
     margin-top: 2px;
     color: #2563eb;
-    font-size: 16px;
+    font-size: 14px;
   }
 
-  .recruiter-plan-card .primary-btn {
+  .recruiter-plan-card.agency .recruiter-plan-features li { color: #ffffff; }
+  .recruiter-plan-card.agency .recruiter-plan-features i { color: #ffffff; }
+
+  .recruiter-plan-action {
+    order: 6;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #ececf2;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-action { border-color: rgba(255, 255, 255, .28); }
+
+  .recruiter-plan-card .recruiter-plan-action .primary-btn {
     width: 100%;
-    min-height: 44px;
+    min-height: 46px;
     justify-content: center;
+    margin: 0;
+    padding: 10px 16px;
+    border: 1px solid #e7e7ef;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #17172a;
+    font-size: 13px;
+  }
+
+  .recruiter-plan-card .recruiter-plan-action .primary-btn:hover,
+  .recruiter-plan-card .recruiter-plan-action .primary-btn:focus-visible {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+  }
+
+  .recruiter-plan-card .recruiter-plan-action .primary-btn:disabled {
+    border-color: #e5e7eb;
+    background: #e5e7eb;
+    color: #64748b;
+    cursor: not-allowed;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-action .primary-btn {
+    border-color: #ffffff;
+    background: #ffffff;
+    color: #2563eb;
+  }
+
+  .recruiter-plan-card.agency .recruiter-plan-action .primary-btn:hover,
+  .recruiter-plan-card.agency .recruiter-plan-action .primary-btn:focus-visible {
+    border-color: rgba(255, 255, 255, .82);
+    background: rgba(255, 255, 255, .9);
   }
 
   .recruiter-pricing-note {
@@ -704,6 +850,9 @@
 
   .career-site-shell {
     background: #ffffff;
+    min-width: 0;
+    padding: 26px 28px 32px;
+    border-radius: 10px;
   }
 
   .career-site-hidden-global {
@@ -1383,6 +1532,34 @@
     border-radius: 8px 0 0 8px;
   }
 
+  .career-site-banner-upload {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .career-site-banner-upload > small {
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .career-site-banner-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #f8fafc;
+  }
+
+  .career-site-banner-preview[hidden] { display: none; }
+  .career-site-banner-preview img { display: block; width: 112px; height: 64px; flex: 0 0 112px; border-radius: 6px; object-fit: cover; background: #e2e8f0; }
+  .career-site-banner-preview span { min-width: 0; color: #475569; font-size: 12px; overflow-wrap: anywhere; }
+
   .media-open-link {
     width: 40px;
     border: 1px solid #dfe5ee;
@@ -1698,6 +1875,10 @@
   }
 
   @media (max-width: 700px) {
+    .career-site-shell {
+      padding: 18px 16px 24px;
+    }
+
     .career-site-heading h2 {
       font-size: 28px;
     }
@@ -2081,15 +2262,17 @@
   .career-preview-frame[data-device="mobile"] .career-preview-site { width:390px; min-width:390px; }
   .career-preview-frame[data-device="tablet"] .career-preview-site { width:720px; min-width:720px; }
   .career-preview-frame[data-device="desktop"] .career-preview-site { width:100%; min-width:680px; }
-  .career-preview-site { --preview-primary:#0d47ff; font-family:Arial,sans-serif; color:#14213d; }
-  .career-preview-site[data-layout="bold"] .career-preview-hero { background:linear-gradient(135deg,var(--preview-primary),#14213d); color:#fff; }
+  .career-preview-site { --preview-primary:#0d47ff; --preview-hero-base:#0d47ff; font-family:Arial,sans-serif; color:#14213d; }
+  .career-preview-site[data-layout="bold"] .career-preview-hero { background:linear-gradient(135deg,var(--preview-hero-base),#14213d); color:#fff; }
   .career-preview-site[data-layout="clean"] .career-preview-hero { background:#eef4ff; color:#14213d; }
   .career-preview-site[data-layout="editorial"] .career-preview-hero { background:#14213d; color:#fff; text-align:left; }
   .career-preview-site[data-layout="editorial"] .career-preview-hero p { margin-left:0; }
   .career-preview-site[data-layout="editorial"] .career-preview-card { border-width:0 0 1px; border-radius:0; }
-  .career-preview-site[data-layout="split"] .career-preview-hero { background:var(--preview-primary); color:#fff; }
+  .career-preview-site[data-layout="split"] .career-preview-hero { background:var(--preview-hero-base); color:#fff; }
   .career-preview-site[data-layout="wireless"] .career-preview-hero { background:linear-gradient(90deg,#3f4b5c,#b96754); color:#fff; text-align:left; }
   .career-preview-site[data-has-banner="true"] .career-preview-hero { background-image:linear-gradient(90deg,rgba(20,33,61,.82),rgba(20,33,61,.58)),var(--preview-hero-image); background-position:center; background-size:cover; color:#fff; }
+  .career-preview-site[data-layout="split"][data-has-banner="true"] .career-preview-hero { background-image:linear-gradient(90deg,rgba(20,33,61,.4),rgba(20,33,61,.22)),var(--preview-hero-image); }
+  .career-preview-site[data-layout="wireless"][data-has-banner="true"] .career-preview-hero { background-image:linear-gradient(90deg,rgba(20,33,61,.42),rgba(20,33,61,.22)),var(--preview-hero-image); }
   .career-preview-site[data-has-banner="true"] .career-preview-hero p,
   .career-preview-site[data-has-banner="true"] .career-preview-hero .content-preview-eyebrow { color:#fff; }
   .career-preview-site[data-layout="wireless"] .career-preview-body { grid-template-columns:80px 1fr; background:#f4f4f4; }
@@ -4482,6 +4665,8 @@
   #dashboard .dashboard-kpi-icon { display:inline-flex; width:22px; height:22px; flex:0 0 22px; align-items:center; justify-content:center; color:#111827; font-size:22px; }
   #dashboard .dashboard-kpi-main strong { color:#0e1530; font-size:26px; font-weight:500; line-height:1; }
   #dashboard .dashboard-kpi-trend { align-self:end; justify-self:end; grid-column:2; grid-row:2; margin:0; color:#159447; font-size:10px; font-weight:600; line-height:1.15; text-align:right; white-space:nowrap; }
+  #dashboard .dashboard-inbox-kpis [data-inbox-view="all-applications"] .dashboard-kpi-label { min-height:30px; overflow-wrap:normal; word-break:normal; }
+  #dashboard .dashboard-inbox-kpis [data-inbox-view="all-applications"] .dashboard-kpi-main { white-space:nowrap; }
   #dashboard .dashboard-kpi-trend.is-neutral { color:#718096; }
   #dashboard .dashboard-kpi-trend.is-attention { color:#c77919; }
   #dashboard .recruiter-inbox { margin:0 0 24px; border-color:#e7ebf2; border-radius:14px; box-shadow:0 7px 22px rgba(15,23,42,.04); }
@@ -4516,6 +4701,7 @@
     #dashboard .dashboard-kpi-main strong { font-size:22px; }
     #dashboard .dashboard-kpi-icon { font-size:19px; }
     #dashboard .dashboard-kpi-trend { grid-column:1 / -1; grid-row:3; align-self:end; justify-self:end; width:100%; margin-top:5px; font-size:9px; }
+    #dashboard .dashboard-inbox-kpis [data-inbox-view="all-applications"] .dashboard-kpi-label { min-height:28px; }
     #dashboard .recruiter-task-row { grid-template-columns:34px minmax(0,1fr) auto; gap:9px; padding:11px 12px; }
     #dashboard .recruiter-task-row .primary-btn { grid-column:auto; width:auto; min-height:36px; padding:7px 9px; font-size:11px; }
   }
@@ -4817,6 +5003,7 @@
     .recruiter-single-offer-action .primary-btn { width: auto; }
     .recruiter-single-offer-status { flex: 1 1 100%; order: 3; margin: 0; text-align: right; }
     .recruiter-pricing-grid { grid-template-columns: 1fr; }
+    .recruiter-plan-card { min-height: 0; }
     .recruiter-plan-summary { min-height: 0; }
   }
 
@@ -6147,7 +6334,16 @@
                   <input id="careerSiteBannerImage" type="url" class="form-input" placeholder="https://.../company-banner.jpg">
                   <button class="media-open-link" type="button" aria-label="Open banner image link"><i class='bx bx-link-external'></i></button>
                 </div>
-                <small class="setting-copy">Use a public HTTPS image URL. The blue background remains as a fallback.</small>
+                <small class="setting-copy">Use a public HTTPS image URL or upload an image from your device. The blue background remains as a fallback.</small>
+                <div class="career-site-banner-upload">
+                  <input id="careerSiteBannerImageUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="selectCareerSiteBannerImage(this)">
+                  <button class="primary-btn btn-ghost" type="button" onclick="document.getElementById('careerSiteBannerImageUpload')?.click()"><i class='bx bx-upload' aria-hidden="true"></i> Upload from device</button>
+                  <small>PNG, JPG or WebP · 4 MB max</small>
+                </div>
+                <div class="career-site-banner-preview" id="careerSiteBannerImagePreview" hidden>
+                  <img id="careerSiteBannerImagePreviewImage" alt="Career site hero image preview">
+                  <span id="careerSiteBannerImagePreviewStatus"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -6294,7 +6490,7 @@
                 <p>These sections are live for visitors to see. Drag sections between Display and Stored to control what appears on your page.</p>
                 <div class="content-list" id="careerSiteSections">
                   <div class="content-list-item" data-section-id="hero" data-order="0">
-                    <i class='bx bx-image item-icon'></i><span>Hero</span><button class="content-edit-button" type="button" aria-label="Edit Hero"><i class='bx bx-pencil'></i></button>
+                    <i class='bx bx-image item-icon'></i><span>Hero</span><button class="content-edit-button" type="button" aria-label="Edit Hero" onclick="openCareerSiteHeroImageUpload()"><i class='bx bx-pencil'></i></button>
                   </div>
                   <div class="content-list-item" data-section-id="images" data-order="1">
                     <i class='bx bx-menu drag-icon'></i><i class='bx bx-image item-icon'></i><span>Images</span>
@@ -6771,67 +6967,84 @@
         </div>
       </div>
       <div class="recruiter-single-offer-action">
-        <p class="recruiter-single-offer-price"><strong>R199</strong> once off</p>
+        <p class="recruiter-single-offer-price" data-zar-price="199"><strong>R199</strong> once off</p>
         <button class="primary-btn" id="singleJobOfferBtn" type="button" onclick="startPayFastSingleJob()">Choose single job</button>
         <p class="recruiter-single-offer-status" id="singleJobCreditStatus">No subscription required</p>
       </div>
     </article>
 
-    <p class="recruiter-monthly-label">Monthly packages</p>
+    <fieldset class="recruiter-billing-toggle" data-recruiter-billing-toggle>
+      <legend>Billing frequency</legend>
+      <label data-billing-option="monthly" data-active="true">
+        <input type="radio" name="recruiterPlanBillingPeriod" value="monthly" checked>
+        <span>Monthly</span>
+      </label>
+      <label data-billing-option="yearly" data-active="false">
+        <input type="radio" name="recruiterPlanBillingPeriod" value="yearly">
+        <span>Yearly (save 10%)</span>
+      </label>
+    </fieldset>
+
+    <p class="recruiter-monthly-label" data-package-period-label>Monthly packages</p>
 
     <div class="recruiter-pricing-grid">
       <article class="recruiter-plan-card">
         <p class="recruiter-plan-name">Starter</p>
-        <p class="recruiter-plan-price"><strong>R299</strong><span>/ month</span></p>
+        <p class="recruiter-plan-price" data-zar-price="299" data-zar-yearly="3229.2" data-zar-yearly-monthly="269.1"><strong>R299</strong><span>/ month</span></p>
+        <p class="recruiter-plan-billing-note" data-yearly-billing-note hidden>Equivalent to R269.10 per month · save 10%</p>
         <p class="recruiter-plan-summary">For smaller teams making focused hires.</p>
         <ul class="recruiter-plan-features">
-          <li><i class='bx bx-check-circle'></i><span>Vacancy publishing with Direct Apply</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Applicant CVs and screening answers</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Pipeline stages and private notes</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Candidate outcome email templates</span></li>
-          <li><i class='bx bx-check-circle'></i><span>50 talent database CV unlocks</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Email support</span></li>
+          <li><i class='bx bx-check'></i><span>Vacancy publishing with Direct Apply</span></li>
+          <li><i class='bx bx-check'></i><span>Applicant CVs and screening answers</span></li>
+          <li><i class='bx bx-check'></i><span>Pipeline stages and private notes</span></li>
+          <li><i class='bx bx-check'></i><span>Candidate outcome email templates</span></li>
+          <li><i class='bx bx-check'></i><span>50 talent database CV unlocks</span></li>
+          <li><i class='bx bx-check'></i><span>Email support</span></li>
         </ul>
-        <button class="primary-btn btn-ghost" id="starterPlanBtn" onclick="startPayFastUpgrade('starter')">Choose Starter</button>
+        <div class="recruiter-plan-action">
+          <button class="primary-btn btn-ghost" id="starterPlanBtn" onclick="startPayFastUpgrade('starter')">Choose Starter</button>
+        </div>
       </article>
 
       <article class="recruiter-plan-card featured">
         <span class="recruiter-plan-badge">Most popular</span>
         <p class="recruiter-plan-name">Growth</p>
-        <p class="recruiter-plan-price"><strong>R699</strong><span>/ month</span></p>
+        <p class="recruiter-plan-price" data-zar-price="699" data-zar-yearly="7549.2" data-zar-yearly-monthly="629.1"><strong>R699</strong><span>/ month</span></p>
+        <p class="recruiter-plan-billing-note" data-yearly-billing-note hidden>Equivalent to R629.10 per month · save 10%</p>
         <p class="recruiter-plan-summary">For growing teams managing several vacancies.</p>
         <ul class="recruiter-plan-features">
-          <li><i class='bx bx-check-circle'></i><span>Everything in Starter</span></li>
-          <li><i class='bx bx-check-circle'></i><span>200 talent database CV unlocks</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Advanced candidate filters and comparison</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Vacancy and application analytics</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Email and WhatsApp candidate follow-up</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Priority support</span></li>
+          <li><i class='bx bx-check'></i><span>Everything in Starter</span></li>
+          <li><i class='bx bx-check'></i><span>200 talent database CV unlocks</span></li>
+          <li><i class='bx bx-check'></i><span>Advanced candidate filters and comparison</span></li>
+          <li><i class='bx bx-check'></i><span>Vacancy and application analytics</span></li>
+          <li><i class='bx bx-check'></i><span>Email and WhatsApp candidate follow-up</span></li>
+          <li><i class='bx bx-check'></i><span>Priority support</span></li>
         </ul>
-        <button class="primary-btn" id="proPlanBtn" onclick="startPayFastUpgrade('pro')">Choose Growth</button>
+        <div class="recruiter-plan-action">
+          <button class="primary-btn" id="proPlanBtn" onclick="startPayFastUpgrade('pro')">Choose Growth</button>
+        </div>
       </article>
 
-      <article class="recruiter-plan-card">
+      <article class="recruiter-plan-card agency">
         <p class="recruiter-plan-name">Agency</p>
-        <p class="recruiter-plan-price"><strong>R1,499</strong><span>/ month</span></p>
+        <p class="recruiter-plan-price" data-zar-price="1499" data-zar-yearly="16189.2" data-zar-yearly-monthly="1349.1"><strong>R1,499</strong><span>/ month</span></p>
+        <p class="recruiter-plan-billing-note" data-yearly-billing-note hidden>Equivalent to R1,349.10 per month · save 10%</p>
         <p class="recruiter-plan-summary">For agencies and high-volume hiring teams.</p>
         <ul class="recruiter-plan-features">
-          <li><i class='bx bx-check-circle'></i><span>Everything in Growth</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Unlimited integrations across supported providers</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Unlimited talent database CV unlocks</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Multi-vacancy applicant workspace</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Screening, notes, pipeline, and analytics</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Interview, offer, and outcome email tools</span></li>
-          <li><i class='bx bx-check-circle'></i><span>Priority email support</span></li>
+          <li><i class='bx bx-check'></i><span>Everything in Growth</span></li>
+          <li><i class='bx bx-check'></i><span>Unlimited integrations across supported providers</span></li>
+          <li><i class='bx bx-check'></i><span>Unlimited talent database CV unlocks</span></li>
+          <li><i class='bx bx-check'></i><span>Multi-vacancy applicant workspace</span></li>
+          <li><i class='bx bx-check'></i><span>Screening, notes, pipeline, and analytics</span></li>
+          <li><i class='bx bx-check'></i><span>Interview, offer, and outcome email tools</span></li>
+          <li><i class='bx bx-check'></i><span>Priority email support</span></li>
         </ul>
-        <button class="primary-btn btn-ghost" id="enterprisePlanBtn" onclick="startPayFastUpgrade('enterprise')">Choose Agency</button>
+        <div class="recruiter-plan-action">
+          <button class="primary-btn btn-ghost" id="enterprisePlanBtn" onclick="startPayFastUpgrade('enterprise')">Choose Agency</button>
+        </div>
       </article>
     </div>
 
-    <div class="recruiter-pricing-note" role="note">
-      <i class='bx bx-info-circle'></i>
-      <div><strong>Applicant CVs are always included.</strong> Unlocks are only used when searching the wider Career Unified talent database. Secure monthly PayFast billing, cancel before your next billing date. No annual contract.</div>
-    </div>
   </div>
 
   <!-- ANALYTICS (NOW FULLY WORKING) -->
@@ -7079,6 +7292,55 @@ function viewCareerSite() {
 
 let careerSiteConfig = null;
 let careerSiteImages = [];
+let careerSiteBannerImageUpload = null;
+
+function clearCareerSiteBannerImageUpload() {
+  if (careerSiteBannerImageUpload?.previewUrl?.startsWith('blob:')) {
+    URL.revokeObjectURL(careerSiteBannerImageUpload.previewUrl);
+  }
+  careerSiteBannerImageUpload = null;
+}
+
+function renderCareerSiteBannerImagePreview(source, isPending = Boolean(careerSiteBannerImageUpload)) {
+  const preview = document.getElementById('careerSiteBannerImagePreview');
+  const image = document.getElementById('careerSiteBannerImagePreviewImage');
+  const status = document.getElementById('careerSiteBannerImagePreviewStatus');
+  if (!preview || !image || !status) return;
+  const imageUrl = String(source || '').trim();
+  preview.hidden = !imageUrl;
+  if (!imageUrl) {
+    image.removeAttribute('src');
+    status.textContent = '';
+    return;
+  }
+  image.src = imageUrl;
+  status.textContent = isPending
+    ? 'Selected image. Save Changes to apply it to your career site.'
+    : 'Current career site hero image';
+}
+
+function selectCareerSiteBannerImage(input) {
+  const file = input?.files?.[0];
+  if (!file) return;
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024) {
+    input.value = '';
+    showToast('error', 'Image not added', 'Choose a PNG, JPG or WebP image up to 4 MB.');
+    return;
+  }
+  clearCareerSiteBannerImageUpload();
+  careerSiteBannerImageUpload = {file, previewUrl: URL.createObjectURL(file)};
+  const urlField = document.getElementById('careerSiteBannerImage');
+  if (urlField) urlField.value = '';
+  input.value = '';
+  renderCareerSiteBannerImagePreview(careerSiteBannerImageUpload.previewUrl, true);
+  updateCareerSiteContentPreview();
+}
+
+function openCareerSiteHeroImageUpload() {
+  const mediaTab = document.querySelector('.career-site-tab[data-tab="media"]');
+  switchCareerSiteTab('media', mediaTab);
+  document.getElementById('careerSiteBannerImageUpload')?.click();
+}
 
 function careerSiteUrl(site) {
   const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -7132,6 +7394,7 @@ async function loadCareerSiteSettings() {
     const social = careerSiteConfig.socialLinks || {};
     const setCareerField = (id, value) => { const field = document.getElementById(id); if (field && value) field.value = value; };
     setCareerField('careerSiteBannerImage', media.bannerImage);
+    renderCareerSiteBannerImagePreview(careerSiteBannerImageUpload?.previewUrl || media.bannerImage || '', Boolean(careerSiteBannerImageUpload));
     const youtubeField = document.getElementById('careerSiteYoutube');
     const vimeoField = document.getElementById('careerSiteVimeo');
     if (youtubeField) youtubeField.value = media.youtube || '';
@@ -7296,9 +7559,10 @@ function getCareerSitePreviewData() {
   const profile = recruiterState.companyProfile || {};
   const field = id => document.getElementById(id)?.value?.trim() || '';
   const savedLogo = document.getElementById('careerSiteLogoPreview')?.getAttribute('src') || '';
-  const rawBanner = String(document.getElementById('careerSiteBannerImage')?.value ?? careerSiteConfig?.media?.bannerImage ?? '');
-  let bannerImage = '';
-  if (rawBanner.trim()) {
+  const pendingBannerPreview = careerSiteBannerImageUpload?.previewUrl || '';
+  const rawBanner = pendingBannerPreview || String(document.getElementById('careerSiteBannerImage')?.value ?? careerSiteConfig?.media?.bannerImage ?? '');
+  let bannerImage = pendingBannerPreview.startsWith('blob:') ? pendingBannerPreview : '';
+  if (!bannerImage && rawBanner.trim()) {
     try {
       const parsed = new URL(rawBanner.trim(), window.location.href);
       if (parsed.protocol === 'http:' || parsed.protocol === 'https:') bannerImage = parsed.href;
@@ -7481,8 +7745,17 @@ async function saveCareerSiteMedia() {
       images.push(image.file ? await uploadCareerSiteImage(image) : image.url);
     }
     renderCareerSiteImages();
+    let bannerImage = document.getElementById('careerSiteBannerImage')?.value?.trim() || '';
+    if (careerSiteBannerImageUpload?.file) {
+      bannerImage = await uploadCareerSiteImage(careerSiteBannerImageUpload);
+      const bannerField = document.getElementById('careerSiteBannerImage');
+      if (bannerField) bannerField.value = bannerImage;
+      clearCareerSiteBannerImageUpload();
+      renderCareerSiteBannerImagePreview(bannerImage, false);
+      updateCareerSiteContentPreview();
+    }
     const data = {
-      bannerImage: document.getElementById('careerSiteBannerImage')?.value,
+      bannerImage,
       youtube: document.getElementById('careerSiteYoutube')?.value,
       vimeo: document.getElementById('careerSiteVimeo')?.value,
       images,
@@ -7749,6 +8022,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('input', event => {
+  if (event.target.matches('#careerSiteBannerImage')) {
+    clearCareerSiteBannerImageUpload();
+    renderCareerSiteBannerImagePreview(event.target.value);
+  }
   if (event.target.matches('#cp_name, #cp_about, #cp_logo, #careerSiteCustomColor, #careerSiteBannerImage, #careerSiteTagline')) updateCareerSiteContentPreview();
 });
 document.addEventListener('change', event => {
@@ -9192,10 +9469,146 @@ function scheduleRecruiterTrialExpiry() {
    3) PayFast ITN activates the recruiter subscription server-side
 ====================================================== */
 
+const recruiterPriceCountryCacheKey = "cu-pricing-country";
+const recruiterPriceRateCacheKey = "cu-pricing-zar-usd-rate";
+const recruiterPriceCacheLifetime = 24 * 60 * 60 * 1000;
+const recruiterPriceFallbackUsdRate = 1 / 18;
+
+function readRecruiterPriceCache(key) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(key) || "null");
+    return cached && Date.now() - cached.savedAt < recruiterPriceCacheLifetime ? cached : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveRecruiterPriceCache(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ ...value, savedAt: Date.now() }));
+  } catch {
+    // Use the current page's country and exchange rate if local storage is unavailable.
+  }
+}
+
+function getRecruiterPriceCountryHint() {
+  const languages = [navigator.language, ...(navigator.languages || [])]
+    .filter(Boolean)
+    .map((language) => language.toLowerCase());
+  return languages.some((language) => language.endsWith("-za"))
+    || Intl.DateTimeFormat().resolvedOptions().timeZone === "Africa/Johannesburg"
+    ? "ZA"
+    : "US";
+}
+
+const cachedRecruiterPriceCountry = readRecruiterPriceCache(recruiterPriceCountryCacheKey);
+const cachedRecruiterPriceRate = readRecruiterPriceCache(recruiterPriceRateCacheKey);
+let recruiterPriceCountryCode = cachedRecruiterPriceCountry?.country || getRecruiterPriceCountryHint();
+let recruiterZarUsdRate = Number(cachedRecruiterPriceRate?.rate) > 0
+  ? Number(cachedRecruiterPriceRate.rate)
+  : recruiterPriceFallbackUsdRate;
+let recruiterBillingPeriod = "monthly";
+
+function formatRecruiterPackagePrice(zarAmount, currency) {
+  const isSouthAfrican = (currency || (recruiterPriceCountryCode === "ZA" ? "ZAR" : "USD")) === "ZAR";
+  const amount = isSouthAfrican ? zarAmount : zarAmount * recruiterZarUsdRate;
+  const digits = isSouthAfrican && Number.isInteger(amount) ? 0 : 2;
+  const formatted = new Intl.NumberFormat(isSouthAfrican ? "en-ZA" : "en-US", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: 2
+  }).format(amount);
+  return `${isSouthAfrican ? "R" : "$"}${formatted}`;
+}
+
+function updateRecruiterPackagePrices(period = recruiterBillingPeriod) {
+  recruiterBillingPeriod = period === "yearly" ? "yearly" : "monthly";
+  const billingToggle = document.querySelector("[data-recruiter-billing-toggle]");
+  billingToggle?.querySelectorAll("[data-billing-option]").forEach((option) => {
+    option.dataset.active = String(option.dataset.billingOption === recruiterBillingPeriod);
+  });
+  const periodLabel = document.querySelector("[data-package-period-label]");
+  if (periodLabel) periodLabel.textContent = recruiterBillingPeriod === "yearly" ? "Yearly packages" : "Monthly packages";
+
+  document.querySelectorAll("#billing .recruiter-single-offer-price[data-zar-price]").forEach((priceElement) => {
+    const display = priceElement.querySelector("strong");
+    if (display) display.textContent = formatRecruiterPackagePrice(Number(priceElement.dataset.zarPrice));
+  });
+
+  document.querySelectorAll("#billing .recruiter-plan-price[data-zar-price]").forEach((priceElement) => {
+    const display = priceElement.querySelector("strong");
+    const pricePeriod = priceElement.querySelector("span");
+    const billingNote = priceElement.parentElement.querySelector("[data-yearly-billing-note]");
+    const amount = Number(recruiterBillingPeriod === "yearly" ? priceElement.dataset.zarYearly : priceElement.dataset.zarPrice);
+    if (display && Number.isFinite(amount)) display.textContent = formatRecruiterPackagePrice(amount);
+    if (pricePeriod) pricePeriod.textContent = recruiterBillingPeriod === "yearly" ? "/ year" : "/ month";
+    if (billingNote) {
+      billingNote.hidden = recruiterBillingPeriod !== "yearly";
+      if (recruiterBillingPeriod === "yearly") {
+        const yearlyMonthly = Number(priceElement.dataset.zarYearlyMonthly);
+        billingNote.textContent = `Equivalent to ${formatRecruiterPackagePrice(yearlyMonthly)} per month · save 10%`;
+      }
+    }
+  });
+}
+
+async function requestRecruiterPriceJson(url) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 2500);
+  try {
+    const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
+    if (!response.ok) throw new Error("Pricing location or currency request failed.");
+    return await response.json();
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function refreshRecruiterPackagePrices() {
+  if (!cachedRecruiterPriceCountry) {
+    try {
+      const location = await requestRecruiterPriceJson("https://get.geojs.io/v1/ip/country.json");
+      if (typeof location.country === "string" && /^[A-Z]{2}$/.test(location.country)) {
+        recruiterPriceCountryCode = location.country;
+        saveRecruiterPriceCache(recruiterPriceCountryCacheKey, { country: recruiterPriceCountryCode });
+      }
+    } catch {
+      // Keep the cached or browser locale country hint if lookup is unavailable.
+    }
+  }
+
+  if (recruiterPriceCountryCode !== "ZA") {
+    try {
+      const cachedRate = readRecruiterPriceCache(recruiterPriceRateCacheKey);
+      if (cachedRate && Number(cachedRate.rate) > 0) {
+        recruiterZarUsdRate = Number(cachedRate.rate);
+      } else {
+        const rate = await requestRecruiterPriceJson("https://api.frankfurter.dev/v2/rate/zar/usd");
+        if (Number(rate.rate) > 0) {
+          recruiterZarUsdRate = Number(rate.rate);
+          saveRecruiterPriceCache(recruiterPriceRateCacheKey, { rate: recruiterZarUsdRate, date: rate.date });
+        }
+      }
+    } catch {
+      // Keep cached or fallback conversion so overseas recruiters still see dollar prices.
+    }
+  }
+
+  updateRecruiterPackagePrices();
+}
+
+updateRecruiterPackagePrices();
+refreshRecruiterPackagePrices();
+
+document.querySelector("[data-recruiter-billing-toggle]")?.addEventListener("change", (event) => {
+  if (event.target.matches('input[name="recruiterPlanBillingPeriod"]')) {
+    updateRecruiterPackagePrices(event.target.value);
+  }
+});
+
 const PLAN_CONFIG = {
-  starter: { label: "STARTER", buttonLabel: "Choose Starter", amountZAR: 299, unlocks: 50 },
-  pro: { label: "GROWTH", buttonLabel: "Choose Growth", amountZAR: 699, unlocks: 200 },
-  enterprise: { label: "AGENCY", buttonLabel: "Choose Agency", amountZAR: 1499, unlocks: -1 },
+  starter: { label: "STARTER", buttonLabel: "Choose Starter", amountZAR: 299, amountYearlyZAR: 3229.2, unlocks: 50 },
+  pro: { label: "GROWTH", buttonLabel: "Choose Growth", amountZAR: 699, amountYearlyZAR: 7549.2, unlocks: 200 },
+  enterprise: { label: "AGENCY", buttonLabel: "Choose Agency", amountZAR: 1499, amountYearlyZAR: 16189.2, unlocks: -1 },
 };
 
 function submitPayFastCheckout(paymentUrl, fields) {
@@ -9227,10 +9640,20 @@ window.startPayFastUpgrade = async function (plan) {
   }
 
   const unlocksText = cfg.unlocks === -1 ? "Unlimited" : cfg.unlocks;
+  const amountZAR = recruiterBillingPeriod === "yearly" ? cfg.amountYearlyZAR : cfg.amountZAR;
+  const paymentPeriod = recruiterBillingPeriod === "yearly" ? "year" : "month";
+  const planButtonId = plan === "pro" ? "proPlanBtn" : `${plan}PlanBtn`;
+  const displayedPlanPrice = document.getElementById(planButtonId)
+    ?.closest(".recruiter-plan-card")
+    ?.querySelector("[data-zar-price] strong")
+    ?.textContent;
+  const confirmationPrice = recruiterPriceCountryCode === "ZA"
+    ? `${formatRecruiterPackagePrice(amountZAR)}/${paymentPeriod}`
+    : `${displayedPlanPrice || formatRecruiterPackagePrice(amountZAR)}/${paymentPeriod} (approx.; PayFast charges ${formatRecruiterPackagePrice(amountZAR, "ZAR")}/${paymentPeriod})`;
 
   const confirmed = confirm(
     `Upgrade to ${cfg.label}?\n\n` +
-      `Price: R${cfg.amountZAR}/month\n` +
+      `Price: ${confirmationPrice}\n` +
       `CV Unlocks: ${unlocksText}\n\n` +
       `You will be redirected to PayFast to complete payment.`
   );
@@ -9252,7 +9675,7 @@ window.startPayFastUpgrade = async function (plan) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${idToken}`,
       },
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({ plan, billingPeriod: recruiterBillingPeriod }),
     });
 
     const out = await res.json().catch(() => null);
@@ -9343,8 +9766,13 @@ window.startRecruiterTrial = async function () {
 window.startPayFastSingleJob = async function () {
   if (!currentRecruiter) return alert("Please login again.");
 
+  const displayedSingleJobPrice = document.querySelector("#billing [data-zar-price='199'] strong")?.textContent;
+  const singleJobConfirmationPrice = recruiterPriceCountryCode === "ZA"
+    ? "R199"
+    : `${displayedSingleJobPrice || formatRecruiterPackagePrice(199)} (approx.; PayFast charges R199)`;
+
   const confirmed = confirm(
-    "Advertise one promoted vacancy for R199?\n\n" +
+    `Advertise one promoted vacancy for ${singleJobConfirmationPrice}?\n\n` +
       "This is a once-off payment, not a subscription. The listing will be promoted for 30 days when you publish it."
   );
   if (!confirmed) return;
