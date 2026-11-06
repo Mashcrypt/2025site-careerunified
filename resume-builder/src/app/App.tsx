@@ -235,6 +235,73 @@ const PLAN_OPTIONS: Array<{
 const TEMPLATE_CANVAS_WIDTH = 816;
 const PROFILE_CV_VERSION_ID = 'profile-cv-import';
 
+async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string) {
+  const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
+    import('jspdf'),
+    import('html2canvas'),
+  ]);
+  await document.fonts?.ready;
+
+  const renderRoot = document.createElement('div');
+  renderRoot.style.cssText = `position:fixed;left:0;top:0;z-index:-1;width:${TEMPLATE_CANVAS_WIDTH}px;pointer-events:none;background:#fff;`;
+  const clone = preview.cloneNode(true) as HTMLElement;
+  clone.style.width = `${TEMPLATE_CANVAS_WIDTH}px`;
+  clone.style.maxWidth = 'none';
+  clone.style.transform = 'none';
+  renderRoot.appendChild(clone);
+  document.body.appendChild(renderRoot);
+
+  try {
+    await Promise.all(Array.from(clone.querySelectorAll('img')).map((image) => image.decode().catch(() => undefined)));
+    const canvas = await html2canvas(clone, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      width: TEMPLATE_CANVAS_WIDTH,
+      windowWidth: TEMPLATE_CANVAS_WIDTH,
+      windowHeight: 1123,
+      scrollX: 0,
+      scrollY: 0,
+    });
+    if (!canvas.width || !canvas.height) throw new Error('The CV preview could not be rendered.');
+
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const sliceHeight = Math.floor((canvas.width * pageHeight) / pageWidth);
+    let offset = 0;
+
+    while (offset < canvas.height) {
+      const currentHeight = Math.min(sliceHeight, canvas.height - offset);
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = currentHeight;
+      const context = pageCanvas.getContext('2d');
+      if (!context) throw new Error('The CV preview could not be rendered.');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      context.drawImage(canvas, 0, offset, canvas.width, currentHeight, 0, 0, canvas.width, currentHeight);
+
+      if (offset > 0) pdf.addPage();
+      pdf.addImage(
+        pageCanvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        0,
+        pageWidth,
+        (currentHeight * pageWidth) / canvas.width,
+      );
+      offset += currentHeight;
+    }
+
+    pdf.save(fileName);
+  } finally {
+    renderRoot.remove();
+  }
+}
+
 const MONTH_LOOKUP: Record<string, string> = {
   jan: '01',
   january: '01',
@@ -1339,28 +1406,53 @@ export default function App() {
   ${el.outerHTML}
 </body>
 </html>`;
-      const token = await getFirebaseAuth().currentUser?.getIdToken();
-      const res = await fetch('/.netlify/functions/export-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ html, fileName: fileSafeName }),
-      });
+      let blob: Blob | null = null;
+      let serverFailure: (Error & { stage?: string; status?: number }) | null = null;
+      try {
+        const token = await getFirebaseAuth().currentUser?.getIdToken();
+        const res = await fetch('/.netlify/functions/export-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ html, fileName: fileSafeName }),
+        });
 
-      if (!res.ok) {
-        const msg = await res.json().catch(() => null);
-        const exportError = new Error(msg?.error || 'Could not export PDF.') as Error & {
-          stage?: string;
-          status?: number;
-        };
-        exportError.stage = typeof msg?.stage === 'string' ? msg.stage : undefined;
-        exportError.status = res.status;
-        throw exportError;
+        if (!res.ok) {
+          const msg = await res.json().catch(() => null);
+          const exportError = new Error(msg?.error || 'Could not export PDF.') as Error & {
+            stage?: string;
+            status?: number;
+          };
+          exportError.stage = typeof msg?.stage === 'string' ? msg.stage : undefined;
+          exportError.status = res.status;
+          if (res.status < 500) throw exportError;
+          serverFailure = exportError;
+        } else {
+          blob = await res.blob();
+          if (blob.type !== 'application/pdf' || blob.size === 0) {
+            blob = null;
+            serverFailure = new Error('The PDF service returned an invalid file.');
+          }
+        }
+      } catch (error: any) {
+        const failure = error as Error & { stage?: string; status?: number };
+        if (failure.status && failure.status < 500) throw failure;
+        serverFailure = failure;
       }
 
-      const blob = await res.blob();
+      if (!blob) {
+        await downloadResumePdfInBrowser(el, `${fileSafeName}.pdf`);
+        trackAnalyticsEvent('resume_pdf_export_fallback', {
+          ...downloadAnalytics,
+          failure_stage: serverFailure?.stage || 'network_or_server_error',
+          response_status: serverFailure?.status,
+        });
+        trackAnalyticsEvent('resume_pdf_download', downloadAnalytics);
+        return;
+      }
+
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement('a');
