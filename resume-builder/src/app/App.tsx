@@ -235,24 +235,65 @@ const PLAN_OPTIONS: Array<{
 const TEMPLATE_CANVAS_WIDTH = 816;
 const PROFILE_CV_VERSION_ID = 'profile-cv-import';
 
-async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string) {
+async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string, styles: string) {
   const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
     import('jspdf'),
     import('html2canvas'),
   ]);
-  await document.fonts?.ready;
+  const colorCanvas = document.createElement('canvas');
+  colorCanvas.width = 1;
+  colorCanvas.height = 1;
+  const colorContext = colorCanvas.getContext('2d', { willReadFrequently: true });
+  const convertOklch = (color: string) => {
+    if (!colorContext) return 'rgb(15, 23, 42)';
+    colorContext.clearRect(0, 0, 1, 1);
+    colorContext.fillStyle = '#010203';
+    const previousFillStyle = colorContext.fillStyle;
+    colorContext.fillStyle = color;
+    if (colorContext.fillStyle === previousFillStyle) return 'rgb(15, 23, 42)';
+    colorContext.fillRect(0, 0, 1, 1);
+    const [red, green, blue, alpha] = colorContext.getImageData(0, 0, 1, 1).data;
+    return `rgba(${red}, ${green}, ${blue}, ${(alpha / 255).toFixed(3)})`;
+  };
+  const normalizeOklch = (css: string) => css.replace(/oklch\([^()]*\)/gi, convertOklch);
+  const pdfStyles = normalizeOklch(styles);
 
-  const renderRoot = document.createElement('div');
-  renderRoot.style.cssText = `position:fixed;left:0;top:0;z-index:-1;width:${TEMPLATE_CANVAS_WIDTH}px;pointer-events:none;background:#fff;`;
-  const clone = preview.cloneNode(true) as HTMLElement;
-  clone.style.width = `${TEMPLATE_CANVAS_WIDTH}px`;
-  clone.style.maxWidth = 'none';
-  clone.style.transform = 'none';
-  renderRoot.appendChild(clone);
-  document.body.appendChild(renderRoot);
+  const frame = document.createElement('iframe');
+  frame.title = 'CV PDF render';
+  frame.tabIndex = -1;
+  frame.setAttribute('aria-hidden', 'true');
+  frame.style.cssText = `position:fixed;left:0;top:0;z-index:-1;width:${TEMPLATE_CANVAS_WIDTH}px;height:1123px;border:0;pointer-events:none;`;
+  document.body.appendChild(frame);
 
   try {
+    await new Promise<void>((resolve, reject) => {
+      frame.addEventListener('load', () => resolve(), { once: true });
+      frame.addEventListener('error', () => reject(new Error('The CV preview could not be prepared.')), { once: true });
+      frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:#fff}body{width:816px}</style></head><body></body></html>';
+    });
+    const frameDocument = frame.contentDocument;
+    const frameWindow = frame.contentWindow;
+    if (!frameDocument || !frameWindow) throw new Error('The CV preview could not be prepared.');
+    frameDocument.documentElement.className = document.documentElement.className;
+    frameDocument.body.className = document.body.className;
+    const stylesheet = frameDocument.createElement('style');
+    stylesheet.textContent = pdfStyles;
+    frameDocument.head.appendChild(stylesheet);
+
+    const clone = frameDocument.importNode(preview, true) as HTMLElement;
+    clone.style.width = `${TEMPLATE_CANVAS_WIDTH}px`;
+    clone.style.maxWidth = 'none';
+    clone.style.transform = 'none';
+    const rootInlineStyles = clone.getAttribute('style');
+    if (rootInlineStyles) clone.setAttribute('style', normalizeOklch(rootInlineStyles));
+    clone.querySelectorAll<HTMLElement>('[style]').forEach((element) => {
+      const inlineStyles = element.getAttribute('style');
+      if (inlineStyles) element.setAttribute('style', normalizeOklch(inlineStyles));
+    });
+    frameDocument.body.appendChild(clone);
+    await frameDocument.fonts?.ready;
     await Promise.all(Array.from(clone.querySelectorAll('img')).map((image) => image.decode().catch(() => undefined)));
+
     const canvas = await html2canvas(clone, {
       backgroundColor: '#ffffff',
       scale: 2,
@@ -262,6 +303,7 @@ async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string
       width: TEMPLATE_CANVAS_WIDTH,
       windowWidth: TEMPLATE_CANVAS_WIDTH,
       windowHeight: 1123,
+      window: frameWindow,
       scrollX: 0,
       scrollY: 0,
     });
@@ -298,7 +340,7 @@ async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string
 
     pdf.save(fileName);
   } finally {
-    renderRoot.remove();
+    frame.remove();
   }
 }
 
@@ -1443,7 +1485,7 @@ export default function App() {
       }
 
       if (!blob) {
-        await downloadResumePdfInBrowser(el, `${fileSafeName}.pdf`);
+        await downloadResumePdfInBrowser(el, `${fileSafeName}.pdf`, styles);
         trackAnalyticsEvent('resume_pdf_export_fallback', {
           ...downloadAnalytics,
           failure_stage: serverFailure?.stage || 'network_or_server_error',

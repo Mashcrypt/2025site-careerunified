@@ -160,14 +160,18 @@ export const handler: Handler = async event => {
       .replace(/[^a-z0-9\-_]/gi, "_")
       .slice(0, 60);
     exportStage = "chromium-path";
-    // Resolve the compressed binaries from the installed package itself.
-    // In Netlify's function bundle, __dirname can resolve differently from the
-    // package's original layout, so chromium.executablePath() may guess /var/bin.
     const chromiumModulePath = require.resolve("@sparticuz/chromium");
-    const chromiumBinPath = path.resolve(path.dirname(chromiumModulePath), "..", "bin");
-    if (!existsSync(path.join(chromiumBinPath, "chromium.br"))) {
-      throw new Error(`Chromium package assets are missing from ${chromiumBinPath}.`);
+    const chromiumBinCandidates = [
+      path.resolve(path.dirname(chromiumModulePath), "..", "bin"),
+      path.resolve(process.cwd(), "node_modules", "@sparticuz", "chromium", "bin"),
+    ];
+    const chromiumBinPath = chromiumBinCandidates.find(candidate =>
+      existsSync(path.join(candidate, "chromium.br")),
+    );
+    if (!chromiumBinPath) {
+      throw new Error(`Chromium package assets are missing. Checked: ${chromiumBinCandidates.join(", ")}.`);
     }
+    console.info("EXPORT_PDF_CHROMIUM_BIN_PATH", chromiumBinPath);
     chromium.setGraphicsMode = false;
     const executablePath = await chromium.executablePath(chromiumBinPath);
     if (!executablePath) throw new Error("Chromium executable path is unavailable.");
