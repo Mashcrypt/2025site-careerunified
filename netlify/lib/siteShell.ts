@@ -102,7 +102,7 @@ export function renderSiteNavigation(activeSection: ActiveSection) {
       <a href="/varsity"${currentPage(activeSection, "varsities")}>Varsities</a>
       <a href="/cv-generator/">Generate CV</a>
       <a href="/z83-filler">Z83 Filler</a>
-      <a href="/cv-tips">CV Tips</a>
+      <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
       <a href="/login.html">Login</a>
       <a href="/account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -126,7 +126,7 @@ export function renderSiteNavigation(activeSection: ActiveSection) {
     <a href="/varsity"${currentPage(activeSection, "varsities")}>Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/z83-filler">Z83 Filler</a>
-    <a href="/cv-tips">CV Tips</a>
+    <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
     <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="/saved-items.html">Saved Items</a>
     <a href="/signup.html">Sign Up</a>
@@ -151,7 +151,7 @@ export function renderSiteFooter(alertTitle = "Job Alerts", alertLabel = "Job Al
         </section>
         <nav class="site-detail-footer-grid" aria-label="Footer navigation">
           <div class="site-detail-footer-column"><h3>Opportunities</h3><a href="/jobs">Jobs</a><a href="/bursaries">Bursaries</a><a href="/varsity">Varsities</a><a href="/saved-items.html">Saved Items</a></div>
-          <div class="site-detail-footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/cv-tips">CV Tips</a><a href="/cv-tips#interview-prep">Interview Prep</a><a href="/z83-filler">Z83 Filler</a></div>
+          <div class="site-detail-footer-column"><h3>Career Tools</h3><a href="/cv-generator/">Generate CV</a><a href="/cv-generator/?tab=ai">AI Tailor</a><a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a><a href="/articles/cv-tips-ats-interview-prep.html#interview-preparation">Interview Prep</a><a href="/z83-filler">Z83 Filler</a></div>
           <div class="site-detail-footer-column"><h3>Company</h3><a href="/about-us">About Us</a><a href="/contact-us">Contact Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/paia-manual">PAIA</a></div>
         </nav>
       </div>

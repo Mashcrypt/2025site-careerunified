@@ -69,7 +69,7 @@ function staticEntries(): SitemapEntry[] {
     {loc: `${SITE_URL}/jobs`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
     {loc: `${SITE_URL}/bursaries`, lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9"},
     {loc: `${SITE_URL}/varsity`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
-    {loc: `${SITE_URL}/cv-tips`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
+    {loc: `${SITE_URL}/articles/cv-tips-ats-interview-prep.html`, lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "0.85"},
     {loc: `${SITE_URL}/cv-generator/`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/z83-filler`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8"},
     {loc: `${SITE_URL}/guides/how-to-complete-z83-form`, lastmod: "2026-07-18", changefreq: "monthly", priority: "0.85"},

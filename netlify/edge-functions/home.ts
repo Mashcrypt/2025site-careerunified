@@ -6,12 +6,14 @@ type EdgeContext = {
 };
 
 type JobSummary = {
+  _id?: string;
   slug?: string;
   title?: string;
   companyName?: string;
+  companyLogo?: string;
   location?: string;
-  deadline?: string;
-  deadlineText?: string;
+  salary?: string;
+  applyLink?: string;
   category?: string;
 };
 
@@ -29,19 +31,40 @@ function renderRecentJobs(jobs: JobSummary[]) {
     .slice(0, 8)
     .map((job) => {
       const slug = String(job.slug || "").trim();
-      const url = slug ? `/jobs/${encodeURIComponent(slug)}` : "/jobs";
-      const closing = String(job.deadlineText || job.deadline || "Not specified").trim();
+      const id = String(job._id || "").trim();
+      const title = String(job.title || "Job opportunity").trim();
+      const company = String(job.companyName || "Confidential").trim();
+      const logoUrl = /^https:\/\/cdn\.sanity\.io\/images\//.test(String(job.companyLogo || ""))
+        ? String(job.companyLogo)
+        : "";
+      const initials = company.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word.charAt(0)).join("").toUpperCase() || "CU";
+      const detailUrl = slug ? `/jobs?slug=${encodeURIComponent(slug)}` : "/jobs";
+      const logo = logoUrl
+        ? `<img src="${escapeHtml(logoUrl)}" alt="" loading="lazy" decoding="async">`
+        : escapeHtml(initials);
+      const category = job.category
+        ? `<div class="home-job-card-details"><span class="home-job-card-category">${escapeHtml(job.category)}</span></div>`
+        : '<div class="home-job-card-details"></div>';
+      const salary = job.salary ? `<span class="home-job-card-salary">${escapeHtml(job.salary)}</span>` : "";
+      const location = job.location ? `<span class="home-job-card-location">${escapeHtml(job.location)}</span>` : "";
 
-      return `<a href="${escapeHtml(url)}" class="job-card" data-cro-event="home_job_open" data-job-slug="${escapeHtml(slug)}" data-job-title="${escapeHtml(job.title || "")}" data-job-company="${escapeHtml(job.companyName || "Confidential")}" style="text-decoration:none;color:inherit">
-        <h3>
-          ${escapeHtml(job.title || "Job opportunity")}
-          ${job.category ? `<span class="badge">${escapeHtml(job.category)}</span>` : ""}
-        </h3>
-        <p class="company">${escapeHtml(job.companyName || "Confidential")}</p>
-        <p>${escapeHtml(job.location || "South Africa")}</p>
-        <p class="meta">Closing: ${escapeHtml(closing)}</p>
-        <span class="job-card-action">View job details <span aria-hidden="true">&rarr;</span></span>
-      </a>`;
+      return `<article class="job-card" data-home-job-card data-job-id="${escapeHtml(id)}" data-job-slug="${escapeHtml(slug)}" data-job-title="${escapeHtml(title)}" data-job-company="${escapeHtml(company)}" data-job-location="${escapeHtml(job.location || "")}" data-job-salary="${escapeHtml(job.salary || "")}" data-job-apply-link="${escapeHtml(job.applyLink || "")}">
+        <div class="home-job-card-company">
+          <span class="home-job-card-logo">${logo}</span>
+          <span class="home-job-card-company-name">${escapeHtml(company)}</span>
+          <div class="home-job-card-actions">
+            <button type="button" class="home-job-card-save" data-home-job-save="${escapeHtml(id)}" data-job-title="${escapeHtml(title)}" aria-label="Save job: ${escapeHtml(title)}" aria-pressed="false" ${id ? "" : "disabled"}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75A1.75 1.75 0 0 1 8.25 2h7.5a1.75 1.75 0 0 1 1.75 1.75V22l-5.75-3.75L6 22V3.75Z"/></svg><span data-save-label>Save</span>
+            </button>
+          </div>
+        </div>
+        <h3 class="home-job-card-title"><a class="home-job-card-title-link" href="${escapeHtml(detailUrl)}" data-cro-event="home_job_open" data-job-title="${escapeHtml(title)}" data-job-company="${escapeHtml(company)}">${escapeHtml(title)}</a></h3>
+        ${category}
+        <div class="home-job-card-footer">
+          <div class="home-job-card-meta">${salary}${location}</div>
+          <a class="home-job-card-apply" href="${escapeHtml(detailUrl)}" data-cro-event="home_job_open" data-job-title="${escapeHtml(title)}" data-job-company="${escapeHtml(company)}">Apply now</a>
+        </div>
+      </article>`;
     })
     .join("");
 }

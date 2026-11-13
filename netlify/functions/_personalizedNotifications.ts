@@ -181,14 +181,14 @@ async function recentCareerUpdates(admin: any, since: Date): Promise<Opportunity
   for (const raw of (guides || []) as any[]) {
     const publishedAt = date(raw._updatedAt || raw._createdAt)
     if (publishedAt < since) continue
-    result.push({id: `guide-${raw._id}`, title: raw.title, kind: raw.category || 'Career guide', types: [], industries: [], url: 'https://careerunified.com/cv-tips', publishedAt})
+    result.push({id: `guide-${raw._id}`, title: raw.title, kind: raw.category || 'Career guide', types: [], industries: [], url: 'https://careerunified.com/articles/cv-tips-ats-interview-prep.html', publishedAt})
   }
   for (const document of updates?.docs || []) {
     const raw = document.data()
     const publishedAt = date(raw.publishedAt || raw.createdAt)
     if (publishedAt < since) continue
     const url = String(raw.url || '')
-    result.push({id: `career-update-${document.id}`, title: String(raw.title || 'Career Unified update'), kind: raw.kind === 'event' ? 'Career event' : 'Career guide', types: [], industries: [], url: url.startsWith('https://careerunified.com/') ? url : 'https://careerunified.com/cv-tips', publishedAt})
+    result.push({id: `career-update-${document.id}`, title: String(raw.title || 'Career Unified update'), kind: raw.kind === 'event' ? 'Career event' : 'Career guide', types: [], industries: [], url: url.startsWith('https://careerunified.com/') ? url : 'https://careerunified.com/articles/cv-tips-ats-interview-prep.html', publishedAt})
   }
   return result
 }

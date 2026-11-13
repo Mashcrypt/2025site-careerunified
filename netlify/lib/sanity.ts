@@ -140,7 +140,7 @@ export async function getActiveJobs(limit = 200) {
     `*[_type == "job" && (!defined(deadline) || deadline >= $today)]
       | order(posted desc)[0...${limit}]{
         _id, _createdAt, _updatedAt, title, "slug": coalesce(slug.current, _id), location, salary,
-        posted, deadline, deadlineText, jobType, category, description, "companyName": company->name,
+        posted, deadline, deadlineText, jobType, category, description, applyLink, "companyName": company->name,
         "companyLogo": company->logo.asset->url
       }`,
     {today: today()},

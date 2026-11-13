@@ -248,7 +248,7 @@
 
 [[redirects]]
   from = "/cv-tips.html"
-  to = "/cv-tips"
+  to = "/articles/cv-tips-ats-interview-prep.html"
   status = 301
   force = true
 
@@ -266,13 +266,15 @@
 
 [[redirects]]
   from = "/cv-tips"
-  to = "/cv-tips.html"
-  status = 200
+  to = "/articles/cv-tips-ats-interview-prep.html"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/cv-tips/"
-  to = "/cv-tips.html"
-  status = 200
+  to = "/articles/cv-tips-ats-interview-prep.html"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/z83-filler"

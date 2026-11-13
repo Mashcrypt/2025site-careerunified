@@ -583,7 +583,6 @@
     <a href="/varsity">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
-    <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="/for-recruiters">For Employers</a>
     <a href="signup.html">Sign Up</a>
     <a href="login.html">Login</a>
@@ -615,7 +614,6 @@
   <a href="/cv-generator/">Generate CV</a>
   <a href="/z83-filler">Z83 Filler</a>
   <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
-  <a href="recruiter-dashboard.html">Recruiter Dashboard</a>
   <a href="/for-recruiters">For Employers</a>
   <a href="saved-items.html">Saved Items</a>
   <a href="signup.html">Sign Up</a>
@@ -658,7 +656,6 @@
 <main class="container">
   <div class="section-heading-row">
     <div>
-      <p class="section-kicker">Start applying</p>
       <h2 class="section-title">Recent Job Openings</h2>
     </div>
     <a href="/jobs" class="section-link" data-cro-event="recent_jobs_view_all">View all jobs <span aria-hidden="true">&rarr;</span></a>
@@ -843,6 +840,10 @@
 <button id="scrollDown" class="scroll-btn">↓</button>
 
 <!-- SANITY CLIENT -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="/js/firebase-lite.js"></script>
 <script src="js/sanityClient.js"></script>
 
 <script>
@@ -906,6 +907,125 @@ function getBadge(job) {
 ================================ */
 const homeJobList = document.getElementById('homeJobList');
 const statJobs = document.getElementById('statJobs');
+const homeSavedJobIds = new Set();
+const homeJobsById = new Map();
+const HOME_BOOKMARK_KEY = 'careerUnifiedBookmarks';
+let homeCandidateUser = null;
+
+document.querySelectorAll('[data-home-job-card][data-job-id]').forEach(card => {
+  const jobId = card.dataset.jobId;
+  homeJobsById.set(jobId, {
+    _id: jobId,
+    slug: card.dataset.jobSlug || '',
+    title: card.dataset.jobTitle || '',
+    company: {name: card.dataset.jobCompany || ''},
+    location: card.dataset.jobLocation || '',
+    salary: card.dataset.jobSalary || '',
+    applyLink: card.dataset.jobApplyLink || ''
+  });
+});
+
+function updateHomeSaveButtons() {
+  document.querySelectorAll('[data-home-job-save]').forEach(button => {
+    const isSaved = homeSavedJobIds.has(`job_${button.dataset.homeJobSave}`);
+    button.classList.toggle('is-saved', isSaved);
+    button.setAttribute('aria-pressed', String(isSaved));
+    button.setAttribute('aria-label', `${isSaved ? 'Remove saved job' : 'Save job'}: ${button.dataset.jobTitle || 'open position'}`);
+    const label = button.querySelector('[data-save-label]');
+    if (label) label.textContent = isSaved ? 'Saved' : 'Save';
+  });
+}
+
+function updateHomeBookmarkCache(jobId, isSaved) {
+  try {
+    const bookmarks = JSON.parse(localStorage.getItem(HOME_BOOKMARK_KEY) || '[]');
+    const key = `job:${jobId}`;
+    const next = bookmarks.filter(item => item !== key);
+    if (isSaved) next.push(key);
+    localStorage.setItem(HOME_BOOKMARK_KEY, JSON.stringify(next));
+  } catch (error) {
+    console.warn('Could not update saved-job cache:', error);
+  }
+}
+
+async function loadHomeSavedJobs(user) {
+  homeSavedJobIds.clear();
+  if (!user || !window.firebase?.firestore) {
+    updateHomeSaveButtons();
+    return;
+  }
+
+  try {
+    const snapshot = await firebase.firestore().collection('users').doc(user.uid).collection('saved').get();
+    snapshot.forEach(doc => {
+      if (doc.id.startsWith('job_')) homeSavedJobIds.add(doc.id);
+    });
+    updateHomeSaveButtons();
+  } catch (error) {
+    console.error('Failed to load saved jobs:', error);
+  }
+}
+
+if (window.firebase?.auth && window.firebase?.firestore) {
+  firebase.auth().onAuthStateChanged(user => {
+    homeCandidateUser = user || null;
+    loadHomeSavedJobs(homeCandidateUser);
+  });
+}
+
+async function toggleHomeJobSave(button) {
+  const job = homeJobsById.get(button.dataset.homeJobSave);
+  if (!job) return;
+
+  if (!homeCandidateUser) {
+    const pending = new URLSearchParams({
+      saveJob: job._id,
+      title: job.title || '',
+      company: job.company?.name || '',
+      location: job.location || '',
+      salary: job.salary || '',
+      applyLink: job.applyLink || '',
+      slug: job.slug || '',
+      returnTo: `${location.origin}/`
+    });
+    try { sessionStorage.setItem('careerUnifiedReturnUrl', `/saved-items.html?${pending.toString()}`); } catch {}
+    window.location.href = '/login.html';
+    return;
+  }
+
+  if (!window.firebase?.firestore) return;
+  const docId = `job_${job._id}`;
+  const ref = firebase.firestore().collection('users').doc(homeCandidateUser.uid).collection('saved').doc(docId);
+  button.disabled = true;
+  try {
+    if (homeSavedJobIds.has(docId)) {
+      await ref.delete();
+      homeSavedJobIds.delete(docId);
+      updateHomeBookmarkCache(job._id, false);
+      trackCroEvent('job_unsave', {job_id: job._id, job_title: job.title || '', job_company: job.company?.name || ''});
+    } else {
+      await ref.set({
+        type: 'job',
+        title: job.title || 'Open position',
+        company: job.company?.name || job.company || null,
+        location: job.location || null,
+        salary: job.salary || null,
+        applyLink: job.applyLink || null,
+        slug: job.slug || null,
+        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      homeSavedJobIds.add(docId);
+      updateHomeBookmarkCache(job._id, true);
+      trackCroEvent('job_save', {job_id: job._id, job_title: job.title || '', job_company: job.company?.name || ''});
+    }
+    updateHomeSaveButtons();
+  } catch (error) {
+    console.error('Error saving job:', error);
+    alert('Could not update this saved job. Please try again.');
+  } finally {
+    button.disabled = false;
+  }
+}
 
 async function renderRecentJobs() {
   const cachedJobs = loadCache("home_jobs_cache");
@@ -917,6 +1037,8 @@ async function renderRecentJobs() {
     _id,
     title,
     "slug": slug.current,
+    salary,
+    applyLink,
     company->{
       name,
       logo,
@@ -944,6 +1066,7 @@ function renderJobsUI(jobs) {
   });
 
   homeJobList.innerHTML = '';
+  homeJobsById.clear();
 
   jobs.slice(0, 9).forEach(job => {
     const badge = getBadge(job);
@@ -962,15 +1085,17 @@ function renderJobsUI(jobs) {
     if (!companyLogoUrl && typeof job.company?.logoUrl === 'string') companyLogoUrl = job.company.logoUrl;
     if (!companyLogoUrl.startsWith('https://cdn.sanity.io/images/')) companyLogoUrl = '';
 
-    const card = document.createElement('a');
-    card.href = jobSlug ? "/jobs/" + encodeURIComponent(jobSlug) : "/jobs";
+    const card = document.createElement('article');
     card.className = `job-card ${job.listingTier === 'premier' ? 'premier' : ''}`;
-    card.dataset.croEvent = 'home_job_open';
+    card.dataset.homeJobCard = '';
     card.dataset.jobSlug = jobSlug;
+    card.dataset.jobId = String(job._id || '');
     card.dataset.jobTitle = job.title || '';
     card.dataset.jobCompany = companyName || 'Confidential';
-    card.style.textDecoration = "none";
-    card.style.color = "inherit";
+    card.dataset.jobLocation = job.location || '';
+    card.dataset.jobSalary = job.salary || '';
+    card.dataset.jobApplyLink = job.applyLink || '';
+    if (job._id) homeJobsById.set(String(job._id), job);
 
     const companyHeader = document.createElement('div');
     companyHeader.className = 'home-job-card-company';
@@ -993,17 +1118,35 @@ function renderJobsUI(jobs) {
     const companyLabel = document.createElement('span');
     companyLabel.className = 'home-job-card-company-name';
     companyLabel.textContent = companyName || 'Confidential';
-    companyHeader.append(logoFrame, companyLabel);
+    const companyActions = document.createElement('div');
+    companyActions.className = 'home-job-card-actions';
     if (badge) {
       const sponsoredBadge = document.createElement('span');
       sponsoredBadge.className = 'badge-sponsored';
       sponsoredBadge.textContent = badge;
-      companyHeader.appendChild(sponsoredBadge);
+      companyActions.appendChild(sponsoredBadge);
     }
+    const saveButton = document.createElement('button');
+    saveButton.type = 'button';
+    saveButton.className = 'home-job-card-save';
+    saveButton.dataset.homeJobSave = String(job._id || '');
+    saveButton.dataset.jobTitle = job.title || 'open position';
+    saveButton.disabled = !job._id || !window.firebase?.firestore;
+    saveButton.setAttribute('aria-pressed', 'false');
+    saveButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75A1.75 1.75 0 0 1 8.25 2h7.5a1.75 1.75 0 0 1 1.75 1.75V22l-5.75-3.75L6 22V3.75Z"/></svg><span data-save-label>Save</span>';
+    companyActions.appendChild(saveButton);
+    companyHeader.append(logoFrame, companyLabel, companyActions);
 
     const title = document.createElement('h3');
     title.className = 'home-job-card-title';
-    title.textContent = job.title || 'Open position';
+    const titleLink = document.createElement('a');
+    titleLink.className = 'home-job-card-title-link';
+    titleLink.href = jobSlug ? `/jobs?slug=${encodeURIComponent(jobSlug)}` : '/jobs';
+    titleLink.dataset.croEvent = 'home_job_open';
+    titleLink.dataset.jobTitle = job.title || '';
+    titleLink.dataset.jobCompany = companyName || 'Confidential';
+    titleLink.textContent = job.title || 'Open position';
+    title.appendChild(titleLink);
 
     const details = document.createElement('div');
     details.className = 'home-job-card-details';
@@ -1013,31 +1156,53 @@ function renderJobsUI(jobs) {
       category.textContent = job.category;
       details.appendChild(category);
     }
+    const footer = document.createElement('div');
+    footer.className = 'home-job-card-footer';
+    const meta = document.createElement('div');
+    meta.className = 'home-job-card-meta';
+    if (job.salary) {
+      const salary = document.createElement('span');
+      salary.className = 'home-job-card-salary';
+      salary.textContent = job.salary;
+      meta.appendChild(salary);
+    }
     if (job.location) {
       const location = document.createElement('span');
       location.className = 'home-job-card-location';
       location.textContent = job.location;
-      details.appendChild(location);
+      meta.appendChild(location);
     }
-
-    const action = document.createElement('span');
-    action.className = 'job-card-action';
-    action.innerHTML = 'View job details <span aria-hidden="true">&rarr;</span>';
-    card.replaceChildren(companyHeader, title, details, action);
+    const applyLink = document.createElement('a');
+    applyLink.className = 'home-job-card-apply';
+    applyLink.href = jobSlug ? `/jobs?slug=${encodeURIComponent(jobSlug)}` : '/jobs';
+    applyLink.dataset.croEvent = 'home_job_open';
+    applyLink.dataset.jobTitle = job.title || '';
+    applyLink.dataset.jobCompany = companyName || 'Confidential';
+    applyLink.textContent = 'Apply now';
+    footer.append(meta, applyLink);
+    card.replaceChildren(companyHeader, title, details, footer);
 
     homeJobList.appendChild(card);
   });
+  updateHomeSaveButtons();
 }
 
 renderRecentJobs();
 
 document.addEventListener('click', event => {
-  const card = event.target.closest?.('[data-cro-event="home_job_open"][data-job-slug]');
-  if (!card || window.innerWidth <= 900) return;
+  const saveButton = event.target.closest?.('[data-home-job-save]');
+  if (saveButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleHomeJobSave(saveButton);
+    return;
+  }
+  const card = event.target.closest?.('[data-home-job-card][data-job-slug]');
+  if (!card || event.target.closest('a, button')) return;
   const slug = card.dataset.jobSlug;
-  if (!slug) return;
-  event.preventDefault();
-  window.location.href = '/jobs?slug=' + encodeURIComponent(slug);
+  const destination = slug ? `/jobs?slug=${encodeURIComponent(slug)}` : '/jobs';
+  trackCroEvent('home_job_open', {link_url: destination, job_title: card.dataset.jobTitle, job_company: card.dataset.jobCompany});
+  window.location.href = destination;
 });
 
 const statBursaries = document.getElementById("statBursaries");

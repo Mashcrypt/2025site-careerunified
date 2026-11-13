@@ -309,9 +309,65 @@ a:hover {
   white-space: nowrap;
 }
 
-.home-job-card-company .badge-sponsored {
+.home-job-card-actions {
+  display: inline-flex;
   flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
   margin-left: auto;
+}
+
+.home-job-card-save {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e3a8a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.home-job-card-save:hover:not(:disabled),
+.home-job-card-save:focus-visible {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.home-job-card-save.is-saved {
+  border-color: #dbeafe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.home-job-card-save:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.home-job-card-save svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.home-job-card-save.is-saved svg {
+  fill: currentColor;
+}
+
+.home-job-card-actions .badge-sponsored {
+  flex: 0 0 auto;
 }
 
 .job-card .home-job-card-title {
@@ -320,6 +376,18 @@ a:hover {
   font-size: 20px;
   font-weight: 700;
   line-height: 1.35;
+}
+
+.home-job-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-job-card-title-link:hover,
+.home-job-card-title-link:focus-visible {
+  color: #1e40af;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .home-job-card-details {
@@ -343,10 +411,55 @@ a:hover {
 }
 
 .home-job-card-location {
-  width: 100%;
   color: #64748b;
   font-size: 14px;
   line-height: 1.45;
+}
+
+.home-job-card-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.home-job-card-meta {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.home-job-card-salary {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.home-job-card-apply {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .18s ease, transform .18s ease;
+}
+
+.home-job-card-apply:hover,
+.home-job-card-apply:focus-visible {
+  background: #1d4ed8;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 .company {

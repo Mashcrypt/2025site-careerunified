@@ -307,7 +307,7 @@ export default async (request: Request) => {
       <a href="/varsity" aria-current="page">Varsities</a>
       <a href="/cv-generator/">Generate CV</a>
       <a href="/z83-filler">Z83 Filler</a>
-      <a href="/cv-tips">CV Tips</a>
+      <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
       <a href="/login.html">Login</a>
       <a href="/account-page.html" class="icon-btn desktop-account-btn" aria-label="My Account" title="My Account">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -332,7 +332,7 @@ export default async (request: Request) => {
     <a href="/varsity" aria-current="page">Varsities</a>
     <a href="/cv-generator/">Generate CV</a>
     <a href="/z83-filler">Z83 Filler</a>
-    <a href="/cv-tips">CV Tips</a>
+    <a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a>
     <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
     <a href="/saved-items.html">Saved Items</a>
     <a href="/signup.html">Sign Up</a>
@@ -430,7 +430,7 @@ export default async (request: Request) => {
       </div>
       <nav class="detail-footer-links" aria-label="Footer navigation">
         <div><h2>Opportunities</h2><a href="/jobs">Jobs</a><a href="/bursaries">Bursaries</a><a href="/varsity">Varsities</a></div>
-        <div><h2>Career tools</h2><a href="/cv-generator/">Generate CV</a><a href="/z83-filler">Z83 Filler</a><a href="/cv-tips">CV Tips</a></div>
+        <div><h2>Career tools</h2><a href="/cv-generator/">Generate CV</a><a href="/z83-filler">Z83 Filler</a><a href="/articles/cv-tips-ats-interview-prep.html">CV Tips</a></div>
         <div><h2>Company</h2><a href="/about-us">About Us</a><a href="/contact-us">Contact Us</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms</a></div>
       </nav>
     </div>
