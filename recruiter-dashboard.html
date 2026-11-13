@@ -104,6 +104,26 @@
   ====================================================== */
   .main { flex: 1; padding: 26px; overflow-y: auto; }
 
+  @media (min-width: 901px) {
+    body.authorized { height: 100vh; min-height: 0; overflow: hidden; }
+    body.authorized .sidebar {
+      position: sticky;
+      top: 0;
+      flex: 0 0 260px;
+      height: 100vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    body.authorized .main {
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
   .dashboard-toolbar {
     display: flex;
     align-items: center;
@@ -2695,7 +2715,8 @@
     align-items: end;
     margin: 16px 0;
   }
-  .screening-toolbar button { min-height: 46px; }
+  .screening-toolbar .form-group { margin-bottom: 0; }
+  .screening-toolbar > .job-inline-add-button { align-self: end; margin: 0; min-height: 46px; }
   .screening-question-list { display: grid; gap: 12px; }
   .screening-question-card {
     padding: 16px;
@@ -3509,6 +3530,7 @@
   .job-automated-emails__head p { margin:5px 0 0; color:#64748b; font-size:12px; line-height:1.5; }
   .job-automated-emails__add { display:flex; align-items:flex-end; gap:10px; margin-bottom:14px; }
   .job-automated-emails__add .form-group { flex:1; margin:0; }
+  .job-automated-emails__add > .job-inline-add-button { margin:0; }
   .job-automated-email-list { display:grid; gap:12px; }
   .job-automated-email-empty { padding:20px 14px; border:1px dashed #cbd5e1; border-radius:7px; color:#64748b; font-size:13px; text-align:center; }
   .job-automated-email-card { padding:15px; border:1px solid #dbe3ef; border-radius:8px; background:#fbfdff; }

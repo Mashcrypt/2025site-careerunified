@@ -262,7 +262,7 @@ async function downloadResumePdfInBrowser(preview: HTMLElement, fileName: string
   frame.title = 'CV PDF render';
   frame.tabIndex = -1;
   frame.setAttribute('aria-hidden', 'true');
-  frame.style.cssText = `position:fixed;left:0;top:0;z-index:-1;width:${TEMPLATE_CANVAS_WIDTH}px;height:1123px;border:0;pointer-events:none;`;
+  frame.style.cssText = `position:fixed;left:-10000px;top:0;z-index:-1;width:${TEMPLATE_CANVAS_WIDTH}px;height:1123px;border:0;pointer-events:none;`;
   document.body.appendChild(frame);
 
   try {
@@ -1823,6 +1823,7 @@ export default function App() {
           <a href="/varsity">Varsities</a>
           <a href="/cv-generator/">Generate CV</a>
           <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+          <a href="/for-recruiters">For Employers</a>
           <a href="/saved-items.html">Saved Items</a>
           <a href="/signup.html">Sign Up</a>
           <a href="/login.html">Login</a>
@@ -1886,6 +1887,7 @@ export default function App() {
         <a href="/varsity">Varsities</a>
         <a href="/cv-generator/">Generate CV</a>
         <a href="/recruiter-dashboard.html">Recruiter Dashboard</a>
+        <a href="/for-recruiters">For Employers</a>
         <a href="/saved-items.html">Saved Items</a>
         <a href="/signup.html">Sign Up</a>
         <a href="/login.html">Login</a>

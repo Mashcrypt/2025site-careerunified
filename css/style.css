@@ -252,6 +252,12 @@ a:hover {
   cursor: pointer;
 }
 
+#homeJobList .job-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+}
+
 .job-card:hover {
   transform: translateY(-5px);
 }
@@ -259,6 +265,88 @@ a:hover {
 .job-card h3 {
   font-size: 18px;
   color: #1e3a8a;
+}
+
+.home-job-card-company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 44px;
+}
+
+.home-job-card-logo {
+  display: inline-flex;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #1e40af;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.home-job-card-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+}
+
+.home-job-card-company-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-job-card-company .badge-sponsored {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.job-card .home-job-card-title {
+  margin: 20px 0 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.home-job-card-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 12px;
+  margin-top: 14px;
+}
+
+.home-job-card-category {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: #eff3fa;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.home-job-card-location {
+  width: 100%;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .company {
@@ -289,6 +377,11 @@ a:hover {
   color: #1e3a8a;
   font-size: 14px;
   font-weight: 700;
+}
+
+#homeJobList .job-card-action {
+  margin-top: auto;
+  padding-top: 16px;
 }
 
 /* ====================================
